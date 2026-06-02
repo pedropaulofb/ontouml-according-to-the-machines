@@ -10,9 +10,10 @@ edit_uri: edit/main/docs/
 theme:
   name: material
   language: en
+  logo: assets/images/binary-loop.svg
+  favicon: assets/images/binary-loop.svg
   features:
     - navigation.sections
-    - navigation.expand
     - navigation.indexes
     - navigation.top
     - navigation.tracking

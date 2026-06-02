@@ -396,3 +396,127 @@ body {
     max-height: 5.5rem;
   }
 }
+/* Desktop layout refinements
+   Purpose: widen the site, reduce hero crowding, and improve desktop scanning.
+*/
+
+/* Widen MkDocs Material's default content shell. */
+.md-grid {
+  max-width: min(94rem, calc(100% - 2rem));
+}
+
+/* Let the article area use the available desktop width. */
+.md-content__inner {
+  max-width: none;
+}
+
+/* Keep background gradients stable while scrolling. */
+body {
+  background-attachment: fixed;
+}
+
+/* Make the header logo usable at small size. */
+.md-header__button.md-logo img,
+.md-header__button.md-logo svg {
+  width: 1.6rem;
+  height: 1.6rem;
+  object-fit: contain;
+}
+
+/* More balanced desktop hero. */
+.aatm-hero {
+  grid-template-columns: minmax(0, 1fr) minmax(18rem, 0.72fr);
+  min-height: 30rem;
+  padding: clamp(1.75rem, 4vw, 3.25rem);
+}
+
+/* Reduce wordmark dominance. */
+.aatm-wordmark {
+  width: min(100%, 30rem);
+  max-height: 6.2rem;
+  margin-bottom: 1rem;
+}
+
+/* Slightly smaller and more desktop-friendly hero title. */
+.aatm-hero h1 {
+  max-width: 42rem;
+  font-size: clamp(2.35rem, 4vw, 3.45rem);
+  line-height: 1.02;
+}
+
+/* Keep the lead readable but not too wide. */
+.aatm-hero__lead {
+  max-width: 39rem;
+  font-size: clamp(1rem, 1.25vw, 1.16rem);
+}
+
+/* Stop the binary-loop asset from overlapping the hero text. */
+.aatm-hero__mark {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 22rem;
+  opacity: 0.23;
+}
+
+.aatm-hero__mark img {
+  position: static;
+  width: min(100%, 25rem);
+  max-height: 30rem;
+  transform: none;
+}
+
+/* Improve desktop card density. */
+.md-typeset .grid.cards > ul {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(18rem, 100%), 1fr));
+  gap: 1rem;
+}
+
+/* Make index-card pages breathe on wide screens. */
+.md-typeset .aatm-page-intro {
+  max-width: 64rem;
+}
+
+/* Improve the homepage start cards on desktop. */
+.md-typeset .grid.cards {
+  margin-top: 1rem;
+}
+
+/* Better spacing below the hero buttons. */
+.aatm-hero__actions {
+  margin-bottom: 0.25rem;
+}
+
+/* Medium screens: avoid cramped two-column hero. */
+@media screen and (max-width: 88rem) {
+  .aatm-hero {
+    grid-template-columns: 1fr;
+  }
+
+  .aatm-hero__mark {
+    order: -1;
+    min-height: 11rem;
+  }
+
+  .aatm-hero__mark img {
+    width: min(18rem, 62vw);
+    max-height: 14rem;
+  }
+}
+
+/* Small screens: keep the previous mobile behavior. */
+@media screen and (max-width: 44.9375em) {
+  .md-grid {
+    max-width: calc(100% - 1rem);
+  }
+
+  .aatm-hero h1 {
+    font-size: clamp(2rem, 10vw, 2.8rem);
+  }
+
+  .aatm-wordmark {
+    width: min(100%, 24rem);
+    max-height: 5rem;
+  }
+}

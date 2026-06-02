@@ -14,7 +14,7 @@ hide:
 # OntoUML According to the Machines
 
 <p class="aatm-hero__lead">
-A machine-generated guide to OntoUML stereotypes, organized as a critical documentation atlas with placeholders for descriptions, stereotype profiles, examples, references, and review logs.
+A machine-generated documentation atlas for OntoUML stereotypes, organized around descriptions, stereotype profiles, examples, references, and review logs.
 </p>
 
 <div class="aatm-hero__actions" markdown>
