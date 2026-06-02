@@ -1,6 +1,12 @@
 # Relation Stereotypes
 
-This section contains placeholder pages for OntoUML relation stereotypes.
+<div class="aatm-page-intro" markdown>
+
+<p class="aatm-kicker">Relation stereotype catalogue</p>
+
+This section contains placeholder pages for OntoUML relation stereotypes. Each page follows the shared documentation structure for generated descriptions, stereotype profiles, examples, references, and generation/review logs.
+
+</div>
 
 <div class="grid cards" markdown>
 

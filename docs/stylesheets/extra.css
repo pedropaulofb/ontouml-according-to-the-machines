@@ -1,0 +1,398 @@
+/* Luminous Machine Codex visual identity
+   Project: OntoUML According to the Machines
+*/
+
+:root {
+  --aatm-radius-lg: 1.4rem;
+  --aatm-radius-md: 0.95rem;
+  --aatm-radius-sm: 0.55rem;
+  --aatm-shadow-soft: 0 1.2rem 3rem rgba(18, 24, 38, 0.09);
+  --aatm-shadow-card: 0 0.7rem 1.8rem rgba(18, 24, 38, 0.07);
+}
+
+[data-md-color-scheme="default"] {
+  --aatm-bg: #fbf7ef;
+  --aatm-surface: #fffdf7;
+  --aatm-surface-soft: #f6efe2;
+  --aatm-card: #fffaf2;
+  --aatm-card-soft: #fdf6eb;
+  --aatm-text: #1d2433;
+  --aatm-muted: #5c6472;
+  --aatm-border: rgba(40, 49, 111, 0.16);
+  --aatm-border-strong: rgba(40, 49, 111, 0.28);
+  --aatm-indigo: #28316f;
+  --aatm-indigo-deep: #182047;
+  --aatm-cyan: #0aa6b8;
+  --aatm-cyan-soft: rgba(10, 166, 184, 0.13);
+  --aatm-amber: #ad6a00;
+  --aatm-amber-soft: rgba(173, 106, 0, 0.13);
+
+  --md-default-bg-color: var(--aatm-bg);
+  --md-default-fg-color: var(--aatm-text);
+  --md-accent-fg-color: var(--aatm-cyan);
+}
+
+[data-md-color-scheme="slate"] {
+  --aatm-bg: #111827;
+  --aatm-surface: #151f31;
+  --aatm-surface-soft: #1b263a;
+  --aatm-card: #172033;
+  --aatm-card-soft: #141c2d;
+  --aatm-text: #edf2f7;
+  --aatm-muted: #b8c1d1;
+  --aatm-border: rgba(128, 218, 231, 0.18);
+  --aatm-border-strong: rgba(128, 218, 231, 0.34);
+  --aatm-indigo: #9ea8ff;
+  --aatm-indigo-deep: #d8dcff;
+  --aatm-cyan: #66d9e8;
+  --aatm-cyan-soft: rgba(102, 217, 232, 0.13);
+  --aatm-amber: #ffd166;
+  --aatm-amber-soft: rgba(255, 209, 102, 0.14);
+
+  --md-default-bg-color: var(--aatm-bg);
+  --md-default-fg-color: var(--aatm-text);
+  --md-accent-fg-color: var(--aatm-cyan);
+}
+
+/* Global shell */
+
+body {
+  background:
+    radial-gradient(circle at 88% 8%, var(--aatm-cyan-soft), transparent 26rem),
+    radial-gradient(
+      circle at 6% 12%,
+      rgba(40, 49, 111, 0.08),
+      transparent 24rem
+    ),
+    var(--aatm-bg);
+}
+
+.md-header {
+  background: linear-gradient(
+    90deg,
+    var(--aatm-indigo-deep),
+    var(--aatm-indigo)
+  );
+  box-shadow: 0 0.3rem 1.2rem rgba(0, 0, 0, 0.16);
+}
+
+.md-tabs {
+  background: var(--aatm-indigo);
+}
+
+.md-main__inner {
+  margin-top: 1.2rem;
+}
+
+.md-content {
+  background: transparent;
+}
+
+.md-content__inner {
+  padding-bottom: 3rem;
+}
+
+/* Typography */
+
+.md-typeset {
+  color: var(--aatm-text);
+}
+
+.md-typeset h1,
+.md-typeset h2,
+.md-typeset h3 {
+  color: var(--aatm-indigo-deep);
+  letter-spacing: -0.025em;
+}
+
+[data-md-color-scheme="slate"] .md-typeset h1,
+[data-md-color-scheme="slate"] .md-typeset h2,
+[data-md-color-scheme="slate"] .md-typeset h3 {
+  color: var(--aatm-indigo-deep);
+}
+
+.md-typeset h1 {
+  font-weight: 760;
+}
+
+.md-typeset h2 {
+  border-bottom: 1px solid var(--aatm-border);
+  padding-bottom: 0.35rem;
+}
+
+.md-typeset a {
+  text-decoration-thickness: 0.08em;
+  text-underline-offset: 0.17em;
+}
+
+/* Homepage hero */
+
+.aatm-hero {
+  position: relative;
+  isolation: isolate;
+  display: grid;
+  grid-template-columns: minmax(0, 1.4fr) minmax(13rem, 0.6fr);
+  gap: clamp(1.5rem, 4vw, 3rem);
+  align-items: center;
+  overflow: hidden;
+  margin: 0 0 2rem;
+  padding: clamp(1.7rem, 5vw, 4rem);
+  border: 1px solid var(--aatm-border);
+  border-radius: var(--aatm-radius-lg);
+  background:
+    radial-gradient(
+      circle at 84% 16%,
+      var(--aatm-cyan-soft),
+      transparent 20rem
+    ),
+    linear-gradient(135deg, var(--aatm-surface), var(--aatm-surface-soft));
+  box-shadow: var(--aatm-shadow-soft);
+}
+
+.aatm-hero::before {
+  content: "";
+  position: absolute;
+  inset: auto -8rem -10rem auto;
+  z-index: -1;
+  width: 28rem;
+  height: 28rem;
+  border-radius: 50%;
+  border: 1px solid var(--aatm-border);
+  background: radial-gradient(
+    circle,
+    rgba(10, 166, 184, 0.13),
+    transparent 62%
+  );
+}
+
+.aatm-hero__content {
+  position: relative;
+  z-index: 1;
+}
+
+.aatm-wordmark {
+  display: block;
+  width: min(100%, 38rem);
+  max-height: 8rem;
+  object-fit: contain;
+  object-position: left center;
+  margin-bottom: 1.1rem;
+}
+
+[data-md-color-scheme="slate"] .aatm-wordmark {
+  filter: brightness(1.08) contrast(1.05);
+}
+
+.aatm-eyebrow {
+  display: inline-flex;
+  gap: 0.4rem;
+  align-items: center;
+  margin: 0 0 0.8rem;
+  padding: 0.28rem 0.7rem;
+  border: 1px solid var(--aatm-border-strong);
+  border-radius: 999px;
+  background: var(--aatm-cyan-soft);
+  color: var(--aatm-indigo-deep);
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.aatm-hero h1 {
+  margin: 0 0 0.6rem;
+  font-size: clamp(2rem, 5vw, 4rem);
+  line-height: 1;
+}
+
+.aatm-hero__lead {
+  max-width: 46rem;
+  margin: 0 0 1.2rem;
+  color: var(--aatm-muted);
+  font-size: clamp(1rem, 1.6vw, 1.22rem);
+}
+
+.aatm-hero__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.7rem;
+  margin-top: 1.2rem;
+}
+
+.aatm-hero__mark {
+  position: relative;
+  min-height: 18rem;
+  opacity: 0.28;
+}
+
+.aatm-hero__mark img {
+  position: absolute;
+  inset: 50% auto auto 50%;
+  width: min(28rem, 90vw);
+  max-width: none;
+  transform: translate(-50%, -50%);
+  filter: saturate(0.85) contrast(1.04);
+}
+
+[data-md-color-scheme="slate"] .aatm-hero__mark {
+  opacity: 0.2;
+}
+
+/* Callouts */
+
+.aatm-read-note {
+  margin: 1.5rem 0 2rem;
+  padding: 1rem 1.1rem;
+  border: 1px solid rgba(173, 106, 0, 0.28);
+  border-left: 0.35rem solid var(--aatm-amber);
+  border-radius: var(--aatm-radius-md);
+  background: var(--aatm-amber-soft);
+}
+
+.aatm-read-note p:last-child {
+  margin-bottom: 0;
+}
+
+.aatm-page-intro {
+  margin: 0 0 1.4rem;
+  padding: 1rem 1.1rem;
+  border: 1px solid var(--aatm-border);
+  border-radius: var(--aatm-radius-md);
+  background: linear-gradient(135deg, var(--aatm-card), var(--aatm-card-soft));
+  box-shadow: var(--aatm-shadow-card);
+}
+
+.aatm-kicker {
+  margin: 0 0 0.35rem;
+  color: var(--aatm-cyan);
+  font-size: 0.72rem;
+  font-weight: 760;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+}
+
+/* Cards */
+
+.md-typeset .grid.cards > ul {
+  grid-gap: 0.9rem;
+}
+
+.md-typeset .grid.cards > ul > li {
+  border: 1px solid var(--aatm-border);
+  border-radius: var(--aatm-radius-md);
+  background: linear-gradient(180deg, var(--aatm-card), var(--aatm-card-soft));
+  box-shadow: var(--aatm-shadow-card);
+  transition:
+    transform 160ms ease,
+    border-color 160ms ease,
+    box-shadow 160ms ease;
+}
+
+.md-typeset .grid.cards > ul > li:hover {
+  border-color: var(--aatm-border-strong);
+  box-shadow: var(--aatm-shadow-soft);
+  transform: translateY(-0.12rem);
+}
+
+.md-typeset .grid.cards > ul > li > p:first-child,
+.md-typeset .grid.cards > ul > li > p:first-child strong {
+  color: var(--aatm-indigo-deep);
+}
+
+.md-typeset .grid.cards a {
+  font-weight: 650;
+}
+
+/* Buttons */
+
+.md-typeset .md-button {
+  border-radius: 999px;
+}
+
+.md-typeset .md-button--primary {
+  background-color: var(--aatm-indigo);
+  border-color: var(--aatm-indigo);
+}
+
+.md-typeset .md-button--primary:hover {
+  background-color: var(--aatm-indigo-deep);
+  border-color: var(--aatm-indigo-deep);
+}
+
+.md-typeset .md-button:not(.md-button--primary) {
+  color: var(--aatm-indigo-deep);
+  border-color: var(--aatm-border-strong);
+}
+
+/* Admonitions */
+
+.md-typeset .admonition.warning,
+.md-typeset details.warning {
+  border-color: var(--aatm-amber);
+}
+
+.md-typeset .warning > .admonition-title,
+.md-typeset .warning > summary {
+  background-color: var(--aatm-amber-soft);
+}
+
+.md-typeset .warning > .admonition-title::before,
+.md-typeset .warning > summary::before {
+  background-color: var(--aatm-amber);
+}
+
+/* Tables */
+
+.md-typeset table:not([class]) {
+  border-radius: var(--aatm-radius-sm);
+  overflow: hidden;
+  box-shadow: var(--aatm-shadow-card);
+}
+
+.md-typeset table:not([class]) th {
+  background: var(--aatm-indigo);
+  color: #fff;
+}
+
+/* Footer */
+
+.md-footer {
+  background: var(--aatm-indigo-deep);
+}
+
+/* Responsive behavior */
+
+@media screen and (max-width: 76.25em) {
+  .aatm-hero {
+    grid-template-columns: 1fr;
+  }
+
+  .aatm-hero__mark {
+    min-height: 10rem;
+    order: -1;
+  }
+
+  .aatm-hero__mark img {
+    width: min(20rem, 72vw);
+  }
+}
+
+@media screen and (max-width: 44.9375em) {
+  .aatm-hero {
+    padding: 1.25rem;
+    border-radius: 1rem;
+  }
+
+  .aatm-hero__actions {
+    display: grid;
+  }
+
+  .aatm-hero__actions .md-button {
+    width: 100%;
+    text-align: center;
+  }
+
+  .aatm-wordmark {
+    max-height: 5.5rem;
+  }
+}

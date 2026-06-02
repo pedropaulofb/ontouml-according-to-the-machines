@@ -1,6 +1,12 @@
 # OntoUML Stereotypes
 
-This section contains placeholder pages for OntoUML stereotypes available in the OntoUML VP plugin.
+<div class="aatm-page-intro" markdown>
+
+<p class="aatm-kicker">Stereotype atlas</p>
+
+This section contains placeholder pages for OntoUML stereotypes available in the OntoUML VP plugin. The pages are organized into class stereotypes and relation stereotypes, with a shared structure for descriptions, stereotype profiles, examples, references, and generation/review logs.
+
+</div>
 
 ## Class Stereotypes
 

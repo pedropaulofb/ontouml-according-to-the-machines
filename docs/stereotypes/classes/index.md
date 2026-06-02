@@ -1,6 +1,12 @@
 # Class Stereotypes
 
-This section contains placeholder pages for OntoUML class stereotypes.
+<div class="aatm-page-intro" markdown>
+
+<p class="aatm-kicker">Class stereotype catalogue</p>
+
+This section contains placeholder pages for OntoUML class stereotypes. Each page follows the shared documentation structure for generated descriptions, stereotype profiles, examples, references, and generation/review logs.
+
+</div>
 
 <div class="grid cards" markdown>
 
