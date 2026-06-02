@@ -1,0 +1,85 @@
+site_name: OntoUML According to the Machines
+site_description: An unofficial, apocryphal LLM-generated guide to OntoUML stereotypes.
+site_author: Pedro Paulo Favato Barcelos
+site_url: https://pedropaulofb.github.io/ontouml-according-to-the-machines/
+
+repo_name: pedropaulofb/ontouml-according-to-the-machines
+repo_url: https://github.com/pedropaulofb/ontouml-according-to-the-machines
+edit_uri: edit/main/docs/
+
+theme:
+  name: material
+  language: en
+  features:
+    - navigation.sections
+    - navigation.expand
+    - navigation.indexes
+    - navigation.top
+    - navigation.tracking
+    - search.suggest
+    - search.highlight
+    - content.code.copy
+
+nav:
+  - Home: index.md
+  - Generation Policy: generation-policy.md
+  - Stereotypes:
+      - Overview: stereotypes/index.md
+      - Class Stereotypes:
+          - Overview: stereotypes/classes/index.md
+          - Abstract: stereotypes/classes/abstract.md
+          - Category: stereotypes/classes/category.md
+          - Collective: stereotypes/classes/collective.md
+          - Datatype: stereotypes/classes/datatype.md
+          - Enumeration: stereotypes/classes/enumeration.md
+          - Event: stereotypes/classes/event.md
+          - Historical Role Mixin: stereotypes/classes/historical-role-mixin.md
+          - Historical Role: stereotypes/classes/historical-role.md
+          - Kind: stereotypes/classes/kind.md
+          - Mixin: stereotypes/classes/mixin.md
+          - Mode: stereotypes/classes/mode.md
+          - Phase Mixin: stereotypes/classes/phase-mixin.md
+          - Phase: stereotypes/classes/phase.md
+          - Quality: stereotypes/classes/quality.md
+          - Quantity: stereotypes/classes/quantity.md
+          - Relator: stereotypes/classes/relator.md
+          - Role Mixin: stereotypes/classes/role-mixin.md
+          - Role: stereotypes/classes/role.md
+          - Situation: stereotypes/classes/situation.md
+          - Subkind: stereotypes/classes/subkind.md
+          - Type: stereotypes/classes/type.md
+      - Relation Stereotypes:
+          - Overview: stereotypes/relations/index.md
+          - Brings About: stereotypes/relations/brings-about.md
+          - Characterization: stereotypes/relations/characterization.md
+          - Comparative: stereotypes/relations/comparative.md
+          - Component Of: stereotypes/relations/component-of.md
+          - Creation: stereotypes/relations/creation.md
+          - External Dependence: stereotypes/relations/external-dependence.md
+          - Historical Dependence: stereotypes/relations/historical-dependence.md
+          - Instantiation: stereotypes/relations/instantiation.md
+          - Manifestation: stereotypes/relations/manifestation.md
+          - Material: stereotypes/relations/material.md
+          - Mediation: stereotypes/relations/mediation.md
+          - Member Of: stereotypes/relations/member-of.md
+          - Participation: stereotypes/relations/participation.md
+          - Participational: stereotypes/relations/participational.md
+          - Sub Collection Of: stereotypes/relations/sub-collection-of.md
+          - Sub Quantity Of: stereotypes/relations/sub-quantity-of.md
+          - Termination: stereotypes/relations/termination.md
+          - Triggers: stereotypes/relations/triggers.md
+
+markdown_extensions:
+  - admonition
+  - attr_list
+  - md_in_html
+  - tables
+  - toc:
+      permalink: true
+  - pymdownx.details
+  - pymdownx.superfences
+
+plugins:
+  - search
+
+strict: true
