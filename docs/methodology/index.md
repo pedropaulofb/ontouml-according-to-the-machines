@@ -35,7 +35,7 @@ The methodology does not cover:
 
 ## Relationship to the generation policy
 
-The [Generation Policy](../generation-policy.md) defines the general principles for LLM-generated content in this project.
+The [Generation Policy](generation-policy.md) defines the general principles for LLM-generated content in this project.
 
 This methodology section operationalizes those principles by documenting concrete phases of work. Each phase defines its own purpose, execution model, expected outputs, limitations, and completion criteria.
 

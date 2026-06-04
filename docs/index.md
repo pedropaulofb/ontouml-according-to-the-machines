@@ -21,7 +21,7 @@ A machine-generated documentation atlas for OntoUML stereotypes, organized aroun
 
 [Browse Class Stereotypes](stereotypes/classes/index.md){ .md-button .md-button--primary }
 [Browse Relation Stereotypes](stereotypes/relations/index.md){ .md-button }
-[Read the Generation Policy](generation-policy.md){ .md-button }
+[Read the Generation Policy](methodology/generation-policy.md){ .md-button }
 
 </div>
 
@@ -59,7 +59,7 @@ This project is **not authoritative OntoUML documentation**. It is an experiment
 
     Read how generated content, direct citations, consulted sources, and generation/review logs should be handled.
 
-    [Open generation policy](generation-policy.md)
+    [Open generation policy](methodology/generation-policy.md)
 
 </div>
 

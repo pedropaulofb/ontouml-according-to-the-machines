@@ -235,6 +235,6 @@ The content should therefore be useful for later refinement work, not merely rea
 
 ## Relationship to later phases
 
-Later phases are intentionally not defined here.
+Later phases are not specified in detail here.
 
 Phase 1 only establishes the initial content base. Future phase documentation should define its own purpose, execution model, and quality expectations.
