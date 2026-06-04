@@ -37,7 +37,12 @@ theme:
 
 nav:
   - Home: index.md
-  - Generation Policy: generation-policy.md
+  - Methodology:
+    - Overview: methodology/index.md
+    - Generation Policy: methodology/generation-policy.md
+    - Project Phases:
+        - Overview: methodology/phases/index.md
+        - Phase 1: methodology/phases/phase-1.md
   - Stereotypes:
       - Overview: stereotypes/index.md
       - Class Stereotypes:
