@@ -78,9 +78,9 @@ Its current intended prompt identity is:
 
 | Field | Value |
 |---|---|
-| Prompt ID | `prompt-phase-1-population-v1.2.4` |
+| Prompt ID | `prompt-phase-1-population-v1.1.0` |
 | Prompt title | `Phase 1 Population — Source-Grounded Intermediate File Generation` |
-| Prompt path | `prompts/phase-1/prompt-phase-1-population-v1.2.4.md` |
+| Prompt path | `prompts/phase-1/prompt-phase-1-population-v1.1.0.md` |
 
 The population prompt should require only minimal run-specific information from the user:
 
