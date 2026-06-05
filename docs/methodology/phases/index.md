@@ -10,8 +10,8 @@ This project produces documentation through iterative use of generative AI. Diff
 
 Using phases makes those differences explicit:
 
-- early work can prioritize source-grounded extraction and structured first-pass population;
-- later work can prioritize consolidation, validation, normalization, consistency, and expert review;
+- early work can prioritize source-grounded extraction, structured first-pass population, and controlled consolidation;
+- later work can prioritize validation, normalization, consistency, expert review, examples, and profile completion;
 - limitations of each period remain visible;
 - generated material can be refined without pretending that all pages have the same maturity level.
 
@@ -32,13 +32,13 @@ They do not define or govern:
 
 | Phase | Name | Status | Main purpose |
 |---|---|---|---|
-| Phase 1 | [Groundwork and Initial Population](phase-1.md) | Planned / in progress | Generate source-specific intermediate files from selected high-yield sources for later consolidation into stereotype pages. |
+| Phase 1 | [Groundwork and Initial Population](phase-1.md) | In progress | Generate source-specific intermediate files from selected high-yield sources and consolidate them into first canonical stereotype pages. |
 
 ## Phase relationship
 
 The phases are cumulative but not necessarily exhaustive.
 
-Phase 1 creates a provisional source-grounded intermediate content base. Later work may consolidate, review, refine, normalize, restructure, validate, or expand that base. A later phase may also revisit content produced in an earlier phase if new source material or review decisions require it.
+Phase 1 creates a provisional source-grounded documentation base. Later work may review, refine, normalize, restructure, validate, or expand that base. A later phase may also revisit content produced in an earlier phase if new source material or review decisions require it.
 
 ## Maturity expectation
 
