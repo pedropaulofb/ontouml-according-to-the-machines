@@ -2,24 +2,35 @@
 
 Phase 1 is the first content-production phase of **OntoUML According to the Machines**.
 
-Its purpose is to do the groundwork for the stereotype documentation by extracting source-grounded, source-specific intermediate content from selected high-yield resources. The resulting work products are expected to be useful, technically oriented, traceable, and provisional. They are not final documentation pages.
+Its purpose is to create a source-grounded first version of the stereotype documentation. Phase 1 does this in two steps:
+
+1. generate source-specific intermediate files from selected high-yield sources;
+2. consolidate those intermediate files into the first canonical stereotype pages.
+
+The resulting canonical pages are still provisional. They are first consolidated documentation pages, not final expert-validated OntoUML documentation.
 
 ## Purpose
 
-Phase 1 has two main goals:
+Phase 1 has three main goals:
 
-1. produce source-specific intermediate content for OntoUML stereotype pages;
-2. create a structured evidence base that can later be consolidated into first complete stereotype pages.
+1. extract source-specific contributions from selected OntoUML and UFO resources;
+2. preserve source traceability through intermediate files, citations, consulted sources, and generation logs;
+3. consolidate the intermediate files into first canonical stereotype pages under `docs/stereotypes/`.
 
-The phase prioritizes coverage of relevant source material over final completeness. It is intended to transform difficult, information-rich sources into reviewable intermediate work products for the affected stereotypes.
+The phase prioritizes source-grounded coverage and traceable first-pass synthesis over final completeness.
 
 Phase 1 does not aim to produce final, authoritative, or fully reviewed OntoUML documentation.
 
 ## Scope
 
-Phase 1 is limited to content work.
+Phase 1 is limited to content work for stereotype documentation.
 
-It may generate intermediate files when selected source material provides substantive information about one or more OntoUML stereotypes.
+It includes:
+
+- source-specific extraction into intermediate work products;
+- consolidation of intermediate files into first canonical stereotype pages;
+- direct updates to skeletal canonical stereotype pages during the consolidation step;
+- generation and review log entries for both intermediate and consolidated artifacts.
 
 Phase 1 does not include:
 
@@ -31,28 +42,24 @@ Phase 1 does not include:
 - example creation;
 - complete stereotype profiles;
 - deep expert validation;
-- agent-based refinement;
+- agent-based refinement beyond the defined prompt executions;
 - changes to the general site architecture;
-- direct commits, branches, pull requests, or repository mutation by the population prompt.
+- pull requests or branch-based review workflows.
 
 These exclusions apply to Phase 1 and are expected to hold for later project phases unless explicitly revised.
 
 ## Execution model
 
-Phase 1 is executed manually using regular ChatGPT.
+Phase 1 is executed manually using regular ChatGPT and repository tools.
 
-It is not an agentic workflow. Agents are not part of the Phase 1 population method.
+The phase uses two prompts:
 
-The Phase 1 population prompt is expected to be run multiple times, once per selected input file, source unit, chapter, section, excerpt, or note set. Each execution analyzes one supplied input source and generates source-specific intermediate files only for stereotypes that are directly and substantively informed by that source.
+1. a population prompt, run once per selected source unit;
+2. a consolidation prompt, run once per stereotype.
 
-For example:
+The population prompt generates source-specific intermediate files. The consolidation prompt reads the intermediate files for one stereotype and commits the first consolidated canonical page directly to `main`, provided that the current canonical page is empty or skeletal.
 
-- execution 1 processes input source X;
-- if source X contains substantive information about stereotypes A and B, intermediate files are generated for A and B;
-- execution 2 processes input source Y;
-- if source Y contains substantive information about stereotypes B and C, separate intermediate files are generated for B and C.
-
-The order of population is therefore determined by the content of the selected input files, not by the current navigation order or by a predefined stereotype sequence.
+This direct commit behavior is intentionally limited to Phase 1 because the target canonical pages are initially skeletal. Later phases should not assume that direct commits to `main` remain appropriate.
 
 ## Input model
 
@@ -66,15 +73,13 @@ Sources should be selected because they are expected to define, explain, or subs
 - existing OntoUML documentation;
 - other selected authoritative or high-yield resources.
 
-Large or dense sources should be processed in smaller source units, such as chapters, sections, page ranges, excerpts, or note sets. The source scope must be recorded explicitly for each execution.
+Large or dense sources should be processed in smaller source units, such as chapters, sections, page ranges, excerpts, or note sets. The source scope must be recorded explicitly for each population execution.
 
 A complete thesis or long paper should not normally be processed as one input if it can be divided into coherent source units.
 
-## Population prompt
+## Prompt 1 — Population
 
 The first Phase 1 prompt is the population prompt.
-
-Its current intended prompt identity is:
 
 | Field | Value |
 |---|---|
@@ -82,7 +87,9 @@ Its current intended prompt identity is:
 | Prompt title | `Phase 1 Population — Source-Grounded Intermediate File Generation` |
 | Prompt path | `prompts/phase-1/prompt-phase-1-population-v1.1.0.md` |
 
-The population prompt should require only minimal run-specific information from the user:
+The population prompt is run once per selected source unit.
+
+It requires only minimal run-specific information from the user:
 
 | Field | Meaning |
 |---|---|
@@ -90,27 +97,13 @@ The population prompt should require only minimal run-specific information from 
 | Input source type | One of `full document`, `excerpt`, `notes`, or `other`. |
 | Source scope | Full document, chapter, section, page range, excerpt label, notes scope, or other precise scope statement. |
 
-The prompt should generate technical metadata itself, including current date, current datetime, prompt ID, prompt version, prompt file path, input source short ID, and output package name.
+The population prompt generates technical metadata itself, including current date, current datetime, prompt ID, prompt version, prompt file path, input source short ID, and output package name.
 
-The generated timestamp and source short ID should be computed once and reused consistently in the ZIP package name, intermediate file paths, generation logs, and final confirmation.
+### Population output
 
-## Output model
+Each population execution generates a downloadable ZIP package containing source-specific intermediate Markdown files.
 
-Each Phase 1 population execution should generate a downloadable ZIP package containing source-specific intermediate Markdown files.
-
-The population prompt should not output full generated Markdown contents in the chat.
-
-The population prompt should not generate final documentation files under `docs/`.
-
-The population prompt should not commit files, create branches, or open pull requests.
-
-If file generation is unavailable, the prompt should report that clearly and stop. It should not provide a textual fallback containing generated file contents.
-
-If no target stereotype is substantively informed by the supplied source, the prompt should generate no package and report that no intermediate files were generated.
-
-## Intermediate work-product location
-
-Intermediate files should be generated inside the ZIP package using repository-relative paths under:
+The ZIP package preserves repository-relative paths under:
 
 ```text
 work-products/phase-1/intermediate/stereotypes/
@@ -130,7 +123,16 @@ work-products/phase-1/intermediate/stereotypes/classes/role-mixin/2026-06-05t143
 work-products/phase-1/intermediate/stereotypes/relations/mediation/2026-06-05t1432-guizzardi-2005-thesis-chapter-04.md
 ```
 
-Intermediate files should not be generated under `docs/`, `references/`, or `prompts/`.
+The population prompt does not:
+
+- generate final documentation files under `docs/`;
+- commit files to the repository;
+- create branches;
+- open pull requests;
+- generate examples;
+- complete stereotype profiles.
+
+If no target stereotype is substantively informed by the supplied source, the population prompt generates no package and reports that no intermediate files were generated.
 
 ## Intermediate file structure
 
@@ -170,19 +172,143 @@ TBD in a later phase.
 
 The `Source-Specific Description Contribution` section is the main content target for Phase 1 population. It represents what one supplied source contributes to a later final `Description` section. It should not be treated as the final description of the stereotype.
 
+## Prompt 2 — Consolidation
+
+The second Phase 1 prompt is the consolidation prompt.
+
+| Field | Value |
+|---|---|
+| Prompt ID | `prompt-phase-1-consolidation-v1.0.5` |
+| Prompt title | `Phase 1 Consolidation — Direct Main Commit for One Stereotype` |
+| Prompt path | `prompts/phase-1/prompt-phase-1-consolidation-v1.0.5.md` |
+
+The consolidation prompt is run once per stereotype.
+
+It receives one GitHub folder URL pointing to the intermediate files for that stereotype, for example:
+
+```text
+https://github.com/pedropaulofb/ontouml-according-to-the-machines/tree/main/work-products/phase-1/intermediate/stereotypes/classes/kind
+```
+
+From that URL, the prompt derives:
+
+- target stereotype group;
+- target stereotype ID;
+- target display name;
+- target canonical file path;
+- commit message.
+
+The consolidation prompt reads all Markdown files directly under the supplied intermediate folder, processes only files for the target stereotype, and generates exactly one canonical page.
+
+### Consolidation output
+
+The consolidation prompt commits exactly one file directly to `main`:
+
+```text
+docs/stereotypes/<classes-or-relations>/<stereotype-id>.md
+```
+
+Examples:
+
+```text
+docs/stereotypes/classes/kind.md
+docs/stereotypes/classes/historical-role-mixin.md
+docs/stereotypes/relations/historical-dependence.md
+```
+
+Direct commits to `main` are allowed in Phase 1 only because the canonical stereotype pages are expected to be empty or skeletal before consolidation.
+
+Before committing, the consolidation prompt must verify that:
+
+- the target canonical page exists;
+- the target canonical page is empty or skeletal;
+- the target canonical page is not already substantively populated;
+- the output path is exactly the derived canonical path;
+- exactly one file will be modified;
+- no file outside `docs/stereotypes/classes/` or `docs/stereotypes/relations/` will be changed.
+
+After committing, the prompt verifies that the committed file content matches the generated canonical page.
+
+If the target page is not skeletal, the prompt must stop and report that it cannot safely overwrite the page.
+
+## Canonical page structure after consolidation
+
+Each consolidated canonical page should use the following structure:
+
+```markdown
+# <OntoUML VP-style display name>
+
+## Description
+
+<Consolidated Phase 1 description synthesized from the supplied valid target intermediate files.>
+
+## Stereotype Profile
+
+TBD in a later phase.
+
+## Examples
+
+TBD in a later phase.
+
+## References
+
+### Direct Citations
+
+<Consolidated direct citation bullets from the supplied valid target intermediate files, or exactly: None.>
+
+### Consulted Sources
+
+<Consolidated consulted source bullets from the supplied valid target intermediate files, or exactly: None.>
+
+## Generation and Review Log
+
+| Date | Phase | Agent | Action | Prompt ID | Prompt Title | Inputs | Notes |
+|---|---|---|---|---|---|---|---|
+| <Current date> | Phase 1 | <agent/model> | Consolidation | <prompt ID> | <prompt title> | <intermediate file IDs or filenames> | First consolidated stereotype page generated from Phase 1 source-specific intermediate files; not final expert-validated documentation. |
+```
+
+The consolidated page contains one new consolidation log entry only. It does not copy the generation logs from the intermediate files. Intermediate generation history remains available in the intermediate files under `work-products/phase-1/intermediate/stereotypes/`.
+
+## Naming conventions
+
+Repository paths and filenames use kebab-case.
+
+Examples:
+
+```text
+docs/stereotypes/classes/historical-role-mixin.md
+docs/stereotypes/relations/historical-dependence.md
+```
+
+Page headings and prose use OntoUML VP-style stereotype display names.
+
+Examples:
+
+```text
+HistoricalRoleMixin
+HistoricalDependence
+RoleMixin
+PhaseMixin
+ComponentOf
+SubQuantityOf
+SubCollectionOf
+```
+
+Spaced labels such as `Historical Role Mixin` or `Historical Dependence` should not be used in generated page content, except inside exact direct quotations.
+
+Direct quotations preserve exact source wording and should not be normalized.
+
 ## Citation and reference requirements
 
 Phase 1 uses a strict citation expectation.
 
-Every important claim should be grounded in the supplied input source. The goal is not only to generate content, but also to preserve enough source traceability for later consolidation and review.
+Every important claim should be grounded in the supplied input source or in a valid target intermediate file.
 
-Direct quotations may be used when they support key definitions or especially important claims. They should not be overused.
-
-Each intermediate file should distinguish between:
+Population files distinguish between:
 
 ### Direct Citations
 
-Exact quoted passages used to support specific claims in the intermediate file. Direct citations should be short and should include a locator when available, such as page number, section number, heading, paragraph number, or excerpt label.
+Exact quoted passages used to support specific claims. Direct citations should be short and should include a locator when available, such as page number, section number, heading, paragraph number, or excerpt label.
 
 The expected direct citation format is:
 
@@ -198,83 +324,65 @@ None.
 
 ### Consulted Sources
 
-The supplied input source used to generate the intermediate file, including the source scope.
+The supplied input source used to generate the intermediate or consolidated content, including source scope when available.
 
-If a source informs intermediate content, it should be listed as a consulted source.
+If a source informs content, it should be listed as a consulted source.
+
+The consolidation prompt merges consulted sources from the valid target intermediate files and preserves distinct source-scope information.
 
 ## Handling uncertainty and conflicts
 
 Phase 1 should avoid uncertain claims rather than include them.
 
-If a claim cannot be supported from the supplied input source, it should not be added in the intermediate file.
+If a claim cannot be supported from the supplied input source or valid target intermediate files, it should not be added.
 
-If the input source contains internal tension or conflict, the prompt should prefer the clearest and most directly relevant passage. It should not resolve theoretical conflicts using external knowledge. If the conflict prevents a reliable source-specific contribution for a stereotype, the stereotype should be skipped for that execution.
+If source-specific intermediate files conflict, the consolidation prompt should not invent a resolution. It should either omit the contested claim or use cautious wording that reflects only what is safely supported.
 
-## Relationship to final stereotype pages
+Claims supported by only one valid target intermediate file should be worded cautiously unless that intermediate file presents the claim as a central definition, central constraint, or central characterization.
 
-Phase 1 population does not directly update the canonical stereotype pages under `docs/stereotypes/`.
+## Results of Phase 1
 
-Instead, it produces source-specific intermediate files. A later consolidation prompt should read the intermediate files for one stereotype and synthesize a first consolidated page under the canonical documentation structure.
+Phase 1 produces two levels of result:
 
-The intended pipeline is:
+1. source-specific intermediate files under `work-products/phase-1/intermediate/stereotypes/`;
+2. first consolidated canonical stereotype pages under `docs/stereotypes/`.
 
-```text
-selected source unit
--> population prompt
--> source-specific intermediate files
--> consolidation prompt
--> first consolidated stereotype page
--> review and refinement in later phases
-```
+The intermediate files preserve source-specific extraction and local provenance.
 
-For consolidation, the recommended unit is one stereotype at a time. Intermediate files should be grouped by stereotype before consolidation.
+The consolidated pages provide the first coherent documentation pages for each stereotype.
 
-## Generation and review log
-
-Each generated intermediate file should include a Phase 1 generation log entry.
-
-The log entry should record:
-
-- date;
-- phase;
-- agent name and version;
-- action performed;
-- prompt ID;
-- prompt title;
-- input source identifier;
-- source scope;
-- notes clarifying that the file is source-specific, intermediate, and intended for later consolidation.
-
-The log should make clear that the file was generated during Phase 1 and remains provisional.
+The consolidated pages are still provisional. They are suitable as a starting point for later review, normalization, refinement, expert validation, and example/profile completion.
 
 ## Completion criteria
 
-Phase 1 population is complete when all selected major input sources or source units have been processed and all source-specific intermediate files have been generated for the stereotypes substantively informed by those inputs.
+Phase 1 is complete when:
 
-Some stereotypes may still have no intermediate files after Phase 1 population. A stereotype is not required to receive intermediate content if the selected Phase 1 inputs do not provide relevant content for it.
+- the selected major source units have been processed with the population prompt;
+- generated intermediate files have been committed under `work-products/phase-1/intermediate/stereotypes/`;
+- the consolidation prompt has been executed once for every stereotype with available intermediate files;
+- each successfully consolidated stereotype has a canonical page under `docs/stereotypes/classes/` or `docs/stereotypes/relations/`;
+- each consolidated page contains a source-grounded `Description` section;
+- each consolidated page keeps `Stereotype Profile` as `TBD in a later phase.`;
+- each consolidated page keeps `Examples` as `TBD in a later phase.`;
+- each consolidated page includes `Direct Citations`, `Consulted Sources`, and one consolidation log entry;
+- no examples, diagrams, or complete stereotype profiles have been generated;
+- no non-skeletal canonical page has been overwritten.
 
-Additional success criteria are:
-
-- generated intermediate files are source-specific;
-- generated intermediate files are stored under the expected `work-products/phase-1/intermediate/stereotypes/` structure;
-- each generated intermediate file lists consulted sources and source scope;
-- each generated intermediate file has a generation log entry;
-- generated content is clearly marked as provisional and intermediate;
-- no generated population output directly modifies canonical `docs/stereotypes/` pages.
+A stereotype is not required to receive a canonical consolidated page if the selected Phase 1 inputs do not provide relevant intermediate content for it.
 
 ## Deferred work
 
-The following work is deferred to later phases or later Phase 1 prompts:
+The following work is deferred to later phases:
 
-- consolidation of intermediate files into canonical stereotype pages;
+- expert-level validation;
+- systematic terminology normalization;
+- systematic cross-page consistency checks;
+- conflict analysis beyond conservative Phase 1 handling;
 - examples;
 - diagrams;
 - complete stereotype profiles;
-- terminology normalization;
-- systematic cross-page consistency checks;
-- expert-level validation;
-- agent-assisted refinement;
-- conflict analysis beyond source-local handling;
+- review of direct citations and consulted sources;
+- refinement of prose for clarity, pedagogy, and completeness;
 - visual or structural website improvements.
 
 ## Risks
@@ -285,28 +393,30 @@ Phase 1 carries known risks:
 - misread source material;
 - oversimplification;
 - citation gaps;
-- inconsistent terminology across intermediate files;
-- uneven intermediate file quality;
+- inconsistent terminology across pages;
+- uneven page quality;
 - overconfidence in generated content;
 - excessive dependence on difficult sources;
 - loss of nuance from UFO or OntoUML theory;
 - duplication or overlap across source-specific intermediate files;
-- later consolidation bias if one source dominates the available intermediate files.
+- consolidation bias if one source dominates the available intermediate files;
+- direct commits to `main` during consolidation, even though guarded by skeletal-page preflight checks.
 
-These risks are acceptable only because Phase 1 is explicitly provisional and designed to support later consolidation and review.
+These risks are acceptable only because Phase 1 is explicitly provisional and designed to support later review and refinement.
 
 ## Expected readers
 
-Phase 1 intermediate content primarily serves:
+Phase 1 content primarily serves:
 
 - the project maintainer;
-- future consolidation prompts;
-- future review agents.
+- future review agents;
+- later expert or human reviewers;
+- future phases of the project.
 
-The content should therefore be useful for later consolidation and refinement work, not merely readable as final educational material.
+The content should therefore be useful for later consolidation, review, and refinement work, not treated as final educational material.
 
 ## Relationship to later phases
 
-Later phases are not specified in detail here.
+Phase 1 establishes a source-grounded initial documentation base.
 
-Phase 1 establishes a source-grounded intermediate content base. Future phase documentation should define its own purpose, execution model, and quality expectations.
+Later phases should define their own purpose, execution model, quality expectations, and review criteria. They should treat Phase 1 pages as provisional first-pass outputs requiring validation and refinement.
