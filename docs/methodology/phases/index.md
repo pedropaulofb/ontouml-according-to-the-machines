@@ -33,12 +33,13 @@ They do not define or govern:
 | Phase | Name | Status | Main purpose |
 |---|---|---|---|
 | Phase 1 | [Groundwork and Initial Population](phase-1.md) | In progress | Generate source-specific intermediate files from selected high-yield sources and consolidate them into first canonical stereotype pages. |
+| Phase 2 | [Page-Level Review Pilot](phase-2.md) | Initial pilot | Review existing canonical stereotype pages through manually triggered model-specific agents that record findings in GitHub issues. |
 
 ## Phase relationship
 
 The phases are cumulative but not necessarily exhaustive.
 
-Phase 1 creates a provisional source-grounded documentation base. Later work may review, refine, normalize, restructure, validate, or expand that base. A later phase may also revisit content produced in an earlier phase if new source material or review decisions require it.
+Phase 1 creates a provisional source-grounded documentation base. Phase 2 begins by reviewing that base at page level, focusing on methodology compliance, visible citation support, citation hygiene, and overstatement risk. Later work may review, refine, normalize, restructure, validate, or expand that base. A later phase may also revisit content produced in an earlier phase if new source material or review decisions require it.
 
 ## Maturity expectation
 
