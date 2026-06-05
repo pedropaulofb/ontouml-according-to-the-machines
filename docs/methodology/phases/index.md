@@ -10,8 +10,8 @@ This project produces documentation through iterative use of generative AI. Diff
 
 Using phases makes those differences explicit:
 
-- early work can prioritize coverage and structured first-pass population;
-- later work can prioritize validation, normalization, consistency, and expert review;
+- early work can prioritize source-grounded extraction and structured first-pass population;
+- later work can prioritize consolidation, validation, normalization, consistency, and expert review;
 - limitations of each period remain visible;
 - generated material can be refined without pretending that all pages have the same maturity level.
 
@@ -32,24 +32,24 @@ They do not define or govern:
 
 | Phase | Name | Status | Main purpose |
 |---|---|---|---|
-| Phase 1 | [Groundwork and Initial Population](phase-1.md) | Planned / in progress | Populate stereotype pages with structured first-pass content from selected high-yield sources. |
+| Phase 1 | [Groundwork and Initial Population](phase-1.md) | Planned / in progress | Generate source-specific intermediate files from selected high-yield sources for later consolidation into stereotype pages. |
 
 ## Phase relationship
 
 The phases are cumulative but not necessarily exhaustive.
 
-Phase 1 creates a provisional content base. Later phases may review, refine, normalize, restructure, validate, or expand that base. A later phase may also revisit content produced in an earlier phase if new source material or review decisions require it.
+Phase 1 creates a provisional source-grounded intermediate content base. Later work may consolidate, review, refine, normalize, restructure, validate, or expand that base. A later phase may also revisit content produced in an earlier phase if new source material or review decisions require it.
 
 ## Maturity expectation
 
-A page populated in an early phase should not be interpreted as final.
+A page or work product produced in an early phase should not be interpreted as final.
 
-The maturity of a page depends on:
+The maturity of a page or work product depends on:
 
 - which phase produced or revised it;
 - which sources were used;
 - whether the content has been checked against authoritative OntoUML and UFO material;
-- whether the page has undergone systematic review;
+- whether the page or work product has undergone systematic review;
 - whether unresolved conceptual or citation issues remain.
 
 ## Phase documentation
