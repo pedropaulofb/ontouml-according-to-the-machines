@@ -43,6 +43,7 @@ nav:
     - Project Phases:
         - Overview: methodology/phases/index.md
         - Phase 1: methodology/phases/phase-1.md
+        - Phase 2: methodology/phases/phase-2.md
   - Stereotypes:
       - Overview: stereotypes/index.md
       - Class Stereotypes:
