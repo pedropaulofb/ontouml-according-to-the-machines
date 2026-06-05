@@ -178,9 +178,9 @@ The second Phase 1 prompt is the consolidation prompt.
 
 | Field | Value |
 |---|---|
-| Prompt ID | `prompt-phase-1-consolidation-v1.0.5` |
+| Prompt ID | `prompt-phase-1-consolidation-v1.0.0` |
 | Prompt title | `Phase 1 Consolidation — Direct Main Commit for One Stereotype` |
-| Prompt path | `prompts/phase-1/prompt-phase-1-consolidation-v1.0.5.md` |
+| Prompt path | `prompts/phase-1/prompt-phase-1-consolidation-v1.0.0.md` |
 
 The consolidation prompt is run once per stereotype.
 
