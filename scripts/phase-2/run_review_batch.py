@@ -554,16 +554,12 @@ def run_batch(config: BatchConfig, *, repo_root: Path, dry_run: bool) -> int:
                     if not config.continue_on_error:
                         return 1
 
-            has_more_generation_or_posting = (
-                model_index < len(config.models)
-                or config.post_mode == "after_page"
-                or page_index < len(config.pages)
-            )
+            has_more_model_generation = model_index < len(config.models)
 
             sleep_if_more_work(
                 config.delay_seconds,
                 dry_run=dry_run,
-                has_more_work=has_more_generation_or_posting,
+                has_more_work=has_more_model_generation,
             )
 
         if config.post_mode == "after_page":
