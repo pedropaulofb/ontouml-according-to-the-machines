@@ -1,58 +1,55 @@
-# Phase 2 — Page-Level Review Pilot
+# Phase 2 — Lightweight Check-Agent Infrastructure
 
 Phase 2 is the second content-production phase of **OntoUML According to the Machines**.
 
-Its initial purpose is to introduce a controlled review workflow for existing canonical stereotype pages. Phase 2 starts with page-level review rather than automatic rewriting, source reprocessing, or full expert validation.
+Its revised purpose is to introduce lightweight, API-based and deterministic review infrastructure for existing canonical stereotype pages. Phase 2 does not perform deep content validation, source-faithfulness analysis, cross-page semantic comparison, or page repair. It produces structured, page-local **signals** that can later be evaluated, resolved, and transformed into edits by Phase 3 automation.
 
-The current Phase 2 implementation produces **structured candidate review comments** from existing canonical Markdown pages, can post those comments to deterministic GitHub issues, and can run configured page/model batches locally. These comments are raw inputs for later human or agentic aggregation. They are not accepted project decisions and they do not directly modify the documentation pages.
+Phase 2 follows a gradual automation model: small checks, small batches, conservative scheduling, and incremental accumulation of signals over time. The intended operating philosophy is _de grão em grão_: progress should come from many small, cheap, repeatable checks rather than infrequent heavyweight analyses.
 
 ## Purpose
 
-Phase 2 has four initial goals:
+Phase 2 has six initial goals:
 
-1. review existing canonical stereotype pages against the project's documented structure and review expectations;
-2. identify potential overstatements and claims that lack visible citation or source support within the page;
-3. check citation and consulted-source hygiene;
-4. collect model-specific candidate findings in page-level GitHub issues for later human or agentic aggregation.
+1. introduce API-based LLM execution into the project in a controlled and lightweight way;
+2. introduce deterministic Python check agents where LLMs are unnecessary;
+3. produce structured, page-local signals about documentation structure, hygiene, formatting, and writing quality;
+4. route signals to deterministic GitHub issues scoped by page and check agent;
+5. support small repeated executions over time without depending on expensive or heavyweight models;
+6. prepare the repository for Phase 3 resolution, planning, patching, and verification agents.
 
-The phase prioritizes controlled review, traceability, and explicit candidate findings over automatic content generation.
+Phase 2 prioritizes infrastructure, signal quality, traceability, and repeatability over deep content judgment.
+
+## Core phase boundary
+
+Phase 2 implements **check agents** only.
+
+Check agents:
+
+- inspect one canonical stereotype page at a time;
+- produce lightweight structured signals;
+- may suggest a repair or replacement when the repair is exact and local;
+- must not modify canonical documentation pages;
+- must not commit changes;
+- must not open pull requests;
+- must not decide that a signal is accepted or rejected;
+- must not perform heavy semantic or source validation.
+
+Resolution agents are deferred to Phase 3.
+
+Resolution agents will later:
+
+- read open check issues;
+- evaluate collected signals;
+- vote on whether a signal should be fixed;
+- produce decision records;
+- plan exact changes;
+- trigger deterministic patch appliers;
+- verify resulting pages;
+- close or update issues according to explicit automation rules.
 
 ## Current implementation status
 
-The current implementation is a **manual local review, issue-posting, and batch-orchestration workflow**.
-
-It can:
-
-- review one canonical stereotype page per `run_page_review.py` execution;
-- use the compact Phase 2 page-review prompt `page-reviewer-v1.0.3`;
-- call a real Groq model through the Groq provider adapter;
-- run a deterministic mock provider for smoke testing;
-- write a local Markdown issue-comment candidate;
-- normalize safe Markdown/template issues;
-- validate generated comments for structure and safety;
-- read a generated candidate comment file;
-- derive the reviewed page identity from the comment metadata;
-- derive a deterministic GitHub issue title;
-- find an existing open issue for the reviewed page;
-- create the issue if needed and allowed;
-- post the candidate review as a GitHub issue comment;
-- read a YAML batch configuration;
-- run configured page/model review batches;
-- write page-scoped generated outputs under `.tmp/phase-2/`;
-- post generated batch outputs through the issue manager.
-
-It does **not** yet:
-
-- aggregate multiple model reviews;
-- decide which findings should be accepted or rejected;
-- update an existing model-review comment instead of posting a new one;
-- rewrite canonical pages;
-- open pull requests;
-- commit generated outputs;
-- run on a schedule;
-- execute through GitHub Actions.
-
-The current implementation files are:
+The current implementation already provides a working local Phase 2 foundation:
 
 ```text
 prompts/phase-2/prompt-phase-2-page-reviewer-v1.0.3.md
@@ -65,692 +62,841 @@ scripts/phase-2/providers/groq.py
 scripts/phase-2/providers/mock.py
 ```
 
-Generated local review outputs and temporary generated outputs are ignored by Git using:
+The current implementation can:
+
+- run one page-level review at a time;
+- call Groq models through the Groq provider adapter;
+- run a deterministic mock provider for smoke testing;
+- write local Markdown candidate comments;
+- normalize safe Markdown/template issues;
+- validate generated comments for structure and safety;
+- read generated comment files;
+- derive deterministic GitHub issue titles;
+- create or reuse GitHub issues;
+- post generated comments to GitHub issues;
+- read a YAML batch configuration;
+- run configured page/model batches;
+- write generated outputs under `.tmp/phase-2/`.
+
+The current implementation does **not** yet match the revised final Phase 2 architecture. In particular, it still uses a general page-reviewer prompt and page-only issue routing. The next Phase 2 work should migrate this implementation toward agent-aware check signals.
+
+## Operational prerequisites
+
+The current local implementation depends on:
+
+- Python;
+- `pyyaml` for the batch configuration;
+- `groq` for Groq API calls;
+- a `GROQ_API_KEY` environment variable for real Groq runs;
+- GitHub CLI authentication through `gh auth login` for local issue posting;
+- `GH_TOKEN` later when the same issue-posting workflow runs in GitHub Actions.
+
+The Groq API key must never be committed.
+
+## Generated output policy
+
+Generated Phase 2 outputs are not source files and must not be committed.
+
+Generated local outputs include paths such as:
+
+```text
+.tmp/phase-2/<page-id>/issue-comment-<provider>-<model>.md
+issue-comment.md
+issue-comment.invalid.md
+```
+
+The repository should continue to ignore these outputs with:
 
 ```text
 .tmp/
 issue-comment*.md
 ```
 
-## Scope
+## Revised Phase 2 agent model
 
-The current Phase 2 pilot includes:
+Phase 2 distinguishes two top-level agent types, but only the first type is implemented during Phase 2.
 
-- page-level review of one canonical stereotype page at a time;
-- manual local execution from the repository checkout;
-- one reviewer-model run per single-review execution;
-- configured batch execution over selected pages and selected models;
-- use of one LLM provider or local model per reviewer-model run;
-- local generation of one structured candidate issue comment per run;
-- optional posting of generated candidate comments to deterministic GitHub issues;
-- one GitHub issue per reviewed stereotype page;
-- one issue comment per posted model run;
-- identification of methodology-compliance issues;
-- identification of potential overstatements;
-- identification of claims without visible citation or consulted-source support;
-- citation-locator checks;
-- citation relevance checks for central claims;
-- consulted-source duplication and formatting checks;
-- detection of quotation encoding or formatting artifacts.
+```text
+Check agents
+└── implemented in Phase 2
 
-The current Phase 2 pilot does not include:
+Resolution agents
+└── deferred to Phase 3
+```
 
-- validation against Phase 1 intermediate files;
-- validation against original papers, theses, PDFs, or external source texts;
-- cross-page consistency checking;
-- aggregation or adjudication of candidate findings;
-- automatic rewriting of canonical stereotype pages;
-- automatic commits to canonical stereotype pages;
-- automatic pull-request creation;
-- scheduled execution;
-- GitHub Actions execution;
-- duplicate-comment prevention beyond deterministic issue titles;
-- example creation;
-- diagram creation;
-- completion of stereotype profiles;
-- expert-level OntoUML validation.
+### Check agents
 
-These exclusions apply to the current pilot only. Later Phase 2 work may add broader review tasks if the pilot proves reliable.
+Check agents produce lightweight page-local signals. They do not apply changes.
 
-## Execution model
+Phase 2 should implement three check agents:
 
-The current Phase 2 workflow is manual and review-oriented.
+```text
+check-agents
+├── page-structure-checker
+├── page-hygiene-checker
+└── language-style-checker
+```
 
-A single reviewer-model run receives:
+### Resolution agents
 
-1. one canonical stereotype Markdown page under `docs/stereotypes/classes/` or `docs/stereotypes/relations/`;
-2. a Phase 2 page-review prompt;
-3. run metadata, including provider name, model name, prompt ID, review date, reviewed page path, commit SHA, and maximum completion-token budget.
+Resolution agents process check-agent signals. They are deferred to Phase 3.
 
-The reviewer model produces a structured Markdown comment. The runner normalizes, validates, and writes the comment locally. The issue manager can then post that generated comment to the deterministic GitHub issue for the reviewed page.
+Potential Phase 3 resolution-agent roles include:
 
-A batch run receives:
+```text
+resolution-agents
+├── signal-deduplicator
+├── signal-evaluator
+├── change-planner
+└── verification-reviewer
+```
 
-1. a YAML batch configuration under `configs/phase-2/`;
-2. one or more configured canonical stereotype pages;
-3. one or more configured provider/model entries;
-4. batch settings such as output directory, delay, posting mode, error-continuation behavior, zero-finding posting behavior, and optional labels.
+These roles may be implemented as separate agents or as stages in a single resolution pipeline.
 
-The batch runner delegates review generation to `run_page_review.py` and issue posting to `issue_manager.py`. It does not call LLM providers directly and it does not implement GitHub issue logic directly.
+## Phase 2 check agents
 
-### Current execution constraints
+### 1. Page Structure Checker
 
-| Constraint | Current value |
+| Property | Value |
 |---|---|
-| Trigger | Manual local command |
-| Page count | One page per `run_page_review.py` execution; selected pages per `run_review_batch.py` execution |
-| Provider adapters | `mock`, `groq` |
-| Prompt | `page-reviewer-v1.0.3` |
-| Batch config | `configs/phase-2/review-batch.yml` |
-| Local output | Markdown candidate comments under `.tmp/phase-2/` or another user-specified path |
-| GitHub output | Deterministic issue plus one comment per posted model run |
-| Repository mutation | No canonical page edits |
-| Review basis | Provided page content and Phase 2 prompt only |
-| Aggregation | Deferred |
-| GitHub issue posting | Implemented locally through `issue_manager.py` |
-| Batch orchestration | Implemented locally through `run_review_batch.py` |
-| GitHub Actions execution | Deferred |
-| Scheduled execution | Deferred |
+| Agent slug | `page-structure-checker` |
+| Type | Deterministic Python |
+| LLM required | No |
+| Phase | 2 |
+| Output | Structured signals |
+| Applies changes | No |
 
-Scheduled execution, GitHub Actions execution, aggregation agents, duplicate-comment management, and pull-request generation are deferred until the manual local workflow, issue-posting workflow, and batch workflow are stable.
+The Page Structure Checker verifies the expected stereotype-page skeleton.
 
-## Input model
+It should check:
 
-The minimal input for the current single-page runner is:
+- required headings;
+- heading order;
+- duplicate required headings;
+- missing required sections;
+- malformed required-section structure;
+- unexpected top-level structural deviations;
+- empty required sections where the project expects placeholder text.
+
+Expected canonical stereotype-page headings are:
 
 ```text
-<canonical stereotype page>.md
-prompts/phase-2/prompt-phase-2-page-reviewer-v1.0.3.md
+## Description
+## Stereotype Profile
+## Examples
+## References
+### Direct Citations
+### Consulted Sources
+## Generation and Review Log
 ```
 
-Example:
+The checker may propose an exact structural repair, such as inserting a missing heading, but it must not apply the repair.
+
+### 2. Page Hygiene Checker
+
+| Property | Value |
+|---|---|
+| Agent slug | `page-hygiene-checker` |
+| Type | Lightweight LLM |
+| LLM required | Yes |
+| Phase | 2 |
+| Output | Structured signals |
+| Applies changes | No |
+
+The Page Hygiene Checker combines reference hygiene, Markdown/encoding hygiene, and review-log hygiene.
+
+It should check only visible page-level issues such as:
+
+- missing or malformed `### Direct Citations` structure;
+- missing or malformed `### Consulted Sources` structure;
+- duplicate-looking source entries;
+- visibly malformed citation locators;
+- inconsistent locator formatting;
+- broken Markdown tables;
+- odd quotation artifacts;
+- encoding noise;
+- malformed headings;
+- malformed review-log entries;
+- missing or inconsistent Generation and Review Log metadata.
+
+It must not:
+
+- validate quotations against original sources;
+- infer source content;
+- check PDFs, papers, theses, or external sources;
+- compare the page with related stereotype pages;
+- decide whether a citation substantively supports a claim;
+- recommend conceptual rewrites.
+
+### 3. Language Style Checker
+
+| Property | Value |
+|---|---|
+| Agent slug | `language-style-checker` |
+| Type | Lightweight LLM |
+| LLM required | Yes |
+| Phase | 2 |
+| Output | Structured signals |
+| Applies changes | No |
+
+The Language Style Checker identifies low-risk writing-quality issues.
+
+It should check:
+
+- grammar;
+- spelling;
+- awkward phrasing;
+- unclear sentence structure;
+- overly long sentences;
+- minor style inconsistencies;
+- reader-facing wording problems.
+
+It may propose replacement wording only when the proposed wording preserves meaning and does not introduce new conceptual content.
+
+It must not:
+
+- change OntoUML claims;
+- strengthen or weaken conceptual claims;
+- add new technical precision;
+- modify source interpretation;
+- rewrite whole sections;
+- perform semantic validation.
+
+## Explicitly excluded Phase 2 checks
+
+Phase 2 does not currently include a Caution Language Checker.
+
+The following are deferred to Phase 3:
+
+- conceptual adequacy analysis;
+- source-faithfulness analysis;
+- comparison with original papers or PDFs;
+- cross-page consistency analysis;
+- OntoUML/UFO semantic validation;
+- claim acceptance or rejection;
+- automatic page rewriting;
+- pull-request generation;
+- patch application;
+- issue closing based on accepted fixes.
+
+## Signal terminology
+
+Phase 2 outputs are **signals**, not accepted findings.
+
+Use:
 
 ```text
-docs/stereotypes/classes/role.md
-prompts/phase-2/prompt-phase-2-page-reviewer-v1.0.3.md
+Signal count
+Signal
+S-001
+S-002
+S-003
 ```
 
-The minimal input for the issue manager is:
+Avoid:
 
 ```text
-<generated issue-comment Markdown file>
-<repository in owner/name form>
+Finding count
+Finding
+F-001
 ```
 
-Example:
+Rationale: a Phase 2 signal is a candidate observation. It has not yet been accepted, rejected, deduplicated, or converted into an edit plan.
 
-```text
-.tmp/phase-2/classes-role/issue-comment-groq-llama-3.3-70b-versatile.md
-pedropaulofb/ontouml-according-to-the-machines
+## Signal output structure
+
+Each check-agent output should be one structured Markdown comment.
+
+Recommended heading:
+
+```markdown
+## Check signal report: <agent> / <provider> / <model> — <review date>
 ```
 
-The minimal input for the batch runner is:
+Recommended metadata table:
 
-```text
-configs/phase-2/review-batch.yml
+```markdown
+### Run metadata
+
+| Field | Value |
+|---|---|
+| Agent | <agent-slug> |
+| Provider | <provider> |
+| Model | <model> |
+| Prompt | <prompt-id or n/a> |
+| Review date | <review date> |
+| Reviewed page | <path> |
+| Commit SHA | <sha> |
+| Signal count | <number of signals, or 0 if none> |
 ```
 
-The current batch configuration includes:
+Recommended signal section:
 
-- repository: `pedropaulofb/ontouml-according-to-the-machines`;
-- output directory: `.tmp/phase-2`;
-- delay between steps: `60` seconds;
-- error handling: `continue_on_error: true`;
-- posting mode: `after_page`;
-- zero-finding behavior: `post_empty: false`;
-- labels: none by default;
-- models: `groq / llama-3.3-70b-versatile` and `groq / openai/gpt-oss-20b`;
-- current configured page: `docs/stereotypes/classes/event.md`.
+```markdown
+### Signals
 
-The reviewer model must not read Phase 1 intermediate files unless a later Phase 2 workflow explicitly enables that task.
+#### S-001 — <signal title>
 
-The reviewer model must not read original source papers, theses, PDFs, external documents, previous issue comments, related pages, commits, or web pages in the current pilot.
-
-## Output model
-
-The first output is a **local Markdown candidate issue comment**.
-
-Candidate comments are generated files and should not be committed. Examples include:
-
-```text
-.tmp/phase-2/classes-role/issue-comment-groq-llama-3.3-70b-versatile.md
-.tmp/phase-2/classes-role/issue-comment-groq-gpt-oss-20b.md
-.tmp/phase-2/classes-event/issue-comment-groq-llama-3.3-70b-versatile.md
-.tmp/phase-2/classes-event/issue-comment-groq-gpt-oss-20b.md
-issue-comment.md
-issue-comment.invalid.md
+- Category: `<category>`
+- Severity: `<low | medium | high>`
+- Confidence: `<low | medium | high>`
+- Location: `<section heading or precise local reference>`
+- Observation: `<what appears problematic>`
+- Rationale: `<why this matters for reviewability or readability>`
+- Recommendation: `<concrete next action>`
+- Suggested repair: `<optional exact local repair; omit if not useful>`
 ```
 
-Each candidate comment identifies the provider, model, prompt version, reviewed page, repository commit SHA, review scope, finding count, and candidate findings.
+If no signals are identified, use exactly:
 
-The second output is an optional **GitHub issue comment**. The issue manager posts the generated candidate comment to a deterministic page-level issue.
+```markdown
+### Signals
 
-The deterministic issue title pattern is:
+None identified within the configured check-agent scope.
+```
+
+## Structured signal block
+
+For automation, each signal should eventually include a machine-readable block.
+
+Recommended format:
+
+````markdown
+```yaml
+signal_id: S-001
+agent: language-style-checker
+page: docs/stereotypes/classes/event.md
+category: grammar
+severity: low
+confidence: high
+location: "## Description"
+current_text: "An event are..."
+proposed_text: "An event is..."
+application_mode: exact_replace
+risk: low
+```
+````
+
+The Markdown text is for humans and issue readability. The structured block is for Phase 3 resolution agents and deterministic patch tools.
+
+## Issue routing model
+
+Phase 2 should use one GitHub issue per:
 
 ```text
-Phase 2 page review: <group>/<stereotype-id>
+page + check agent
+```
+
+Recommended issue title pattern:
+
+```text
+Phase 2 check: <agent-slug>: <page-id>
 ```
 
 Examples:
 
 ```text
-Phase 2 page review: classes/role
-Phase 2 page review: classes/kind
-Phase 2 page review: relations/mediation
+Phase 2 check: page-structure-checker: classes/event
+Phase 2 check: page-hygiene-checker: classes/event
+Phase 2 check: language-style-checker: classes/event
+Phase 2 check: page-structure-checker: relations/material
 ```
 
-The issue body is intentionally minimal. It acts as a stable page-level header for later model-generated review comments.
+The page identity is derived from the reviewed page path:
 
-The current issue-body pattern is:
+```text
+docs/stereotypes/classes/event.md -> classes/event
+docs/stereotypes/relations/material.md -> relations/material
+```
+
+All model outputs for the same page and same check agent should be posted to the same issue.
+
+## Issue body pattern
+
+Recommended issue body:
 
 ```markdown
-# Phase 2 page review: <group>/<stereotype-id>
+# Phase 2 check: <agent-slug>: <page-id>
 
 ## Reviewed page
 
-`docs/stereotypes/<group>/<stereotype-id>.md`
+`<docs/stereotypes/...>.md`
 
 ## Page identity
 
 `<group>/<stereotype-id>`
 
+## Check agent
+
+`<agent-slug>`
+
 ## Purpose
 
-Collect Phase 2 model-review comments for this page.
+Collect Phase 2 check-agent signals for this page and agent.
+
+## Resolution status
+
+Resolution is deferred to Phase 3. Phase 2 signals are candidate inputs and are not accepted findings.
 ```
 
-## Issue-posting behavior
+## Comment identity and duplicate control
 
-The issue manager implements the following rules:
+Before repeated or scheduled execution, Phase 2 should support stable comment identity.
 
-| Situation | Current behavior |
-|---|---|
-| At least one finding and no issue exists | Create the issue and post the comment. |
-| At least one finding and issue exists | Post the comment to the existing issue. |
-| Zero findings and issue exists | Post the comment to the existing issue. |
-| Zero findings and no issue exists | Skip issue creation by default. |
-
-The `--post-empty` flag can override the default zero-finding behavior and allow issue creation even when the generated candidate comment declares zero findings.
-
-The issue manager supports a `--dry-run` mode that derives the page identity, issue title, finding count, and intended action without calling GitHub.
-
-The issue manager supports optional `--label` arguments when creating issues. Labels are not hardcoded in the current implementation. If issue creation with labels fails, the script retries issue creation without labels.
-
-## Batch behavior
-
-The batch runner implements the following local orchestration pattern:
+Recommended stable identity:
 
 ```text
-review-batch.yml
-→ run_review_batch.py
-→ run_page_review.py for each configured page/model pair
-→ local candidate comments under .tmp/phase-2/<page-id>/
-→ issue_manager.py for each generated candidate comment, depending on post_mode
+page
+agent
+provider
+model
+prompt
+commit SHA
 ```
 
-The current batch configuration uses `post_mode: after_page`, which means:
+If a comment with the same stable identity already exists, the system should update the existing comment instead of posting a new one.
 
-1. generate all configured model comments for one page;
-2. post the generated comments for that page;
-3. continue with the next page, if any.
+If the commit SHA changes, a new comment may be posted because the page content may have changed.
 
-Supported posting modes are:
+This is required before scheduled execution to prevent issue-comment noise.
 
-| Mode | Behavior |
-|---|---|
-| `after_page` | Generate all configured model comments for a page, then post them. |
-| `after_each_model` | Post each generated model comment immediately after generation. |
-| `none` | Generate local candidate comments only; do not post to GitHub issues. |
+## Batch execution model
 
-The batch runner also supports:
+The revised batch model should eventually iterate over:
 
-- `--dry-run` to print planned commands without executing them;
-- `--only-page` to process one configured page;
-- `--only-model` to process one configured model by slug or model name;
-- `--delay-seconds` to override the configured delay;
-- `--no-post` to generate local comments without issue posting;
-- `--post-empty` to allow issue creation for zero-finding comments.
+```text
+pages × check agents × models
+```
 
-The batch runner sleeps between operations when another operation remains. It does not intentionally sleep after the final operation.
+For deterministic Python agents, the provider/model fields can be:
 
-## Current model set
+```text
+provider: python
+model: deterministic
+```
 
-The first implemented real provider is Groq.
+For LLM agents, the provider/model fields should identify the API provider and model.
 
-The current manually tested Groq models are:
+Example conceptual configuration:
 
-| Provider | Model | Typical max completion tokens | Role |
-|---|---|---:|---|
-| `groq` | `llama-3.3-70b-versatile` | `3000` | stronger general reviewer |
-| `groq` | `openai/gpt-oss-20b` | `3000` | alternate model-family reviewer |
+```yaml
+repo: pedropaulofb/ontouml-according-to-the-machines
+output_dir: .tmp/phase-2
+delay_seconds: 60
+continue_on_error: true
+post_mode: after_agent
+post_empty: false
 
-The exact completion-token value is configurable per run through `--max-completion-tokens` in the single-page runner and through `max_completion_tokens` in the batch configuration.
+agents:
+  - slug: page-structure-checker
+    type: python
+    provider: python
+    model: deterministic
 
-The Groq API key must be provided through the `GROQ_API_KEY` environment variable and must not be committed.
+  - slug: page-hygiene-checker
+    type: llm
+    prompt: page-hygiene-checker-v0.1.0
+    provider: groq
+    models:
+      - model: openai/gpt-oss-20b
+        slug: gpt-oss-20b
+        max_completion_tokens: 1200
 
-The issue manager uses the GitHub CLI and expects local authentication through `gh auth login`.
+  - slug: language-style-checker
+    type: llm
+    prompt: language-style-checker-v0.1.0
+    provider: groq
+    models:
+      - model: openai/gpt-oss-20b
+        slug: gpt-oss-20b
+        max_completion_tokens: 1200
 
-The batch runner requires PyYAML to read the YAML configuration:
+pages:
+  - docs/stereotypes/classes/event.md
+```
+
+The concrete schema may evolve, but the conceptual shift should be from:
+
+```text
+page × model
+```
+
+to:
+
+```text
+page × check agent × model
+```
+
+## Free-model and slow-automation strategy
+
+Phase 2 should be designed to work within free or low-cost model quotas.
+
+The intended strategy is:
+
+- keep prompts compact;
+- cap outputs to a small number of signals;
+- run few pages per batch;
+- use lightweight models more often;
+- use deterministic Python whenever possible;
+- spread execution over time;
+- avoid heavyweight models in Phase 2;
+- rely on gradual accumulation rather than large one-shot reviews.
+
+This supports a slow continuous process: small page batches can run with delays between pages or agents, allowing the project to accumulate signals incrementally.
+
+## Scheduling policy
+
+Scheduled execution is not the immediate next milestone.
+
+Scheduling should wait until:
+
+1. check-agent prompts are separated;
+2. agent-aware issue routing is implemented;
+3. stable comment identity and update-existing behavior are implemented;
+4. duplicate issue-comment posting is controlled;
+5. lightweight model quotas are understood;
+6. generated signals are consistently structured.
+
+Once those gates are satisfied, the initial schedule should be conservative.
+
+Recommended starting point:
+
+```text
+one page
+one LLM check agent
+one lightweight model
+large delay between runs
+```
+
+Later, scheduling may expand page by page.
+
+## Phase 3 resolution model
+
+Phase 3 should introduce resolution agents.
+
+A resolution agent reads open check issues and evaluates the collected signals.
+
+The resolution stage should not rely on a single model judgment. It should use a quorum rule.
+
+Recommended vote values:
+
+```text
+must_fix
+no_fix
+defer
+```
+
+Recommended acceptance rule:
+
+```text
+A signal is accepted when at least 2 out of 3 evaluator votes are must_fix.
+```
+
+This single rule should apply across signal types.
+
+Do not define different acceptance thresholds for grammar, style, hygiene, and structure at the beginning. A single rule is easier to reason about and easier to automate.
+
+## Acceptance gate vs patch-safety gate
+
+The quorum rule decides whether a signal should be fixed.
+
+It does not decide whether the system may automatically patch the page.
+
+Use two gates:
+
+```text
+Gate 1: resolution quorum
+Gate 2: deterministic patch safety
+```
+
+### Gate 1 — Resolution quorum
+
+A signal is accepted if:
+
+- at least 2 out of 3 evaluators vote `must_fix`;
+- no evaluator reports the signal as unsafe;
+- the signal still refers to the current page version or can be rebased safely.
+
+### Gate 2 — Patch safety
+
+An accepted signal may be automatically applied only if:
+
+- the application mode is supported by Python;
+- at least two evaluators propose the same normalized replacement;
+- `current_text` occurs exactly once;
+- `proposed_text` is non-empty;
+- the change is local;
+- the change does not touch protected content types;
+- the resulting Markdown passes validation.
+
+Protected content types should initially include:
+
+- definitions;
+- conceptual claims;
+- source interpretation;
+- direct quotations;
+- citation locators not already visible in the page.
+
+## Patch application model
+
+LLMs should not directly edit repository files.
+
+Phase 3 should use deterministic Python tools for patch application.
+
+Initial supported operations may include:
+
+```text
+exact_replace
+insert_heading
+normalize_whitespace
+fix_markdown_table
+append_review_log_entry
+```
+
+Patch tools must reject ambiguous edits.
+
+Reject when:
+
+- `current_text` occurs zero times;
+- `current_text` occurs multiple times;
+- the target page changed since the signal commit SHA and cannot be safely rebased;
+- the proposed replacement is empty;
+- the edit affects protected content;
+- post-edit validation fails.
+
+## Fully automatic final configuration
+
+The final project goal may remove the human from the loop, but it should not remove control gates.
+
+The final automated pipeline should be:
+
+```text
+check agents
+→ signal issues
+→ resolution agents
+→ quorum decision
+→ change planner
+→ deterministic Python patch applier
+→ verification checks
+→ pull request
+→ CI
+→ auto-merge when eligible
+→ issue update or closure
+```
+
+The preferred final automation path is automatic PR creation and auto-merge after gates pass, rather than direct commits to `main`.
+
+Direct commits, if ever allowed, should be limited to very low-risk mechanical fixes.
+
+## Current deferred work
+
+The following work is deferred from the immediate Phase 2 migration:
+
+- GitHub Actions scheduling;
+- Phase 3 resolution agents;
+- quorum evaluation;
+- patch planning;
+- patch application;
+- automatic PR creation;
+- automatic issue closure;
+- auto-merge;
+- source-faithfulness validation;
+- heavy semantic analysis;
+- local/offline model integration.
+
+## Recommended implementation steps
+
+### Step 1 — Update Phase 2 documentation
+
+Update this document to define Phase 2 as lightweight check-agent infrastructure.
+
+Commit message:
 
 ```bash
-python -m pip install pyyaml
+docs(phase-2): define lightweight check-agent architecture
 ```
 
-## Example commands
+### Step 2 — Rename concepts from findings to signals
 
-Single reviewer command:
+Update runner, issue-manager, prompts, and docs to use:
+
+```text
+Signal count
+Signals
+S-001
+```
+
+rather than:
+
+```text
+Finding count
+Findings
+F-001
+```
+
+Commit message:
 
 ```bash
-python scripts/phase-2/run_page_review.py \
-  --page docs/stereotypes/classes/role.md \
-  --provider groq \
-  --model llama-3.3-70b-versatile \
-  --output .tmp/phase-2/classes-role/issue-comment-groq-llama-3.3-70b-versatile.md \
-  --max-completion-tokens 3000
+refactor(phase-2): rename review findings to check signals
 ```
 
-Issue-manager dry run:
+### Step 3 — Introduce agent-aware issue routing
+
+Change deterministic issue titles from page-only routing to page-plus-agent routing.
+
+From:
+
+```text
+Phase 2 page review: classes/event
+```
+
+To:
+
+```text
+Phase 2 check: page-structure-checker: classes/event
+Phase 2 check: page-hygiene-checker: classes/event
+Phase 2 check: language-style-checker: classes/event
+```
+
+Commit message:
 
 ```bash
-python scripts/phase-2/issue_manager.py \
-  --comment .tmp/phase-2/classes-role/issue-comment-groq-llama-3.3-70b-versatile.md \
-  --repo pedropaulofb/ontouml-according-to-the-machines \
-  --dry-run
+feat(phase-2): route check signals by page and agent
 ```
 
-Issue-manager posting command:
+### Step 4 — Implement `page-structure-checker`
+
+Implement the first revised check agent as Python-only.
+
+Recommended file:
+
+```text
+scripts/phase-2/check_agents/page_structure_checker.py
+```
+
+The checker should generate a structured signal report and should not call an LLM.
+
+Commit message:
 
 ```bash
-python scripts/phase-2/issue_manager.py \
-  --comment .tmp/phase-2/classes-role/issue-comment-groq-llama-3.3-70b-versatile.md \
-  --repo pedropaulofb/ontouml-according-to-the-machines
+feat(phase-2): add page structure check agent
 ```
 
-Batch dry run:
+### Step 5 — Add stable comment identity and update-existing behavior
+
+Modify issue posting so repeated runs update matching comments instead of always posting new comments.
+
+Stable identity:
+
+```text
+page + agent + provider + model + prompt + commit SHA
+```
+
+Commit message:
 
 ```bash
-python scripts/phase-2/run_review_batch.py \
-  --config configs/phase-2/review-batch.yml \
-  --dry-run
+feat(phase-2): update existing check signal comments
 ```
 
-Batch execution:
+### Step 6 — Split the current LLM prompt
+
+Replace the general page-review prompt with two narrower prompts:
+
+```text
+prompts/phase-2/page-hygiene-checker-v0.1.0.md
+prompts/phase-2/language-style-checker-v0.1.0.md
+```
+
+Commit message:
 
 ```bash
-python scripts/phase-2/run_review_batch.py \
-  --config configs/phase-2/review-batch.yml
+feat(phase-2): add lightweight check-agent prompts
 ```
 
-## Mock provider
+### Step 7 — Update batch configuration
 
-The `mock` provider is a smoke-test provider, not a substantive reviewer.
+Move the batch config from page/model execution to page/agent/model execution.
 
-It allows maintainers to test the runner without:
+Commit message:
 
-- Groq credentials;
-- API quota;
-- internet access;
-- model availability.
+```bash
+feat(phase-2): configure agent-aware check batches
+```
 
-The mock provider checks the pipeline:
+### Step 8 — Run small local batches
+
+Begin with:
 
 ```text
-CLI arguments
-→ prompt loading
-→ page loading
-→ commit SHA detection
-→ provider loading
-→ output generation
-→ normalization
-→ validation
-→ file writing
+one page
+page-structure-checker
+no posting
 ```
 
-It should not be interpreted as a model-generated review.
-
-## Review basis
-
-The reviewer model evaluates only what is visible from the provided page and the Phase 2 prompt.
-
-The reviewer may state that a claim lacks visible support within the page. It must not state that a claim is unsupported by the original literature unless the workflow has actually checked the original literature.
-
-The reviewer may state that a citation appears relevant, irrelevant, weakly connected, malformed, duplicated, or missing a locator. It must not state that a quotation is accurate in the original source unless the workflow has actually checked the source text.
-
-## Review checks
-
-### Methodology compliance
-
-The reviewer should check whether the page follows the expected documentation structure, including:
-
-- `## Description`;
-- `## Stereotype Profile`;
-- `## Examples`;
-- `## References`;
-- `### Direct Citations`;
-- `### Consulted Sources`;
-- `## Generation and Review Log`.
-
-The reviewer should also check whether the page respects the current maturity expectations. In the current pilot, the reviewer should not require completed examples, diagrams, or stereotype profiles. `Stereotype Profile` and `Examples` may contain `TBD in a later phase.`
-
-### Potential overstatements
-
-The reviewer should identify claims that sound stronger than their visible support in the page.
-
-Examples of potential overstatement signals include:
-
-- absolute language where the page only provides limited support;
-- profile-like rules stated as final when the page is still provisional;
-- broad claims based on a narrow set of citations;
-- claims that appear to collapse version-sensitive distinctions;
-- claims that imply expert validation where only Phase 1 consolidation has occurred.
-
-### Claims without visible support
-
-The reviewer should identify important claims in the `Description` section that do not appear visibly supported by a direct citation or consulted source entry in the page.
-
-This is a page-level traceability check. It is not a source-literature validation check.
-
-### Citation and source-grounding quality
-
-The reviewer should check:
-
-- whether important claims appear connected to at least one direct citation or consulted source;
-- whether direct citations include locators when locators are expected;
-- whether direct citations are relevant to central claims;
-- whether direct citations are used for key definitions or central conceptual claims rather than decorative support.
-
-### Consulted-source hygiene
-
-The reviewer should check:
-
-- duplicated consulted-source entries;
-- inconsistent formatting of the same source;
-- missing source scopes;
-- unclear or malformed source identifiers;
-- source entries that appear unrelated to the page content.
-
-### Encoding and formatting issues
-
-The reviewer should check:
-
-- quotation encoding artifacts;
-- malformed quotation marks;
-- broken Markdown in citation bullets;
-- Markdown table problems in the generation and review log;
-- other formatting issues that reduce reviewability.
-
-## Candidate issue comment structure
-
-Each generated candidate comment should use the compact structure defined by `page-reviewer-v1.0.3`:
-
-```markdown
-## Model review: <provider> / <model> — <review date>
-
-### Run metadata
-
-| Field | Value |
-|---|---|
-| Provider | <provider> |
-| Model | <model> |
-| Prompt | page-reviewer-v1.0.3 |
-| Review date | <review date> |
-| Reviewed page | <path> |
-| Commit SHA | <sha> |
-| Finding count | <number of findings, or 0 if none> |
-
-### Summary judgment
-
-<One concise paragraph.>
-
-### Scope
-
-Page-level review only. This run did not check intermediate files, original sources, related pages, previous issue comments, or external OntoUML materials.
-
-### Findings
-
-#### F-001 — <finding title>
-
-- Category: <one category>
-- Severity: <low, medium, or high>
-- Confidence: <low, medium, or high>
-- Location: <section heading or line reference if supplied>
-- Observation: <problem>
-- Rationale: <why it matters>
-- Recommendation: <concrete action>
-- Suggested wording: <optional; omit if not useful>
-```
-
-The prompt asks for at most three findings, prioritizing the highest-impact findings. The runner remains more permissive and only rejects unusually noisy output above its configured hard limit.
-
-## Runner validation and normalization
-
-The runner enforces structure and safety, not review quality.
-
-It normalizes safe mechanical issues such as:
-
-- missing backticks around allowed category, severity, or confidence values;
-- placeholder-style `Suggested wording: None` lines;
-- duplicate trailing `### Findings` notes after concrete findings.
-
-It validates:
-
-- required output sections;
-- required metadata values;
-- unresolved placeholders;
-- task checkboxes;
-- finding-count parseability;
-- finding-count consistency with visible finding headings;
-- sequential finding IDs;
-- required finding fields;
-- allowed category, severity, and confidence values;
-- obvious claims that the model used out-of-scope evidence;
-- obvious recommendations to commit, open pull requests, apply changes, or otherwise mutate the repository automatically.
-
-It intentionally does not reject candidate findings merely because a later aggregation step may consider them weak, redundant, overbroad, or out of scope.
-
-## Issue-manager validation and posting
-
-The issue manager enforces handoff safety between local candidate comments and GitHub issues.
-
-It validates:
-
-- required candidate-comment sections;
-- presence and parseability of `Reviewed page` metadata;
-- presence and parseability of `Finding count` metadata;
-- reviewed-page paths under `docs/stereotypes/classes/` or `docs/stereotypes/relations/`.
-
-It derives page identity values such as:
+Then:
 
 ```text
-classes/role
-relations/mediation
+one page
+page-hygiene-checker
+one lightweight model
+no posting
 ```
 
-It derives issue titles such as:
+Then:
 
 ```text
-Phase 2 page review: classes/role
-Phase 2 page review: relations/mediation
+one page
+language-style-checker
+one lightweight model
+no posting
 ```
 
-It does not perform conceptual validation and it does not judge whether model-generated findings are correct.
+Only then enable issue posting.
 
-## Batch-runner validation and orchestration
+### Step 9 — Add manual GitHub Actions execution
 
-The batch runner validates the YAML configuration before execution.
+After local execution is stable and duplicate comments are controlled, add manual GitHub Actions execution through `workflow_dispatch`.
 
-It checks:
+Do not add schedules yet.
 
-- that the configuration root is a mapping;
-- that repository and output-directory values are present;
-- that delay values are non-negative integers;
-- that boolean settings are boolean values;
-- that posting modes are one of `after_page`, `after_each_model`, or `none`;
-- that at least one model and one page are configured;
-- that model entries include provider, model, slug, and positive completion-token values.
+Commit message:
 
-It then orchestrates the existing scripts rather than duplicating their responsibilities.
-
-## Multi-model review pattern
-
-The current pattern runs multiple reviewer models independently over the same page.
-
-In this pattern:
-
-- each model-specific reviewer evaluates the page independently;
-- each reviewer produces a separate structured candidate comment;
-- each generated comment may be posted to the same deterministic page-level issue;
-- reviewers should not use previous model comments as input unless explicitly configured to do so;
-- a later aggregation agent may read all candidate comments and propose accepted findings, rejected findings, merged findings, and issues requiring human review.
-
-The aggregation agent is deferred from the current pilot.
-
-## Current GitHub issue pattern
-
-The current issue-posting workflow is:
-
-```text
-generated local candidate comment
-→ issue_manager.py
-→ deterministic page-level issue
-→ model-specific GitHub issue comment
+```bash
+ci(phase-2): add manual check-agent workflow
 ```
 
-The current batch workflow is:
+### Step 10 — Add conservative scheduling
 
-```text
-review-batch.yml
-→ run_review_batch.py
-→ run_page_review.py
-→ issue_manager.py
-→ deterministic page-level issue comments
+After manual GitHub Actions execution is stable, add a conservative schedule.
+
+Initial schedule should run only a very small batch.
+
+Commit message:
+
+```bash
+ci(phase-2): schedule lightweight check-agent batch
 ```
 
-The intended long-term pattern is:
+## Completion criteria
 
-```text
-one GitHub issue per stereotype page
-one comment per model run, or one updated comment per stable review identity
-one later aggregation comment per reviewed page or review cycle
-```
+Phase 2 can be considered complete when:
 
-The current implementation posts a new comment for each posted model run. It does not yet update previous comments from the same page, provider, model, prompt, and commit SHA.
+- check-agent architecture is documented;
+- at least one deterministic check agent is implemented;
+- at least two lightweight LLM check agents are implemented;
+- issue routing is page-plus-agent based;
+- outputs use signal terminology;
+- generated comments are structured and machine-readable;
+- repeated runs update existing comments rather than creating duplicates;
+- generated outputs remain uncommitted;
+- small batch execution works locally;
+- manual GitHub Actions execution works;
+- conservative scheduled execution works;
+- Phase 3 resolution-agent requirements are documented but not implemented in Phase 2.
 
-## Risks
+## Generation and review log
 
-The current Phase 2 pilot carries known risks:
-
-- model reviewers may overinterpret page content;
-- model reviewers may confuse visible support with actual source support;
-- multiple reviewers may repeat the same weak finding;
-- candidate comments may become noisy if runs are repeated too often;
-- repeated runs currently create additional GitHub comments instead of updating prior comments;
-- free API limits may interrupt executions;
-- provider-specific model behavior may change over time;
-- page-level review cannot establish authoritative OntoUML correctness;
-- GitHub issues may accumulate noisy candidate comments before aggregation is implemented.
-
-These risks are acceptable only if the workflow remains review-oriented and avoids automatic page mutation.
-
-## Completion criteria for the local-runner milestone
-
-The local-runner milestone is complete when:
-
-- a Phase 2 page-review prompt exists;
-- a manual reviewer command can be executed for one canonical stereotype page;
-- the runner can call at least one real provider adapter;
-- the runner can run a mock smoke-test provider;
-- the runner can write a structured local candidate comment;
-- the generated comment clearly states its scope and limitations;
-- the runner validates candidate comments for structure and safety;
-- no canonical stereotype page is modified automatically;
-- no pull request is opened automatically.
-
-This milestone is currently implemented.
-
-## Completion criteria for the issue-posting milestone
-
-The issue-posting milestone is complete when:
-
-- the workflow can create or find the correct GitHub issue for the reviewed page;
-- the workflow can add a structured reviewer comment to that issue;
-- repeated runs avoid duplicate issues by using deterministic issue titles;
-- zero-finding comments do not create new issues by default;
-- the maintainer can inspect the issue and decide whether follow-up work is needed.
-
-This milestone is currently implemented for manual local execution.
-
-## Completion criteria for the batch-runner milestone
-
-The batch-runner milestone is complete when:
-
-- a batch configuration exists;
-- the batch runner can read and validate the configuration;
-- the batch runner can execute configured page/model review runs;
-- the batch runner can write generated comments under page-scoped output directories;
-- the batch runner can delegate issue posting to the issue manager;
-- the batch runner supports dry runs;
-- the batch runner can complete a manual local batch with no failures.
-
-This milestone is currently implemented for manual local execution.
-
-## Next implementation focus
-
-The next major Phase 2 implementation focus is **manual GitHub Actions execution**.
-
-A future manual GitHub Actions workflow should:
-
-- run through `workflow_dispatch`;
-- check out the repository;
-- set up Python;
-- install required dependencies, including Groq and PyYAML;
-- read `GROQ_API_KEY` from an Actions repository secret;
-- use the GitHub-provided token for issue posting;
-- run `scripts/phase-2/run_review_batch.py` against the committed batch configuration;
-- use minimal permissions, including `contents: read` and `issues: write`;
-- avoid scheduled execution until comment-duplication behavior and API-quota behavior are better understood.
-
-Before scheduled execution, a future implementation should consider updating existing model-review comments instead of always posting new comments. A reasonable stable review identity would include page, provider, model, prompt, and commit SHA.
-
-A later aggregation workflow should:
-
-- read a page-level issue body;
-- read all model-review comments in that issue;
-- identify repeated, conflicting, weak, or redundant candidate findings;
-- propose accepted findings;
-- propose rejected findings;
-- identify findings requiring human review;
-- avoid treating model agreement as proof of correctness;
-- avoid automatic page mutation unless a later controlled editing workflow is explicitly introduced.
-
-A later implementation may also split the current page-review prompt into specialized reviewer prompts, such as:
-
-- language or grammar review;
-- style and caution review;
-- citation and visible-support review.
-
-Such prompt splitting should be introduced only after the issue-posting, batch, and aggregation patterns are stable.
-
-## Deferred work
-
-The following work is deferred to later Phase 2 iterations or later phases:
-
-- GitHub Actions execution;
-- scheduled execution;
-- comment-update or duplicate-comment management;
-- aggregation of multiple model reviews;
-- validation against Phase 1 intermediate files;
-- validation against original source documents;
-- cross-page consistency checking;
-- automatic pull-request creation;
-- controlled page rewriting;
-- stereotype-profile completion;
-- example generation;
-- diagram generation;
-- expert-level review workflows.
-
-## Relationship to Phase 1
-
-Phase 1 created a provisional source-grounded documentation base. Phase 2 begins by reviewing that base without assuming that the content is final.
-
-The current Phase 2 pilot deliberately operates at page level. It checks structure, visible traceability, citation hygiene, and overstatement risk. It does not reopen the full Phase 1 extraction or consolidation process.
+- Phase 2 revised from a general page-level review pilot into lightweight check-agent infrastructure.
+- Check agents are responsible for producing structured page-local signals.
+- Resolution agents, quorum decisions, patch planning, patch application, PR creation, and issue closure are deferred to Phase 3.
+- The final automation goal may remove the human from the loop, but must retain structured signals, quorum gates, deterministic patch application, validation, and traceable GitHub issues/PRs.
