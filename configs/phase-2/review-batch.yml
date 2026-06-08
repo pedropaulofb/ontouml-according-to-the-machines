@@ -1,0 +1,51 @@
+# Phase 2 batch review configuration.
+#
+# Initial scope:
+# - one page;
+# - two Groq models;
+# - local generation of candidate issue comments;
+# - posting to deterministic GitHub issues through issue_manager.py.
+#
+# Before running with Groq, ensure GROQ_API_KEY is available in the environment.
+# Before posting issues, ensure GitHub CLI authentication is available through gh auth login
+# or GH_TOKEN in GitHub Actions.
+
+repo: pedropaulofb/ontouml-according-to-the-machines
+
+output_dir: .tmp/phase-2
+
+# Delay between generation/posting steps.
+# Recommended initial value: 60 seconds.
+# Increase if provider rate limits or transient empty responses occur.
+delay_seconds: 60
+
+# Continue to the next model/page if one generation or posting step fails.
+continue_on_error: true
+
+# Supported values:
+# - after_page: generate all model comments for a page, then post them.
+# - after_each_model: post each model comment immediately after it is generated.
+# - none: generate local comments only; do not post to GitHub issues.
+post_mode: after_page
+
+# If false, a zero-finding comment does not create a new issue.
+# It is still posted when the page-level issue already exists.
+post_empty: false
+
+# Optional labels for newly created issues.
+# Keep empty until the label strategy is decided.
+labels: []
+
+models:
+  - provider: groq
+    model: llama-3.3-70b-versatile
+    slug: llama-3.3-70b-versatile
+    max_completion_tokens: 3000
+
+  - provider: groq
+    model: openai/gpt-oss-20b
+    slug: gpt-oss-20b
+    max_completion_tokens: 3000
+
+pages:
+  - docs/stereotypes/classes/role.md
