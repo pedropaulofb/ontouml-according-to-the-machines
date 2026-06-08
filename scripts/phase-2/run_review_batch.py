@@ -532,7 +532,6 @@ def run_batch(config: BatchConfig, *, repo_root: Path, dry_run: bool) -> int:
                 )
                 if not should_continue:
                     return 1
-                sleep_between_steps(config.delay_seconds, dry_run=dry_run)
                 continue
 
             generated = GeneratedComment(page=page, model=model, path=output_path)
