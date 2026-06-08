@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Run a Phase 2 batch of page-review generations and issue postings.
+"""Run a Phase 2 batch of page-check generations and issue postings.
 
 This script orchestrates the existing Phase 2 scripts:
 
@@ -13,8 +13,8 @@ Typical flow with post_mode=after_page:
 
 for each page:
     for each model:
-        run_page_review.py -> generated candidate comment
-    for each generated candidate comment:
+        run_page_review.py -> generated candidate signal comment
+    for each generated candidate signal comment:
         issue_manager.py -> post comment to deterministic page-level issue
 
 The script is designed to run locally first and later from GitHub Actions.
@@ -65,8 +65,8 @@ class BatchConfig:
 
 
 @dataclass(frozen=True)
-class GeneratedComment:
-    """Generated candidate comment for a page/model run."""
+class GeneratedSignalComment:
+    """Generated candidate signal comment for a page/model run."""
 
     page: str
     model: ModelConfig
@@ -75,7 +75,7 @@ class GeneratedComment:
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
-        description="Run a configured Phase 2 page-review batch."
+        description="Run a configured Phase 2 page-check batch."
     )
 
     parser.add_argument(
@@ -118,7 +118,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument(
         "--no-post",
         action="store_true",
-        help="Generate local candidate comments only; do not post to GitHub issues.",
+        help="Generate local candidate signal comments only; do not post to GitHub issues.",
     )
 
     parser.add_argument(
@@ -126,7 +126,7 @@ def parse_args() -> argparse.Namespace:
         action="store_true",
         help=(
             "Override the configuration and allow issue_manager.py to create/post "
-            "even when Finding count is 0 and no issue exists."
+            "even when Signal count is 0 and no issue exists."
         ),
     )
 
@@ -383,12 +383,14 @@ def sleep_between_steps(seconds: int, *, dry_run: bool) -> None:
     print(f"Waiting {seconds} second(s)...")
     time.sleep(seconds)
 
+
 def sleep_if_more_work(seconds: int, *, dry_run: bool, has_more_work: bool) -> None:
     """Sleep only when another batch operation remains."""
     if not has_more_work:
         return
 
     sleep_between_steps(seconds, dry_run=dry_run)
+
 
 def should_include_page(page: str, only_page: str | None) -> bool:
     if only_page is None:
@@ -412,7 +414,7 @@ def post_generated_comment(
     *,
     repo_root: Path,
     config: BatchConfig,
-    generated: GeneratedComment,
+    generated: GeneratedSignalComment,
     dry_run: bool,
     post_empty: bool,
 ) -> bool:
@@ -470,7 +472,7 @@ def apply_cli_overrides(config: BatchConfig, args: argparse.Namespace) -> BatchC
 
 
 def print_plan(config: BatchConfig) -> None:
-    print("Phase 2 batch review plan")
+    print("Phase 2 batch check plan")
     print()
     print(f"Repository: {config.repo}")
     print(f"Output directory: {config.output_dir}")
@@ -503,12 +505,12 @@ def run_batch(config: BatchConfig, *, repo_root: Path, dry_run: bool) -> int:
         print(f"Page {page_index}/{len(config.pages)}: {page}")
         print("=" * 80)
 
-        generated_for_page: list[GeneratedComment] = []
+        generated_for_page: list[GeneratedSignalComment] = []
 
         for model_index, model in enumerate(config.models, start=1):
             print()
             print(
-                f"Generating review {model_index}/{len(config.models)} for page: "
+                f"Generating check signal report {model_index}/{len(config.models)} for page: "
                 f"{page} using {model.provider} / {model.model}"
             )
 
@@ -527,20 +529,20 @@ def run_batch(config: BatchConfig, *, repo_root: Path, dry_run: bool) -> int:
             if return_code != 0:
                 failures += 1
                 should_continue = handle_failure(
-                    f"Review generation failed for {page} / {model.provider} / {model.model}",
+                    f"Check signal generation failed for {page} / {model.provider} / {model.model}",
                     continue_on_error=config.continue_on_error,
                 )
                 if not should_continue:
                     return 1
                 continue
 
-            generated = GeneratedComment(page=page, model=model, path=output_path)
+            generated = GeneratedSignalComment(page=page, model=model, path=output_path)
             generated_for_page.append(generated)
 
             if config.post_mode == "after_each_model":
                 print()
                 print(
-                    f"Posting generated comment for {page} using "
+                    f"Posting generated signal comment for {page} using "
                     f"{model.provider} / {model.model}"
                 )
                 if not post_generated_comment(
@@ -564,7 +566,7 @@ def run_batch(config: BatchConfig, *, repo_root: Path, dry_run: bool) -> int:
 
         if config.post_mode == "after_page":
             print()
-            print(f"Posting generated comments for page: {page}")
+            print(f"Posting generated signal comments for page: {page}")
 
             for generated_index, generated in enumerate(generated_for_page, start=1):
                 print()

@@ -1,19 +1,19 @@
 #!/usr/bin/env python3
-"""Post a Phase 2 candidate page-review comment to the correct GitHub issue.
+"""Post a Phase 2 candidate check-signal comment to the correct GitHub issue.
 
-This script bridges the current local Phase 2 output model and the planned
-GitHub issue pattern.
+This script bridges the current local Phase 2 output model and the GitHub issue
+pattern.
 
 Input:
 - one generated issue-comment Markdown file produced by run_page_review.py;
 - one GitHub repository in owner/name form.
 
 Behavior:
-- extract Reviewed page and Finding count from the comment metadata table;
-- derive the deterministic issue title from the reviewed page;
+- extract Agent, Reviewed page, and Signal count from the comment metadata table;
+- derive the deterministic page-level issue title from the reviewed page;
 - find an existing open issue with that exact title;
 - create the issue if needed and allowed;
-- post the candidate review comment as a new issue comment.
+- post the candidate check-signal comment as a new issue comment.
 
 Important:
 - this script does not run an LLM;
@@ -21,6 +21,11 @@ Important:
 - this script does not open pull requests;
 - this script uses the GitHub CLI (`gh`) and expects local authentication via
   `gh auth login`.
+
+Compatibility:
+- during the Phase 2 migration, this script accepts legacy `Finding count`
+  metadata as a fallback, but emits and documents `Signal count` as the primary
+  contract.
 """
 
 from __future__ import annotations
@@ -36,10 +41,18 @@ from pathlib import Path
 
 
 REQUIRED_COMMENT_FRAGMENTS = [
-    "## Model review:",
     "### Run metadata",
     "### Summary judgment",
     "### Scope",
+]
+
+PRIMARY_COMMENT_FRAGMENTS = [
+    "## Check signal report:",
+    "### Signals",
+]
+
+LEGACY_COMMENT_FRAGMENTS = [
+    "## Model review:",
     "### Findings",
 ]
 
@@ -57,10 +70,11 @@ class IssueManagerError(RuntimeError):
 
 @dataclass(frozen=True)
 class ReviewCommentMetadata:
-    """Metadata extracted from a generated candidate review comment."""
+    """Metadata extracted from a generated candidate signal comment."""
 
     reviewed_page: str
-    finding_count: int
+    signal_count: int
+    agent: str | None = None
     provider: str | None = None
     model: str | None = None
     prompt: str | None = None
@@ -79,7 +93,7 @@ class GitHubIssue:
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
         description=(
-            "Post a generated Phase 2 candidate review comment to the "
+            "Post a generated Phase 2 candidate check-signal comment to the "
             "deterministic GitHub issue for the reviewed stereotype page."
         )
     )
@@ -117,8 +131,8 @@ def parse_args() -> argparse.Namespace:
         "--post-empty",
         action="store_true",
         help=(
-            "Create/post even when Finding count is 0 and no issue exists. "
-            "By default, zero-finding comments are posted only if the issue "
+            "Create/post even when Signal count is 0 and no issue exists. "
+            "By default, zero-signal comments are posted only if the issue "
             "already exists."
         ),
     )
@@ -140,11 +154,7 @@ def read_text_file(path: Path, description: str) -> str:
 
 
 def clean_metadata_value(value: str) -> str:
-    """Normalize a metadata-table cell value.
-
-    The runner currently emits plain values, but this accepts optional
-    backticks and common Markdown spacing.
-    """
+    """Normalize a metadata-table cell value."""
     normalized = value.strip()
 
     if normalized.startswith("`") and normalized.endswith("`") and len(normalized) >= 2:
@@ -176,6 +186,14 @@ def validate_comment_structure(comment_text: str) -> None:
         if fragment not in comment_text:
             raise IssueManagerError(f"Comment is missing required fragment: {fragment}")
 
+    has_primary_structure = all(fragment in comment_text for fragment in PRIMARY_COMMENT_FRAGMENTS)
+    has_legacy_structure = all(fragment in comment_text for fragment in LEGACY_COMMENT_FRAGMENTS)
+
+    if not has_primary_structure and not has_legacy_structure:
+        raise IssueManagerError(
+            "Comment does not match the current signal-comment structure or the legacy review-comment structure."
+        )
+
 
 def extract_review_comment_metadata(comment_text: str) -> ReviewCommentMetadata:
     validate_comment_structure(comment_text)
@@ -186,23 +204,27 @@ def extract_review_comment_metadata(comment_text: str) -> ReviewCommentMetadata:
     if not reviewed_page:
         raise IssueManagerError("Comment metadata is missing Reviewed page.")
 
-    finding_count_raw = metadata.get("finding count")
-    if finding_count_raw is None:
-        raise IssueManagerError("Comment metadata is missing Finding count.")
+    signal_count_raw = metadata.get("signal count")
+    if signal_count_raw is None:
+        signal_count_raw = metadata.get("finding count")
+
+    if signal_count_raw is None:
+        raise IssueManagerError("Comment metadata is missing Signal count.")
 
     try:
-        finding_count = int(finding_count_raw)
+        signal_count = int(signal_count_raw)
     except ValueError as exc:
         raise IssueManagerError(
-            f"Finding count is not an integer: {finding_count_raw}"
+            f"Signal count is not an integer: {signal_count_raw}"
         ) from exc
 
-    if finding_count < 0:
-        raise IssueManagerError(f"Finding count must not be negative: {finding_count}")
+    if signal_count < 0:
+        raise IssueManagerError(f"Signal count must not be negative: {signal_count}")
 
     return ReviewCommentMetadata(
         reviewed_page=reviewed_page,
-        finding_count=finding_count,
+        signal_count=signal_count,
+        agent=metadata.get("agent"),
         provider=metadata.get("provider"),
         model=metadata.get("model"),
         prompt=metadata.get("prompt"),
@@ -239,6 +261,8 @@ def derive_page_identity(reviewed_page: str) -> str:
 
 
 def derive_issue_title(page_identity: str) -> str:
+    # Agent-aware issue routing is the next migration step. This signal refactor
+    # deliberately preserves the current page-level issue-title pattern.
     return f"{ISSUE_TITLE_PREFIX}: {page_identity}"
 
 
@@ -255,7 +279,11 @@ def build_issue_body(issue_title: str, reviewed_page: str, page_identity: str) -
 
 ## Purpose
 
-Collect Phase 2 model-review comments for this page.
+Collect Phase 2 check-signal comments for this page.
+
+## Migration note
+
+This page-level issue title is retained during the signal-terminology migration. Agent-aware issue routing is a later Phase 2 migration step.
 """
 
 
@@ -460,7 +488,8 @@ def print_dry_run(
     print(f"Reviewed page: {metadata.reviewed_page}")
     print(f"Page identity: {page_identity}")
     print(f"Issue title: {issue_title}")
-    print(f"Finding count: {metadata.finding_count}")
+    print(f"Signal count: {metadata.signal_count}")
+    print(f"Agent: {metadata.agent or '(not found)'}")
     print(f"Provider: {metadata.provider or '(not found)'}")
     print(f"Model: {metadata.model or '(not found)'}")
     print(f"Prompt: {metadata.prompt or '(not found)'}")
@@ -470,14 +499,14 @@ def print_dry_run(
     print()
     print("Would search for an existing open issue with this exact title.")
 
-    if metadata.finding_count == 0 and not post_empty:
+    if metadata.signal_count == 0 and not post_empty:
         print(
-            "If no issue exists, would skip issue creation because Finding count is 0."
+            "If no issue exists, would skip issue creation because Signal count is 0."
         )
-        print("If an issue exists, would post the candidate review as a new comment.")
+        print("If an issue exists, would post the candidate signal comment as a new comment.")
     else:
         print("Would create the issue if missing.")
-        print("Would post the candidate review as a new comment.")
+        print("Would post the candidate signal comment as a new comment.")
 
     print()
     print("Issue body that would be used if creating a new issue:")
@@ -523,13 +552,13 @@ def main() -> int:
         if existing_issue is not None:
             print(f"Found existing issue #{existing_issue.number}: {issue_title}")
             post_issue_comment(args.repo, existing_issue.number, comment_path)
-            print(f"Posted candidate review comment to issue #{existing_issue.number}")
+            print(f"Posted candidate signal comment to issue #{existing_issue.number}")
             return 0
 
         print(f"No open issue found for: {issue_title}")
 
-        if metadata.finding_count == 0 and not args.post_empty:
-            print("Finding count is 0.")
+        if metadata.signal_count == 0 and not args.post_empty:
+            print("Signal count is 0.")
             print("Skipped issue creation by default.")
             return 0
 
@@ -543,7 +572,7 @@ def main() -> int:
         print(f"Created issue #{created_issue.number}: {issue_title}")
 
         post_issue_comment(args.repo, created_issue.number, comment_path)
-        print(f"Posted candidate review comment to issue #{created_issue.number}")
+        print(f"Posted candidate signal comment to issue #{created_issue.number}")
 
         return 0
 
