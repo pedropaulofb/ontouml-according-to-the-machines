@@ -217,5 +217,6 @@ __marimo__/
 # Streamlit
 .streamlit/secrets.toml
 
-# Phase 2 generated local review outputs
+# Phase 2 generated local review outputs and temporary generated outputs
+.tmp/
 issue-comment*.md
