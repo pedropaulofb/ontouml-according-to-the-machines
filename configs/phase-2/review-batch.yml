@@ -48,4 +48,4 @@ models:
     max_completion_tokens: 3000
 
 pages:
-  - docs/stereotypes/classes/role.md
+  - docs/stereotypes/classes/event.md

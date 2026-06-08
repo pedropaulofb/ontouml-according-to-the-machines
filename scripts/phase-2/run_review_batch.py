@@ -383,6 +383,12 @@ def sleep_between_steps(seconds: int, *, dry_run: bool) -> None:
     print(f"Waiting {seconds} second(s)...")
     time.sleep(seconds)
 
+def sleep_if_more_work(seconds: int, *, dry_run: bool, has_more_work: bool) -> None:
+    """Sleep only when another batch operation remains."""
+    if not has_more_work:
+        return
+
+    sleep_between_steps(seconds, dry_run=dry_run)
 
 def should_include_page(page: str, only_page: str | None) -> bool:
     if only_page is None:
@@ -549,7 +555,17 @@ def run_batch(config: BatchConfig, *, repo_root: Path, dry_run: bool) -> int:
                     if not config.continue_on_error:
                         return 1
 
-            sleep_between_steps(config.delay_seconds, dry_run=dry_run)
+            has_more_generation_or_posting = (
+                model_index < len(config.models)
+                or config.post_mode == "after_page"
+                or page_index < len(config.pages)
+            )
+
+            sleep_if_more_work(
+                config.delay_seconds,
+                dry_run=dry_run,
+                has_more_work=has_more_generation_or_posting,
+            )
 
         if config.post_mode == "after_page":
             print()
@@ -573,7 +589,16 @@ def run_batch(config: BatchConfig, *, repo_root: Path, dry_run: bool) -> int:
                     if not config.continue_on_error:
                         return 1
 
-                sleep_between_steps(config.delay_seconds, dry_run=dry_run)
+                has_more_posting_or_pages = (
+                    generated_index < len(generated_for_page)
+                    or page_index < len(config.pages)
+                )
+
+                sleep_if_more_work(
+                    config.delay_seconds,
+                    dry_run=dry_run,
+                    has_more_work=has_more_posting_or_pages,
+                )
 
     print()
     print("=" * 80)
