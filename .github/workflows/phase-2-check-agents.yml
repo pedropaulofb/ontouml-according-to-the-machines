@@ -1,4 +1,4 @@
-name: Phase 2 check-agent signal collector
+name: Check-agent signal collector
 
 "on":
   schedule:
@@ -71,7 +71,7 @@ concurrency:
 
 jobs:
   collect-check-agent-signal:
-    name: Collect rotating Phase 2 check-agent signal
+    name: Collect rotating check-agent signal
     runs-on: ubuntu-latest
 
     env:
@@ -197,7 +197,7 @@ jobs:
             --max-runs "$max_runs" \
             --sleep-seconds "$sleep_seconds"
 
-      - name: Upload Phase 2 check-agent artifacts
+      - name: Upload check-agent artifacts
         if: always()
         uses: actions/upload-artifact@v4
         with:
