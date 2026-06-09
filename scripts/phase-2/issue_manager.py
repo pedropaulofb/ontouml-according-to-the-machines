@@ -13,7 +13,9 @@ Behavior:
 - derive the deterministic page-plus-agent issue title from the reviewed page and agent;
 - find an existing open issue with that exact title;
 - create the issue if needed and allowed;
-- post the candidate check-signal comment as a new issue comment.
+- add a stable identity marker to the issue comment body;
+- update an existing matching issue comment when the same stable identity exists;
+- post the candidate check-signal comment as a new issue comment otherwise.
 
 Important:
 - this script does not run an LLM;
@@ -63,8 +65,15 @@ METADATA_ROW_PATTERN = re.compile(
     re.MULTILINE,
 )
 
+COMMENT_IDENTITY_MARKER_PATTERN = re.compile(
+    r"<!--\s*check-signal-comment\s*\n(?P<body>.*?)\n-->",
+    re.DOTALL,
+)
+
 AGENT_SLUG_PATTERN = re.compile(r"^[a-z0-9][a-z0-9-]*$")
 ISSUE_TITLE_PREFIX = "Check signal"
+COMMENT_IDENTITY_MARKER_NAME = "check-signal-comment"
+COMMENT_IDENTITY_KEYS = ("page", "agent", "provider", "model", "prompt", "commit")
 
 
 class IssueManagerError(RuntimeError):
@@ -90,6 +99,15 @@ class GitHubIssue:
 
     number: int
     title: str
+    url: str | None = None
+
+
+@dataclass(frozen=True)
+class GitHubIssueComment:
+    """Minimal GitHub issue-comment snapshot returned by the GitHub API."""
+
+    comment_id: int
+    body: str
     url: str | None = None
 
 
@@ -215,6 +233,92 @@ def normalize_agent_slug(agent: str | None) -> str:
         )
 
     return normalized
+
+
+def require_identity_value(value: str | None, field_name: str) -> str:
+    """Return a safe non-empty metadata value for stable comment identity."""
+    if value is None:
+        raise IssueManagerError(f"Comment metadata is missing {field_name}.")
+
+    normalized = clean_metadata_value(value)
+
+    if not normalized:
+        raise IssueManagerError(f"Comment metadata {field_name} must not be empty.")
+
+    if "\n" in normalized or "\r" in normalized or "-->" in normalized:
+        raise IssueManagerError(
+            f"Comment metadata {field_name} contains characters that cannot be used "
+            "inside a stable identity marker."
+        )
+
+    return normalized
+
+
+def build_comment_identity(metadata: ReviewCommentMetadata) -> dict[str, str]:
+    """Build the stable identity used to find an existing issue comment."""
+    return {
+        "page": require_identity_value(metadata.reviewed_page, "Reviewed page"),
+        "agent": metadata.agent,
+        "provider": require_identity_value(metadata.provider, "Provider"),
+        "model": require_identity_value(metadata.model, "Model"),
+        "prompt": require_identity_value(metadata.prompt, "Prompt"),
+        "commit": require_identity_value(metadata.commit_sha, "Commit SHA"),
+    }
+
+
+def render_comment_identity_marker(identity: dict[str, str]) -> str:
+    """Render the hidden marker that identifies one posted check-signal comment."""
+    lines = [f"<!-- {COMMENT_IDENTITY_MARKER_NAME}"]
+
+    for key in COMMENT_IDENTITY_KEYS:
+        lines.append(f"{key}: {identity[key]}")
+
+    lines.append("-->")
+    return "\n".join(lines)
+
+
+def strip_existing_comment_identity_marker(comment_text: str) -> str:
+    """Remove one existing identity marker before re-rendering the comment body."""
+    return COMMENT_IDENTITY_MARKER_PATTERN.sub("", comment_text, count=1).lstrip("\n")
+
+
+def build_issue_comment_body(comment_text: str, identity: dict[str, str]) -> str:
+    """Build the body posted to GitHub, including a hidden stable identity marker."""
+    marker = render_comment_identity_marker(identity)
+    visible_comment = strip_existing_comment_identity_marker(comment_text).rstrip()
+    return f"{marker}\n\n{visible_comment}\n"
+
+
+def parse_comment_identity_marker(comment_body: str) -> dict[str, str] | None:
+    """Parse the first hidden stable identity marker in an issue comment."""
+    match = COMMENT_IDENTITY_MARKER_PATTERN.search(comment_body)
+    if not match:
+        return None
+
+    identity: dict[str, str] = {}
+
+    for raw_line in match.group("body").splitlines():
+        line = raw_line.strip()
+        if not line or ":" not in line:
+            continue
+
+        key, value = line.split(":", 1)
+        key = key.strip()
+        value = value.strip()
+
+        if key in COMMENT_IDENTITY_KEYS:
+            identity[key] = value
+
+    if any(key not in identity for key in COMMENT_IDENTITY_KEYS):
+        return None
+
+    return identity
+
+
+def comment_identity_matches(comment_body: str, identity: dict[str, str]) -> bool:
+    """Return whether an existing GitHub comment has the same stable identity."""
+    existing_identity = parse_comment_identity_marker(comment_body)
+    return existing_identity == identity
 
 
 def extract_review_comment_metadata(comment_text: str) -> ReviewCommentMetadata:
@@ -483,22 +587,134 @@ def create_issue(repo: str, title: str, body: str, labels: list[str]) -> GitHubI
             pass
 
 
-def post_issue_comment(repo: str, issue_number: int, comment_path: Path) -> None:
+def list_issue_comments(repo: str, issue_number: int) -> list[GitHubIssueComment]:
+    """Fetch all issue comments for one issue using the GitHub API."""
     result = run_gh(
         [
-            "issue",
-            "comment",
-            str(issue_number),
-            "--repo",
-            repo,
-            "--body-file",
-            str(comment_path),
+            "api",
+            f"repos/{repo}/issues/{issue_number}/comments?per_page=100",
+            "--paginate",
+            "--slurp",
         ]
     )
 
     if result.returncode != 0:
         raise IssueManagerError(
+            "Failed to list GitHub issue comments.\n"
+            f"{result.stderr.strip() or result.stdout.strip()}"
+        )
+
+    try:
+        payload = json.loads(result.stdout or "[]")
+    except json.JSONDecodeError as exc:
+        raise IssueManagerError("GitHub issue comments did not return valid JSON.") from exc
+
+    if payload and all(isinstance(page, list) for page in payload):
+        raw_comments = [comment for page in payload for comment in page]
+    elif isinstance(payload, list):
+        raw_comments = payload
+    else:
+        raise IssueManagerError("GitHub issue comments returned an unexpected JSON shape.")
+
+    comments: list[GitHubIssueComment] = []
+
+    for raw_comment in raw_comments:
+        if not isinstance(raw_comment, dict):
+            continue
+
+        comment_id = raw_comment.get("id")
+        body = raw_comment.get("body")
+
+        if comment_id is None or body is None:
+            continue
+
+        comments.append(
+            GitHubIssueComment(
+                comment_id=int(comment_id),
+                body=str(body),
+                url=raw_comment.get("html_url") or raw_comment.get("url"),
+            )
+        )
+
+    return comments
+
+
+def find_matching_issue_comment(
+    comments: list[GitHubIssueComment],
+    identity: dict[str, str],
+) -> GitHubIssueComment | None:
+    """Find an existing issue comment with the same stable identity marker."""
+    for comment in comments:
+        if comment_identity_matches(comment.body, identity):
+            return comment
+
+    return None
+
+
+def write_temp_text_file(text: str, suffix: str) -> Path:
+    """Write text to a temporary file and return its path."""
+    with tempfile.NamedTemporaryFile(
+        mode="w",
+        encoding="utf-8",
+        newline="\n",
+        suffix=suffix,
+        delete=False,
+    ) as text_file:
+        text_file.write(text)
+        return Path(text_file.name)
+
+
+def post_issue_comment(repo: str, issue_number: int, comment_body: str) -> None:
+    body_path = write_temp_text_file(comment_body, ".md")
+
+    try:
+        result = run_gh(
+            [
+                "issue",
+                "comment",
+                str(issue_number),
+                "--repo",
+                repo,
+                "--body-file",
+                str(body_path),
+            ]
+        )
+    finally:
+        try:
+            body_path.unlink(missing_ok=True)
+        except OSError:
+            pass
+
+    if result.returncode != 0:
+        raise IssueManagerError(
             "Failed to post GitHub issue comment.\n"
+            f"{result.stderr.strip() or result.stdout.strip()}"
+        )
+
+
+def update_issue_comment(repo: str, comment_id: int, comment_body: str) -> None:
+    payload_path = write_temp_text_file(json.dumps({"body": comment_body}), ".json")
+
+    try:
+        result = run_gh(
+            [
+                "api",
+                "--method",
+                "PATCH",
+                f"repos/{repo}/issues/comments/{comment_id}",
+                "--input",
+                str(payload_path),
+            ]
+        )
+    finally:
+        try:
+            payload_path.unlink(missing_ok=True)
+        except OSError:
+            pass
+
+    if result.returncode != 0:
+        raise IssueManagerError(
+            "Failed to update GitHub issue comment.\n"
             f"{result.stderr.strip() or result.stdout.strip()}"
         )
 
@@ -511,6 +727,7 @@ def print_dry_run(
     page_identity: str,
     issue_title: str,
     issue_body: str,
+    comment_identity: dict[str, str],
     labels: list[str],
     post_empty: bool,
 ) -> None:
@@ -527,19 +744,24 @@ def print_dry_run(
     print(f"Model: {metadata.model or '(not found)'}")
     print(f"Prompt: {metadata.prompt or '(not found)'}")
     print(f"Commit SHA: {metadata.commit_sha or '(not found)'}")
+    print("Stable comment identity:")
+    for key in COMMENT_IDENTITY_KEYS:
+        print(f"  {key}: {comment_identity[key]}")
     print(f"Labels: {', '.join(labels) if labels else '(none)'}")
     print(f"Post empty if issue is missing: {post_empty}")
     print()
     print("Would search for an existing open issue with this exact title.")
 
+    print("If an issue exists, would search its comments for the stable identity marker.")
+    print("If a matching comment exists, would update that comment.")
+    print("If no matching comment exists, would post a new comment.")
+
     if metadata.signal_count == 0 and not post_empty:
         print(
             "If no issue exists, would skip issue creation because Signal count is 0."
         )
-        print("If an issue exists, would post the candidate signal comment as a new comment.")
     else:
-        print("Would create the issue if missing.")
-        print("Would post the candidate signal comment as a new comment.")
+        print("If no issue exists, would create the issue and post a new comment.")
 
     print()
     print("Issue body that would be used if creating a new issue:")
@@ -564,6 +786,9 @@ def main() -> int:
             agent=metadata.agent,
         )
 
+        comment_identity = build_comment_identity(metadata)
+        issue_comment_body = build_issue_comment_body(comment_text, comment_identity)
+
         labels = [label.strip() for label in args.label if label.strip()]
 
         if args.dry_run:
@@ -574,6 +799,7 @@ def main() -> int:
                 page_identity=page_identity,
                 issue_title=issue_title,
                 issue_body=issue_body,
+                comment_identity=comment_identity,
                 labels=labels,
                 post_empty=args.post_empty,
             )
@@ -585,7 +811,22 @@ def main() -> int:
 
         if existing_issue is not None:
             print(f"Found existing issue #{existing_issue.number}: {issue_title}")
-            post_issue_comment(args.repo, existing_issue.number, comment_path)
+            existing_comments = list_issue_comments(args.repo, existing_issue.number)
+            matching_comment = find_matching_issue_comment(existing_comments, comment_identity)
+
+            if matching_comment is not None:
+                update_issue_comment(
+                    args.repo,
+                    matching_comment.comment_id,
+                    issue_comment_body,
+                )
+                print(
+                    "Updated existing candidate signal comment "
+                    f"#{matching_comment.comment_id} on issue #{existing_issue.number}"
+                )
+                return 0
+
+            post_issue_comment(args.repo, existing_issue.number, issue_comment_body)
             print(f"Posted candidate signal comment to issue #{existing_issue.number}")
             return 0
 
@@ -605,7 +846,7 @@ def main() -> int:
 
         print(f"Created issue #{created_issue.number}: {issue_title}")
 
-        post_issue_comment(args.repo, created_issue.number, comment_path)
+        post_issue_comment(args.repo, created_issue.number, issue_comment_body)
         print(f"Posted candidate signal comment to issue #{created_issue.number}")
 
         return 0
