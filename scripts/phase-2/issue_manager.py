@@ -1,16 +1,16 @@
 #!/usr/bin/env python3
-"""Post a Phase 2 candidate check-signal comment to the correct GitHub issue.
+"""Post a candidate check-signal comment to the correct GitHub issue.
 
-This script bridges the current local Phase 2 output model and the GitHub issue
-pattern.
+This script bridges generated check-agent output and the GitHub issue pattern
+used by the project.
 
 Input:
-- one generated issue-comment Markdown file produced by run_page_review.py;
+- one generated issue-comment Markdown file produced by a check-agent runner;
 - one GitHub repository in owner/name form.
 
 Behavior:
 - extract Agent, Reviewed page, and Signal count from the comment metadata table;
-- derive the deterministic page-level issue title from the reviewed page;
+- derive the deterministic page-plus-agent issue title from the reviewed page and agent;
 - find an existing open issue with that exact title;
 - create the issue if needed and allowed;
 - post the candidate check-signal comment as a new issue comment.
@@ -19,13 +19,15 @@ Important:
 - this script does not run an LLM;
 - this script does not modify canonical documentation pages;
 - this script does not open pull requests;
+- this script does not close issues;
 - this script uses the GitHub CLI (`gh`) and expects local authentication via
   `gh auth login`.
 
 Compatibility:
-- during the Phase 2 migration, this script accepts legacy `Finding count`
+- during the signal migration, this script accepts legacy `Finding count`
   metadata as a fallback, but emits and documents `Signal count` as the primary
-  contract.
+  contract;
+- page-plus-agent routing requires an `Agent` metadata row.
 """
 
 from __future__ import annotations
@@ -61,7 +63,8 @@ METADATA_ROW_PATTERN = re.compile(
     re.MULTILINE,
 )
 
-ISSUE_TITLE_PREFIX = "Phase 2 page review"
+AGENT_SLUG_PATTERN = re.compile(r"^[a-z0-9][a-z0-9-]*$")
+ISSUE_TITLE_PREFIX = "Check signal"
 
 
 class IssueManagerError(RuntimeError):
@@ -74,7 +77,7 @@ class ReviewCommentMetadata:
 
     reviewed_page: str
     signal_count: int
-    agent: str | None = None
+    agent: str
     provider: str | None = None
     model: str | None = None
     prompt: str | None = None
@@ -93,8 +96,8 @@ class GitHubIssue:
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
         description=(
-            "Post a generated Phase 2 candidate check-signal comment to the "
-            "deterministic GitHub issue for the reviewed stereotype page."
+            "Post a generated candidate check-signal comment to the "
+            "deterministic GitHub issue for the reviewed stereotype page and check agent."
         )
     )
 
@@ -195,6 +198,25 @@ def validate_comment_structure(comment_text: str) -> None:
         )
 
 
+def normalize_agent_slug(agent: str | None) -> str:
+    """Return a validated check-agent slug for issue routing."""
+    if agent is None:
+        raise IssueManagerError("Comment metadata is missing Agent.")
+
+    normalized = clean_metadata_value(agent)
+
+    if not normalized or normalized.lower() in {"n/a", "none", "null"}:
+        raise IssueManagerError("Comment metadata Agent must contain a check-agent slug.")
+
+    if not AGENT_SLUG_PATTERN.fullmatch(normalized):
+        raise IssueManagerError(
+            "Comment metadata Agent must be a lowercase slug containing only "
+            f"letters, numbers, and hyphens: {normalized}"
+        )
+
+    return normalized
+
+
 def extract_review_comment_metadata(comment_text: str) -> ReviewCommentMetadata:
     validate_comment_structure(comment_text)
 
@@ -224,7 +246,7 @@ def extract_review_comment_metadata(comment_text: str) -> ReviewCommentMetadata:
     return ReviewCommentMetadata(
         reviewed_page=reviewed_page,
         signal_count=signal_count,
-        agent=metadata.get("agent"),
+        agent=normalize_agent_slug(metadata.get("agent")),
         provider=metadata.get("provider"),
         model=metadata.get("model"),
         prompt=metadata.get("prompt"),
@@ -260,13 +282,18 @@ def derive_page_identity(reviewed_page: str) -> str:
     return identity
 
 
-def derive_issue_title(page_identity: str) -> str:
-    # Agent-aware issue routing is the next migration step. This signal refactor
-    # deliberately preserves the current page-level issue-title pattern.
-    return f"{ISSUE_TITLE_PREFIX}: {page_identity}"
+def derive_issue_title(page_identity: str, agent: str) -> str:
+    """Derive the phase-neutral issue title for one page plus one check agent."""
+    return f"{ISSUE_TITLE_PREFIX}: {agent}: {page_identity}"
 
 
-def build_issue_body(issue_title: str, reviewed_page: str, page_identity: str) -> str:
+def build_issue_body(
+    *,
+    issue_title: str,
+    reviewed_page: str,
+    page_identity: str,
+    agent: str,
+) -> str:
     return f"""# {issue_title}
 
 ## Reviewed page
@@ -277,13 +304,19 @@ def build_issue_body(issue_title: str, reviewed_page: str, page_identity: str) -
 
 `{page_identity}`
 
+## Check agent
+
+`{agent}`
+
 ## Purpose
 
-Collect Phase 2 check-signal comments for this page.
+Collect check-agent signal comments for this page and agent.
 
-## Migration note
+## Resolution model
 
-This page-level issue title is retained during the signal-terminology migration. Agent-aware issue routing is a later Phase 2 migration step.
+Signals are candidate observations. They are not accepted findings until reviewed.
+
+This issue may be resolved manually or by later resolution tooling.
 """
 
 
@@ -487,9 +520,9 @@ def print_dry_run(
     print(f"Comment file: {comment_path}")
     print(f"Reviewed page: {metadata.reviewed_page}")
     print(f"Page identity: {page_identity}")
+    print(f"Agent: {metadata.agent}")
     print(f"Issue title: {issue_title}")
     print(f"Signal count: {metadata.signal_count}")
-    print(f"Agent: {metadata.agent or '(not found)'}")
     print(f"Provider: {metadata.provider or '(not found)'}")
     print(f"Model: {metadata.model or '(not found)'}")
     print(f"Prompt: {metadata.prompt or '(not found)'}")
@@ -523,11 +556,12 @@ def main() -> int:
         metadata = extract_review_comment_metadata(comment_text)
 
         page_identity = derive_page_identity(metadata.reviewed_page)
-        issue_title = derive_issue_title(page_identity)
+        issue_title = derive_issue_title(page_identity, metadata.agent)
         issue_body = build_issue_body(
             issue_title=issue_title,
             reviewed_page=metadata.reviewed_page,
             page_identity=page_identity,
+            agent=metadata.agent,
         )
 
         labels = [label.strip() for label in args.label if label.strip()]
