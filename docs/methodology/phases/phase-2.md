@@ -54,6 +54,7 @@ The current implementation provides a working local Phase 2 foundation:
 ```text
 prompts/phase-2/prompt-phase-2-page-reviewer-v1.0.3.md
 prompts/phase-2/page-hygiene-checker-v1.0.0.md
+prompts/phase-2/language-style-checker-v1.0.0.md
 configs/phase-2/review-batch.yml
 scripts/phase-2/run_page_review.py
 scripts/phase-2/issue_manager.py
@@ -71,6 +72,7 @@ The current implementation can:
 - call Groq models through the Groq provider adapter;
 - run a deterministic mock provider for smoke testing;
 - run the standalone Python-based `page-structure-checker` for deterministic page-skeleton checks;
+- provide dedicated LLM prompt contracts for `page-hygiene-checker-v1.0.0` and `language-style-checker-v1.0.0`;
 - write local Markdown candidate signal comments;
 - normalize safe Markdown/template issues;
 - validate generated signal comments for structure and safety;
@@ -89,7 +91,7 @@ The current implementation does **not** yet match the final Phase 2 architecture
 - the batch runner is still page/model oriented, not page/check-agent/model oriented;
 - `page-structure-checker` exists as a standalone script but is not yet integrated into the batch runner;
 - `page-hygiene-checker-v1.0.0` exists as a standalone prompt but is not yet wired into an agent-aware runner or batch configuration;
-- `language-style-checker` is still pending;
+- `language-style-checker-v1.0.0` exists as a standalone prompt but is not yet wired into an agent-aware runner or batch configuration;
 - manual GitHub Actions execution is still pending;
 - scheduled execution is still pending.
 
@@ -273,32 +275,98 @@ The current `page-hygiene-checker-v1.0.0` prompt is Markdown-only. It emits one 
 | Type | Lightweight LLM |
 | LLM required | Yes |
 | Phase | 2 |
-| Implementation status | Pending |
-| Output | Structured signals |
+| Implementation status | Prompt implemented; runner integration pending |
+| Prompt | `prompts/phase-2/language-style-checker-v1.0.0.md` |
+| Output | Structured Markdown signal comment |
 | Applies changes | No |
 
-The Language Style Checker identifies low-risk writing-quality issues.
+The Language Style Checker identifies low-risk writing-quality issues in one provided canonical stereotype page.
 
-It should check:
+It checks only:
 
 - grammar;
 - spelling;
-- awkward phrasing;
-- unclear sentence structure;
-- overly long sentences;
-- minor style inconsistencies;
-- reader-facing wording problems.
+- clarity;
+- professional technical style;
+- project or process self-reference in reader-facing documentation.
 
-It may propose replacement wording only when the proposed wording preserves meaning and does not introduce new conceptual content.
+Its categories are:
+
+```text
+grammar
+spelling
+clarity
+professional_style
+project_self_reference
+```
+
+Reader-facing prose includes visible documentation text intended for readers of the stereotype page, including:
+
+- headings;
+- paragraphs;
+- list items;
+- table cells;
+- captions;
+- image alt text.
+
+The checker must not flag project/process references when they occur outside reader-facing prose, including:
+
+- YAML or TOML front matter;
+- code blocks;
+- HTML comments;
+- generation logs;
+- review logs;
+- source metadata;
+- bibliography or reference sections;
+- citation/source tables;
+- changelog sections;
+- explicitly marked process/history sections.
+
+It must protect:
+
+- direct quotations;
+- citation locators;
+- bibliographic entries;
+- source titles;
+- Markdown links or link targets;
+- stereotype names;
+- formal definitions;
+- OntoUML claims;
+- source interpretations;
+- technical terminology when meaning could change.
+
+It reports at most three signals. `Signal count` must exactly equal the number of emitted `#### S-...` signal sections. Signal IDs must be sequential and limited to `S-001`, `S-002`, and `S-003`.
+
+Its location format is:
+
+```text
+Location: Section: "<nearest heading, or Document root if no heading applies>"; Fragment: "<exact affected fragment from the same location, maximum 160 characters>"
+```
+
+It may include `current_text` and `proposed_text` only when the replacement is exact, contiguous, local, low-risk, meaning-preserving, and does not cross sentence, paragraph, heading, table-cell, or list-item boundaries.
+
+When included, `current_text` and `proposed_text` must be emitted together, wrapped in double quotation marks, and escaped when necessary.
+
+It must not include `current_text` or `proposed_text` for issues inside protected content.
 
 It must not:
 
+- validate source support;
+- validate citation correctness;
+- evaluate OntoUML correctness;
+- evaluate conceptual adequacy;
+- compare pages;
 - change OntoUML claims;
 - strengthen or weaken conceptual claims;
 - add new technical precision;
+- remove necessary caution;
 - modify source interpretation;
 - rewrite whole sections;
-- perform semantic validation.
+- recommend repository operations.
+
+The current `language-style-checker-v1.0.0` prompt is Markdown-only. It emits one GitHub issue comment and does not emit YAML, JSON, or a separate machine-readable artifact.
+
+For no-signal runs, the prompt still requires a full comment with `Signal count` set to `0` and the exact no-signal sentence under `### Signals`.
 
 ## Explicitly excluded Phase 2 checks
 
@@ -365,7 +433,25 @@ Recommended metadata table:
 | Review date | <review date> |
 | Reviewed page | <path> |
 | Commit SHA | <sha> |
-| Signal count | <number of signals, or 0 if none> |
+| Signal count | <number of emitted signal sections, or 0 if none> |
+```
+
+For LLM-based check agents, `Signal count` should exactly match the number of emitted `#### S-...` signal sections.
+
+Recommended summary section:
+
+```markdown
+### Summary judgment
+
+<agent-specific summary sentence>
+```
+
+Recommended scope section:
+
+```markdown
+### Scope
+
+<agent-specific scope statement>
 ```
 
 Recommended signal section:
@@ -373,17 +459,27 @@ Recommended signal section:
 ```markdown
 ### Signals
 
-#### S-001 — <signal title>
+#### S-001 — <short plain-text signal title>
 
-- Category: `<category>`
-- Severity: `<low | medium | high>`
-- Confidence: `<low | medium | high>`
-- Location: `<section heading or precise local reference>`
-- Observation: `<what appears problematic>`
-- Rationale: `<why this matters for reviewability or readability>`
-- Recommendation: `<concrete next action>`
-- Suggested repair: `<optional exact local repair; omit if not useful>`
+- Category: <agent-specific category>
+- Severity: <low | medium | high>
+- Confidence: <low | medium | high>
+- Location: Section: "<nearest heading, or Document root if no heading applies>"; Fragment: "<exact affected fragment, maximum 160 characters>"
+- Observation: <single-line observation>
+- Rationale: <single-line rationale>
+- Recommendation: <single-line recommendation>
 ```
+
+Agent-specific contracts may allow optional exact replacement fields:
+
+```markdown
+- current_text: "<exact current text copied from the page>"
+- proposed_text: "<exact local replacement text>"
+```
+
+Optional replacement fields must be emitted together or omitted together. They must not be emitted as empty values, placeholders, `None`, or `N/A`.
+
+For `language-style-checker-v1.0.0`, `current_text` and `proposed_text` are forbidden for issues inside protected content. When they are included, values must be double-quoted and exact, local, meaning-preserving text spans.
 
 If no signals are identified, use exactly:
 
@@ -401,6 +497,7 @@ Current status:
 
 - `page-structure-checker` emits YAML blocks because its output is generated deterministically by Python;
 - `page-hygiene-checker-v1.0.0` is Markdown-only;
+- `language-style-checker-v1.0.0` is Markdown-only;
 - machine-readable signal blocks for LLM-based agents are deferred to a later prompt version or to Phase 3 tooling.
 
 For future LLM-based check agents, structured signal data may use a block such as:
@@ -749,14 +846,15 @@ Completed:
 - Phase 2 methodology defines lightweight check-agent infrastructure;
 - signal terminology is used in the current runner, mock provider, issue manager, and batch runner;
 - `page-structure-checker` exists as the first deterministic check agent;
-- `page-hygiene-checker-v1.0.0` exists as the first dedicated LLM check-agent prompt.
+- `page-hygiene-checker-v1.0.0` exists as the first dedicated LLM check-agent prompt;
+- `language-style-checker-v1.0.0` exists as the second dedicated LLM check-agent prompt.
 
 Pending:
 
 1. implement agent-aware issue routing;
 2. implement stable comment identity and update-existing behavior;
 3. add runner and batch support for page/check-agent/model execution;
-4. create the `language-style-checker` prompt;
+4. wire `page-hygiene-checker-v1.0.0` and `language-style-checker-v1.0.0` into agent-aware local execution;
 5. run small local agent-aware batches before issue posting;
 6. add manual GitHub Actions execution after local stability;
 7. add conservative scheduling only after duplicate-comment control exists.
@@ -867,7 +965,7 @@ Commit message:
 feat(phase-2): update existing check signal comments
 ```
 
-### Step 6 — Split the current LLM prompt — partially completed
+### Step 6 — Split the current LLM prompt — completed
 
 The page-hygiene checker prompt exists:
 
@@ -875,15 +973,16 @@ The page-hygiene checker prompt exists:
 prompts/phase-2/page-hygiene-checker-v1.0.0.md
 ```
 
-The language-style checker prompt is still pending:
+The language-style checker prompt exists:
 
 ```text
 prompts/phase-2/language-style-checker-v1.0.0.md
 ```
 
-Commit message:
+Commit messages:
 
 ```bash
+feat(phase-2): add page hygiene checker prompt
 feat(phase-2): add language style checker prompt
 ```
 
@@ -957,10 +1056,10 @@ Phase 2 can be considered complete when:
 
 - check-agent architecture is documented;
 - at least one deterministic check agent is implemented;
-- at least two lightweight LLM check agents are implemented;
+- at least two lightweight LLM check-agent prompts are implemented and wired into agent-aware execution;
 - issue routing is page-plus-agent based;
 - outputs use signal terminology;
-- generated comments are structured according to each agent contract;
+- generated comments are structured according to each agent contract and pass validation;
 - repeated runs update existing comments rather than creating duplicates;
 - generated outputs remain uncommitted;
 - small batch execution works locally;
@@ -975,6 +1074,7 @@ Phase 2 can be considered complete when:
 - Signal terminology has been introduced in the current runner, mock provider, issue manager, and batch runner.
 - The Python-based `page-structure-checker` has been added as the first deterministic check agent.
 - The LLM-based `page-hygiene-checker-v1.0.0` prompt has been added, with runner and batch integration still pending.
+- The LLM-based `language-style-checker-v1.0.0` prompt has been added, with runner and batch integration still pending.
 - The current general runner still points to the legacy general page-reviewer prompt and should be parameterized or replaced before real agent-specific LLM runs.
 - Resolution agents, quorum decisions, patch planning, patch application, PR creation, and issue closure are deferred to Phase 3.
 - The final automation goal may remove the human from the loop, but must retain structured signals, quorum gates, deterministic patch application, validation, and traceable GitHub issues/PRs.
