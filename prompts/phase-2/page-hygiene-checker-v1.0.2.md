@@ -76,7 +76,7 @@ Category meanings:
 
 - `reference_hygiene`: visible issues in `### Direct Citations` or `### Consulted Sources`, such as visibly repeated or near-repeated entries, inconsistent source labels, malformed source-entry formatting, visibly malformed locators, inconsistent locator formatting, or unclear citation-entry structure.
 - `markdown_hygiene`: Markdown syntax or layout issues that reduce readability or reviewability, such as broken tables, malformed lists, bad heading syntax, unclosed code fences, inconsistent blockquotes, or malformed Markdown structure.
-- `encoding_hygiene`: visible character-level artifacts, such as mojibake, replacement characters, corrupted punctuation, garbled quotation marks, broken dash characters, or artifacts such as `ΓÇö`.
+- `encoding_hygiene`: visible character-level artifacts, such as mojibake, replacement characters, corrupted punctuation, garbled quotation marks, broken dash characters, or mojibake strings such as `ΓÇö`.
 - `review_log_hygiene`: visible issues in `## Generation and Review Log`, such as malformed entries, inconsistent date/provider/model/prompt formatting, duplicated-looking log entries, or unclear provenance information visible within that section.
 
 If multiple categories could apply, choose the first applicable category in this order:
