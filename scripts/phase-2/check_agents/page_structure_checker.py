@@ -28,12 +28,12 @@ from datetime import date
 from pathlib import Path
 from typing import Iterable
 
-
 AGENT_ID = "page-structure-checker"
 PROVIDER_ID = "python"
 MODEL_ID = "deterministic"
 PROMPT_ID = "n/a"
 DEFAULT_MAX_SIGNALS = 3
+SKELETON_PAGE_MARKER = "<!-- skeleton-page -->"
 
 EXPECTED_HEADINGS = [
     (2, "Description"),
@@ -45,13 +45,9 @@ EXPECTED_HEADINGS = [
     (2, "Generation and Review Log"),
 ]
 
-EXPECTED_HEADING_LABELS = [
-    f"{'#' * level} {title}" for level, title in EXPECTED_HEADINGS
-]
+EXPECTED_HEADING_LABELS = [f"{'#' * level} {title}" for level, title in EXPECTED_HEADINGS]
 
-EXPECTED_H2_TITLES = {
-    title for level, title in EXPECTED_HEADINGS if level == 2
-}
+EXPECTED_H2_TITLES = {title for level, title in EXPECTED_HEADINGS if level == 2}
 
 REQUIRED_SECTION_TITLES = {title for _level, title in EXPECTED_HEADINGS}
 
@@ -102,11 +98,15 @@ class Signal:
     details: dict[str, object] | None = None
 
 
+def is_skeleton_page(markdown: str) -> bool:
+    """Return True when a page is explicitly marked as an intentional skeleton."""
+    return SKELETON_PAGE_MARKER in markdown
+
+
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
         description=(
-            "Run the deterministic Phase 2 page-structure checker for one "
-            "canonical stereotype Markdown page."
+            "Run the deterministic Phase 2 page-structure checker for one " "canonical stereotype Markdown page."
         )
     )
 
@@ -172,9 +172,7 @@ def resolve_repo_relative_path(repo_root: Path, relative_path: str) -> Path:
     candidate = Path(relative_path)
 
     if candidate.is_absolute():
-        raise PageStructureCheckerError(
-            f"Expected repository-relative path, got absolute path: {relative_path}"
-        )
+        raise PageStructureCheckerError(f"Expected repository-relative path, got absolute path: {relative_path}")
 
     resolved = (repo_root / candidate).resolve()
 
@@ -366,9 +364,7 @@ def detect_missing_required_headings(headings_by_title: dict[str, list[Heading]]
         severity="high",
         location="Page structure",
         observation=(
-            "The page is missing the following expected heading(s): "
-            + ", ".join(f"`{item}`" for item in missing)
-            + "."
+            "The page is missing the following expected heading(s): " + ", ".join(f"`{item}`" for item in missing) + "."
         ),
         rationale=(
             "Canonical stereotype pages must expose the expected sections so that "
@@ -422,11 +418,7 @@ def detect_duplicate_required_headings(headings_by_title: dict[str, list[Heading
     duplicates: list[str] = []
 
     for expected_level, title in EXPECTED_HEADINGS:
-        exact_matches = [
-            heading
-            for heading in headings_by_title.get(title, [])
-            if heading.level == expected_level
-        ]
+        exact_matches = [heading for heading in headings_by_title.get(title, []) if heading.level == expected_level]
 
         if len(exact_matches) > 1:
             locations = ", ".join(str(heading.line) for heading in exact_matches)
@@ -439,11 +431,7 @@ def detect_duplicate_required_headings(headings_by_title: dict[str, list[Heading
         title="Duplicate required heading",
         severity="medium",
         location="Page structure",
-        observation=(
-            "The page contains duplicate required heading(s): "
-            + "; ".join(duplicates)
-            + "."
-        ),
+        observation=("The page contains duplicate required heading(s): " + "; ".join(duplicates) + "."),
         rationale=(
             "Duplicate required headings make section boundaries ambiguous for "
             "both readers and automated check agents."
@@ -459,11 +447,7 @@ def detect_heading_order_issue(headings_by_title: dict[str, list[Heading]]) -> S
     observed: list[tuple[str, int]] = []
 
     for expected_level, title in EXPECTED_HEADINGS:
-        exact_matches = [
-            heading
-            for heading in headings_by_title.get(title, [])
-            if heading.level == expected_level
-        ]
+        exact_matches = [heading for heading in headings_by_title.get(title, []) if heading.level == expected_level]
 
         if exact_matches:
             first = min(exact_matches, key=lambda heading: heading.line)
@@ -510,8 +494,7 @@ def detect_heading_order_issue(headings_by_title: dict[str, list[Heading]]) -> S
         ),
         recommendation="Review whether the required headings should be reordered to match the canonical sequence.",
         suggested_repair=(
-            "Reorder the affected sections only after confirming that their content "
-            "moves with the correct heading."
+            "Reorder the affected sections only after confirming that their content " "moves with the correct heading."
         ),
         details={"observed_order": observed_labels, "expected_order": expected_subset_order},
     )
@@ -532,11 +515,7 @@ def detect_unexpected_level_two_sections(headings: list[Heading]) -> Signal | No
         title="Unexpected level-2 section",
         severity="low",
         location="Page structure",
-        observation=(
-            "The page contains unexpected level-2 section(s): "
-            + "; ".join(unexpected)
-            + "."
-        ),
+        observation=("The page contains unexpected level-2 section(s): " + "; ".join(unexpected) + "."),
         rationale=(
             "Unexpected top-level sections may be intentional, but they can also "
             "indicate drift from the canonical stereotype-page structure."
@@ -557,9 +536,7 @@ def detect_empty_required_sections(markdown: str, headings: list[Heading]) -> Si
 
     for expected_level, title in EXPECTED_HEADINGS:
         matching_headings = [
-            heading
-            for heading in headings
-            if heading.level == expected_level and heading.title == title
+            heading for heading in headings if heading.level == expected_level and heading.title == title
         ]
 
         if not matching_headings:
@@ -606,9 +583,12 @@ def collect_signals(markdown: str) -> list[Signal]:
         lambda: detect_malformed_required_heading_levels(headings_by_title),
         lambda: detect_duplicate_required_headings(headings_by_title),
         lambda: detect_heading_order_issue(headings_by_title),
-        lambda: detect_empty_required_sections(markdown, headings),
-        lambda: detect_unexpected_level_two_sections(headings),
     ]
+
+    if not is_skeleton_page(markdown):
+        detectors.append(lambda: detect_empty_required_sections(markdown, headings))
+
+    detectors.append(lambda: detect_unexpected_level_two_sections(headings))
 
     signals: list[Signal] = []
 
@@ -750,10 +730,7 @@ def render_signal(signal: Signal, page_path: str) -> str:
 def render_summary(signals: list[Signal], total_signal_count: int, omitted_count: int) -> str:
     """Render the summary paragraph."""
     if not signals:
-        return (
-            "The deterministic page-structure checker found no structural signals "
-            "within the configured scope."
-        )
+        return "The deterministic page-structure checker found no structural signals " "within the configured scope."
 
     omitted_sentence = (
         f" {omitted_count} additional structural signal(s) were omitted because this run is capped."
@@ -791,10 +768,7 @@ def render_report(
         "Signal count": str(signal_count),
     }
 
-    metadata_rows = "\n".join(
-        f"| {field} | {escape_table_value(value)} |"
-        for field, value in metadata_values.items()
-    )
+    metadata_rows = "\n".join(f"| {field} | {escape_table_value(value)} |" for field, value in metadata_values.items())
 
     if signals:
         signals_body = "\n\n".join(render_signal(signal, page_path) for signal in signals)

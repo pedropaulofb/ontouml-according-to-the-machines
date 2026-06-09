@@ -1,5 +1,7 @@
 # HistoricalRoleMixin
 
+<!-- skeleton-page -->
+
 ## Description
 
 ## Stereotype Profile
