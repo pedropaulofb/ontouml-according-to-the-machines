@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Run one agent-aware LLM check against one canonical stereotype page.
 
-This runner is intentionally local-output only:
+This runner is local-output only:
 
 - it reads one canonical stereotype Markdown page;
 - it reads one check-agent prompt;
@@ -212,40 +212,34 @@ def parse_args() -> argparse.Namespace:
         choices=sorted(AGENT_CONTRACTS),
         help="Check-agent slug to run.",
     )
-
     parser.add_argument(
         "--page",
         required=True,
         help="Repository-relative path to the canonical stereotype Markdown page.",
     )
-
     parser.add_argument(
         "--provider",
         required=True,
         help="LLM provider adapter to use. Supported value: groq.",
     )
-
     parser.add_argument(
         "--model",
         required=True,
         help="Provider-specific model name to use and report in metadata.",
     )
-
     parser.add_argument(
         "--output",
         required=True,
         help="Path where the generated issue comment should be written.",
     )
-
     parser.add_argument(
         "--prompt",
         default=None,
         help=(
-            "Optional repository-relative prompt path override. "
-            "Defaults to the configured prompt for the selected agent."
+            "Optional repository-relative prompt path override. Defaults to the "
+            "configured prompt for the selected agent."
         ),
     )
-
     parser.add_argument(
         "--prompt-id",
         default=None,
@@ -254,26 +248,23 @@ def parse_args() -> argparse.Namespace:
             "configured prompt ID."
         ),
     )
-
     parser.add_argument(
         "--commit-sha",
         default=None,
         help="Optional commit SHA override. If omitted, git rev-parse HEAD is used.",
     )
-
     parser.add_argument(
         "--review-date",
         default=None,
         help="Optional review date override in YYYY-MM-DD form. Defaults to today's date.",
     )
-
     parser.add_argument(
         "--max-completion-tokens",
         type=int,
         default=DEFAULT_MAX_COMPLETION_TOKENS,
         help=(
-            "Maximum completion tokens requested from the provider. "
-            f"Default: {DEFAULT_MAX_COMPLETION_TOKENS}."
+            "Maximum completion tokens requested from the provider. Default: "
+            f"{DEFAULT_MAX_COMPLETION_TOKENS}."
         ),
     )
 
@@ -426,9 +417,9 @@ def load_provider(provider_name: str) -> Callable[..., str]:
             from providers.groq import generate_review
         except ImportError as exc:
             raise CheckAgentRunnerError(
-                "Could not import Groq provider adapter. "
-                "Check that scripts/phase-2/providers/groq.py exists and that "
-                "the groq package is installed."
+                "Could not import Groq provider adapter. Check that "
+                "scripts/phase-2/providers/groq.py exists and that the groq "
+                "package is installed."
             ) from exc
 
         return generate_review
@@ -659,19 +650,6 @@ def normalize_enum_field(text: str, field_name: str, allowed_values: set[str]) -
     )
 
 
-def remove_trailing_duplicate_signals_note(text: str) -> str:
-    """Remove redundant no-signal text after concrete signal sections."""
-    if not SIGNAL_HEADING_PATTERN.search(text):
-        return text
-
-    return re.sub(
-        r"\n+### Signals\s*\n+None identified within the configured check-agent scope\.\s*$",
-        "\n",
-        text,
-        flags=re.IGNORECASE | re.DOTALL,
-    )
-
-
 def normalize_issue_comment(text: str, contract: AgentContract) -> str:
     """Apply safe mechanical repairs before validation.
 
@@ -690,8 +668,6 @@ def normalize_issue_comment(text: str, contract: AgentContract) -> str:
         normalized,
         flags=re.IGNORECASE | re.MULTILINE,
     )
-
-    normalized = remove_trailing_duplicate_signals_note(normalized)
 
     return normalized.strip() + "\n"
 
@@ -842,6 +818,19 @@ def validate_issue_comment(
     if not text.strip():
         return ["Output is empty."]
 
+    expected_report_title = (
+        f"## Check signal report: {contract.slug} / {provider} / {model} — {review_date}"
+    )
+    first_non_empty_line = next(
+        (line.strip() for line in text.splitlines() if line.strip()),
+        "",
+    )
+    if first_non_empty_line != expected_report_title:
+        errors.append(
+            "Report title mismatch: expected "
+            f"{expected_report_title!r}, found {first_non_empty_line!r}"
+        )
+
     for fragment in REQUIRED_OUTPUT_FRAGMENTS:
         if fragment not in text:
             errors.append(f"Missing required output fragment: {fragment}")
@@ -880,6 +869,7 @@ def validate_issue_comment(
 
     declared_signal_count = extract_signal_count(text)
     signal_blocks = extract_signal_blocks(text)
+    signals_section = extract_signals_section(text)
 
     if declared_signal_count is None:
         errors.append("Missing or unparsable Signal count metadata row.")
@@ -897,21 +887,6 @@ def validate_issue_comment(
         errors.append("Missing non-empty Summary judgment sentence.")
     elif summary not in contract.summary_sentences:
         errors.append(f"Unexpected Summary judgment sentence: {summary}")
-
-    expected_report_title = (
-        f"## Check signal report: {contract.slug} / {provider} / {model} — {review_date}"
-    )
-    first_non_empty_line = next(
-        (line.strip() for line in text.splitlines() if line.strip()),
-        "",
-    )
-    if first_non_empty_line != expected_report_title:
-        errors.append(
-            "Report title mismatch: expected "
-            f"{expected_report_title!r}, found {first_non_empty_line!r}"
-        )
-
-    signals_section = extract_signals_section(text)
 
     if declared_signal_count == 0:
         if signal_blocks:
@@ -989,7 +964,9 @@ def main() -> int:
         contract = AGENT_CONTRACTS[validate_agent_slug(args.agent)]
         provider = args.provider.strip().lower()
         prompt_path = args.prompt or contract.prompt_path
-        prompt_id = args.prompt_id or (contract.prompt_id if prompt_path == contract.prompt_path else derive_prompt_id(prompt_path))
+        prompt_id = args.prompt_id or (
+            contract.prompt_id if prompt_path == contract.prompt_path else derive_prompt_id(prompt_path)
+        )
 
         repo_root = get_repo_root()
         prompt_file = resolve_repo_relative_path(repo_root, prompt_path)

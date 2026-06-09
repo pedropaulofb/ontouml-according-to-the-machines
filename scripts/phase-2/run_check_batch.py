@@ -1,20 +1,14 @@
 #!/usr/bin/env python3
 """Run Phase 2 LLM check agents across pages, agents, and models.
 
-This batch runner is intentionally conservative:
+The batch runner delegates individual LLM calls and output validation to
+`scripts/phase-2/run_check_agent.py`, and optionally delegates issue dry-runs
+or posting to `scripts/phase-2/issue_manager.py`.
 
-- it delegates each individual LLM call and output validation to
-  `scripts/phase-2/run_check_agent.py`;
-- it can optionally delegate issue dry-runs or posting to
-  `scripts/phase-2/issue_manager.py`;
-- it derives stable output paths under `.tmp/phase-2`;
-- it continues after individual failures so one bad page/model does not hide
-  the rest of the batch;
-- it writes a Markdown batch summary;
-- it exits nonzero when any individual run fails.
-
-Default behavior is local generation only. GitHub is touched only when
-`--mode post` is explicitly selected.
+It supports both normal batch execution and rotating scheduled execution. The
+rotating mode is intended for a scheduled workflow that runs one
+(page, agent, model) triple per interval and gradually collects check-agent
+signals over time.
 """
 
 from __future__ import annotations
@@ -26,16 +20,16 @@ import subprocess
 import sys
 import time
 from dataclasses import dataclass
-from datetime import datetime
+from datetime import datetime, timezone
 from pathlib import Path
 from typing import Iterable, Sequence
 
 
 DEFAULT_AGENTS = ["page-hygiene-checker", "language-style-checker"]
 DEFAULT_PROVIDER = "groq"
-DEFAULT_MODELS = ["llama-3.3-70b-versatile"]
+DEFAULT_MODELS = ["llama-3.3-70b-versatile", "openai/gpt-oss-20b"]
 DEFAULT_OUTPUT_ROOT = Path(".tmp/phase-2")
-DEFAULT_SLEEP_SECONDS = 30.0
+DEFAULT_SLEEP_SECONDS = 0.0
 SUMMARY_FILENAME = "batch-summary.md"
 
 RUN_CHECK_AGENT_PATH = Path("scripts/phase-2/run_check_agent.py")
@@ -94,7 +88,6 @@ def parse_args() -> argparse.Namespace:
         default=".",
         help="Repository root. Defaults to the current working directory.",
     )
-
     parser.add_argument(
         "--page",
         action="append",
@@ -104,7 +97,6 @@ def parse_args() -> argparse.Namespace:
             "times."
         ),
     )
-
     parser.add_argument(
         "--pages-glob",
         action="append",
@@ -114,7 +106,24 @@ def parse_args() -> argparse.Namespace:
             '"docs/stereotypes/**/*.md". May be passed multiple times.'
         ),
     )
-
+    parser.add_argument(
+        "--exclude-page",
+        action="append",
+        default=[],
+        help=(
+            "Repository-relative Markdown page to exclude from the selected page set. "
+            "May be passed multiple times."
+        ),
+    )
+    parser.add_argument(
+        "--exclude-pages-glob",
+        action="append",
+        default=[],
+        help=(
+            "Repository-relative glob for Markdown pages to exclude, for example "
+            '"docs/stereotypes/**/index.md". May be passed multiple times.'
+        ),
+    )
     parser.add_argument(
         "--agent",
         action="append",
@@ -125,23 +134,20 @@ def parse_args() -> argparse.Namespace:
             "LLM-based Phase 2 agents."
         ),
     )
-
     parser.add_argument(
         "--provider",
         default=DEFAULT_PROVIDER,
         help=f"LLM provider to use. Defaults to {DEFAULT_PROVIDER!r}.",
     )
-
     parser.add_argument(
         "--model",
         action="append",
         default=[],
         help=(
             "Model to use. May be passed multiple times. Defaults to "
-            f"{DEFAULT_MODELS[0]!r}."
+            f"{', '.join(DEFAULT_MODELS)!r}."
         ),
     )
-
     parser.add_argument(
         "--mode",
         choices=["generate", "dry-run", "post"],
@@ -152,7 +158,6 @@ def parse_args() -> argparse.Namespace:
             "runs issue_manager.py without --dry-run. Defaults to 'generate'."
         ),
     )
-
     parser.add_argument(
         "--repo",
         help=(
@@ -160,19 +165,16 @@ def parse_args() -> argparse.Namespace:
             "post, for example pedropaulofb/ontouml-according-to-the-machines."
         ),
     )
-
     parser.add_argument(
         "--post-empty",
         action="store_true",
         help="Forward --post-empty to issue_manager.py in dry-run or post mode.",
     )
-
     parser.add_argument(
         "--output-root",
         default=str(DEFAULT_OUTPUT_ROOT),
         help=f"Root directory for generated comments. Defaults to {DEFAULT_OUTPUT_ROOT}.",
     )
-
     parser.add_argument(
         "--summary",
         help=(
@@ -180,7 +182,6 @@ def parse_args() -> argparse.Namespace:
             ".tmp/phase-2/batch-summary.md under --repo-root."
         ),
     )
-
     parser.add_argument(
         "--sleep-seconds",
         type=float,
@@ -190,28 +191,52 @@ def parse_args() -> argparse.Namespace:
             f"{DEFAULT_SLEEP_SECONDS:g}. Use 0 for no delay."
         ),
     )
-
     parser.add_argument(
         "--max-runs",
         type=int,
         help=(
-            "Maximum number of planned combinations to execute. Useful for "
-            "conservative scheduled batches. Omit for no limit."
+            "Maximum number of planned combinations to execute after selection. "
+            "Use 1 with --selection rotate for one scheduled triple per run."
         ),
     )
-
+    parser.add_argument(
+        "--selection",
+        choices=["first", "rotate"],
+        default="first",
+        help=(
+            "How to select runs from the full page x agent x model plan before "
+            "applying --max-runs. 'first' keeps the sorted order. 'rotate' "
+            "rotates the full plan by --rotation-index, or by the selected "
+            "--rotation-seed when no explicit index is provided. Defaults to 'first'."
+        ),
+    )
+    parser.add_argument(
+        "--rotation-seed",
+        choices=["hourly", "daily"],
+        default="hourly",
+        help=(
+            "Time seed used by --selection rotate when --rotation-index is not set. "
+            "Defaults to 'hourly'."
+        ),
+    )
+    parser.add_argument(
+        "--rotation-index",
+        type=int,
+        help=(
+            "Explicit non-negative rotation index for --selection rotate. "
+            "Mostly useful for deterministic tests."
+        ),
+    )
     parser.add_argument(
         "--fail-fast",
         action="store_true",
         help="Stop after the first failed individual run.",
     )
-
     parser.add_argument(
         "--plan-only",
         action="store_true",
         help="Print and summarize the planned runs without executing them.",
     )
-
     parser.add_argument(
         "--max-completion-tokens",
         type=int,
@@ -263,8 +288,14 @@ def log_path_for(output_path: Path) -> Path:
     return output_path.with_suffix(".batch.log")
 
 
-def discover_pages(repo_root: Path, explicit_pages: Sequence[str], globs: Sequence[str]) -> list[str]:
-    """Resolve explicit pages and globbed pages to sorted repo-relative paths."""
+def discover_pages(
+    repo_root: Path,
+    explicit_pages: Sequence[str],
+    globs: Sequence[str],
+    explicit_excluded_pages: Sequence[str],
+    excluded_globs: Sequence[str],
+) -> list[str]:
+    """Resolve explicit/globbed pages to sorted repo-relative paths with exclusions."""
     pages: set[str] = set()
 
     for page in explicit_pages:
@@ -279,6 +310,20 @@ def discover_pages(repo_root: Path, explicit_pages: Sequence[str], globs: Sequen
             if match.is_file() and match.suffix == ".md":
                 pages.add(match.relative_to(repo_root).as_posix())
 
+    excluded_pages: set[str] = set()
+    for page in explicit_excluded_pages:
+        normalized = normalize_repo_relative_path(page)
+        if normalized.endswith(".md"):
+            excluded_pages.add(normalized)
+
+    for pattern in excluded_globs:
+        matches = sorted(repo_root.glob(pattern))
+        for match in matches:
+            if match.is_file() and match.suffix == ".md":
+                excluded_pages.add(match.relative_to(repo_root).as_posix())
+
+    pages -= excluded_pages
+
     if not pages:
         raise ValueError("No pages selected. Pass --page and/or --pages-glob.")
 
@@ -292,25 +337,17 @@ def discover_pages(repo_root: Path, explicit_pages: Sequence[str], globs: Sequen
 
 def plan_runs(
     *,
-    repo_root: Path,
     pages: Sequence[str],
     agents: Sequence[str],
     provider: str,
     models: Sequence[str],
     output_root: Path,
-    max_runs: int | None,
 ) -> list[PlannedRun]:
-    """Create the cross product of pages, agents, provider, and models."""
-    if max_runs is not None and max_runs < 1:
-        raise ValueError("--max-runs must be greater than 0 when provided.")
-
+    """Create the full cross product of pages, agents, provider, and models."""
     combinations: Iterable[tuple[str, str, str]] = itertools.product(pages, agents, models)
     planned: list[PlannedRun] = []
 
     for index, (page, agent, model) in enumerate(combinations, start=1):
-        if max_runs is not None and len(planned) >= max_runs:
-            break
-
         output_path = output_path_for(
             output_root=output_root,
             page=page,
@@ -331,6 +368,51 @@ def plan_runs(
         )
 
     return planned
+
+
+def current_rotation_index(seed: str) -> int:
+    """Return a UTC time-based rotation index for scheduled runs."""
+    now = datetime.now(timezone.utc)
+    if seed == "hourly":
+        return int(now.timestamp() // 3600)
+    if seed == "daily":
+        return int(now.timestamp() // 86400)
+    raise ValueError(f"Unsupported rotation seed: {seed}")
+
+
+def select_runs(
+    *,
+    planned_runs: Sequence[PlannedRun],
+    selection: str,
+    max_runs: int | None,
+    rotation_seed: str,
+    rotation_index: int | None,
+) -> tuple[list[PlannedRun], int | None]:
+    """Select a subset of planned runs using first-N or rotating selection."""
+    if max_runs is not None and max_runs < 1:
+        raise ValueError("--max-runs must be greater than 0 when provided.")
+
+    if not planned_runs:
+        return [], None
+
+    selected_pool = list(planned_runs)
+    applied_rotation_index: int | None = None
+
+    if selection == "rotate":
+        if rotation_index is not None and rotation_index < 0:
+            raise ValueError("--rotation-index must be non-negative when provided.")
+        applied_rotation_index = (
+            rotation_index if rotation_index is not None else current_rotation_index(rotation_seed)
+        )
+        offset = applied_rotation_index % len(selected_pool)
+        selected_pool = selected_pool[offset:] + selected_pool[:offset]
+    elif selection != "first":
+        raise ValueError(f"Unsupported selection mode: {selection}")
+
+    if max_runs is not None:
+        selected_pool = selected_pool[:max_runs]
+
+    return selected_pool, applied_rotation_index
 
 
 def run_subprocess(command: Sequence[str], repo_root: Path) -> subprocess.CompletedProcess[str]:
@@ -565,6 +647,10 @@ def write_summary(
     summary_path: Path,
     repo_root: Path,
     mode: str,
+    selection: str,
+    rotation_seed: str,
+    applied_rotation_index: int | None,
+    available_run_count: int,
     planned_runs: Sequence[PlannedRun],
     completed_runs: Sequence[CompletedRun],
     plan_only: bool,
@@ -581,8 +667,15 @@ def write_summary(
     lines.append(f"Generated at: {datetime.now().isoformat(timespec='seconds')}")
     lines.append(f"Repository root: `{repo_root}`")
     lines.append(f"Mode: `{mode}`")
+    lines.append(f"Selection: `{selection}`")
+    lines.append(f"Rotation seed: `{rotation_seed}`")
+    lines.append(
+        "Rotation index: "
+        + (f"`{applied_rotation_index}`" if applied_rotation_index is not None else "`n/a`")
+    )
     lines.append(f"Plan only: `{str(plan_only).lower()}`")
-    lines.append(f"Planned runs: `{len(planned_runs)}`")
+    lines.append(f"Available runs: `{available_run_count}`")
+    lines.append(f"Selected/planned runs: `{len(planned_runs)}`")
     lines.append(f"Completed runs: `{len(completed_runs)}`")
     lines.append(f"Successful runs: `{success_count}`")
     lines.append(f"Failed runs: `{failure_count}`")
@@ -653,23 +746,40 @@ def main() -> int:
 
     try:
         validate_environment(repo_root, args.mode, args.repo)
-        pages = discover_pages(repo_root, args.page, args.pages_glob)
+        pages = discover_pages(
+            repo_root,
+            args.page,
+            args.pages_glob,
+            args.exclude_page,
+            args.exclude_pages_glob,
+        )
         agents = args.agent or DEFAULT_AGENTS
         models = args.model or DEFAULT_MODELS
-        planned_runs = plan_runs(
-            repo_root=repo_root,
+        available_runs = plan_runs(
             pages=pages,
             agents=agents,
             provider=args.provider,
             models=models,
             output_root=output_root,
+        )
+        planned_runs, applied_rotation_index = select_runs(
+            planned_runs=available_runs,
+            selection=args.selection,
             max_runs=args.max_runs,
+            rotation_seed=args.rotation_seed,
+            rotation_index=args.rotation_index,
         )
     except ValueError as exc:
         print(f"ERROR: {exc}", file=sys.stderr)
         return 2
 
-    print(f"Planned runs: {len(planned_runs)}")
+    print(f"Available runs: {len(available_runs)}")
+    print(f"Selected runs: {len(planned_runs)}")
+    print(f"Selection: {args.selection}")
+    if applied_rotation_index is not None:
+        print(f"Rotation seed: {args.rotation_seed}")
+        print(f"Rotation index: {applied_rotation_index}")
+
     for planned in planned_runs:
         print(
             f"- [{planned.index}] {planned.agent} / {planned.provider} / "
@@ -683,6 +793,10 @@ def main() -> int:
             summary_path=summary_path,
             repo_root=repo_root,
             mode=args.mode,
+            selection=args.selection,
+            rotation_seed=args.rotation_seed,
+            applied_rotation_index=applied_rotation_index,
+            available_run_count=len(available_runs),
             planned_runs=planned_runs,
             completed_runs=completed_runs,
             plan_only=True,
@@ -713,6 +827,10 @@ def main() -> int:
         summary_path=summary_path,
         repo_root=repo_root,
         mode=args.mode,
+        selection=args.selection,
+        rotation_seed=args.rotation_seed,
+        applied_rotation_index=applied_rotation_index,
+        available_run_count=len(available_runs),
         planned_runs=planned_runs,
         completed_runs=completed_runs,
         plan_only=False,

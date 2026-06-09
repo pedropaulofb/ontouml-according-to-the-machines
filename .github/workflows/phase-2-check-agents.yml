@@ -1,0 +1,207 @@
+name: Phase 2 check-agent signal collector
+
+"on":
+  schedule:
+    - cron: "17 * * * *"
+  workflow_dispatch:
+    inputs:
+      mode:
+        description: "Issue-manager mode to use. Scheduled runs default to post."
+        type: choice
+        required: true
+        default: post
+        options:
+          - generate
+          - dry-run
+          - post
+      selection:
+        description: "How to select triples from the full page x agent x model plan."
+        type: choice
+        required: true
+        default: rotate
+        options:
+          - rotate
+          - first
+      rotation_seed:
+        description: "Time seed for rotating selection when rotation_index is omitted."
+        type: choice
+        required: true
+        default: hourly
+        options:
+          - hourly
+          - daily
+      rotation_index:
+        description: "Optional explicit non-negative rotation index for deterministic manual runs."
+        type: string
+        required: false
+        default: ""
+      pages:
+        description: "Optional newline-separated page list. If empty, all canonical stereotype pages are considered."
+        type: string
+        required: false
+        default: ""
+      agents:
+        description: "Comma-separated agents."
+        type: string
+        required: true
+        default: "page-hygiene-checker,language-style-checker"
+      models:
+        description: "Comma-separated Groq models."
+        type: string
+        required: true
+        default: "llama-3.3-70b-versatile,openai/gpt-oss-20b"
+      max_runs:
+        description: "Maximum number of selected triples to run. Use 1 for hourly rotating collection."
+        type: string
+        required: true
+        default: "1"
+      sleep_seconds:
+        description: "Seconds to sleep between selected triples. Usually 0 when max_runs is 1."
+        type: string
+        required: true
+        default: "0"
+
+permissions:
+  contents: read
+  issues: write
+
+concurrency:
+  group: phase-2-check-agent-signal-collector
+  cancel-in-progress: false
+
+jobs:
+  collect-check-agent-signal:
+    name: Collect rotating Phase 2 check-agent signal
+    runs-on: ubuntu-latest
+
+    env:
+      GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
+      GH_TOKEN: ${{ github.token }}
+      WORKFLOW_MODE: ${{ github.event.inputs.mode }}
+      WORKFLOW_SELECTION: ${{ github.event.inputs.selection }}
+      WORKFLOW_ROTATION_SEED: ${{ github.event.inputs.rotation_seed }}
+      WORKFLOW_ROTATION_INDEX: ${{ github.event.inputs.rotation_index }}
+      WORKFLOW_PAGES: ${{ github.event.inputs.pages }}
+      WORKFLOW_AGENTS: ${{ github.event.inputs.agents }}
+      WORKFLOW_MODELS: ${{ github.event.inputs.models }}
+      WORKFLOW_MAX_RUNS: ${{ github.event.inputs.max_runs }}
+      WORKFLOW_SLEEP_SECONDS: ${{ github.event.inputs.sleep_seconds }}
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install Python dependencies
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m pip install --upgrade pip
+          if [[ -f requirements.txt ]]; then
+            python -m pip install -r requirements.txt
+          fi
+          python -m pip install groq
+
+      - name: Validate required secrets and tools
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [[ -z "${GROQ_API_KEY:-}" ]]; then
+            echo "::error::Missing required repository secret: GROQ_API_KEY"
+            exit 1
+          fi
+          gh --version
+          gh auth status
+
+      - name: Compile Phase 2 scripts
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m py_compile \
+            scripts/phase-2/run_check_agent.py \
+            scripts/phase-2/run_check_batch.py \
+            scripts/phase-2/issue_manager.py
+
+      - name: Run rotating check-agent collector
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          trim() {
+            printf '%s' "$1" | sed 's/^[[:space:]]*//;s/[[:space:]]*$//'
+          }
+
+          mode="${WORKFLOW_MODE:-post}"
+          selection="${WORKFLOW_SELECTION:-rotate}"
+          rotation_seed="${WORKFLOW_ROTATION_SEED:-hourly}"
+          rotation_index="${WORKFLOW_ROTATION_INDEX:-}"
+          pages_input="${WORKFLOW_PAGES:-}"
+          agents_input="${WORKFLOW_AGENTS:-page-hygiene-checker,language-style-checker}"
+          models_input="${WORKFLOW_MODELS:-llama-3.3-70b-versatile,openai/gpt-oss-20b}"
+          max_runs="${WORKFLOW_MAX_RUNS:-1}"
+          sleep_seconds="${WORKFLOW_SLEEP_SECONDS:-0}"
+
+          page_args=()
+          if [[ -n "$pages_input" ]]; then
+            while IFS= read -r page; do
+              page="$(trim "$page")"
+              if [[ -n "$page" ]]; then
+                page_args+=(--page "$page")
+              fi
+            done <<< "$pages_input"
+          else
+            page_args+=(--pages-glob "docs/stereotypes/classes/*.md")
+            page_args+=(--pages-glob "docs/stereotypes/relations/*.md")
+            page_args+=(--exclude-pages-glob "docs/stereotypes/**/index.md")
+          fi
+
+          agent_args=()
+          IFS=',' read -ra agents <<< "$agents_input"
+          for agent in "${agents[@]}"; do
+            agent="$(trim "$agent")"
+            if [[ -n "$agent" ]]; then
+              agent_args+=(--agent "$agent")
+            fi
+          done
+
+          model_args=()
+          IFS=',' read -ra models <<< "$models_input"
+          for model in "${models[@]}"; do
+            model="$(trim "$model")"
+            if [[ -n "$model" ]]; then
+              model_args+=(--model "$model")
+            fi
+          done
+
+          rotation_args=()
+          if [[ -n "$rotation_index" ]]; then
+            rotation_args+=(--rotation-index "$rotation_index")
+          fi
+
+          python scripts/phase-2/run_check_batch.py \
+            "${page_args[@]}" \
+            "${agent_args[@]}" \
+            --provider groq \
+            "${model_args[@]}" \
+            --mode "$mode" \
+            --repo "$GITHUB_REPOSITORY" \
+            --selection "$selection" \
+            --rotation-seed "$rotation_seed" \
+            "${rotation_args[@]}" \
+            --max-runs "$max_runs" \
+            --sleep-seconds "$sleep_seconds"
+
+      - name: Upload Phase 2 check-agent artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: phase-2-check-agent-signals-${{ github.run_id }}
+          path: .tmp/phase-2
+          if-no-files-found: warn
+          retention-days: 90
