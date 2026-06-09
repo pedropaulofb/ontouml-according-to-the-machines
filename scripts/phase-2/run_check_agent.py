@@ -103,7 +103,13 @@ EXPLANATORY_PROMPT_TEXT_PATTERNS = [
     "Add at most S-002 and S-003",
 ]
 
-LANGUAGE_STYLE_EXCLUDED_LOCATION_SECTIONS = {
+MARKDOWN_HEADING_PATTERN = re.compile(
+    r"^(?P<hashes>#{1,6})\s+(?P<title>.+?)\s*#*\s*$"
+)
+
+FENCED_BLOCK_PATTERN = re.compile(r"^\s*(```|~~~)")
+
+LANGUAGE_STYLE_EXCLUDED_SECTIONS = {
     "references",
     "direct citations",
     "consulted sources",
@@ -380,6 +386,7 @@ def build_review_input(
     commit_sha: str,
     max_completion_tokens: int,
     page_content: str,
+    input_scope_note: str,
 ) -> str:
     """Build the complete prompt payload for provider adapters."""
     return f"""# Check-agent prompt
@@ -398,10 +405,11 @@ Review date: {review_date}
 Reviewed page path: {page_path}
 Repository commit SHA: {commit_sha}
 Max completion tokens: {max_completion_tokens}
+Input scope: {input_scope_note}
 
 ---
 
-# Canonical stereotype page Markdown
+# Canonical stereotype page Markdown selected for the configured check-agent scope
 
 BEGIN_CANONICAL_STEREOTYPE_PAGE_MARKDOWN
 {page_content}
@@ -519,14 +527,84 @@ def strip_inline_code(value: str) -> str:
         return normalized[1:-1].strip()
     return normalized
 
-def normalize_location_section(section: str) -> str:
-    """Normalize a Location section value for scope checks."""
+
+def normalize_markdown_section_title(section: str) -> str:
+    """Normalize a Markdown heading or Location section value for scope checks."""
     normalized = section.strip()
 
     while normalized.startswith("#"):
         normalized = normalized[1:].strip()
 
+    normalized = re.sub(r"\s+#*$", "", normalized).strip()
     return re.sub(r"\s+", " ", normalized).lower()
+
+
+def remove_markdown_sections(text: str, excluded_sections: set[str]) -> str:
+    """Remove Markdown sections whose normalized headings are excluded.
+
+    A removed section starts at the excluded heading and continues until the next
+    heading at the same or a higher level. Headings inside fenced code blocks are
+    ignored.
+    """
+    kept_lines: list[str] = []
+    skip_until_heading_level: int | None = None
+    in_fenced_block = False
+
+    for line in text.splitlines():
+        if FENCED_BLOCK_PATTERN.match(line):
+            if skip_until_heading_level is None:
+                kept_lines.append(line)
+            in_fenced_block = not in_fenced_block
+            continue
+
+        heading_match = None if in_fenced_block else MARKDOWN_HEADING_PATTERN.match(line)
+
+        if heading_match is not None:
+            heading_level = len(heading_match.group("hashes"))
+            heading_title = normalize_markdown_section_title(heading_match.group("title"))
+
+            if (
+                skip_until_heading_level is not None
+                and heading_level <= skip_until_heading_level
+            ):
+                skip_until_heading_level = None
+
+            if skip_until_heading_level is None and heading_title in excluded_sections:
+                skip_until_heading_level = heading_level
+                continue
+
+        if skip_until_heading_level is None:
+            kept_lines.append(line)
+
+    scoped_text = "\n".join(kept_lines).strip()
+    return scoped_text + "\n" if scoped_text else ""
+
+
+def scope_page_content_for_agent(
+    *,
+    contract: AgentContract,
+    page_content: str,
+) -> tuple[str, str]:
+    """Return the page content visible to the selected check agent."""
+    if contract.slug != "language-style-checker":
+        return page_content, "full canonical stereotype page"
+
+    scoped_content = remove_markdown_sections(
+        page_content,
+        LANGUAGE_STYLE_EXCLUDED_SECTIONS,
+    )
+
+    if not scoped_content.strip():
+        raise CheckAgentRunnerError(
+            "Language-style input scoping removed all page content; refusing to call provider."
+        )
+
+    return (
+        scoped_content,
+        "reader-facing page content only; excluded References, Direct Citations, "
+        "Consulted Sources, and Generation and Review Log sections",
+    )
+
 
 def extract_signal_fields(signal_block: str) -> list[tuple[str, str]]:
     """Extract bullet fields from one signal block in order."""
@@ -725,11 +803,11 @@ def validate_signal_block(
             )
         else:
             section = location_match.group("section")
-            normalized_section = normalize_location_section(section)
+            normalized_section = normalize_markdown_section_title(section)
 
             if (
                 contract.slug == "language-style-checker"
-                and normalized_section in LANGUAGE_STYLE_EXCLUDED_LOCATION_SECTIONS
+                and normalized_section in LANGUAGE_STYLE_EXCLUDED_SECTIONS
             ):
                 errors.append(
                     f"{signal_id} is located in an excluded non-reader-facing section "
@@ -920,6 +998,10 @@ def main() -> int:
 
         checker_prompt = read_text_file(prompt_file, "Check-agent prompt")
         page_content = read_text_file(page_file, "Canonical stereotype page")
+        scoped_page_content, input_scope_note = scope_page_content_for_agent(
+            contract=contract,
+            page_content=page_content,
+        )
 
         review_date = get_review_date(args.review_date)
         commit_sha = get_commit_sha(repo_root, args.commit_sha)
@@ -935,7 +1017,8 @@ def main() -> int:
             page_path=args.page,
             commit_sha=commit_sha,
             max_completion_tokens=args.max_completion_tokens,
-            page_content=page_content,
+            page_content=scoped_page_content,
+            input_scope_note=input_scope_note,
         )
 
         try:
@@ -946,7 +1029,7 @@ def main() -> int:
                 review_date=review_date,
                 page_path=args.page,
                 commit_sha=commit_sha,
-                page_content=page_content,
+                page_content=scoped_page_content,
                 max_completion_tokens=args.max_completion_tokens,
             )
         except Exception as exc:
