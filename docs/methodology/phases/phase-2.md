@@ -2,11 +2,11 @@
 
 Phase 2 is the second content-production phase of **OntoUML According to the Machines**.
 
-Its purpose is to introduce lightweight deterministic and API-based review infrastructure for existing canonical stereotype pages. Phase 2 does not perform deep content validation, source-faithfulness analysis, cross-page semantic comparison, automatic page repair, pull-request generation, or automatic issue closure.
+Its purpose is to provide lightweight deterministic and API-based review infrastructure for existing canonical stereotype pages. Phase 2 does not perform deep content validation, source-faithfulness analysis, cross-page semantic comparison, automatic page repair, pull-request generation, automatic issue closure, or auto-merge.
 
-Phase 2 produces page-local **signals**, routes those signals to deterministic GitHub issues, and provides manual ChatGPT-assisted prompts for closing those issues later.
+Phase 2 produces page-local **signals**, routes those signals to deterministic GitHub issues, and leaves signal acceptance, rejection, and closure decisions to later manual review.
 
-Phase 2 follows a gradual automation model: small checks, small batches, conservative execution, and incremental accumulation of signals over time. The intended operating philosophy is _de grão em grão_: progress should come from many small, cheap, repeatable checks rather than infrequent heavyweight analyses.
+This document reflects the repository state on **2026-06-09**.
 
 ## Purpose
 
@@ -14,22 +14,23 @@ Phase 2 has six goals:
 
 1. implement three lightweight check agents for canonical stereotype pages;
 2. run the deterministic Python check agent on page modifications;
-3. run the two LLM-based check agents periodically in conservative batches;
+3. run the two LLM-based check agents periodically in conservative rotating batches;
 4. produce structured, page-local signals about page structure, page hygiene, formatting, and writing quality;
 5. route check-agent outputs to deterministic GitHub issues scoped by page and check agent;
-6. provide manual ChatGPT prompts that help a human evaluate, resolve, and close Phase 2 signal issues.
+6. support later manual ChatGPT-assisted issue closure.
 
 Phase 2 prioritizes infrastructure, signal quality, traceability, repeatability, and controlled issue routing over deep content judgment.
 
-## Simplified Phase 2 boundary
+## Phase 2 boundary
 
 Phase 2 implements:
 
 ```text
 check agents
 → check-agent execution
+→ output validation
 → issue routing
-→ manual issue-closure prompt support
+→ planned manual issue-closure support
 ```
 
 Phase 2 does **not** implement autonomous resolution agents.
@@ -48,12 +49,12 @@ Phase 2 check agents:
 
 The issue manager:
 
-- reads check-agent reports;
+- reads validated check-agent reports;
 - derives the reviewed page identity;
 - derives the check-agent identity;
-- creates or reuses one GitHub issue per page and check agent;
+- creates or reuses one open GitHub issue per page and check agent;
 - posts model-specific check-agent reports as comments in that issue;
-- should update matching comments instead of creating duplicate comments once stable comment identity is implemented.
+- updates a matching existing comment when the stable comment identity already exists.
 
 Manual issue-closure prompts:
 
@@ -64,9 +65,9 @@ Manual issue-closure prompts:
 - do not run automatically;
 - do not replace human judgment.
 
-## Target Phase 2 architecture
+## Current Phase 2 architecture
 
-Phase 2 should contain exactly three check agents:
+The Phase 2 architecture contains exactly three check agents:
 
 ```text
 check-agents
@@ -75,7 +76,7 @@ check-agents
 └── language-style-checker
 ```
 
-The target execution model is:
+The implemented execution model is:
 
 ```text
 page-structure-checker
@@ -85,133 +86,136 @@ page-structure-checker
 
 page-hygiene-checker
 └── LLM-based
-└── runs periodically in conservative batches
+└── runs through the agent-aware LLM runner
+└── runs periodically through the rotating scheduled workflow
 └── reports page-hygiene signals
 
 language-style-checker
 └── LLM-based
-└── runs periodically in conservative batches
+└── runs through the agent-aware LLM runner
+└── runs periodically through the rotating scheduled workflow
 └── reports language/style signals
 ```
 
-The target issue-routing model is:
+The implemented issue-routing model is:
 
 ```text
 one GitHub issue per page + check agent
 ```
 
-Different models executed by the same agent for the same page must post comments in the same issue.
+Different models executed by the same agent for the same page post comments in the same issue.
+
+Actual issue title pattern:
+
+```text
+Check signal: <agent-slug>: <page-id>
+```
 
 Examples:
 
 ```text
-Phase 2 check: page-structure-checker: classes/event
-Phase 2 check: page-hygiene-checker: classes/event
-Phase 2 check: language-style-checker: classes/event
+Check signal: page-structure-checker: classes/event
+Check signal: page-hygiene-checker: classes/event
+Check signal: language-style-checker: classes/event
+Check signal: page-structure-checker: relations/material
 ```
 
 If `page-hygiene-checker` runs with multiple LLM models on `classes/event`, all those model outputs belong in:
 
 ```text
-Phase 2 check: page-hygiene-checker: classes/event
+Check signal: page-hygiene-checker: classes/event
 ```
 
 ## Current implementation status
 
-The current implementation provides a working local and CI-based Phase 2 foundation, but it does not yet fully implement the simplified target architecture.
+The current implementation includes the core runtime pieces of the simplified Phase 2 architecture: check execution, output validation, page-plus-agent issue routing, duplicate-control for comments, and scheduled LLM collection. Manual issue-closure prompt support remains planned.
 
 ### Implemented files and artifacts
 
 ```text
 .github/workflows/page-structure-check.yml
+.github/workflows/phase-2-check-agents.yml
 prompts/phase-2/page-hygiene-checker-v1.0.2.md
 prompts/phase-2/language-style-checker-v1.0.2.md
-configs/phase-2/review-batch.yml
-scripts/phase-2/run_page_review.py
+scripts/phase-2/run_check_agent.py
+scripts/phase-2/run_check_batch.py
 scripts/phase-2/issue_manager.py
-scripts/phase-2/run_review_batch.py
 scripts/phase-2/run_page_structure_batch.py
 scripts/phase-2/check_agents/page_structure_checker.py
 scripts/phase-2/providers/__init__.py
 scripts/phase-2/providers/groq.py
+```
+
+Legacy compatibility or stale artifacts still exist:
+
+```text
+configs/phase-2/review-batch.yml
+scripts/phase-2/run_page_review.py
+scripts/phase-2/run_review_batch.py
 scripts/phase-2/providers/mock.py
 ```
 
-Legacy compatibility artifacts also exist or are referenced by the current runner:
+These legacy artifacts are not the current scheduled Phase 2 LLM execution path. They should either be clearly marked as legacy or removed in a later cleanup.
+
+A legacy prompt path is referenced by legacy code:
 
 ```text
 prompts/phase-2/prompt-phase-2-page-reviewer-v1.0.3.md
 ```
 
-The legacy general page-reviewer prompt is not part of the simplified target architecture. It should be replaced or parameterized before relying on real agent-specific LLM runs.
+That legacy general page-reviewer prompt is not part of the simplified three-agent Phase 2 architecture.
 
 ### Current capabilities
 
 The current implementation can:
 
-- run one general page-level LLM check at a time through `run_page_review.py`;
-- use signal terminology in generated comments, validation, mock output, batch output, and issue-manager parsing;
+- run the deterministic `page-structure-checker`;
+- run one LLM check-agent invocation through `run_check_agent.py`;
+- route `page-hygiene-checker` to `prompts/phase-2/page-hygiene-checker-v1.0.2.md`;
+- route `language-style-checker` to `prompts/phase-2/language-style-checker-v1.0.2.md`;
 - call Groq models through the Groq provider adapter;
-- run a deterministic mock provider for smoke testing;
-- run the standalone Python-based `page-structure-checker` for deterministic page-skeleton checks;
-- provide dedicated LLM prompt contracts for `page-hygiene-checker-v1.0.2` and `language-style-checker-v1.0.2`;
-- write local Markdown candidate signal comments;
-- normalize safe Markdown/template issues;
-- validate generated signal comments for structure and safety;
-- read generated comment files;
-- derive deterministic page-level GitHub issue titles;
-- create or reuse GitHub issues through local `issue_manager.py`;
-- post generated signal comments to GitHub issues through local `issue_manager.py`;
-- read a YAML batch configuration for the existing page/model-oriented runner;
-- run configured page/model batches through the existing batch runner;
-- run `page-structure-checker` across all canonical stereotype pages through `run_page_structure_batch.py`;
-- exclude stereotype `index.md` pages from page-structure batch execution;
-- mark intentional skeleton pages with `<!-- skeleton-page -->`;
-- suppress empty-section signals for explicitly marked skeleton pages;
-- run page-structure checks in GitHub Actions on changed canonical stereotype pages;
-- upload page-structure check reports as GitHub Actions artifacts;
-- fail CI when page-structure signals are reported.
+- validate generated LLM signal comments against agent-specific contracts;
+- write valid generated comments to `.tmp/phase-2/`;
+- write invalid generated comments to `.invalid.md` files for debugging;
+- run page × agent × model batches through `run_check_batch.py`;
+- select rotating scheduled triples with hourly or daily rotation seeds;
+- run one selected triple per scheduled interval with `--selection rotate --max-runs 1`;
+- run in `generate`, `dry-run`, or `post` mode;
+- write per-run logs and a batch summary under `.tmp/phase-2/`;
+- derive deterministic page-plus-agent issue titles;
+- create or reuse open GitHub issues;
+- add stable identity markers to issue comments;
+- update an existing matching issue comment instead of posting a duplicate;
+- skip issue creation for zero-signal reports unless explicitly configured with `--post-empty`;
+- run deterministic page-structure checks in GitHub Actions on changed canonical stereotype pages;
+- run scheduled LLM check-agent collection hourly through GitHub Actions;
+- upload generated outputs as GitHub Actions artifacts.
 
-### Current clean baseline
+These capabilities do not mean every scheduled LLM output is valid. Invalid model outputs are preserved as artifacts and currently make the selected batch run fail.
 
-The latest local execution of `run_page_structure_batch.py` over all canonical stereotype pages reported:
+### Current limitations and operational risks
 
-```text
-Pages processed: 39
-Checker failures: 0
-Pages with structural signals: 0
-Issue-manager runs: 0
-Issue-manager failures: 0
-```
+The current implementation still has these limitations:
 
-This means the deterministic page-structure checker currently has a clean baseline across all canonical stereotype pages.
-
-### Current limitations
-
-The current implementation does **not** yet match the simplified target architecture. In particular:
-
-- issue routing is still page-level, not page-plus-agent;
-- repeated local issue-posting runs still post new comments rather than updating matching comments;
-- `run_review_batch.py` is still page/model oriented, not page/check-agent/model oriented;
-- `page-structure-checker` is implemented and has a dedicated local batch runner, but it is not integrated into a unified agent-aware runner;
-- `page-hygiene-checker-v1.0.2` exists as a standalone prompt but is not yet wired into an agent-aware runner or batch configuration;
-- `language-style-checker-v1.0.2` exists as a standalone prompt but is not yet wired into an agent-aware runner or batch configuration;
-- GitHub Actions currently run the deterministic page-structure checker only;
-- GitHub Actions do not create or update GitHub issues;
-- scheduled LLM execution is still pending;
-- automatic issue creation and comment updates from scheduled runs are still pending;
-- the three manual issue-closure prompts are planned but have not yet been created.
+- manual issue-closure prompts are planned but not yet created;
+- legacy runner/config files still exist and may confuse future maintenance;
+- `run_check_agent.py` currently supports only the Groq provider in the active agent-aware path;
+- `providers/mock.py` is stale relative to the active `run_check_agent.py` contracts;
+- `requirements.txt` does not pin or include the Groq runtime dependency used by the scheduled workflow;
+- `run_check_batch.py` currently fails the batch when the selected LLM output fails validation;
+- the scheduled workflow therefore turns red when the selected model output is invalid, although the next scheduled hour still runs;
+- `issue_manager.py` searches only open issues, so closed issues with matching titles are not reused;
+- stable comment identity includes the commit SHA, so a new commit may produce a new model comment for the same page, agent, provider, model, and prompt.
 
 ## Operational prerequisites
 
 The current local implementation depends on:
 
-- Python;
-- `pyyaml` for the batch configuration;
-- `groq` for Groq API calls;
+- Python 3;
+- `groq` for Groq API calls when using the active LLM provider;
 - a `GROQ_API_KEY` environment variable for real Groq runs;
 - GitHub CLI authentication through `gh auth login` for local issue posting;
-- `GH_TOKEN` later if issue-posting workflows run in GitHub Actions.
+- `GH_TOKEN` or the default `github.token` for issue posting in GitHub Actions.
 
 The Groq API key must never be committed.
 
@@ -222,28 +226,33 @@ The current page-structure GitHub Actions workflow depends only on:
 - the deterministic checker script;
 - read-only repository contents permission.
 
-It does not require secrets, issue permissions, or write permissions.
+The scheduled LLM GitHub Actions workflow depends on:
 
-Scheduled LLM workflows will require:
-
-- a model-provider API key, such as `GROQ_API_KEY`;
-- issue write permissions if the workflow creates issues or comments;
-- duplicate-control logic before routine posting is enabled.
+- repository checkout;
+- Python;
+- `groq`;
+- `GROQ_API_KEY`;
+- `GH_TOKEN`;
+- `contents: read`;
+- `issues: write`.
 
 ## Generated output policy
 
 Generated Phase 2 outputs are not source files and must not be committed.
 
-Generated local outputs include paths such as:
+Generated local and CI outputs include paths such as:
 
 ```text
-.tmp/phase-2/<page-id>/issue-comment-<provider>-<model>.md
 .tmp/phase-2/page-structure-checker/<page-id>/issue-comment-page-structure-checker.md
+.tmp/phase-2/<agent>/<page-id>/issue-comment-<provider>-<model>.md
+.tmp/phase-2/<agent>/<page-id>/issue-comment-<provider>-<model>.invalid.md
+.tmp/phase-2/<agent>/<page-id>/issue-comment-<provider>-<model>.batch.log
+.tmp/phase-2/batch-summary.md
 issue-comment.md
 issue-comment.invalid.md
 ```
 
-The repository should continue to ignore these outputs with:
+The repository ignores these outputs with:
 
 ```text
 .tmp/
@@ -260,7 +269,7 @@ issue-comment*.md
 | Type | Deterministic Python |
 | LLM required | No |
 | Phase | 2 |
-| Implementation status | Implemented as a standalone script, local batch runner, and CI workflow |
+| Implementation status | Implemented |
 | Script | `scripts/phase-2/check_agents/page_structure_checker.py` |
 | Local batch runner | `scripts/phase-2/run_page_structure_batch.py` |
 | GitHub Actions workflow | `.github/workflows/page-structure-check.yml` |
@@ -318,12 +327,6 @@ Such pages may be marked with:
 
 When this marker is present, the checker suppresses empty-section signals for that page. The checker still performs structural checks for required headings, heading levels, heading order, duplicate headings, and unexpected level-2 sections.
 
-Current intentionally marked skeleton page:
-
-```text
-docs/stereotypes/classes/historical-role-mixin.md
-```
-
 #### Local all-page runner
 
 The local all-page runner is:
@@ -367,7 +370,7 @@ python scripts/phase-2/run_page_structure_batch.py \
   --repo pedropaulofb/ontouml-according-to-the-machines
 ```
 
-The `--post` mode should be used conservatively until `issue_manager.py` supports page-plus-agent routing and stable comment updates.
+When `--post` is passed, the runner posts only reports with `Signal count > 0` and skips zero-signal reports to avoid issue/comment noise.
 
 #### GitHub Actions workflow
 
@@ -412,11 +415,14 @@ A negative-control pull request should be used to verify that the branch rule bl
 | Type | Lightweight LLM |
 | LLM required | Yes |
 | Phase | 2 |
-| Implementation status | Prompt implemented; runner integration pending |
+| Implementation status | Implemented in the active agent-aware LLM runner and scheduled workflow |
+| Runner | `scripts/phase-2/run_check_agent.py` |
+| Batch runner | `scripts/phase-2/run_check_batch.py` |
 | Prompt | `prompts/phase-2/page-hygiene-checker-v1.0.2.md` |
+| Supported active provider | `groq` |
 | Output | Structured Markdown signal comment |
 | Applies changes | No |
-| Target execution | Periodic conservative batches |
+| Target execution | Periodic conservative rotating batches |
 
 The Page Hygiene Checker checks only visible page-hygiene issues in Markdown content that is present.
 
@@ -450,7 +456,9 @@ It must not:
 - recommend conceptual rewrites;
 - recommend repository actions or workflow changes.
 
-The current `page-hygiene-checker-v1.0.2` prompt is Markdown-only. It emits one GitHub issue comment and does not emit YAML, JSON, or a separate machine-readable artifact.
+The active `page-hygiene-checker-v1.0.2` prompt is Markdown-only. It emits one GitHub issue comment and does not emit YAML, JSON, or a separate machine-readable artifact.
+
+`run_check_agent.py` validates the output against the configured page-hygiene contract. Invalid model output is written as `.invalid.md` and is not posted.
 
 ### 3. Language Style Checker
 
@@ -460,11 +468,14 @@ The current `page-hygiene-checker-v1.0.2` prompt is Markdown-only. It emits one 
 | Type | Lightweight LLM |
 | LLM required | Yes |
 | Phase | 2 |
-| Implementation status | Prompt implemented; runner integration pending |
+| Implementation status | Implemented in the active agent-aware LLM runner and scheduled workflow |
+| Runner | `scripts/phase-2/run_check_agent.py` |
+| Batch runner | `scripts/phase-2/run_check_batch.py` |
 | Prompt | `prompts/phase-2/language-style-checker-v1.0.2.md` |
+| Supported active provider | `groq` |
 | Output | Structured Markdown signal comment |
 | Applies changes | No |
-| Target execution | Periodic conservative batches |
+| Target execution | Periodic conservative rotating batches |
 
 The Language Style Checker identifies low-risk writing-quality issues in one provided canonical stereotype page.
 
@@ -495,20 +506,16 @@ Reader-facing prose includes visible documentation text intended for readers of 
 - captions;
 - image alt text.
 
-The checker must not flag project/process references when they occur outside reader-facing prose, including:
+The active runner scopes the input for `language-style-checker` by excluding these sections before calling the provider:
 
-- YAML or TOML front matter;
-- code blocks;
-- HTML comments;
-- generation logs;
-- review logs;
-- source metadata;
-- bibliography or reference sections;
-- citation/source tables;
-- changelog sections;
-- explicitly marked process/history sections.
+```text
+References
+Direct Citations
+Consulted Sources
+Generation and Review Log
+```
 
-It must protect:
+The checker must protect:
 
 - direct quotations;
 - citation locators;
@@ -535,24 +542,9 @@ When included, `current_text` and `proposed_text` must be emitted together, wrap
 
 It must not include `current_text` or `proposed_text` for issues inside protected content.
 
-It must not:
+The active `language-style-checker-v1.0.2` prompt is Markdown-only. It emits one GitHub issue comment and does not emit YAML, JSON, or a separate machine-readable artifact.
 
-- validate source support;
-- validate citation correctness;
-- evaluate OntoUML correctness;
-- evaluate conceptual adequacy;
-- compare pages;
-- change OntoUML claims;
-- strengthen or weaken conceptual claims;
-- add new technical precision;
-- remove necessary caution;
-- modify source interpretation;
-- rewrite whole sections;
-- recommend repository operations.
-
-The current `language-style-checker-v1.0.2` prompt is Markdown-only. It emits one GitHub issue comment and does not emit YAML, JSON, or a separate machine-readable artifact.
-
-For no-signal runs, the prompt still requires a full comment with `Signal count` set to `0` and the exact no-signal sentence under `### Signals`.
+`run_check_agent.py` validates the output against the configured language-style contract. Invalid model output is written as `.invalid.md` and is not posted.
 
 ## Explicitly excluded Phase 2 checks
 
@@ -610,13 +602,13 @@ Rationale: a Phase 2 signal is a candidate observation. It has not yet been acce
 
 Each check-agent output should be one structured Markdown comment.
 
-Recommended heading:
+Required heading:
 
 ```markdown
 ## Check signal report: <agent> / <provider> / <model> — <review date>
 ```
 
-Recommended metadata table:
+Required metadata table:
 
 ```markdown
 ### Run metadata
@@ -633,9 +625,9 @@ Recommended metadata table:
 | Signal count | <number of emitted signal sections, or 0 if none> |
 ```
 
-For LLM-based check agents, `Signal count` should exactly match the number of emitted `#### S-...` signal sections.
+For LLM-based check agents, `Signal count` must exactly match the number of emitted `#### S-...` signal sections.
 
-Recommended summary section:
+Required summary section:
 
 ```markdown
 ### Summary judgment
@@ -643,7 +635,7 @@ Recommended summary section:
 <agent-specific summary sentence>
 ```
 
-Recommended scope section:
+Required scope section:
 
 ```markdown
 ### Scope
@@ -651,7 +643,7 @@ Recommended scope section:
 <agent-specific scope statement>
 ```
 
-Recommended signal section:
+Required signal section:
 
 ```markdown
 ### Signals
@@ -676,13 +668,9 @@ Agent-specific contracts may allow optional exact replacement fields:
 
 Optional replacement fields must be emitted together or omitted together. They must not be emitted as empty values, placeholders, `None`, or `N/A`.
 
-For `language-style-checker-v1.0.2`, `current_text` and `proposed_text` are forbidden for issues inside protected content. When they are included, values must be double-quoted and exact, local, meaning-preserving text spans.
-
-If no signals are identified, use exactly:
+For no-signal runs, the prompt still requires a full comment with `Signal count` set to `0` and this exact sentence under `### Signals`:
 
 ```markdown
-### Signals
-
 None identified within the configured check-agent scope.
 ```
 
@@ -701,25 +689,25 @@ The Markdown text is for humans and issue readability. Structured blocks are opt
 
 ## Issue routing model
 
-The target Phase 2 issue routing model is one GitHub issue per:
+The implemented Phase 2 issue routing model is one open GitHub issue per:
 
 ```text
 page + check agent
 ```
 
-Recommended issue title pattern:
+Implemented issue title pattern:
 
 ```text
-Phase 2 check: <agent-slug>: <page-id>
+Check signal: <agent-slug>: <page-id>
 ```
 
 Examples:
 
 ```text
-Phase 2 check: page-structure-checker: classes/event
-Phase 2 check: page-hygiene-checker: classes/event
-Phase 2 check: language-style-checker: classes/event
-Phase 2 check: page-structure-checker: relations/material
+Check signal: page-structure-checker: classes/event
+Check signal: page-hygiene-checker: classes/event
+Check signal: language-style-checker: classes/event
+Check signal: page-structure-checker: relations/material
 ```
 
 The page identity is derived from the reviewed page path:
@@ -729,28 +717,22 @@ docs/stereotypes/classes/event.md -> classes/event
 docs/stereotypes/relations/material.md -> relations/material
 ```
 
-All model outputs for the same page and same check agent should be posted to the same issue.
+All model outputs for the same page and same check agent are posted to the same open issue.
 
-For example, if `page-hygiene-checker` runs with two models on `docs/stereotypes/classes/event.md`, both model reports should be comments under:
-
-```text
-Phase 2 check: page-hygiene-checker: classes/event
-```
-
-Current status: `issue_manager.py` still uses the older page-level issue title pattern:
+For example, if `page-hygiene-checker` runs with two models on `docs/stereotypes/classes/event.md`, both model reports are comments under:
 
 ```text
-Phase 2 page review: <group>/<stereotype-id>
+Check signal: page-hygiene-checker: classes/event
 ```
 
-Changing issue routing to page-plus-agent is the next major implementation step.
+The issue manager currently searches only open issues with an exact matching title. Closed issues are not reused.
 
 ## Issue body pattern
 
-Recommended issue body:
+When creating a new issue, the issue body uses this structure:
 
 ```markdown
-# Phase 2 check: <agent-slug>: <page-id>
+# Check signal: <agent-slug>: <page-id>
 
 ## Reviewed page
 
@@ -766,20 +748,20 @@ Recommended issue body:
 
 ## Purpose
 
-Collect Phase 2 check-agent signals for this page and agent.
+Collect check-agent signal comments for this page and agent.
 
 ## Resolution model
 
-This issue is resolved manually with the aid of the corresponding Phase 2 issue-closure prompt.
-
 Signals are candidate observations. They are not accepted findings until reviewed.
+
+This issue may be resolved manually or by later resolution tooling.
 ```
 
 ## Comment identity and duplicate control
 
-Before repeated or scheduled issue posting, Phase 2 should support stable comment identity.
+Phase 2 supports stable comment identity.
 
-Recommended stable identity:
+Stable identity fields:
 
 ```text
 page
@@ -787,157 +769,204 @@ agent
 provider
 model
 prompt
-commit SHA
+commit
 ```
 
-If a comment with the same stable identity already exists, the system should update the existing comment instead of posting a new one.
+The issue manager inserts a hidden marker into the posted comment:
 
-If the commit SHA changes, a new comment may be posted because the page content may have changed.
+```markdown
+<!-- check-signal-comment
+page: <reviewed page>
+agent: <agent>
+provider: <provider>
+model: <model>
+prompt: <prompt>
+commit: <commit SHA>
+-->
+```
 
-This is required before scheduled LLM execution or automated issue posting to prevent issue-comment noise.
+If a comment with the same stable identity already exists in the target issue, the system updates the existing comment instead of posting a new one.
 
-The current page-structure CI workflow intentionally avoids GitHub issue/comment creation until this duplicate-control layer exists.
+If the commit SHA changes, a new comment may be posted because the reviewed page content may have changed.
 
 ## Batch execution model
 
-The current general batch runner is page/model oriented.
-
-The new `run_page_structure_batch.py` runner is agent-specific and supports one deterministic check agent:
+The active LLM batch runner is:
 
 ```text
-page-structure-checker
+scripts/phase-2/run_check_batch.py
 ```
 
-The target batch model should iterate over:
+It iterates over:
 
 ```text
 pages × check agents × models
 ```
 
-For deterministic Python agents, the provider/model fields can be:
-
-```text
-provider: python
-model: deterministic
-```
-
-For LLM agents, the provider/model fields should identify the API provider and model.
-
-Example target configuration:
-
-```yaml
-repo: pedropaulofb/ontouml-according-to-the-machines
-output_dir: .tmp/phase-2
-delay_seconds: 60
-continue_on_error: true
-post_mode: after_agent
-post_empty: false
-
-agents:
-  - slug: page-structure-checker
-    type: python
-    provider: python
-    model: deterministic
-    execution: on_page_modification
-
-  - slug: page-hygiene-checker
-    type: llm
-    prompt: page-hygiene-checker-v1.0.2
-    provider: groq
-    execution: scheduled
-    models:
-      - model: openai/gpt-oss-20b
-        slug: gpt-oss-20b
-        max_completion_tokens: 3000
-
-  - slug: language-style-checker
-    type: llm
-    prompt: language-style-checker-v1.0.2
-    provider: groq
-    execution: scheduled
-    models:
-      - model: openai/gpt-oss-20b
-        slug: gpt-oss-20b
-        max_completion_tokens: 3000
-
-pages:
-  - docs/stereotypes/classes/event.md
-```
-
-The concrete schema may evolve, but the conceptual shift should be from:
-
-```text
-page × model
-```
-
-to:
-
-```text
-page × check agent × model
-```
-
-## Execution policy
-
-### Page-structure execution
-
-The deterministic `page-structure-checker` should run when canonical stereotype pages are modified.
-
-This check should remain CI-oriented and blocking:
-
-- it should run on relevant pull requests;
-- it should run on relevant pushes to `main`;
-- it should be manually triggerable;
-- it should upload reports as artifacts;
-- it should fail when structural signals are reported;
-- it should not create GitHub issues from CI until issue routing and duplicate control are stable.
-
-### LLM-agent execution
-
-The two LLM-based agents should run periodically in conservative batches:
+Default active LLM agents:
 
 ```text
 page-hygiene-checker
 language-style-checker
 ```
 
-Initial scheduled execution should be deliberately small:
+Default provider:
 
 ```text
-one or a few pages
-one LLM check agent
-one lightweight model
-large interval between runs
+groq
 ```
 
-After the issue manager supports page-plus-agent routing and duplicate-control updates, scheduled runs may post results to GitHub issues.
+Default models:
 
-LLM scheduled execution should avoid:
+```text
+llama-3.3-70b-versatile
+openai/gpt-oss-20b
+```
 
-- reviewing all pages too frequently;
-- using expensive models by default;
-- creating issues for zero-signal runs unless there is a specific reason;
-- posting duplicate comments for the same page, agent, provider, model, prompt, and commit SHA.
+Default output root:
+
+```text
+.tmp/phase-2
+```
+
+Main modes:
+
+| Mode | Behavior |
+|---|---|
+| `generate` | Calls the LLM runner, validates output, and writes local files only. |
+| `dry-run` | Calls the LLM runner, validates output, then calls `issue_manager.py --dry-run` for valid outputs. |
+| `post` | Calls the LLM runner, validates output, then creates/updates GitHub issues/comments for valid outputs. |
+
+Important: `dry-run` still calls the LLM provider and still validates the generated report. It only dry-runs the issue-manager operation.
+
+Common examples:
+
+```bash
+python scripts/phase-2/run_check_batch.py \
+  --page docs/stereotypes/classes/event.md \
+  --agent page-hygiene-checker \
+  --provider groq \
+  --model llama-3.3-70b-versatile \
+  --mode generate
+```
+
+```bash
+python scripts/phase-2/run_check_batch.py \
+  --pages-glob "docs/stereotypes/classes/*.md" \
+  --pages-glob "docs/stereotypes/relations/*.md" \
+  --exclude-pages-glob "docs/stereotypes/**/index.md" \
+  --provider groq \
+  --selection rotate \
+  --rotation-seed hourly \
+  --max-runs 1 \
+  --mode dry-run \
+  --repo pedropaulofb/ontouml-according-to-the-machines
+```
+
+```bash
+python scripts/phase-2/run_check_batch.py \
+  --pages-glob "docs/stereotypes/classes/*.md" \
+  --pages-glob "docs/stereotypes/relations/*.md" \
+  --exclude-pages-glob "docs/stereotypes/**/index.md" \
+  --provider groq \
+  --selection rotate \
+  --rotation-seed hourly \
+  --max-runs 1 \
+  --mode post \
+  --repo pedropaulofb/ontouml-according-to-the-machines
+```
+
+## Execution policy
+
+### Page-structure execution
+
+The deterministic `page-structure-checker` runs when canonical stereotype pages are modified.
+
+This check remains CI-oriented and blocking:
+
+- it runs on relevant pull requests;
+- it runs on relevant pushes to `main`;
+- it is manually triggerable;
+- it uploads reports as artifacts;
+- it fails when structural signals are reported;
+- it does not create GitHub issues from CI.
+
+### LLM-agent execution
+
+The two LLM-based agents run periodically through the scheduled workflow:
+
+```text
+page-hygiene-checker
+language-style-checker
+```
+
+The current scheduled workflow is:
+
+```text
+.github/workflows/phase-2-check-agents.yml
+```
+
+Workflow display name:
+
+```text
+Check-agent signal collector
+```
+
+It runs:
+
+```text
+17 * * * *
+```
+
+That means it is scheduled once per hour at minute 17 UTC.
+
+The workflow is also manually triggerable through `workflow_dispatch`.
+
+Effective scheduled defaults:
+
+```text
+mode: post
+selection: rotate
+rotation_seed: hourly
+max_runs: 1
+sleep_seconds: 0
+agents: page-hygiene-checker,language-style-checker
+models: llama-3.3-70b-versatile,openai/gpt-oss-20b
+pages: all canonical class and relation stereotype pages, excluding index.md
+```
+
+The scheduled run therefore selects one `(page, agent, model)` triple per hour from the full plan and advances through the rotating plan over time.
+
+If a selected LLM output fails validation:
+
+- the generated invalid output is saved as `.invalid.md`;
+- `issue_manager.py` is not called for that output;
+- artifacts are still uploaded;
+- the workflow run is marked failed under the current batch runner behavior;
+- the next scheduled hour still runs and selects according to the current hourly rotation index.
 
 ## Free-model and slow-automation strategy
 
-Phase 2 should be designed to work within free or low-cost model quotas.
+Phase 2 is designed to work within free or low-cost model quotas.
 
 The intended strategy is:
 
 - keep prompts compact;
 - cap outputs to a small number of signals;
-- run few pages per batch;
-- use lightweight models more often;
+- run one selected triple per scheduled interval;
+- use lightweight models;
 - use deterministic Python whenever possible;
 - spread execution over time;
 - avoid heavyweight models in Phase 2;
 - rely on gradual accumulation rather than large one-shot reviews.
 
-This supports a slow continuous process: small page batches can run with delays between pages or agents, allowing the project to accumulate signals incrementally.
+This supports a slow continuous process: small page/agent/model batches can run over time, allowing the project to accumulate signals incrementally.
 
 ## GitHub Actions and branch protection policy
 
-The current page-structure GitHub Actions workflow is CI-only.
+### Page-structure workflow
+
+The page-structure GitHub Actions workflow is CI-only.
 
 It should be used to block structural regressions, not to create issues.
 
@@ -967,36 +996,25 @@ After branch protection is configured, a negative-control pull request should be
 - the failing required status check blocks merging;
 - the report artifact is uploaded and inspectable.
 
-## Scheduling policy
+### Scheduled check-agent workflow
 
-Scheduled execution applies to the two LLM-based check agents:
+The scheduled check-agent workflow creates or updates GitHub issues/comments in `post` mode.
 
-```text
-page-hygiene-checker
-language-style-checker
-```
-
-Scheduled execution is not the first implementation step. It should wait until:
-
-1. agent-aware issue routing is implemented;
-2. stable comment identity and update-existing behavior are implemented;
-3. both LLM prompts are wired into agent-aware execution;
-4. duplicate issue-comment posting is controlled;
-5. lightweight model quotas are understood;
-6. generated signals are consistently structured.
-
-Once those gates are satisfied, the initial schedule should be conservative.
-
-Recommended starting point:
+Required repository secret:
 
 ```text
-one page
-one LLM check agent
-one lightweight model
-large delay between runs
+GROQ_API_KEY
 ```
 
-Later, scheduling may expand page by page.
+Required workflow permissions:
+
+```yaml
+permissions:
+  contents: read
+  issues: write
+```
+
+The workflow uploads `.tmp/phase-2` as an artifact even if the check-agent run fails.
 
 ## Manual issue-closure prompt support
 
@@ -1129,28 +1147,33 @@ That later pipeline is not part of the simplified Phase 2 scope.
 Completed:
 
 - Phase 2 methodology defines lightweight check-agent infrastructure;
-- signal terminology is used in the current runner, mock provider, issue manager, and batch runner;
+- signal terminology is used by the current runners and issue manager;
 - `page-structure-checker` exists as the deterministic Python check agent;
 - `page-structure-checker` supports an explicit `<!-- skeleton-page -->` marker for intentional skeleton pages;
-- `run_page_structure_batch.py` runs the deterministic page-structure checker across all canonical stereotype pages;
-- the repository has a clean page-structure baseline across 39 canonical stereotype pages;
+- `run_page_structure_batch.py` runs the deterministic page-structure checker across canonical stereotype pages;
 - `.github/workflows/page-structure-check.yml` runs the page-structure checker in CI;
-- the CI workflow uploads generated reports as artifacts and fails on structural signals;
-- `page-hygiene-checker-v1.0.2` exists as the first dedicated LLM check-agent prompt;
-- `language-style-checker-v1.0.2` exists as the second dedicated LLM check-agent prompt.
+- the page-structure CI workflow uploads generated reports as artifacts and fails on structural signals;
+- `page-hygiene-checker-v1.0.2` exists as a dedicated LLM check-agent prompt;
+- `language-style-checker-v1.0.2` exists as a dedicated LLM check-agent prompt;
+- `run_check_agent.py` runs the two LLM check agents through an agent-aware contract;
+- `run_check_agent.py` validates generated LLM output and writes `.invalid.md` debugging files for invalid output;
+- `run_check_batch.py` supports page × agent × model execution;
+- `run_check_batch.py` supports rotating scheduled selection;
+- `issue_manager.py` implements page-plus-agent issue routing;
+- `issue_manager.py` implements stable comment identity;
+- `issue_manager.py` updates matching existing comments instead of posting duplicates;
+- `.github/workflows/phase-2-check-agents.yml` runs scheduled hourly LLM check-agent collection;
+- scheduled runs can create or update GitHub issues/comments in `post` mode;
+- generated output paths are ignored by `.gitignore`.
 
 Pending:
 
-1. verify branch protection with a negative-control pull request;
-2. implement agent-aware issue routing;
-3. implement stable comment identity and update-existing behavior;
-4. add runner and batch support for page/check-agent/model execution;
-5. wire `page-hygiene-checker-v1.0.2` into agent-aware local execution;
-6. wire `language-style-checker-v1.0.2` into agent-aware local execution;
-7. run small local agent-aware batches before issue posting;
-8. enable issue creation/update based on check-agent results;
-9. add conservative scheduled execution for the two LLM-based agents;
-10. add the three manual issue-closure prompts.
+1. create the three manual issue-closure prompts;
+2. decide whether scheduled LLM validation failures should remain fatal or become nonfatal warnings;
+3. mark or remove legacy Phase 2 runner/config/provider artifacts;
+4. pin or document runtime dependencies for the active Groq-based execution path;
+5. verify branch protection with a negative-control pull request;
+6. document any observed clean baseline with a dated run artifact rather than an undocumented local claim.
 
 Deferred outside Phase 2:
 
@@ -1166,173 +1189,58 @@ Deferred outside Phase 2:
 - heavy semantic analysis;
 - local/offline model integration.
 
-## Recommended implementation steps
+## Recommended next implementation steps
 
-### Step 1 — Keep the current page-structure checker and CI workflow
+### Step 1 — Replace the stale Phase 2 documentation
 
-The current deterministic checker and workflow already match the simplified Phase 2 model.
+Replace the repository’s current Phase 2 documentation with this updated version.
 
-Keep:
-
-```text
-scripts/phase-2/check_agents/page_structure_checker.py
-scripts/phase-2/run_page_structure_batch.py
-.github/workflows/page-structure-check.yml
-```
-
-The workflow should continue to run after canonical stereotype page modifications and should continue to fail on structural signals.
-
-### Step 2 — Verify branch protection and blocking behavior
-
-Create a negative-control pull request that deliberately introduces a structural defect and verify that:
-
-- the page-structure workflow fails;
-- the required status check blocks merging;
-- the artifact contains the generated signal report.
-
-Commit message for the temporary test branch may be:
+Suggested commit message:
 
 ```bash
-test: trigger page-structure check failure
+docs(phase-2): align documentation with check-agent implementation
 ```
 
-The test branch should be reverted or closed after validation.
+### Step 2 — Decide scheduled failure policy
 
-### Step 3 — Implement agent-aware issue routing
+Current behavior:
 
-Change deterministic issue titles from page-only routing to page-plus-agent routing.
+- invalid LLM output fails `run_check_agent.py`;
+- the invalid report is saved as `.invalid.md`;
+- `run_check_batch.py` marks the run failed;
+- the workflow run becomes red;
+- the next hourly schedule still runs.
 
-From:
+If red scheduled runs are acceptable evidence of invalid model output, no change is needed.
 
-```text
-Phase 2 page review: classes/event
-```
+If the goal is always-green hourly collection with invalid outputs captured only as artifacts, add an explicit nonfatal check-output policy to `run_check_batch.py` and pass it from the scheduled workflow.
 
-To:
-
-```text
-Phase 2 check: page-structure-checker: classes/event
-Phase 2 check: page-hygiene-checker: classes/event
-Phase 2 check: language-style-checker: classes/event
-```
-
-Commit message:
+Suggested commit message:
 
 ```bash
-feat(phase-2): route check signals by page and agent
+ci(phase-2): keep scheduled check-agent runs nonfatal on invalid outputs
 ```
 
-### Step 4 — Add stable comment identity and update-existing behavior
+### Step 3 — Clean up legacy Phase 2 execution artifacts
 
-Modify issue posting so repeated runs update matching comments instead of always posting new comments.
-
-Stable identity:
+Clarify or remove these artifacts:
 
 ```text
-page + agent + provider + model + prompt + commit SHA
+configs/phase-2/review-batch.yml
+scripts/phase-2/run_page_review.py
+scripts/phase-2/run_review_batch.py
+scripts/phase-2/providers/mock.py
 ```
 
-Commit message:
+Suggested commit message:
 
 ```bash
-feat(phase-2): update existing check signal comments
+chore(phase-2): mark legacy review runners as deprecated
 ```
 
-### Step 5 — Wire LLM check-agent prompts into execution
+### Step 4 — Add manual issue-closure prompts
 
-The page-hygiene checker prompt exists:
-
-```text
-prompts/phase-2/page-hygiene-checker-v1.0.2.md
-```
-
-The language-style checker prompt exists:
-
-```text
-prompts/phase-2/language-style-checker-v1.0.2.md
-```
-
-Next, wire both prompts into agent-aware local execution.
-
-Commit messages:
-
-```bash
-feat(phase-2): run page hygiene checker as agent
-feat(phase-2): run language style checker as agent
-```
-
-### Step 6 — Update batch configuration
-
-Move the batch config from page/model execution to page/check-agent/model execution.
-
-Commit message:
-
-```bash
-feat(phase-2): configure agent-aware check batches
-```
-
-### Step 7 — Run small local agent-aware batches
-
-Begin with:
-
-```text
-one page
-page-structure-checker
-no posting
-```
-
-Then:
-
-```text
-one page
-page-hygiene-checker
-one lightweight model
-no posting
-```
-
-Then:
-
-```text
-one page
-language-style-checker
-one lightweight model
-no posting
-```
-
-Only then enable issue posting.
-
-### Step 8 — Enable issue creation and comment updates
-
-Once local execution is stable, enable the issue manager to create or reuse page-plus-agent issues and post or update check-agent comments.
-
-The issue manager should:
-
-- create one issue per page and agent;
-- reuse existing open issues with the same title;
-- skip zero-signal reports unless explicitly configured to post them;
-- update an existing matching comment when the stable identity already exists;
-- post a new comment when the stable identity is new.
-
-### Step 9 — Add conservative scheduled execution for LLM agents
-
-After duplicate control exists, add scheduled execution for:
-
-```text
-page-hygiene-checker
-language-style-checker
-```
-
-Initial schedule should run only a very small batch.
-
-Commit message:
-
-```bash
-ci(phase-2): schedule lightweight check-agent batch
-```
-
-### Step 10 — Add manual issue-closure prompts
-
-Add three prompt files:
+Add:
 
 ```text
 prompts/phase-2/issue-closure/close-page-structure-signal-issue.md
@@ -1340,7 +1248,7 @@ prompts/phase-2/issue-closure/close-page-hygiene-signal-issue.md
 prompts/phase-2/issue-closure/close-language-style-signal-issue.md
 ```
 
-Commit message:
+Suggested commit message:
 
 ```bash
 docs(phase-2): add manual issue-closure prompts
@@ -1356,13 +1264,13 @@ Phase 2 can be considered complete when:
 - `language-style-checker` is implemented as an LLM-based check agent and runs in conservative periodic batches;
 - issue routing is page-plus-agent based;
 - outputs use signal terminology;
-- generated comments are structured according to each agent contract and pass validation;
+- generated comments are structured according to each agent contract and pass validation before posting;
 - all model outputs for the same page and agent are routed to the same issue;
-- repeated runs update existing comments rather than creating duplicates;
+- repeated runs update existing comments when the stable identity is unchanged;
 - generated outputs remain uncommitted;
 - small batch execution works locally;
 - page-structure CI blocks structural regressions;
-- conservative scheduled LLM execution works after duplicate-comment control exists;
+- conservative scheduled LLM execution works;
 - three manual issue-closure prompts exist for human/ChatGPT-assisted issue resolution.
 
 ## Generation and review log
@@ -1371,11 +1279,12 @@ Phase 2 can be considered complete when:
 - The simplified Phase 2 target has exactly three check agents: one deterministic Python agent and two LLM-based agents.
 - The deterministic Python agent is `page-structure-checker`.
 - The two LLM-based agents are `page-hygiene-checker` and `language-style-checker`.
-- The `page-structure-checker` should run after canonical stereotype page modifications and block structural regressions in CI.
-- The two LLM-based check agents should run periodically in conservative batches.
-- Issue routing should be one GitHub issue per page and check agent.
-- Different models executed by the same agent for the same page should create comments in the same issue.
-- Manual issue closure has been added to the Phase 2 target as a new documentation-supported activity.
+- The `page-structure-checker` runs after canonical stereotype page modifications and blocks structural regressions in CI.
+- The two LLM-based check agents run periodically through the scheduled rotating workflow.
+- Issue routing is one GitHub issue per page and check agent.
+- Different models executed by the same agent for the same page create comments in the same issue.
+- Stable comment identity is implemented with page, agent, provider, model, prompt, and commit.
+- Matching existing comments are updated instead of duplicated.
+- Manual issue closure remains planned documentation-supported activity.
 - The planned issue-closure support consists of three ChatGPT prompts, one per check agent.
-- The manual issue-closure prompts are planned but not created in this document update.
 - Resolution agents, quorum decisions, patch planning, patch application, PR creation, automatic issue closure, and auto-merge are outside the simplified Phase 2 scope.
