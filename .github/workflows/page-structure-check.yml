@@ -1,0 +1,162 @@
+name: Phase 2 page-structure check
+
+on:
+  pull_request:
+    paths:
+      - ".github/workflows/page-structure-check.yml"
+      - "scripts/phase-2/check_agents/page_structure_checker.py"
+      - "docs/stereotypes/**/*.md"
+      - "!docs/stereotypes/**/index.md"
+  push:
+    branches:
+      - main
+    paths:
+      - ".github/workflows/page-structure-check.yml"
+      - "scripts/phase-2/check_agents/page_structure_checker.py"
+      - "docs/stereotypes/**/*.md"
+      - "!docs/stereotypes/**/index.md"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  page-structure-check:
+    name: Check stereotype page structure
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Identify pages to check
+        id: pages
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          work_dir=".tmp/phase-2/page-structure-checker"
+          changed_files="${work_dir}/changed-files.txt"
+          candidate_pages="${work_dir}/candidate-pages.txt"
+          pages_to_check="${work_dir}/pages-to-check.txt"
+
+          mkdir -p "$work_dir"
+
+          if [[ "${{ github.event_name }}" == "pull_request" ]]; then
+            git diff --name-only --diff-filter=ACMR \
+              "${{ github.event.pull_request.base.sha }}" \
+              "${{ github.event.pull_request.head.sha }}" > "$changed_files"
+          elif [[ "${{ github.event_name }}" == "push" ]]; then
+            before="${{ github.event.before }}"
+
+            if [[ "$before" =~ ^0+$ ]]; then
+              git ls-tree -r --name-only HEAD > "$changed_files"
+            else
+              git diff --name-only --diff-filter=ACMR \
+                "$before" \
+                "${{ github.sha }}" > "$changed_files"
+            fi
+          else
+            : > "$changed_files"
+          fi
+
+          if [[ "${{ github.event_name }}" == "workflow_dispatch" ]] \
+            || grep -qx 'scripts/phase-2/check_agents/page_structure_checker.py' "$changed_files" \
+            || grep -qx '.github/workflows/page-structure-check.yml' "$changed_files"; then
+            echo "Checking all canonical stereotype pages."
+            git ls-files \
+              "docs/stereotypes/classes/*.md" \
+              "docs/stereotypes/relations/*.md" > "$candidate_pages"
+          else
+            echo "Checking changed canonical stereotype pages only."
+            cp "$changed_files" "$candidate_pages"
+          fi
+
+          grep -E '^docs/stereotypes/(classes|relations)/[^/]+\.md$' "$candidate_pages" \
+            | grep -vE '/index\.md$' \
+            | sort -u > "$pages_to_check" || true
+
+          if [[ -s "$pages_to_check" ]]; then
+            echo "has_pages=true" >> "$GITHUB_OUTPUT"
+            echo "Pages to check:"
+            cat "$pages_to_check"
+          else
+            echo "has_pages=false" >> "$GITHUB_OUTPUT"
+            echo "No canonical stereotype pages to check."
+          fi
+
+      - name: Run page-structure-checker
+        if: steps.pages.outputs.has_pages == 'true'
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          work_dir=".tmp/phase-2/page-structure-checker"
+          pages_to_check="${work_dir}/pages-to-check.txt"
+          summary_path="${work_dir}/summary.txt"
+
+          : > "$summary_path"
+
+          checked_pages=0
+          total_signals=0
+
+          while IFS= read -r page; do
+            page_identity="${page#docs/stereotypes/}"
+            page_identity="${page_identity%.md}"
+            page_identity="${page_identity//\//-}"
+
+            output_path="${work_dir}/${page_identity}/issue-comment-page-structure-checker.md"
+            mkdir -p "$(dirname "$output_path")"
+
+            echo "::group::Checking ${page}"
+            python scripts/phase-2/check_agents/page_structure_checker.py \
+              --page "$page" \
+              --output "$output_path" \
+              --commit-sha "${{ github.sha }}" \
+              --max-signals 3
+            echo "::endgroup::"
+
+            signal_count="$(
+              awk -F'|' '/\| Signal count \|/ {
+                value = $3
+                gsub(/^[ \t]+|[ \t]+$/, "", value)
+                print value
+                exit
+              }' "$output_path"
+            )"
+
+            if [[ -z "$signal_count" || ! "$signal_count" =~ ^[0-9]+$ ]]; then
+              echo "::error file=${output_path}::Could not parse Signal count."
+              exit 1
+            fi
+
+            checked_pages=$((checked_pages + 1))
+            total_signals=$((total_signals + signal_count))
+
+            echo "- ${page}: ${signal_count} structural signal(s)" >> "$summary_path"
+          done < "$pages_to_check"
+
+          echo "Checked pages: ${checked_pages}"
+          echo "Total structural signals: ${total_signals}"
+          echo
+          cat "$summary_path"
+
+          if (( total_signals > 0 )); then
+            echo "::error::page-structure-checker reported ${total_signals} structural signal(s). See uploaded artifacts for issue-comment reports."
+            exit 1
+          fi
+
+      - name: Upload page-structure check reports
+        if: always() && steps.pages.outputs.has_pages == 'true'
+        uses: actions/upload-artifact@v4
+        with:
+          name: page-structure-check-reports
+          path: .tmp/phase-2/page-structure-checker
+          if-no-files-found: error
