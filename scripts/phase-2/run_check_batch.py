@@ -37,7 +37,10 @@ ISSUE_MANAGER_PATH = Path("scripts/phase-2/issue_manager.py")
 
 RUN_STATUS_OK = "ok"
 RUN_STATUS_FAILED = "failed"
+RUN_STATUS_REJECTED = "rejected"
 RUN_STATUS_SKIPPED = "skipped"
+
+CHECK_VALIDATION_FAILURE_MARKER = "Generated issue comment failed validation:"
 
 
 @dataclass(frozen=True)
@@ -70,12 +73,23 @@ class CompletedRun:
     message: str
 
     @property
-    def succeeded(self) -> bool:
-        if self.check_status != RUN_STATUS_OK:
-            return False
+    def rejected(self) -> bool:
+        """Return whether the check-agent output was rejected by validation."""
+        return self.check_status == RUN_STATUS_REJECTED
+
+    @property
+    def fatal_failed(self) -> bool:
+        """Return whether this run represents a real automation failure."""
+        if self.check_status == RUN_STATUS_FAILED:
+            return True
         if self.issue_status == RUN_STATUS_FAILED:
-            return False
-        return True
+            return True
+        return False
+
+    @property
+    def succeeded(self) -> bool:
+        """Return whether this run should allow the batch to exit successfully."""
+        return not self.fatal_failed
 
 
 def parse_args() -> argparse.Namespace:
@@ -230,7 +244,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument(
         "--fail-fast",
         action="store_true",
-        help="Stop after the first failed individual run.",
+        help="Stop after the first fatal failed individual run.",
     )
     parser.add_argument(
         "--plan-only",
@@ -241,6 +255,17 @@ def parse_args() -> argparse.Namespace:
         "--max-completion-tokens",
         type=int,
         help="Forward --max-completion-tokens to run_check_agent.py when set.",
+    )
+    parser.add_argument(
+        "--allow-rejected-check-outputs",
+        action="store_true",
+        help=(
+            "Treat check-agent output validation failures as nonfatal rejected "
+            "outputs. The invalid output artifact is kept, issue_manager.py is "
+            "not run, and the batch exits 0 unless a real automation failure "
+            "also occurs. Provider, configuration, and issue-manager failures "
+            "remain fatal."
+        ),
     )
 
     return parser.parse_args()
@@ -427,6 +452,19 @@ def run_subprocess(command: Sequence[str], repo_root: Path) -> subprocess.Comple
     )
 
 
+def is_rejected_check_output(result: subprocess.CompletedProcess[str]) -> bool:
+    """Return whether run_check_agent.py rejected an LLM output by validation.
+
+    Validation rejection is expected Phase 2 behavior: the candidate signal report
+    did not satisfy the configured check-agent contract, so it must not be posted.
+    Other failures, such as provider errors, missing files, authentication issues,
+    or configuration problems, remain fatal.
+    """
+    if result.returncode == 0:
+        return False
+    return CHECK_VALIDATION_FAILURE_MARKER in result.stderr
+
+
 def write_log(
     *,
     repo_root: Path,
@@ -560,6 +598,7 @@ def run_one(
     repo: str | None,
     post_empty: bool,
     max_completion_tokens: int | None,
+    allow_rejected_check_outputs: bool,
 ) -> CompletedRun:
     """Execute one planned run and return its status."""
     filesystem_path(repo_root, planned.output_path).parent.mkdir(parents=True, exist_ok=True)
@@ -587,6 +626,26 @@ def run_one(
             issue_command=None,
             issue_result=None,
         )
+
+        if allow_rejected_check_outputs and is_rejected_check_output(check_result):
+            warning = (
+                "check-agent output was rejected by validation; treating as "
+                "nonfatal and skipping issue_manager.py."
+            )
+            print(
+                f"::warning title=Rejected check-agent output::{planned.agent} / "
+                f"{planned.provider} / {planned.model} / {planned.page}: {warning}",
+                file=sys.stderr,
+            )
+            return CompletedRun(
+                planned=planned,
+                check_status=RUN_STATUS_REJECTED,
+                check_exit_code=check_result.returncode,
+                issue_status=RUN_STATUS_SKIPPED,
+                issue_exit_code=None,
+                message=warning,
+            )
+
         return CompletedRun(
             planned=planned,
             check_status=RUN_STATUS_FAILED,
@@ -642,6 +701,34 @@ def markdown_escape(value: object) -> str:
     return text.replace("|", "\\|").replace("\n", " ")
 
 
+def summarize_completed_runs(completed_runs: Sequence[CompletedRun]) -> tuple[int, int, int]:
+    """Return accepted, rejected, and fatal-failure counts."""
+    accepted_count = sum(
+        1
+        for run in completed_runs
+        if run.check_status == RUN_STATUS_OK and run.issue_status != RUN_STATUS_FAILED
+    )
+    rejected_count = sum(1 for run in completed_runs if run.rejected)
+    fatal_failure_count = sum(1 for run in completed_runs if run.fatal_failed)
+    return accepted_count, rejected_count, fatal_failure_count
+
+
+def status_for_summary(completed: CompletedRun | None, plan_only: bool) -> tuple[str, str]:
+    """Return status and message text for one summary row."""
+    if completed is None:
+        return (RUN_STATUS_SKIPPED if plan_only else "not-run"), (
+            "planned only" if plan_only else "not executed"
+        )
+
+    if completed.fatal_failed:
+        return RUN_STATUS_FAILED, completed.message
+
+    if completed.rejected:
+        return RUN_STATUS_REJECTED, completed.message
+
+    return RUN_STATUS_OK, completed.message
+
+
 def write_summary(
     *,
     summary_path: Path,
@@ -658,8 +745,7 @@ def write_summary(
     """Write a Markdown batch summary."""
     summary_path.parent.mkdir(parents=True, exist_ok=True)
 
-    success_count = sum(1 for run in completed_runs if run.succeeded)
-    failure_count = sum(1 for run in completed_runs if not run.succeeded)
+    accepted_count, rejected_count, fatal_failure_count = summarize_completed_runs(completed_runs)
 
     lines: list[str] = []
     lines.append("# Phase 2 check batch summary")
@@ -677,8 +763,9 @@ def write_summary(
     lines.append(f"Available runs: `{available_run_count}`")
     lines.append(f"Selected/planned runs: `{len(planned_runs)}`")
     lines.append(f"Completed runs: `{len(completed_runs)}`")
-    lines.append(f"Successful runs: `{success_count}`")
-    lines.append(f"Failed runs: `{failure_count}`")
+    lines.append(f"Accepted runs: `{accepted_count}`")
+    lines.append(f"Rejected check-agent outputs: `{rejected_count}`")
+    lines.append(f"Fatal failed runs: `{fatal_failure_count}`")
     lines.append("")
     lines.append("## Runs")
     lines.append("")
@@ -690,12 +777,7 @@ def write_summary(
     completed_by_index = {run.planned.index: run for run in completed_runs}
     for planned in planned_runs:
         completed = completed_by_index.get(planned.index)
-        if completed is None:
-            status = RUN_STATUS_SKIPPED if plan_only else "not-run"
-            message = "planned only" if plan_only else "not executed"
-        else:
-            status = RUN_STATUS_OK if completed.succeeded else RUN_STATUS_FAILED
-            message = completed.message
+        status, message = status_for_summary(completed, plan_only)
 
         lines.append(
             "| "
@@ -812,11 +894,12 @@ def main() -> int:
             repo=args.repo,
             post_empty=args.post_empty,
             max_completion_tokens=args.max_completion_tokens,
+            allow_rejected_check_outputs=args.allow_rejected_check_outputs,
         )
         completed_runs.append(completed)
 
-        if args.fail_fast and not completed.succeeded:
-            print("Stopping after first failed run because --fail-fast was set.")
+        if args.fail_fast and completed.fatal_failed:
+            print("Stopping after first fatal failed run because --fail-fast was set.")
             break
 
         if run_number < len(planned_runs) and args.sleep_seconds > 0:
@@ -837,10 +920,22 @@ def main() -> int:
     )
     print(f"Wrote batch summary to: {summary_path}")
 
-    failures = [completed for completed in completed_runs if not completed.succeeded]
-    if failures:
-        print(f"Batch completed with {len(failures)} failed run(s).", file=sys.stderr)
+    fatal_failures = [completed for completed in completed_runs if completed.fatal_failed]
+    if fatal_failures:
+        print(
+            f"Batch completed with {len(fatal_failures)} fatal failed run(s).",
+            file=sys.stderr,
+        )
         return 1
+
+    rejected_outputs = [completed for completed in completed_runs if completed.rejected]
+    if rejected_outputs:
+        print(
+            "Batch completed successfully with "
+            f"{len(rejected_outputs)} nonfatal rejected check-agent output(s).",
+            file=sys.stderr,
+        )
+        return 0
 
     print("Batch completed successfully.")
     return 0

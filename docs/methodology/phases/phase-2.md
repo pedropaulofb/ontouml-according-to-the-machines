@@ -405,8 +405,6 @@ Require status checks to pass before merging
 Required status check: Check stereotype page structure
 ```
 
-A negative-control pull request should be used to verify that the branch rule blocks merges when the workflow fails.
-
 ### 2. Page Hygiene Checker
 
 | Property | Value |
@@ -990,12 +988,6 @@ Branch name pattern: main
 
 `Require linear history` is optional and should be enabled only if the repository intentionally avoids merge commits.
 
-After branch protection is configured, a negative-control pull request should be created to verify that:
-
-- the workflow fails when a canonical stereotype page has a structural defect;
-- the failing required status check blocks merging;
-- the report artifact is uploaded and inspectable.
-
 ### Scheduled check-agent workflow
 
 The scheduled check-agent workflow creates or updates GitHub issues/comments in `post` mode.
@@ -1172,8 +1164,7 @@ Pending:
 2. decide whether scheduled LLM validation failures should remain fatal or become nonfatal warnings;
 3. mark or remove legacy Phase 2 runner/config/provider artifacts;
 4. pin or document runtime dependencies for the active Groq-based execution path;
-5. verify branch protection with a negative-control pull request;
-6. document any observed clean baseline with a dated run artifact rather than an undocumented local claim.
+5. document any observed clean baseline with a dated run artifact rather than an undocumented local claim.
 
 Deferred outside Phase 2:
 

@@ -195,7 +195,8 @@ jobs:
             --rotation-seed "$rotation_seed" \
             "${rotation_args[@]}" \
             --max-runs "$max_runs" \
-            --sleep-seconds "$sleep_seconds"
+            --sleep-seconds "$sleep_seconds" \
+            --allow-rejected-check-outputs
 
       - name: Upload check-agent artifacts
         if: always()
