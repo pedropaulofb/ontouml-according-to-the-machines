@@ -1,0 +1,24 @@
+name: Schedule canary
+
+"on":
+  schedule:
+    - cron: "*/5 * * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  canary:
+    name: Schedule canary
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Print schedule context
+        shell: bash
+        run: |
+          set -euo pipefail
+          date -u
+          echo "event=${GITHUB_EVENT_NAME}"
+          echo "ref=${GITHUB_REF}"
+          echo "sha=${GITHUB_SHA}"
