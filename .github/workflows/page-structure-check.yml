@@ -27,12 +27,12 @@ jobs:
 
     steps:
       - name: Check out repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           fetch-depth: 0
 
       - name: Set up Python
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v6
         with:
           python-version: "3.12"
 
@@ -155,7 +155,7 @@ jobs:
 
       - name: Upload page-structure check reports
         if: always() && steps.pages.outputs.has_pages == 'true'
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: page-structure-check-reports
           path: .tmp/phase-2/page-structure-checker
