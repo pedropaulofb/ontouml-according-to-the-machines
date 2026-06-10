@@ -2,7 +2,7 @@ name: Check-agent signal collector
 
 "on":
   schedule:
-    - cron: "17 * * * *"
+    - cron: "17,37,57 * * * *"
   workflow_dispatch:
     inputs:
       mode:
@@ -51,7 +51,7 @@ name: Check-agent signal collector
         required: true
         default: "llama-3.3-70b-versatile,openai/gpt-oss-20b"
       max_runs:
-        description: "Maximum number of selected triples to run. Use 1 for hourly rotating collection."
+        description: "Maximum number of selected triples to run. Use 1 for rotating collection."
         type: string
         required: true
         default: "1"
@@ -152,6 +152,10 @@ jobs:
           models_input="${WORKFLOW_MODELS:-llama-3.3-70b-versatile,openai/gpt-oss-20b}"
           max_runs="${WORKFLOW_MAX_RUNS:-1}"
           sleep_seconds="${WORKFLOW_SLEEP_SECONDS:-0}"
+
+          if [[ -z "$rotation_index" && "${GITHUB_EVENT_NAME:-}" == "schedule" ]]; then
+            rotation_index="$(($(date -u +%s) / 1200))"
+          fi
 
           page_args=()
           if [[ -n "$pages_input" ]]; then
