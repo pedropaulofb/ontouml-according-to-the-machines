@@ -65,10 +65,6 @@ permissions:
   contents: read
   issues: write
 
-concurrency:
-  group: phase-2-check-agent-signal-collector
-  cancel-in-progress: false
-
 jobs:
   collect-check-agent-signal:
     name: Collect rotating check-agent signal
