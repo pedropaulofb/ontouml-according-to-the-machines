@@ -2,7 +2,7 @@ name: Check-agent signal collector
 
 "on":
   schedule:
-    - cron: "17,37,57 * * * *"
+    - cron: "13,33,53 * * * *"
   workflow_dispatch:
     inputs:
       mode:
