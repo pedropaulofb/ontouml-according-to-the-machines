@@ -103,10 +103,16 @@ jobs:
         run: |
           set -euo pipefail
           python -m pip install --upgrade pip
-          if [[ -f requirements.txt ]]; then
-            python -m pip install -r requirements.txt
-          fi
-          python -m pip install groq
+          python -m pip install -r requirements.txt
+
+      - name: Show Python dependency versions
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import groq
+          print(f"groq=={groq.__version__}")
+          PY
 
       - name: Validate required secrets and tools
         shell: bash
