@@ -1,6 +1,6 @@
 name: Schedule canary
 
-"on":
+on:
   schedule:
     - cron: "*/5 * * * *"
   workflow_dispatch:
