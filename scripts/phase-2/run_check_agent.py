@@ -20,6 +20,7 @@ Posting or updating GitHub issue comments remains the responsibility of
 from __future__ import annotations
 
 import argparse
+import importlib
 import re
 import subprocess
 import sys
@@ -197,6 +198,12 @@ AGENT_CONTRACTS: dict[str, AgentContract] = {
 }
 
 
+SUPPORTED_PROVIDERS: dict[str, str] = {
+    "groq": "providers.groq",
+    "gemini": "providers.gemini",
+}
+
+
 class CheckAgentRunnerError(RuntimeError):
     """Raised when a check-agent run cannot be completed safely."""
 
@@ -220,7 +227,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument(
         "--provider",
         required=True,
-        help="LLM provider adapter to use. Supported value: groq.",
+        help="LLM provider adapter to use. Supported values: groq, gemini.",
     )
     parser.add_argument(
         "--model",
@@ -411,22 +418,32 @@ END_CANONICAL_STEREOTYPE_PAGE_MARKDOWN
 def load_provider(provider_name: str) -> Callable[..., str]:
     """Load a provider adapter by name."""
     normalized = provider_name.strip().lower()
+    module_name = SUPPORTED_PROVIDERS.get(normalized)
 
-    if normalized == "groq":
-        try:
-            from providers.groq import generate_review
-        except ImportError as exc:
-            raise CheckAgentRunnerError(
-                "Could not import Groq provider adapter. Check that "
-                "scripts/phase-2/providers/groq.py exists and that the groq "
-                "package is installed."
-            ) from exc
+    if module_name is None:
+        supported = ", ".join(sorted(SUPPORTED_PROVIDERS))
+        raise CheckAgentRunnerError(
+            f"Unsupported provider: {provider_name}. Supported providers: {supported}."
+        )
 
-        return generate_review
+    try:
+        module = importlib.import_module(module_name)
+    except ImportError as exc:
+        raise CheckAgentRunnerError(
+            "Could not import provider adapter "
+            f"{normalized!r}. Check that scripts/phase-2/providers/{normalized}.py "
+            "exists and that the provider package is installed."
+        ) from exc
 
-    raise CheckAgentRunnerError(
-        f"Unsupported provider: {provider_name}. Supported providers: groq."
-    )
+    try:
+        generate_review = getattr(module, "generate_review")
+    except AttributeError as exc:
+        raise CheckAgentRunnerError(
+            f"Provider adapter {module_name!r} does not define generate_review."
+        ) from exc
+
+    return generate_review
+
 
 
 def clean_metadata_value(value: str) -> str:
