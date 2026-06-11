@@ -20,7 +20,7 @@ run-name: Scheduled check-agent signal collector (${{ github.event_name }})
           - post
 
       provider:
-        description: "LLM provider adapter."
+        description: "LLM provider adapter used when provider_model_specs is empty."
         type: choice
         required: true
         default: groq
@@ -28,8 +28,14 @@ run-name: Scheduled check-agent signal collector (${{ github.event_name }})
           - groq
           - gemini
 
+      provider_model_specs:
+        description: "Optional comma-separated provider:model list. Overrides provider/models when set. Scheduled runs use Groq and Gemini defaults."
+        type: string
+        required: false
+        default: ""
+
       selection:
-        description: "How to select triples from the full page x agent x model plan."
+        description: "How to select triples from the full page x agent x model plan. Scheduled provider:model rotation is applied before this runner selection."
         type: choice
         required: true
         default: rotate
@@ -65,7 +71,7 @@ run-name: Scheduled check-agent signal collector (${{ github.event_name }})
         default: "page-hygiene-checker,language-style-checker"
 
       models:
-        description: "Comma-separated provider-specific models. For Gemini, use values such as gemini-2.5-flash."
+        description: "Comma-separated provider-specific models used when provider_model_specs is empty. For Gemini, use values such as gemini-2.5-flash."
         type: string
         required: true
         default: "llama-3.3-70b-versatile,openai/gpt-oss-20b"
@@ -106,6 +112,7 @@ jobs:
 
       WORKFLOW_MODE: ${{ github.event.inputs.mode }}
       WORKFLOW_PROVIDER: ${{ github.event.inputs.provider }}
+      WORKFLOW_PROVIDER_MODEL_SPECS: ${{ github.event.inputs.provider_model_specs }}
       WORKFLOW_SELECTION: ${{ github.event.inputs.selection }}
       WORKFLOW_ROTATION_SEED: ${{ github.event.inputs.rotation_seed }}
       WORKFLOW_ROTATION_INDEX: ${{ github.event.inputs.rotation_index }}
@@ -162,26 +169,63 @@ jobs:
         run: |
           set -euo pipefail
 
-          provider="${WORKFLOW_PROVIDER:-groq}"
+          trim() {
+            printf '%s' "$1" | sed 's/^[[:space:]]*//;s/[[:space:]]*$//'
+          }
 
-          case "$provider" in
-            groq)
-              if [[ -z "${GROQ_API_KEY:-}" ]]; then
-                echo "::error::Missing required repository secret: GROQ_API_KEY"
+          default_periodic_provider_model_specs="groq:llama-3.3-70b-versatile,groq:openai/gpt-oss-20b,gemini:gemini-2.5-flash"
+
+          provider="${WORKFLOW_PROVIDER:-groq}"
+          provider_model_specs="${WORKFLOW_PROVIDER_MODEL_SPECS:-}"
+
+          if [[ -z "$provider_model_specs" && "${GITHUB_EVENT_NAME:-}" == "schedule" ]]; then
+            provider_model_specs="$default_periodic_provider_model_specs"
+          fi
+
+          uses_groq=false
+          uses_gemini=false
+
+          if [[ -n "$provider_model_specs" ]]; then
+            IFS=',' read -ra specs <<< "$provider_model_specs"
+            for spec in "${specs[@]}"; do
+              spec="$(trim "$spec")"
+              if [[ -z "$spec" ]]; then
+                continue
+              fi
+              if [[ "$spec" != *:* ]]; then
+                echo "::error::Invalid provider:model spec: ${spec}"
                 exit 1
               fi
-              ;;
-            gemini)
-              if [[ -z "${GEMINI_API_KEY:-}" ]]; then
-                echo "::error::Missing required repository secret: GEMINI_API_KEY"
+              spec_provider="$(trim "${spec%%:*}")"
+              case "$spec_provider" in
+                groq) uses_groq=true ;;
+                gemini) uses_gemini=true ;;
+                *)
+                  echo "::error::Unsupported provider in provider_model_specs: ${spec_provider}"
+                  exit 1
+                  ;;
+              esac
+            done
+          else
+            case "$provider" in
+              groq) uses_groq=true ;;
+              gemini) uses_gemini=true ;;
+              *)
+                echo "::error::Unsupported provider: ${provider}"
                 exit 1
-              fi
-              ;;
-            *)
-              echo "::error::Unsupported provider: ${provider}"
-              exit 1
-              ;;
-          esac
+                ;;
+            esac
+          fi
+
+          if [[ "$uses_groq" == "true" && -z "${GROQ_API_KEY:-}" ]]; then
+            echo "::error::Missing required repository secret: GROQ_API_KEY"
+            exit 1
+          fi
+
+          if [[ "$uses_gemini" == "true" && -z "${GEMINI_API_KEY:-}" ]]; then
+            echo "::error::Missing required repository secret: GEMINI_API_KEY"
+            exit 1
+          fi
 
           gh --version
           gh auth status
@@ -208,9 +252,11 @@ jobs:
           }
 
           default_groq_models="llama-3.3-70b-versatile,openai/gpt-oss-20b"
+          default_periodic_provider_model_specs="groq:llama-3.3-70b-versatile,groq:openai/gpt-oss-20b,gemini:gemini-2.5-flash"
 
           mode="${WORKFLOW_MODE:-post}"
           provider="${WORKFLOW_PROVIDER:-groq}"
+          provider_model_specs="${WORKFLOW_PROVIDER_MODEL_SPECS:-}"
           selection="${WORKFLOW_SELECTION:-rotate}"
           rotation_seed="${WORKFLOW_ROTATION_SEED:-hourly}"
           rotation_index="${WORKFLOW_ROTATION_INDEX:-}"
@@ -221,17 +267,58 @@ jobs:
           sleep_seconds="${WORKFLOW_SLEEP_SECONDS:-0}"
           max_completion_tokens="${WORKFLOW_MAX_COMPLETION_TOKENS:-}"
 
-          if [[ "$provider" == "gemini" && "$models_input" == "$default_groq_models" ]]; then
+          if [[ -z "$rotation_index" && "${GITHUB_EVENT_NAME:-}" == "schedule" ]]; then
+            rotation_index="$(($(date -u +%s) / 1200))"
+          fi
+
+          if [[ -z "$provider_model_specs" && "${GITHUB_EVENT_NAME:-}" == "schedule" ]]; then
+            provider_model_specs="$default_periodic_provider_model_specs"
+          fi
+
+          if [[ -n "$provider_model_specs" ]]; then
+            provider_model_specs_normalized="${provider_model_specs//$'\n'/,}"
+            IFS=',' read -ra provider_model_specs_array <<< "$provider_model_specs_normalized"
+
+            normalized_specs=()
+            for spec in "${provider_model_specs_array[@]}"; do
+              spec="$(trim "$spec")"
+              if [[ -n "$spec" ]]; then
+                normalized_specs+=("$spec")
+              fi
+            done
+
+            if [[ "${#normalized_specs[@]}" -eq 0 ]]; then
+              echo "::error::provider_model_specs was provided but no usable provider:model spec was found."
+              exit 1
+            fi
+
+            provider_model_index=0
+            runner_rotation_index="$rotation_index"
+
+            if [[ "$selection" == "rotate" && -n "$rotation_index" ]]; then
+              provider_model_index="$((rotation_index % ${#normalized_specs[@]}))"
+              runner_rotation_index="$((rotation_index / ${#normalized_specs[@]}))"
+            fi
+
+            selected_provider_model_spec="${normalized_specs[$provider_model_index]}"
+            if [[ "$selected_provider_model_spec" != *:* ]]; then
+              echo "::error::Invalid provider:model spec: ${selected_provider_model_spec}"
+              exit 1
+            fi
+
+            provider="$(trim "${selected_provider_model_spec%%:*}")"
+            models_input="$(trim "${selected_provider_model_spec#*:}")"
+            rotation_index="$runner_rotation_index"
+
+            echo "Provider/model rotation specs: ${normalized_specs[*]}"
+            echo "Selected provider/model spec: ${selected_provider_model_spec}"
+          elif [[ "$provider" == "gemini" && "$models_input" == "$default_groq_models" ]]; then
             echo "Provider is gemini and Groq default models were supplied; using gemini-2.5-flash."
             models_input="gemini-2.5-flash"
           fi
 
           if [[ -z "$max_completion_tokens" && "$provider" == "gemini" ]]; then
             max_completion_tokens="8000"
-          fi
-
-          if [[ -z "$rotation_index" && "${GITHUB_EVENT_NAME:-}" == "schedule" ]]; then
-            rotation_index="$(($(date -u +%s) / 1200))"
           fi
 
           page_args=()
@@ -280,6 +367,7 @@ jobs:
 
           echo "Mode: ${mode}"
           echo "Provider: ${provider}"
+          echo "Models: ${models_input}"
           echo "Selection: ${selection}"
           echo "Rotation seed: ${rotation_seed}"
           echo "Rotation index: ${rotation_index:-n/a}"
