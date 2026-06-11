@@ -309,7 +309,7 @@ If one or more signals are identified, output each signal using the required str
 - Category: `{one allowed category}`
 - Severity: `{one allowed severity}`
 - Confidence: `{one allowed confidence}`
-- Location: Section: "{nearest heading, or Document root if no heading applies}"; Fragment: "{exact affected fragment from the same location, maximum 160 characters}"
+- Location: Section: "{nearest heading, or Document root if no heading applies}"; Fragment: "{exact affected fragment from the same location, maximum 140 characters}"
 - Observation: {single-line observation}
 - Rationale: {single-line rationale}
 - Recommendation: {single-line recommendation}
@@ -365,11 +365,11 @@ Do not copy Markdown table syntax into signal field values. If a raw pipe charac
 
 Do not output category, severity, or confidence lists inside a signal. Select exactly one value.
 
-Do not copy schema values such as `{one allowed category}`, `{single-line observation}`, or `{exact affected fragment from the same location, maximum 160 characters}`.
+Do not copy schema values such as `{one allowed category}`, `{single-line observation}`, or `{exact affected fragment from the same location, maximum 140 characters}`.
 
 Do not output unresolved template braces. Braces may appear only when they are exact copied page content inside `current_text`, `proposed_text`, or `Fragment`.
 
-Do not output fragments longer than 160 characters.
+Do not output fragments longer than 140 characters.
 
 Signal count must equal the number of `#### S-xxx` signal headings.
 
