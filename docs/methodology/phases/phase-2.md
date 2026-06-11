@@ -6,7 +6,13 @@ Its purpose is to provide lightweight deterministic and API-based review infrast
 
 Phase 2 produces page-local **signals**, routes those signals to deterministic GitHub issues, and leaves signal acceptance, rejection, and closure decisions to later manual review.
 
-This document reflects the repository state on **2026-06-09**.
+This document reflects the repository state on **2026-06-11**.
+
+## Documentation structure
+
+This document is the canonical Phase 2 methodology page.
+
+Gemini provider support is documented inline here. A separate `phase-2-gemini-provider.md` file is not required unless a later documentation split is intentionally added to the MkDocs navigation.
 
 ## Purpose
 
@@ -103,7 +109,7 @@ The implemented issue-routing model is:
 one GitHub issue per page + check agent
 ```
 
-Different models executed by the same agent for the same page post comments in the same issue.
+Different providers and models executed by the same agent for the same page post comments in the same issue.
 
 Actual issue title pattern:
 
@@ -120,7 +126,7 @@ Check signal: language-style-checker: classes/event
 Check signal: page-structure-checker: relations/material
 ```
 
-If `page-hygiene-checker` runs with multiple LLM models on `classes/event`, all those model outputs belong in:
+If `page-hygiene-checker` runs with multiple provider/model combinations on `classes/event`, all those outputs belong in:
 
 ```text
 Check signal: page-hygiene-checker: classes/event
@@ -128,13 +134,14 @@ Check signal: page-hygiene-checker: classes/event
 
 ## Current implementation status
 
-The current implementation includes the core runtime pieces of the simplified Phase 2 architecture: check execution, output validation, page-plus-agent issue routing, duplicate-control for comments, and scheduled LLM collection. Manual issue-closure prompt support remains planned.
+The current implementation includes the core runtime pieces of the simplified Phase 2 architecture: check execution, output validation, page-plus-agent issue routing, duplicate-control for comments, scheduled LLM collection, and Groq/Gemini provider support. Manual issue-closure prompt support remains planned.
 
 ### Implemented files and artifacts
 
 ```text
 .github/workflows/page-structure-check.yml
-.github/workflows/phase-2-check-agents.yml
+.github/workflows/check-agent-signal-collector.yml
+requirements.txt
 prompts/phase-2/page-hygiene-checker-v1.0.2.md
 prompts/phase-2/language-style-checker-v1.0.2.md
 scripts/phase-2/run_check_agent.py
@@ -144,26 +151,29 @@ scripts/phase-2/run_page_structure_batch.py
 scripts/phase-2/check_agents/page_structure_checker.py
 scripts/phase-2/providers/__init__.py
 scripts/phase-2/providers/groq.py
+scripts/phase-2/providers/gemini.py
 ```
 
-Legacy compatibility or stale artifacts still exist:
+Non-canonical or legacy-support artifacts may also exist:
 
 ```text
-configs/phase-2/review-batch.yml
-scripts/phase-2/run_page_review.py
-scripts/phase-2/run_review_batch.py
+.github/workflows/phase-2-check-agents.yml.bak
 scripts/phase-2/providers/mock.py
 ```
 
-These legacy artifacts are not the current scheduled Phase 2 LLM execution path. They should either be clearly marked as legacy or removed in a later cleanup.
-
-A legacy prompt path is referenced by legacy code:
+These are not the canonical scheduled Phase 2 LLM execution path. The canonical shared LLM workflow is:
 
 ```text
-prompts/phase-2/prompt-phase-2-page-reviewer-v1.0.3.md
+.github/workflows/check-agent-signal-collector.yml
 ```
 
-That legacy general page-reviewer prompt is not part of the simplified three-agent Phase 2 architecture.
+A machine-local dispatcher may exist outside the committed repository, for example:
+
+```text
+scripts/local/dispatch-check-agent-signal.ps1
+```
+
+This is optional local operational tooling only. It is not canonical repository infrastructure unless intentionally committed and documented as reusable tooling.
 
 ### Current capabilities
 
@@ -173,13 +183,14 @@ The current implementation can:
 - run one LLM check-agent invocation through `run_check_agent.py`;
 - route `page-hygiene-checker` to `prompts/phase-2/page-hygiene-checker-v1.0.2.md`;
 - route `language-style-checker` to `prompts/phase-2/language-style-checker-v1.0.2.md`;
-- call Groq models through the Groq provider adapter;
+- call Groq models through `scripts/phase-2/providers/groq.py`;
+- call Gemini models through `scripts/phase-2/providers/gemini.py`;
 - validate generated LLM signal comments against agent-specific contracts;
 - write valid generated comments to `.tmp/phase-2/`;
 - write invalid generated comments to `.invalid.md` files for debugging;
-- run page × agent × model batches through `run_check_batch.py`;
-- select rotating scheduled triples with hourly or daily rotation seeds;
-- run one selected triple per scheduled interval with `--selection rotate --max-runs 1`;
+- run page × agent × provider × model collection through the scheduled workflow;
+- run page × agent × model batches for one selected provider through `run_check_batch.py`;
+- select rotating scheduled combinations over time;
 - run in `generate`, `dry-run`, or `post` mode;
 - write per-run logs and a batch summary under `.tmp/phase-2/`;
 - derive deterministic page-plus-agent issue titles;
@@ -187,39 +198,67 @@ The current implementation can:
 - add stable identity markers to issue comments;
 - update an existing matching issue comment instead of posting a duplicate;
 - skip issue creation for zero-signal reports unless explicitly configured with `--post-empty`;
+- treat rejected LLM outputs as nonfatal when `--allow-rejected-check-outputs` is used;
 - run deterministic page-structure checks in GitHub Actions on changed canonical stereotype pages;
-- run scheduled LLM check-agent collection hourly through GitHub Actions;
+- run scheduled LLM check-agent collection through GitHub Actions;
 - upload generated outputs as GitHub Actions artifacts.
 
-These capabilities do not mean every scheduled LLM output is valid. Invalid model outputs are preserved as artifacts and currently make the selected batch run fail.
+These capabilities do not mean every scheduled LLM output is valid. Invalid model outputs are preserved as artifacts. In the canonical scheduled workflow, rejected check-agent outputs are nonfatal because the workflow passes:
+
+```text
+--allow-rejected-check-outputs
+```
+
+Provider failures, configuration failures, and issue-manager failures remain fatal unless provider retry logic succeeds.
 
 ### Current limitations and operational risks
 
 The current implementation still has these limitations:
 
 - manual issue-closure prompts are planned but not yet created;
-- legacy runner/config files still exist and may confuse future maintenance;
-- `run_check_agent.py` currently supports only the Groq provider in the active agent-aware path;
-- `providers/mock.py` is stale relative to the active `run_check_agent.py` contracts;
-- `requirements.txt` does not pin or include the Groq runtime dependency used by the scheduled workflow;
-- `run_check_batch.py` currently fails the batch when the selected LLM output fails validation;
-- the scheduled workflow therefore turns red when the selected model output is invalid, although the next scheduled hour still runs;
+- `providers/mock.py` is not part of the active `run_check_agent.py` provider set;
 - `issue_manager.py` searches only open issues, so closed issues with matching titles are not reused;
-- stable comment identity includes the commit SHA, so a new commit may produce a new model comment for the same page, agent, provider, model, and prompt.
+- stable comment identity includes the commit SHA, so a new commit may produce a new model comment for the same page, agent, provider, model, and prompt;
+- Gemini transient-error detection is marker-based and may need extension if the SDK surfaces `500`, `502`, or `504` without one of the currently recognized markers;
+- scheduled runs intentionally collect signals gradually rather than executing the full matrix in one workflow execution.
 
 ## Operational prerequisites
 
 The current local implementation depends on:
 
 - Python 3;
-- `groq` for Groq API calls when using the active LLM provider;
-- a `GROQ_API_KEY` environment variable for real Groq runs;
+- dependencies from `requirements.txt`;
+- a provider API key for real LLM runs;
 - GitHub CLI authentication through `gh auth login` for local issue posting;
 - `GH_TOKEN` or the default `github.token` for issue posting in GitHub Actions.
 
-The Groq API key must never be committed.
+Current Python runtime dependencies include:
 
-The current page-structure GitHub Actions workflow depends only on:
+```text
+mkdocs-material==9.7.6
+groq==1.4.0
+google-genai>=1.0.0,<2.0.0
+```
+
+The operational provider secrets are:
+
+```text
+GROQ_API_KEY
+GEMINI_API_KEY
+```
+
+The provider adapters use:
+
+| Provider | Local/API environment variable behavior | GitHub Actions repository secret |
+|---|---|---|
+| `groq` | requires `GROQ_API_KEY` | `GROQ_API_KEY` |
+| `gemini` | reads `GEMINI_API_KEY` or `GOOGLE_API_KEY` | `GEMINI_API_KEY` |
+
+`GOOGLE_API_KEY` is only a provider-code fallback for local or alternate environments. It is not the canonical workflow secret.
+
+API key values must never be committed or documented.
+
+The page-structure GitHub Actions workflow depends only on:
 
 - repository checkout;
 - Python;
@@ -230,8 +269,9 @@ The scheduled LLM GitHub Actions workflow depends on:
 
 - repository checkout;
 - Python;
-- `groq`;
-- `GROQ_API_KEY`;
+- dependencies from `requirements.txt`;
+- `GROQ_API_KEY` when Groq is selected;
+- `GEMINI_API_KEY` when Gemini is selected;
 - `GH_TOKEN`;
 - `contents: read`;
 - `issues: write`.
@@ -380,6 +420,18 @@ The page-structure CI workflow is:
 .github/workflows/page-structure-check.yml
 ```
 
+Workflow display name:
+
+```text
+Phase 2 page-structure check
+```
+
+Job name:
+
+```text
+Check stereotype page structure
+```
+
 It runs on:
 
 - pull requests that modify canonical stereotype pages, the checker script, or the workflow file;
@@ -417,7 +469,7 @@ Required status check: Check stereotype page structure
 | Runner | `scripts/phase-2/run_check_agent.py` |
 | Batch runner | `scripts/phase-2/run_check_batch.py` |
 | Prompt | `prompts/phase-2/page-hygiene-checker-v1.0.2.md` |
-| Supported active provider | `groq` |
+| Supported active providers | `groq`, `gemini` |
 | Output | Structured Markdown signal comment |
 | Applies changes | No |
 | Target execution | Periodic conservative rotating batches |
@@ -470,7 +522,7 @@ The active `page-hygiene-checker-v1.0.2` prompt is Markdown-only. It emits one G
 | Runner | `scripts/phase-2/run_check_agent.py` |
 | Batch runner | `scripts/phase-2/run_check_batch.py` |
 | Prompt | `prompts/phase-2/language-style-checker-v1.0.2.md` |
-| Supported active provider | `groq` |
+| Supported active providers | `groq`, `gemini` |
 | Output | Structured Markdown signal comment |
 | Applies changes | No |
 | Target execution | Periodic conservative rotating batches |
@@ -528,11 +580,13 @@ The checker must protect:
 
 It reports at most three signals. `Signal count` must exactly equal the number of emitted `#### S-...` signal sections. Signal IDs must be sequential and limited to `S-001`, `S-002`, and `S-003`.
 
-Its location format is:
+Its validator location format is:
 
 ```text
 Location: Section: "<nearest heading, or Document root if no heading applies>"; Fragment: "<exact affected fragment from the same location, maximum 160 characters>"
 ```
+
+The current prompts ask models to keep `Location` fragments below 140 characters. The validator hard limit remains 160 characters.
 
 It may include `current_text` and `proposed_text` only when the replacement is exact, contiguous, local, low-risk, meaning-preserving, and does not cross sentence, paragraph, heading, table-cell, or list-item boundaries.
 
@@ -543,6 +597,124 @@ It must not include `current_text` or `proposed_text` for issues inside protecte
 The active `language-style-checker-v1.0.2` prompt is Markdown-only. It emits one GitHub issue comment and does not emit YAML, JSON, or a separate machine-readable artifact.
 
 `run_check_agent.py` validates the output against the configured language-style contract. Invalid model output is written as `.invalid.md` and is not posted.
+
+## LLM provider support
+
+The active provider set in `run_check_agent.py` is:
+
+```text
+groq
+gemini
+```
+
+| Provider | Adapter | API key |
+|---|---|---|
+| `groq` | `scripts/phase-2/providers/groq.py` | `GROQ_API_KEY` |
+| `gemini` | `scripts/phase-2/providers/gemini.py` | `GEMINI_API_KEY` in GitHub Actions; `GEMINI_API_KEY` or `GOOGLE_API_KEY` locally |
+
+### Groq provider
+
+Groq was the original provider for Phase 2 LLM check-agent generation.
+
+The Groq adapter calls the Groq chat-completions API and uses:
+
+```text
+GROQ_API_KEY
+```
+
+The direct batch-runner defaults remain Groq-oriented:
+
+```text
+provider: groq
+models: llama-3.3-70b-versatile,openai/gpt-oss-20b
+```
+
+### Gemini provider
+
+The Gemini adapter is:
+
+```text
+scripts/phase-2/providers/gemini.py
+```
+
+It uses the Google GenAI SDK:
+
+```python
+from google import genai
+from google.genai import types
+```
+
+It calls Gemini through:
+
+```python
+client.models.generate_content(...)
+```
+
+Recommended Gemini model:
+
+```text
+gemini-2.5-flash
+```
+
+Gemini runs should use:
+
+```text
+--max-completion-tokens 8000
+```
+
+The scheduled workflow sets this automatically when the selected provider is `gemini` and no manual completion-token value is supplied.
+
+The Gemini adapter includes reduced-thinking configuration for strict-format output reliability:
+
+| Model family | Thinking configuration |
+|---|---|
+| `gemini-2.5-flash*` | `types.ThinkingConfig(thinking_budget=0)` |
+| `gemini-3.*` | `types.ThinkingConfig(thinking_level="low")` |
+
+This setting improves strict-format check-agent output reliability but does not replace validation.
+
+Do not recommend unconfirmed model names such as:
+
+```text
+gemini-3.5-flash-lite
+```
+
+Reported Gemini 3.x attempts showed provider availability instability, including `503 UNAVAILABLE`. For current Phase 2 automation, `gemini-2.5-flash` remains the recommended default.
+
+### Gemini retry behavior
+
+The Gemini provider includes provider-level retry handling for transient provider/API failures.
+
+The configured retry delays are:
+
+```text
+5 seconds
+15 seconds
+45 seconds
+```
+
+The operational retry intent is to cover transient provider/API failures such as:
+
+```text
+429
+500
+502
+503
+504
+```
+
+Current implementation detail: transient detection is marker-based and explicitly recognizes diagnostics containing:
+
+```text
+429
+503
+RESOURCE_EXHAUSTED
+UNAVAILABLE
+```
+
+This covers the observed `503 UNAVAILABLE` capacity failures. If the SDK surfaces `500`, `502`, or `504` without one of the configured transient markers, the provider marker list should be extended.
+
+Validation failures are not retried. A structurally invalid model output is treated as a rejected check-agent output, not as a transient provider failure.
 
 ## Explicitly excluded Phase 2 checks
 
@@ -657,6 +829,20 @@ Required signal section:
 - Recommendation: <single-line recommendation>
 ```
 
+For LLM-based check agents, the prompt target for `Location` fragments is stricter:
+
+```text
+maximum 140 characters
+```
+
+The validator hard acceptance limit remains:
+
+```text
+maximum 160 characters
+```
+
+The lower prompt target gives the model a safety margin while preserving the existing validator invariant.
+
 Agent-specific contracts may allow optional exact replacement fields:
 
 ```markdown
@@ -671,6 +857,53 @@ For no-signal runs, the prompt still requires a full comment with `Signal count`
 ```markdown
 None identified within the configured check-agent scope.
 ```
+
+## Validation and rejection policy
+
+`run_check_agent.py` validates every generated LLM issue comment before accepting it as a candidate output.
+
+Validation checks include:
+
+- report title;
+- required sections;
+- metadata values;
+- prompt ID;
+- provider and model identity;
+- signal count;
+- allowed categories;
+- severity and confidence values;
+- signal ID sequence;
+- required field order;
+- `Location` format;
+- hard 160-character `Location` fragment limit;
+- no unresolved template placeholders;
+- no copied explanatory prompt text;
+- no forbidden task checkboxes;
+- no out-of-scope source-validation claims;
+- no recommendations to mutate repository or issue state.
+
+If validation fails, `run_check_agent.py` writes an invalid artifact and exits nonzero.
+
+The invalid artifact path uses `.invalid.md`, for example:
+
+```text
+.tmp/phase-2/<agent>/<page-id>/issue-comment-<provider>-<model>.invalid.md
+```
+
+`run_check_batch.py` can treat validation failures as nonfatal when this flag is used:
+
+```text
+--allow-rejected-check-outputs
+```
+
+When this flag is active:
+
+- rejected outputs are kept as artifacts;
+- rejected outputs are not sent to `issue_manager.py`;
+- rejected outputs are not posted as issue comments;
+- the batch can still exit successfully if no fatal automation failure occurs.
+
+Provider failures, configuration failures, and issue-manager failures remain fatal unless handled by provider retry logic.
 
 ## Structured signal data
 
@@ -715,9 +948,9 @@ docs/stereotypes/classes/event.md -> classes/event
 docs/stereotypes/relations/material.md -> relations/material
 ```
 
-All model outputs for the same page and same check agent are posted to the same open issue.
+All provider/model outputs for the same page and same check agent are posted to the same open issue.
 
-For example, if `page-hygiene-checker` runs with two models on `docs/stereotypes/classes/event.md`, both model reports are comments under:
+For example, if `page-hygiene-checker` runs with Groq and Gemini on `docs/stereotypes/classes/event.md`, both model reports are comments under:
 
 ```text
 Check signal: page-hygiene-checker: classes/event
@@ -795,11 +1028,13 @@ The active LLM batch runner is:
 scripts/phase-2/run_check_batch.py
 ```
 
-It iterates over:
+A direct `run_check_batch.py` invocation iterates over:
 
 ```text
 pages × check agents × models
 ```
+
+for one selected provider.
 
 Default active LLM agents:
 
@@ -837,7 +1072,7 @@ Main modes:
 
 Important: `dry-run` still calls the LLM provider and still validates the generated report. It only dry-runs the issue-manager operation.
 
-Common examples:
+Common Groq example:
 
 ```bash
 python scripts/phase-2/run_check_batch.py \
@@ -847,6 +1082,30 @@ python scripts/phase-2/run_check_batch.py \
   --model llama-3.3-70b-versatile \
   --mode generate
 ```
+
+Common Gemini example:
+
+```bash
+export GEMINI_API_KEY="..."
+
+python scripts/phase-2/run_check_batch.py \
+  --page docs/stereotypes/classes/event.md \
+  --agent page-hygiene-checker \
+  --provider gemini \
+  --model gemini-2.5-flash \
+  --mode generate \
+  --max-runs 1 \
+  --max-completion-tokens 8000 \
+  --allow-rejected-check-outputs
+```
+
+On Windows PowerShell:
+
+```powershell
+$env:GEMINI_API_KEY = "..."
+```
+
+Rotating local example:
 
 ```bash
 python scripts/phase-2/run_check_batch.py \
@@ -858,20 +1117,8 @@ python scripts/phase-2/run_check_batch.py \
   --rotation-seed hourly \
   --max-runs 1 \
   --mode dry-run \
-  --repo pedropaulofb/ontouml-according-to-the-machines
-```
-
-```bash
-python scripts/phase-2/run_check_batch.py \
-  --pages-glob "docs/stereotypes/classes/*.md" \
-  --pages-glob "docs/stereotypes/relations/*.md" \
-  --exclude-pages-glob "docs/stereotypes/**/index.md" \
-  --provider groq \
-  --selection rotate \
-  --rotation-seed hourly \
-  --max-runs 1 \
-  --mode post \
-  --repo pedropaulofb/ontouml-according-to-the-machines
+  --repo pedropaulofb/ontouml-according-to-the-machines \
+  --allow-rejected-check-outputs
 ```
 
 ## Execution policy
@@ -898,27 +1145,47 @@ page-hygiene-checker
 language-style-checker
 ```
 
-The current scheduled workflow is:
+The canonical scheduled workflow is:
 
 ```text
-.github/workflows/phase-2-check-agents.yml
+.github/workflows/check-agent-signal-collector.yml
 ```
 
 Workflow display name:
 
 ```text
-Check-agent signal collector
+Scheduled check-agent signal collector
 ```
 
-It runs:
+It runs on this schedule:
 
 ```text
-17 * * * *
+13,33,53 * * * *
 ```
 
-That means it is scheduled once per hour at minute 17 UTC.
+That means it is scheduled every 20 minutes, at minutes 13, 33, and 53 UTC.
 
 The workflow is also manually triggerable through `workflow_dispatch`.
+
+Manual dispatch supports:
+
+- `generate`, `dry-run`, or `post` mode;
+- `groq` or `gemini` provider selection;
+- comma-separated `models`;
+- comma- or newline-separated `provider_model_specs`;
+- comma- or newline-separated page lists;
+- explicit `rotation_index`;
+- explicit `max_completion_tokens`.
+
+When `provider_model_specs` is supplied, it overrides the `provider` and `models` inputs.
+
+Scheduled provider/model rotation:
+
+```text
+groq:llama-3.3-70b-versatile
+groq:openai/gpt-oss-20b
+gemini:gemini-2.5-flash
+```
 
 Effective scheduled defaults:
 
@@ -929,19 +1196,21 @@ rotation_seed: hourly
 max_runs: 1
 sleep_seconds: 0
 agents: page-hygiene-checker,language-style-checker
-models: llama-3.3-70b-versatile,openai/gpt-oss-20b
+provider/model rotation: groq:llama-3.3-70b-versatile, groq:openai/gpt-oss-20b, gemini:gemini-2.5-flash
 pages: all canonical class and relation stereotype pages, excluding index.md
 ```
 
-The scheduled run therefore selects one `(page, agent, model)` triple per hour from the full plan and advances through the rotating plan over time.
+The workflow first rotates over provider/model specs, then delegates page/agent/model selection to `run_check_batch.py` with rotating selection.
+
+The scheduled run therefore gradually rotates over page, agent, provider, and model combinations. It does not run the full matrix in one execution.
 
 If a selected LLM output fails validation:
 
 - the generated invalid output is saved as `.invalid.md`;
 - `issue_manager.py` is not called for that output;
 - artifacts are still uploaded;
-- the workflow run is marked failed under the current batch runner behavior;
-- the next scheduled hour still runs and selects according to the current hourly rotation index.
+- the workflow remains nonfatal for that rejection because it passes `--allow-rejected-check-outputs`;
+- provider, configuration, and issue-manager failures remain fatal unless handled by retry logic.
 
 ## Free-model and slow-automation strategy
 
@@ -951,14 +1220,14 @@ The intended strategy is:
 
 - keep prompts compact;
 - cap outputs to a small number of signals;
-- run one selected triple per scheduled interval;
+- run one selected combination per scheduled interval;
 - use lightweight models;
 - use deterministic Python whenever possible;
 - spread execution over time;
 - avoid heavyweight models in Phase 2;
 - rely on gradual accumulation rather than large one-shot reviews.
 
-This supports a slow continuous process: small page/agent/model batches can run over time, allowing the project to accumulate signals incrementally.
+This supports a slow continuous process: small page/agent/provider/model batches can run over time, allowing the project to accumulate signals incrementally.
 
 ## GitHub Actions and branch protection policy
 
@@ -992,10 +1261,11 @@ Branch name pattern: main
 
 The scheduled check-agent workflow creates or updates GitHub issues/comments in `post` mode.
 
-Required repository secret:
+Required repository secrets:
 
 ```text
 GROQ_API_KEY
+GEMINI_API_KEY
 ```
 
 Required workflow permissions:
@@ -1006,7 +1276,18 @@ permissions:
   issues: write
 ```
 
-The workflow uploads `.tmp/phase-2` as an artifact even if the check-agent run fails.
+The workflow uploads `.tmp/phase-2` as an artifact even if the check-agent run fails or produces rejected outputs.
+
+## Operational observations
+
+Reported recent Phase 2 Gemini testing showed:
+
+- successful GitHub Actions execution for `gemini-2.5-flash`;
+- valid generated issue-comment structure after adding reduced-thinking configuration and increasing Gemini completion tokens;
+- transient Gemini provider failures with `503 UNAVAILABLE`;
+- validation rejections caused by overly long `Location` fragments before the prompt target was tightened from 160 characters to 140 characters.
+
+These are operational observations, not guaranteed future behavior.
 
 ## Manual issue-closure prompt support
 
@@ -1148,23 +1429,27 @@ Completed:
 - `page-hygiene-checker-v1.0.2` exists as a dedicated LLM check-agent prompt;
 - `language-style-checker-v1.0.2` exists as a dedicated LLM check-agent prompt;
 - `run_check_agent.py` runs the two LLM check agents through an agent-aware contract;
+- `run_check_agent.py` supports Groq and Gemini provider adapters;
 - `run_check_agent.py` validates generated LLM output and writes `.invalid.md` debugging files for invalid output;
-- `run_check_batch.py` supports page × agent × model execution;
+- `run_check_batch.py` supports page × agent × model execution for one selected provider;
 - `run_check_batch.py` supports rotating scheduled selection;
+- `run_check_batch.py` can keep validation rejections nonfatal when `--allow-rejected-check-outputs` is used;
 - `issue_manager.py` implements page-plus-agent issue routing;
 - `issue_manager.py` implements stable comment identity;
 - `issue_manager.py` updates matching existing comments instead of posting duplicates;
-- `.github/workflows/phase-2-check-agents.yml` runs scheduled hourly LLM check-agent collection;
+- `.github/workflows/check-agent-signal-collector.yml` runs scheduled rotating LLM check-agent collection;
 - scheduled runs can create or update GitHub issues/comments in `post` mode;
+- scheduled provider/model rotation includes Groq and Gemini;
+- Gemini uses `gemini-2.5-flash` as the recommended scheduled default;
+- Gemini runs use `max_completion_tokens=8000` in the canonical workflow when no manual override is supplied;
 - generated output paths are ignored by `.gitignore`.
 
 Pending:
 
 1. create the three manual issue-closure prompts;
-2. decide whether scheduled LLM validation failures should remain fatal or become nonfatal warnings;
-3. mark or remove legacy Phase 2 runner/config/provider artifacts;
-4. pin or document runtime dependencies for the active Groq-based execution path;
-5. document any observed clean baseline with a dated run artifact rather than an undocumented local claim.
+2. decide whether to keep or remove non-canonical support artifacts such as `providers/mock.py` and `.github/workflows/phase-2-check-agents.yml.bak`;
+3. document any observed clean baseline with a dated run artifact rather than an undocumented local claim;
+4. extend Gemini transient-error markers if observed SDK diagnostics for `500`, `502`, or `504` are not caught by the current marker list.
 
 Deferred outside Phase 2:
 
@@ -1192,44 +1477,7 @@ Suggested commit message:
 docs(phase-2): align documentation with check-agent implementation
 ```
 
-### Step 2 — Decide scheduled failure policy
-
-Current behavior:
-
-- invalid LLM output fails `run_check_agent.py`;
-- the invalid report is saved as `.invalid.md`;
-- `run_check_batch.py` marks the run failed;
-- the workflow run becomes red;
-- the next hourly schedule still runs.
-
-If red scheduled runs are acceptable evidence of invalid model output, no change is needed.
-
-If the goal is always-green hourly collection with invalid outputs captured only as artifacts, add an explicit nonfatal check-output policy to `run_check_batch.py` and pass it from the scheduled workflow.
-
-Suggested commit message:
-
-```bash
-ci(phase-2): keep scheduled check-agent runs nonfatal on invalid outputs
-```
-
-### Step 3 — Clean up legacy Phase 2 execution artifacts
-
-Clarify or remove these artifacts:
-
-```text
-configs/phase-2/review-batch.yml
-scripts/phase-2/run_page_review.py
-scripts/phase-2/run_review_batch.py
-scripts/phase-2/providers/mock.py
-```
-
-Suggested commit message:
-
-```bash
-chore(phase-2): mark legacy review runners as deprecated
-```
-
-### Step 4 — Add manual issue-closure prompts
+### Step 2 — Add manual issue-closure prompts
 
 Add:
 
@@ -1245,6 +1493,23 @@ Suggested commit message:
 docs(phase-2): add manual issue-closure prompts
 ```
 
+### Step 3 — Clean up non-canonical Phase 2 support artifacts
+
+Clarify or remove non-canonical support artifacts if they are no longer needed.
+
+Current candidates:
+
+```text
+.github/workflows/phase-2-check-agents.yml.bak
+scripts/phase-2/providers/mock.py
+```
+
+Suggested commit message:
+
+```bash
+chore(phase-2): remove stale check-agent support artifacts
+```
+
 ## Completion criteria
 
 Phase 2 can be considered complete when:
@@ -1256,12 +1521,12 @@ Phase 2 can be considered complete when:
 - issue routing is page-plus-agent based;
 - outputs use signal terminology;
 - generated comments are structured according to each agent contract and pass validation before posting;
-- all model outputs for the same page and agent are routed to the same issue;
+- all provider/model outputs for the same page and agent are routed to the same issue;
 - repeated runs update existing comments when the stable identity is unchanged;
 - generated outputs remain uncommitted;
 - small batch execution works locally;
 - page-structure CI blocks structural regressions;
-- conservative scheduled LLM execution works;
+- conservative scheduled LLM execution works with Groq and Gemini;
 - three manual issue-closure prompts exist for human/ChatGPT-assisted issue resolution.
 
 ## Generation and review log
@@ -1272,8 +1537,14 @@ Phase 2 can be considered complete when:
 - The two LLM-based agents are `page-hygiene-checker` and `language-style-checker`.
 - The `page-structure-checker` runs after canonical stereotype page modifications and blocks structural regressions in CI.
 - The two LLM-based check agents run periodically through the scheduled rotating workflow.
+- The active LLM providers are `groq` and `gemini`.
+- Gemini support is documented inline in this Phase 2 page rather than split into a separate provider-only methodology page.
+- The recommended Gemini model for Phase 2 check-agent automation is `gemini-2.5-flash`.
+- The scheduled provider/model rotation includes `groq:llama-3.3-70b-versatile`, `groq:openai/gpt-oss-20b`, and `gemini:gemini-2.5-flash`.
+- Gemini runs use a larger completion-token budget and reduced-thinking configuration to improve strict-format output reliability.
+- The prompts target 140-character `Location` fragments while the validator hard limit remains 160 characters.
 - Issue routing is one GitHub issue per page and check agent.
-- Different models executed by the same agent for the same page create comments in the same issue.
+- Different providers and models executed by the same agent for the same page create comments in the same issue.
 - Stable comment identity is implemented with page, agent, provider, model, prompt, and commit.
 - Matching existing comments are updated instead of duplicated.
 - Manual issue closure remains planned documentation-supported activity.
