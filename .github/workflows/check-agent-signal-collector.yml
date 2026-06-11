@@ -53,7 +53,7 @@ run-name: Scheduled check-agent signal collector (${{ github.event_name }})
         default: ""
 
       pages:
-        description: "Optional newline-separated page list. If empty, all canonical stereotype pages are considered."
+        description: "Optional comma- or newline-separated page list. If empty, all canonical stereotype pages are considered."
         type: string
         required: false
         default: ""
@@ -236,12 +236,14 @@ jobs:
 
           page_args=()
           if [[ -n "$pages_input" ]]; then
+            pages_normalized="${pages_input//,/$'\n'}"
+
             while IFS= read -r page; do
               page="$(trim "$page")"
               if [[ -n "$page" ]]; then
                 page_args+=(--page "$page")
               fi
-            done <<< "$pages_input"
+            done <<< "$pages_normalized"
           else
             page_args+=(--pages-glob "docs/stereotypes/classes/*.md")
             page_args+=(--pages-glob "docs/stereotypes/relations/*.md")
