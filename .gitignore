@@ -220,3 +220,4 @@ __marimo__/
 # Phase 2 generated local review outputs and temporary generated outputs
 .tmp/
 issue-comment*.md
+scripts/local
