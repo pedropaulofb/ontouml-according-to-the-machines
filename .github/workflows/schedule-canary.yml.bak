@@ -1,0 +1,26 @@
+name: Schedule canary
+
+on:
+  schedule:
+    # Four off-top-of-hour ticks per hour, UTC.
+    - cron: "7,22,37,52 * * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  canary:
+    name: Schedule canary
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Print schedule context
+        shell: bash
+        run: |
+          set -euo pipefail
+          date -u
+          echo "event=${GITHUB_EVENT_NAME}"
+          echo "schedule=${{ github.event.schedule || 'n/a' }}"
+          echo "ref=${GITHUB_REF}"
+          echo "sha=${GITHUB_SHA}"
