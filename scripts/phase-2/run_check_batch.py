@@ -37,6 +37,7 @@ ISSUE_MANAGER_PATH = Path("scripts/phase-2/issue_manager.py")
 
 RUN_STATUS_OK = "ok"
 RUN_STATUS_FAILED = "failed"
+RUN_STATUS_PROVIDER_FAILED = "provider_failed"
 RUN_STATUS_REJECTED = "rejected"
 RUN_STATUS_SKIPPED = "skipped"
 
@@ -81,6 +82,8 @@ class CompletedRun:
     def fatal_failed(self) -> bool:
         """Return whether this run represents a real automation failure."""
         if self.check_status == RUN_STATUS_FAILED:
+            return True
+        if self.check_status == RUN_STATUS_PROVIDER_FAILED:
             return True
         if self.issue_status == RUN_STATUS_FAILED:
             return True
@@ -465,6 +468,58 @@ def is_rejected_check_output(result: subprocess.CompletedProcess[str]) -> bool:
     return CHECK_VALIDATION_FAILURE_MARKER in result.stderr
 
 
+def provider_failure_message(result: subprocess.CompletedProcess[str]) -> str | None:
+    """Return a provider-failure summary message for failed check-agent runs.
+
+    Provider failures are distinct from rejected check-agent outputs. Rejected
+    outputs indicate that an LLM response was produced but failed the local
+    issue-comment contract. Provider failures indicate that no usable response
+    was produced by the provider call itself.
+    """
+    if result.returncode == 0:
+        return None
+
+    stderr = result.stderr.strip()
+    if CHECK_VALIDATION_FAILURE_MARKER in stderr:
+        return None
+    if "Provider call failed:" not in stderr:
+        return None
+
+    if "Request too large" in stderr or "Error code: 413" in stderr:
+        return (
+            "Provider call failed. Reason: request_too_large. Suggested remediation: "
+            "reduce --max-completion-tokens for this provider/model combination, "
+            "use a smaller input scope, or remove the model from rotation."
+        )
+
+    if "returned an empty response" in stderr:
+        return (
+            "Provider call failed. Reason: empty_response. Suggested remediation: "
+            "retry later, add provider retry handling, or remove the model from "
+            "rotation if empty responses persist."
+        )
+
+    if "rate_limit_exceeded" in stderr or "Error code: 429" in stderr:
+        return (
+            "Provider call failed. Reason: rate_limited. Suggested remediation: "
+            "reduce workflow frequency, add provider retry/backoff handling, or "
+            "remove the model from rotation."
+        )
+
+    if "environment variable is not set" in stderr:
+        return (
+            "Provider call failed. Reason: missing_provider_secret. Suggested "
+            "remediation: configure the required provider secret or remove the "
+            "provider/model from rotation."
+        )
+
+    return (
+        "Provider call failed. Reason: provider_call_failed. Suggested remediation: "
+        "inspect the per-run log stderr for the provider error and adjust provider "
+        "credentials, limits, model, or request size."
+    )
+
+
 def write_log(
     *,
     repo_root: Path,
@@ -646,6 +701,17 @@ def run_one(
                 message=warning,
             )
 
+        provider_failure = provider_failure_message(check_result)
+        if provider_failure is not None:
+            return CompletedRun(
+                planned=planned,
+                check_status=RUN_STATUS_PROVIDER_FAILED,
+                check_exit_code=check_result.returncode,
+                issue_status=RUN_STATUS_SKIPPED,
+                issue_exit_code=None,
+                message=provider_failure,
+            )
+
         return CompletedRun(
             planned=planned,
             check_status=RUN_STATUS_FAILED,
@@ -719,6 +785,9 @@ def status_for_summary(completed: CompletedRun | None, plan_only: bool) -> tuple
         return (RUN_STATUS_SKIPPED if plan_only else "not-run"), (
             "planned only" if plan_only else "not executed"
         )
+
+    if completed.check_status == RUN_STATUS_PROVIDER_FAILED:
+        return RUN_STATUS_PROVIDER_FAILED, completed.message
 
     if completed.fatal_failed:
         return RUN_STATUS_FAILED, completed.message

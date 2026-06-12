@@ -317,6 +317,10 @@ jobs:
             models_input="gemini-2.5-flash"
           fi
 
+          if [[ -z "$max_completion_tokens" && "$provider" == "groq" && "$models_input" == "openai/gpt-oss-20b" ]]; then
+            max_completion_tokens="1800"
+          fi
+
           if [[ -z "$max_completion_tokens" && "$provider" == "gemini" ]]; then
             max_completion_tokens="8000"
           fi
