@@ -4,7 +4,7 @@
 
 Enumeration is an OntoUML stereotype for classes that are treated as particular types of Datatype. In the consulted source, Enumeration is also used in the treatment of quality structures as a datatype-like representational device for a finite space of admissible quality values.
 
-This Phase 1 description is limited to those source-grounded characterizations. The supplied intermediate contribution does not provide a complete stereotype profile for Enumeration.
+This description is limited to those source-grounded characterizations. The supplied intermediate contribution does not provide a complete stereotype profile for Enumeration.
 
 ## Stereotype Profile
 
