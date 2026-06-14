@@ -2,7 +2,7 @@
 
 ## Description
 
-Participation is used in the Phase 1 sources to represent how endurants or objects are involved in events or perdurants. At the OntoUML modeling level, Participation is described as an association stereotype connecting an Event class to a class denoting an endurant type. It is the main connection between modeled events and the endurant types that participate in them.
+Participation is used in the sources to represent how endurants or objects are involved in events or perdurants. At the OntoUML modeling level, Participation is described as an association stereotype connecting an Event class to a class denoting an endurant type. It is the main connection between modeled events and the endurant types that participate in them.
 
 The sources ground this connection in an underlying event account. One recurrent characterization treats a participation as the event portion that depends exclusively on a single object. In this account, `participationOf` is derived from exclusive dependence between that event portion and the object, rather than introduced as primitive. Participation can apply to atomic events that manifest dispositions and to complex events that have such atomic events as parts; participations may themselves be atomic or complex. The participation view is therefore presented as orthogonal to a purely mereological decomposition of events.
 
