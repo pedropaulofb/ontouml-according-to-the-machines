@@ -14,11 +14,11 @@ Event-oriented sources add that Event instances can bear or manifest qualities, 
 
 ## Stereotype Profile
 
-TBD in a later phase.
+To be determined.
 
 ## Examples
 
-TBD in a later phase.
+To be determined.
 
 ## References
 
