@@ -12,11 +12,11 @@ The supplied evidence gives cardinality constraints for the association ends. On
 
 ## Stereotype Profile
 
-TBD in a later phase.
+To be completed.
 
 ## Examples
 
-TBD in a later phase.
+To be completed.
 
 ## References
 
