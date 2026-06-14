@@ -2,7 +2,7 @@
 
 ## Description
 
-Comparative is treated in the Phase 1 sources as a formal relation of comparison rather than as Material. In the source-specific account, a relation stereotyped Comparative does not require an intervening Relator, unlike Material relations, which are derived from relator universals and mediated entities. One source also distinguishes these formal relations from internal formal relations and treats the non-internal case as a derived formal relation with `isDerived = true`.
+Comparative is described in the relevant sources as a formal relation of comparison rather than as Material. In the source-specific account, a relation stereotyped Comparative does not require an intervening Relator, unlike Material relations, which are derived from relator universals and mediated entities. One source also distinguishes these formal relations from internal formal relations and treats the non-internal case as a derived formal relation with `isDerived = true`.
 
 The grounding of Comparative is described in terms of intrinsic properties or qualities of the relata. The immediate relata are qualities, and the relation can be analyzed as a relation between qualia obtained through attribute functions. The meta-properties of such a relation are derived from the meta-properties of relations among qualia in the relevant quality structure, connecting the stereotype to the geometry, ordering, or topology of quality domains.
 
