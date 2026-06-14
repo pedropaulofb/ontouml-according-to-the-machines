@@ -2,7 +2,7 @@
 
 ## Description
 
-Participational is introduced in the supplied Phase 1 evidence as a stereotype for event part-whole relations that decompose an Event into participations. The decomposition is characterized as constructed: participational portions are projected from a whole event by considering their formal dependence on specific endurants.
+Participational is introduced as a stereotype for event part-whole relations that decompose an Event into participations. The decomposition is characterized as constructed: participational portions are projected from a whole event by considering their formal dependence on specific endurants.
 
 A participational portion is described as maximal with respect to the property under consideration and disjoint from other portions produced by the same criterion. The same source states that the maximum cardinality at the association end attached to the participant is always one, reflecting the rule that participations depend exclusively on a single endurant.
 
