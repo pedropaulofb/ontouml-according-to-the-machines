@@ -1,12 +1,12 @@
 # Phase 2 — Lightweight Check-Agent Infrastructure
 
-Phase 2 is the second content-production phase of **OntoUML According to the Machines**.
+Phase 2 is the second documented project phase of **OntoUML According to the Machines**.
 
-Its purpose is to provide lightweight deterministic and API-based review infrastructure for existing canonical stereotype pages. Phase 2 does not perform deep content validation, source-faithfulness analysis, cross-page semantic comparison, automatic page repair, pull-request generation, automatic issue closure, or auto-merge.
+Its purpose is to provide lightweight deterministic and API-based review infrastructure for existing canonical stereotype pages. The automated check-agent layer in Phase 2 does not perform deep content validation, source-faithfulness analysis, cross-page semantic comparison, automatic page repair, autonomous pull-request generation, automatic issue closure, or auto-merge.
 
-Phase 2 produces page-local **signals**, routes those signals to deterministic GitHub issues, and leaves signal acceptance, rejection, and closure decisions to later manual review.
+Phase 2 produces page-local **signals**, routes those signals to deterministic GitHub issues, and leaves signal acceptance, rejection, and closure decisions to manual review or later explicitly confirmed resolution workflows.
 
-This document reflects the repository state on **2026-06-11**.
+This document reflects the repository state verified from committed repository files on **2026-06-14**. It does not claim that GitHub Actions workflows, provider calls, or issue-resolution prompts were re-run on that date.
 
 ## Documentation structure
 
@@ -23,7 +23,7 @@ Phase 2 has six goals:
 3. run the two LLM-based check agents periodically in conservative rotating batches;
 4. produce structured, page-local signals about page structure, page hygiene, formatting, and writing quality;
 5. route check-agent outputs to deterministic GitHub issues scoped by page and check agent;
-6. support later manual ChatGPT-assisted issue closure.
+6. support manual ChatGPT-assisted issue review and resolution for the two LLM-based check agents.
 
 Phase 2 prioritizes infrastructure, signal quality, traceability, repeatability, and controlled issue routing over deep content judgment.
 
@@ -36,7 +36,7 @@ check agents
 → check-agent execution
 → output validation
 → issue routing
-→ planned manual issue-closure support
+→ manual signal-review support for LLM-based agents
 ```
 
 Phase 2 does **not** implement autonomous resolution agents.
@@ -62,12 +62,15 @@ The issue manager:
 - posts model-specific check-agent reports as comments in that issue;
 - updates a matching existing comment when the stable comment identity already exists.
 
-Manual issue-closure prompts:
+Manual signal-review and issue-resolution prompts:
 
-- are planned Phase 2 documentation artifacts;
+- exist for `page-hygiene-checker` and `language-style-checker`;
+- do not currently exist for `page-structure-checker`;
 - are intended for use with ChatGPT by a human maintainer;
-- help evaluate the signals in one issue;
-- help decide whether the issue should be closed as completed, closed as not planned, or left open;
+- help evaluate signals in one GitHub issue against the current reviewed page;
+- classify signals as `accept`, `reject`, or `defer`;
+- may prepare exact local edits, issue comments, branch names, commit messages, or pull-request material when safe and in scope;
+- require explicit human confirmation before any GitHub write action;
 - do not run automatically;
 - do not replace human judgment.
 
@@ -134,7 +137,9 @@ Check signal: page-hygiene-checker: classes/event
 
 ## Current implementation status
 
-The current implementation includes the core runtime pieces of the simplified Phase 2 architecture: check execution, output validation, page-plus-agent issue routing, duplicate-control for comments, scheduled LLM collection, and Groq/Gemini provider support. Manual issue-closure prompt support remains planned.
+The current implementation includes the core runtime pieces of the simplified Phase 2 architecture: check execution, output validation, page-plus-agent issue routing, duplicate-control for comments, scheduled LLM collection, Groq/Gemini provider support, and manual signal-review prompts for the two LLM-based agents.
+
+There is no current dedicated manual closure prompt for `page-structure-checker`; that third closure prompt has been discarded.
 
 ### Implemented files and artifacts
 
@@ -144,6 +149,8 @@ The current implementation includes the core runtime pieces of the simplified Ph
 requirements.txt
 prompts/phase-2/page-hygiene-checker-v1.0.2.md
 prompts/phase-2/language-style-checker-v1.0.2.md
+prompts/phase-2/close-page-hygiene-signal-issue-v1.0.0.md
+prompts/phase-2/close-language-style-signal-issue-v1.0.0.md
 scripts/phase-2/run_check_agent.py
 scripts/phase-2/run_check_batch.py
 scripts/phase-2/issue_manager.py
@@ -167,13 +174,7 @@ These are not the canonical scheduled Phase 2 LLM execution path. The canonical 
 .github/workflows/check-agent-signal-collector.yml
 ```
 
-A machine-local dispatcher may exist outside the committed repository, for example:
-
-```text
-scripts/local/dispatch-check-agent-signal.ps1
-```
-
-This is optional local operational tooling only. It is not canonical repository infrastructure unless intentionally committed and documented as reusable tooling.
+The repository ignores `scripts/local/`. Any machine-local dispatcher or helper under that path is outside canonical repository infrastructure unless it is intentionally committed and documented as reusable tooling.
 
 ### Current capabilities
 
@@ -201,7 +202,8 @@ The current implementation can:
 - treat rejected LLM outputs as nonfatal when `--allow-rejected-check-outputs` is used;
 - run deterministic page-structure checks in GitHub Actions on changed canonical stereotype pages;
 - run scheduled LLM check-agent collection through GitHub Actions;
-- upload generated outputs as GitHub Actions artifacts.
+- upload generated outputs as GitHub Actions artifacts;
+- provide manual, confirmation-gated issue-review workflows for `page-hygiene-checker` and `language-style-checker` issues.
 
 These capabilities do not mean every scheduled LLM output is valid. Invalid model outputs are preserved as artifacts. In the canonical scheduled workflow, rejected check-agent outputs are nonfatal because the workflow passes:
 
@@ -215,11 +217,13 @@ Provider failures, configuration failures, and issue-manager failures remain fat
 
 The current implementation still has these limitations:
 
-- manual issue-closure prompts are planned but not yet created;
+- manual issue-review prompts currently exist only for `page-hygiene-checker` and `language-style-checker`;
+- no dedicated `page-structure-checker` issue-closure prompt exists; this prompt was intentionally discarded rather than left pending;
+- the manual issue-review prompts are not scheduled automation and do not replace maintainer judgment;
 - `providers/mock.py` is not part of the active `run_check_agent.py` provider set;
 - `issue_manager.py` searches only open issues, so closed issues with matching titles are not reused;
 - stable comment identity includes the commit SHA, so a new commit may produce a new model comment for the same page, agent, provider, model, and prompt;
-- Gemini transient-error detection is marker-based and may need extension if the SDK surfaces `500`, `502`, or `504` without one of the currently recognized markers;
+- Gemini transient-error detection is marker-based and may need extension if future observed SDK diagnostics for `500`, `502`, or `504` are not caught by the current marker list;
 - scheduled runs intentionally collect signals gradually rather than executing the full matrix in one workflow execution.
 
 ## Operational prerequisites
@@ -673,13 +677,7 @@ The Gemini adapter includes reduced-thinking configuration for strict-format out
 
 This setting improves strict-format check-agent output reliability but does not replace validation.
 
-Do not recommend unconfirmed model names such as:
-
-```text
-gemini-3.5-flash-lite
-```
-
-Reported Gemini 3.x attempts showed provider availability instability, including `503 UNAVAILABLE`. For current Phase 2 automation, `gemini-2.5-flash` remains the recommended default.
+For current Phase 2 automation, `gemini-2.5-flash` remains the documented recommended Gemini default. Other Gemini model names should not be added to the scheduled rotation unless they are first verified operationally and documented.
 
 ### Gemini retry behavior
 
@@ -693,16 +691,6 @@ The configured retry delays are:
 45 seconds
 ```
 
-The operational retry intent is to cover transient provider/API failures such as:
-
-```text
-429
-500
-502
-503
-504
-```
-
 Current implementation detail: transient detection is marker-based and explicitly recognizes diagnostics containing:
 
 ```text
@@ -712,7 +700,7 @@ RESOURCE_EXHAUSTED
 UNAVAILABLE
 ```
 
-This covers the observed `503 UNAVAILABLE` capacity failures. If the SDK surfaces `500`, `502`, or `504` without one of the configured transient markers, the provider marker list should be extended.
+This covers observed `503 UNAVAILABLE` capacity failures. If future provider diagnostics for `500`, `502`, or `504` are not caught by these markers, the provider marker list should be extended.
 
 Validation failures are not retried. A structurally invalid model output is treated as a rejected check-agent output, not as a transient provider failure.
 
@@ -1280,90 +1268,108 @@ The workflow uploads `.tmp/phase-2` as an artifact even if the check-agent run f
 
 ## Operational observations
 
-Reported recent Phase 2 Gemini testing showed:
+Earlier operational notes reported that recent Phase 2 Gemini testing showed:
 
 - successful GitHub Actions execution for `gemini-2.5-flash`;
 - valid generated issue-comment structure after adding reduced-thinking configuration and increasing Gemini completion tokens;
 - transient Gemini provider failures with `503 UNAVAILABLE`;
 - validation rejections caused by overly long `Location` fragments before the prompt target was tightened from 160 characters to 140 characters.
 
-These are operational observations, not guaranteed future behavior.
+These are operational observations retained from the earlier documentation. They are not guaranteed future behavior and were not independently revalidated by this documentation update.
 
-## Manual issue-closure prompt support
+## Manual signal-review and issue-resolution prompt support
 
-Phase 2 should include three manual ChatGPT prompts for closing check-agent issues.
-
-Planned prompt files:
+Phase 2 currently includes two manual ChatGPT prompts for reviewing and resolving check-agent signal issues:
 
 ```text
-prompts/phase-2/issue-closure/close-page-structure-signal-issue.md
-prompts/phase-2/issue-closure/close-page-hygiene-signal-issue.md
-prompts/phase-2/issue-closure/close-language-style-signal-issue.md
+prompts/phase-2/close-page-hygiene-signal-issue-v1.0.0.md
+prompts/phase-2/close-language-style-signal-issue-v1.0.0.md
 ```
 
-These prompts are **not yet created**.
+These prompts are implemented for the two LLM-based check agents:
 
-The prompts should help a human maintainer use ChatGPT to resolve one Phase 2 issue at a time.
+```text
+page-hygiene-checker
+language-style-checker
+```
 
-Each closure prompt should guide ChatGPT to:
+There is no current `page-structure-checker` closure prompt. The earlier plan for a third closure prompt was discarded. Page-structure signals should therefore be handled through direct maintainer review of the deterministic report, the referenced page, and the normal repository review process.
 
-1. read the issue body and all check-agent comments;
-2. inspect the referenced canonical stereotype page;
-3. classify each signal as `accept`, `reject`, or `defer`;
-4. explain the decision for each signal;
-5. propose exact edits only when they are safe and local;
-6. produce a closing comment for the GitHub issue;
-7. recommend whether the issue should be closed as `completed`, closed as `not planned`, or left open.
+The two existing prompts help a human maintainer use ChatGPT to review one Phase 2 issue at a time. They support two stages:
 
-Closure prompts must preserve the Phase 2 boundary:
+1. read-only analysis and preparation;
+2. optional GitHub mutation only after explicit human confirmation.
+
+In the read-only stage, the prompts guide ChatGPT to:
+
+1. validate the issue URL and repository;
+2. read the issue body and all accessible comments;
+3. verify attribution to the relevant check agent;
+4. identify the reviewed page;
+5. inspect the current reviewed page;
+6. extract and group relevant check-agent signals;
+7. classify each signal or signal group as `accept`, `reject`, or `defer`;
+8. explain the decision for each signal or signal group;
+9. prepare exact local edits, issue comments, branch names, commit messages, or pull-request material only when safe and in scope;
+10. recommend whether the issue should remain open, receive a comment, be closed as not planned, or later be closed as completed after accepted edits have actually been applied.
+
+The prompts require explicit human confirmation before any GitHub write action.
+
+GitHub write actions include, but are not limited to:
+
+- creating a branch;
+- modifying repository files;
+- creating a commit;
+- opening a pull request;
+- posting an issue comment;
+- closing an issue;
+- changing labels;
+- changing assignees;
+- changing milestones;
+- changing issue titles.
+
+The prompts must preserve the Phase 2 boundary:
 
 - they are manually invoked;
 - they do not run in CI;
-- they do not directly edit repository files;
-- they do not commit changes;
-- they do not open pull requests;
-- they do not close issues automatically.
+- they are not check agents;
+- they are not autonomous resolution agents;
+- they do not automatically edit repository files;
+- they do not automatically commit changes;
+- they do not automatically open pull requests;
+- they do not automatically close issues;
+- they do not merge pull requests, enable auto-merge, delete branches, or bypass human review.
 
-Agent-specific closure prompts are preferred because each agent has a different scope and different protected-content rules.
+### Page-hygiene issue-resolution prompt
 
-### Page-structure issue-closure prompt
+The page-hygiene issue-resolution prompt is:
 
-The page-structure closure prompt should focus on deterministic structural signals.
+```text
+prompts/phase-2/close-page-hygiene-signal-issue-v1.0.0.md
+```
 
-It should evaluate:
+It focuses on `page-hygiene-checker` signals.
 
-- missing headings;
-- malformed heading levels;
-- heading order;
-- duplicate headings;
-- unexpected level-2 sections;
-- empty required sections when the page is not marked as an intentional skeleton.
-
-It should not evaluate:
-
-- source faithfulness;
-- OntoUML correctness;
-- language quality beyond structural headings;
-- conceptual adequacy.
-
-### Page-hygiene issue-closure prompt
-
-The page-hygiene closure prompt should focus on visible hygiene signals.
-
-It should evaluate:
+It evaluates:
 
 - visible reference-hygiene issues;
 - Markdown-hygiene issues;
 - encoding issues;
 - Generation and Review Log hygiene.
 
-It should not validate source content or infer missing source support.
+It should not validate source content, infer missing source support, evaluate OntoUML correctness, or perform broad rewriting.
 
-### Language-style issue-closure prompt
+### Language-style issue-resolution prompt
 
-The language-style closure prompt should focus on low-risk writing-quality signals in reader-facing prose.
+The language-style issue-resolution prompt is:
 
-It should evaluate:
+```text
+prompts/phase-2/close-language-style-signal-issue-v1.0.0.md
+```
+
+It focuses on `language-style-checker` signals in reader-facing prose.
+
+It evaluates:
 
 - grammar;
 - spelling;
@@ -1371,7 +1377,7 @@ It should evaluate:
 - professional technical style;
 - project/process self-reference in reader-facing text.
 
-It should protect:
+It protects:
 
 - direct quotations;
 - citation locators;
@@ -1442,14 +1448,17 @@ Completed:
 - scheduled provider/model rotation includes Groq and Gemini;
 - Gemini uses `gemini-2.5-flash` as the recommended scheduled default;
 - Gemini runs use `max_completion_tokens=8000` in the canonical workflow when no manual override is supplied;
-- generated output paths are ignored by `.gitignore`.
+- generated output paths are ignored by `.gitignore`;
+- `close-page-hygiene-signal-issue-v1.0.0.md` exists as the manual issue-review and resolution prompt for `page-hygiene-checker` issues;
+- `close-language-style-signal-issue-v1.0.0.md` exists as the manual issue-review and resolution prompt for `language-style-checker` issues;
+- the earlier plan for a third `page-structure-checker` closure prompt has been discarded.
 
 Pending:
 
-1. create the three manual issue-closure prompts;
-2. decide whether to keep or remove non-canonical support artifacts such as `providers/mock.py` and `.github/workflows/phase-2-check-agents.yml.bak`;
-3. document any observed clean baseline with a dated run artifact rather than an undocumented local claim;
-4. extend Gemini transient-error markers if observed SDK diagnostics for `500`, `502`, or `504` are not caught by the current marker list.
+1. decide whether to keep or remove non-canonical support artifacts such as `providers/mock.py` and `.github/workflows/phase-2-check-agents.yml.bak`;
+2. document any observed clean baseline with a dated run artifact rather than an undocumented local claim;
+3. extend Gemini transient-error markers if future observed SDK diagnostics for `500`, `502`, or `504` are not caught by the current marker list;
+4. confirm whether the two existing issue-resolution prompts should remain directly under `prompts/phase-2/` or be moved into a dedicated subdirectory in a later cleanup.
 
 Deferred outside Phase 2:
 
@@ -1469,31 +1478,15 @@ Deferred outside Phase 2:
 
 ### Step 1 — Replace the stale Phase 2 documentation
 
-Replace the repository’s current Phase 2 documentation with this updated version.
+Replace the repository's current Phase 2 documentation with this updated version.
 
 Suggested commit message:
 
 ```bash
-docs(phase-2): align documentation with check-agent implementation
+docs(phase-2): align documentation with current signal-review prompts
 ```
 
-### Step 2 — Add manual issue-closure prompts
-
-Add:
-
-```text
-prompts/phase-2/issue-closure/close-page-structure-signal-issue.md
-prompts/phase-2/issue-closure/close-page-hygiene-signal-issue.md
-prompts/phase-2/issue-closure/close-language-style-signal-issue.md
-```
-
-Suggested commit message:
-
-```bash
-docs(phase-2): add manual issue-closure prompts
-```
-
-### Step 3 — Clean up non-canonical Phase 2 support artifacts
+### Step 2 — Clean up non-canonical Phase 2 support artifacts
 
 Clarify or remove non-canonical support artifacts if they are no longer needed.
 
@@ -1509,6 +1502,22 @@ Suggested commit message:
 ```bash
 chore(phase-2): remove stale check-agent support artifacts
 ```
+
+### Step 3 — Record a dated Phase 2 baseline
+
+If a clean or representative run is observed or already available in GitHub Actions artifacts/issues, document it with a dated artifact or issue reference rather than relying on an undocumented local claim.
+
+Suggested commit message:
+
+```bash
+docs(phase-2): record current check-agent baseline
+```
+
+### Step 4 — Review prompt organization
+
+The two implemented issue-resolution prompts currently live directly under `prompts/phase-2/`.
+
+If the project later prefers a dedicated prompt namespace, move them consistently and update this methodology page, MkDocs navigation if needed, and any operational references.
 
 ## Completion criteria
 
@@ -1527,7 +1536,8 @@ Phase 2 can be considered complete when:
 - small batch execution works locally;
 - page-structure CI blocks structural regressions;
 - conservative scheduled LLM execution works with Groq and Gemini;
-- three manual issue-closure prompts exist for human/ChatGPT-assisted issue resolution.
+- the two manual issue-review and resolution prompts for the LLM-based agents exist and are documented;
+- the absence of a dedicated `page-structure-checker` closure prompt is documented as intentional.
 
 ## Generation and review log
 
@@ -1547,6 +1557,6 @@ Phase 2 can be considered complete when:
 - Different providers and models executed by the same agent for the same page create comments in the same issue.
 - Stable comment identity is implemented with page, agent, provider, model, prompt, and commit.
 - Matching existing comments are updated instead of duplicated.
-- Manual issue closure remains planned documentation-supported activity.
-- The planned issue-closure support consists of three ChatGPT prompts, one per check agent.
-- Resolution agents, quorum decisions, patch planning, patch application, PR creation, automatic issue closure, and auto-merge are outside the simplified Phase 2 scope.
+- Manual signal-review and issue-resolution support is documented for `page-hygiene-checker` and `language-style-checker` through two ChatGPT prompts.
+- The planned `page-structure-checker` closure prompt was discarded; deterministic page-structure signals remain subject to direct maintainer review.
+- Autonomous resolution agents, quorum decisions, automatic patch planning, automatic patch application, automatic PR creation, automatic issue closure, and auto-merge are outside the simplified Phase 2 scope.
