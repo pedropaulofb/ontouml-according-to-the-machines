@@ -2,7 +2,7 @@
 
 ## Description
 
-Termination is used to represent the event-related endpoint of an endurant's active life. The Phase 1 sources treat this endpoint as distinct from an unrestricted deletion mechanism: under historical semantics, termination is modeled as a change of phase rather than removal from the universe of discourse, because events and their dependent endurants accumulate.
+Termination is used to represent the event-related endpoint of an endurant's active life. The sources treat this endpoint as distinct from an unrestricted deletion mechanism: under historical semantics, termination is modeled as a change of phase rather than removal from the universe of discourse, because events and their dependent endurants accumulate.
 
 One source characterizes `<<termination>>` as an association from an Event type to a Phase. The target Phase is instantiated by the terminated endurant when it assumes a historical nature; in that state, the endurant has immutable properties comparable to those of past events. A complementary source frames termination as the counterpart of Creation in the life cycle of an endurant, where an endurant may go out of existence by becoming causally inactive and entering inactive or final phases after its relevant manifestations have accumulated.
 
@@ -12,11 +12,11 @@ Taken together, the sources support Termination as a constrained event-related t
 
 ## Stereotype Profile
 
-TBD in a later phase.
+To be determined.
 
 ## Examples
 
-TBD in a later phase.
+To be determined.
 
 ## References
 
