@@ -2,7 +2,7 @@
 
 ## Description
 
-Type is the OntoUML construct for representing types as entities that can be instantiated, rather than as mere extensions or sets of instances. The Phase 1 sources characterize Type through instantiation and higher-order typing: individuals can instantiate first-order types, and types can instantiate higher-order types. The available sources explicitly cover first-order and second-order types, while one multi-level treatment also describes a scheme that can extend further.
+Type is the OntoUML construct for representing types as entities that can be instantiated, rather than as mere extensions or sets of instances. Type is characterized through instantiation and higher-order typing: individuals can instantiate first-order types, and types can instantiate higher-order types. The available sources explicitly cover first-order and second-order types, while one multi-level treatment also describes a scheme that can extend further.
 
 Several sources present Type in relation to universals, properties, and intensions. Chapter 6 of the 2005 thesis treats types as universals: predicative entities that can apply to multiple individuals. It also distinguishes a type from its extension, arguing that coextension, empty extensions, and membership changes are not sufficient to determine the identity or meaning of a type. The same source connects type intensions to axiomatic or elementary specifications involving features, including moment universals that may characterize the universal.
 

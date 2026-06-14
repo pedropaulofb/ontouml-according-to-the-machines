@@ -2,7 +2,7 @@
 
 ## Description
 
-Creation connects an Event with the endurant or Object it brings into existence. The intermediate sources characterize Creation as an event-to-endurant relation, and one source describes `<<creation>>` as a special kind of Participation. In this Phase 1 evidence, Creation belongs to the broader event-extension account in which Event occurrences record changes affecting endurants, including Creation, Termination, property change, and Participation.
+Creation connects an Event with the endurant or Object it brings into existence. The intermediate sources characterize Creation as an event-to-endurant relation, and one source describes `<<creation>>` as a special kind of Participation. In the evidence, Creation belongs to the broader event-extension account in which Event occurrences record changes affecting endurants, including Creation, Termination, property change, and Participation.
 
 For past modeled Event occurrences, a Creation relation fixes which endurant was created by the Event. The source-specific contribution that discusses `<<creation>>` therefore applies an immutability rule to association ends attached to endurants in Creation associations: they should be read-only because the past Event cannot change which endurant it created.
 
