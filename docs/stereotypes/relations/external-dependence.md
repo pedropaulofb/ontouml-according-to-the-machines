@@ -2,7 +2,7 @@
 
 ## Description
 
-ExternalDependence is characterized in the supplied Phase 1 sources as a specialization of existential dependence involving an externally dependent Mode. In this account, a Mode inheres in one bearer while depending on another entity that is independent of that bearer. The independence condition distinguishes this dependence from dependence on the bearer itself, on the bearer's other moments, or on essential parts or wholes of the bearer; one source also characterizes the external dependent as depending on an entity mereologically disjoint from the entity it inheres in.
+ExternalDependence is characterized in the supplied Phase 1 sources as a specialization of existential dependence involving an externally dependent Mode. Under this characterization, a Mode inheres in one bearer while depending on another entity that is independent of that bearer. The independence condition distinguishes this dependence from dependence on the bearer itself, on the bearer's other moments, or on essential parts or wholes of the bearer; one source also characterizes the external dependent as depending on an entity mereologically disjoint from the entity it inheres in.
 
 Across the sources, ExternalDependence is associated with externally dependent Modes, qua individuals, Relators, and Material or extrinsic descriptive relations. Qua individuals are described as externally dependent Modes that inhere in their bearers while depending on another entity through a relational context captured by a Relator. The Chapter 7 source further states that qua individuals composing a Relator are existentially dependent on each other, and uses this dependence commitment in its account of role-related entities and functional parthood.
 
