@@ -12,11 +12,11 @@ Situation participates centrally in event triggering, event outcomes, and event 
 
 ## Stereotype Profile
 
-TBD in a later phase.
+Not specified.
 
 ## Examples
 
-TBD in a later phase.
+Not specified.
 
 ## References
 
