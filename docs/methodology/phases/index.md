@@ -1,8 +1,8 @@
 # Project Phases
 
-The project is organized into content-production phases.
+The project is organized into methodology phases.
 
-A phase defines a bounded period of work with a specific purpose, execution model, output expectation, and maturity target. Phases help keep broad generation, review, refinement, and later automation work separate from each other.
+A phase defines a bounded period of work with a specific purpose, execution model, output expectation, and maturity target. Phases help keep broad generation, review, refinement, check infrastructure, and later automation work separate from each other.
 
 ## Why phases are used
 
@@ -12,12 +12,13 @@ Using phases makes those differences explicit:
 
 - early work can prioritize source-grounded extraction, structured first-pass population, and controlled consolidation;
 - later work can prioritize validation, normalization, consistency, expert review, examples, and profile completion;
+- phase-specific tooling can be introduced without implying that it performs full content validation or autonomous remediation;
 - limitations of each period remain visible;
 - generated material can be refined without pretending that all pages have the same maturity level.
 
-## Content-only scope
+## Content and methodology scope
 
-Project phases concern page content and content-production methodology.
+Project phases concern page content, content-production methodology, and phase-specific review or check infrastructure.
 
 They do not define or govern:
 
@@ -26,20 +27,20 @@ They do not define or govern:
 - CSS styling;
 - MkDocs theme behavior;
 - deployment infrastructure;
-- general repository maintenance unrelated to documentation content.
+- general repository maintenance unrelated to documentation content or documented phase methodology.
 
 ## Current phases
 
 | Phase | Name | Status | Main purpose |
 |---|---|---|---|
 | Phase 1 | [Groundwork and Initial Population](phase-1.md) | In progress | Generate source-specific intermediate files from selected high-yield sources and consolidate them into first canonical stereotype pages. |
-| Phase 2 | [Page-Level Review Pilot](phase-2.md) | Initial pilot | Review existing canonical stereotype pages through manually triggered model-specific agents that record findings in GitHub issues. |
+| Phase 2 | [Lightweight Check-Agent Infrastructure](phase-2.md) | Active / implemented infrastructure | Provide deterministic and LLM-based check-agent infrastructure that emits page-local signals, routes them to page-plus-agent GitHub issues, and supports manual confirmation-gated review of LLM signal issues. |
 
 ## Phase relationship
 
 The phases are cumulative but not necessarily exhaustive.
 
-Phase 1 creates a provisional source-grounded documentation base. Phase 2 begins by reviewing that base at page level, focusing on methodology compliance, visible citation support, citation hygiene, and overstatement risk. Later work may review, refine, normalize, restructure, validate, or expand that base. A later phase may also revisit content produced in an earlier phase if new source material or review decisions require it.
+Phase 1 creates a provisional source-grounded documentation base. Phase 2 adds lightweight page-local check infrastructure over that base: deterministic page-structure checks in CI, scheduled conservative LLM signal collection for page hygiene and language/style, deterministic issue routing, and manual confirmation-gated signal-review prompts. Phase 2 does not perform source-faithfulness validation, conceptual adequacy review, cross-page semantic comparison, automatic page repair, automatic PR creation, or automatic issue closure. Later work may review, refine, normalize, restructure, validate, or expand the documentation base. A later phase may also revisit content produced in an earlier phase if new source material, review decisions, or automation requirements justify it.
 
 ## Maturity expectation
 
