@@ -317,8 +317,10 @@ jobs:
             models_input="gemini-2.5-flash"
           fi
 
+          # Keep groq:openai/gpt-oss-20b in rotation, but stay below Groq's observed
+          # 8k on-demand TPM/request envelope for long page-hygiene prompts.
           if [[ -z "$max_completion_tokens" && "$provider" == "groq" && "$models_input" == "openai/gpt-oss-20b" ]]; then
-            max_completion_tokens="1800"
+            max_completion_tokens="1400"
           fi
 
           if [[ -z "$max_completion_tokens" && "$provider" == "gemini" ]]; then
