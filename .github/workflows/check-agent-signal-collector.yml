@@ -4,8 +4,8 @@ run-name: Scheduled check-agent signal collector (${{ github.event_name }})
 
 "on":
   schedule:
-    # Every 20 minutes, UTC. Offset away from minute 00 to reduce scheduler contention.
-    - cron: "13,33,53 * * * *"
+    # Every 30 minutes, UTC. Offset away from minute 00 to reduce scheduler contention.
+    - cron: "13,43 * * * *"
 
   workflow_dispatch:
     inputs:
@@ -71,10 +71,10 @@ run-name: Scheduled check-agent signal collector (${{ github.event_name }})
         default: "page-hygiene-checker,language-style-checker"
 
       models:
-        description: "Comma-separated provider-specific models used when provider_model_specs is empty. For Gemini, use values such as gemini-2.5-flash."
+        description: "Comma-separated provider-specific models used when provider_model_specs is empty. For Gemini, use values such as gemini-3.5-flash."
         type: string
         required: true
-        default: "llama-3.3-70b-versatile,openai/gpt-oss-20b"
+        default: "llama-3.3-70b-versatile"
 
       max_runs:
         description: "Maximum number of selected triples to run. Use 1 for rotating scheduled collection."
@@ -173,7 +173,7 @@ jobs:
             printf '%s' "$1" | sed 's/^[[:space:]]*//;s/[[:space:]]*$//'
           }
 
-          default_periodic_provider_model_specs="groq:llama-3.3-70b-versatile,groq:openai/gpt-oss-20b,gemini:gemini-2.5-flash"
+          default_periodic_provider_model_specs="groq:llama-3.3-70b-versatile,gemini:gemini-3.5-flash"
 
           provider="${WORKFLOW_PROVIDER:-groq}"
           provider_model_specs="${WORKFLOW_PROVIDER_MODEL_SPECS:-}"
@@ -251,8 +251,8 @@ jobs:
             printf '%s' "$1" | sed 's/^[[:space:]]*//;s/[[:space:]]*$//'
           }
 
-          default_groq_models="llama-3.3-70b-versatile,openai/gpt-oss-20b"
-          default_periodic_provider_model_specs="groq:llama-3.3-70b-versatile,groq:openai/gpt-oss-20b,gemini:gemini-2.5-flash"
+          default_groq_models="llama-3.3-70b-versatile"
+          default_periodic_provider_model_specs="groq:llama-3.3-70b-versatile,gemini:gemini-3.5-flash"
 
           mode="${WORKFLOW_MODE:-post}"
           provider="${WORKFLOW_PROVIDER:-groq}"
@@ -268,7 +268,7 @@ jobs:
           max_completion_tokens="${WORKFLOW_MAX_COMPLETION_TOKENS:-}"
 
           if [[ -z "$rotation_index" && "${GITHUB_EVENT_NAME:-}" == "schedule" ]]; then
-            rotation_index="$(($(date -u +%s) / 1200))"
+            rotation_index="$(($(date -u +%s) / 1800))"
           fi
 
           if [[ -z "$provider_model_specs" && "${GITHUB_EVENT_NAME:-}" == "schedule" ]]; then
@@ -313,11 +313,11 @@ jobs:
             echo "Provider/model rotation specs: ${normalized_specs[*]}"
             echo "Selected provider/model spec: ${selected_provider_model_spec}"
           elif [[ "$provider" == "gemini" && "$models_input" == "$default_groq_models" ]]; then
-            echo "Provider is gemini and Groq default models were supplied; using gemini-2.5-flash."
-            models_input="gemini-2.5-flash"
+            echo "Provider is gemini and Groq default models were supplied; using gemini-3.5-flash."
+            models_input="gemini-3.5-flash"
           fi
 
-          # Keep groq:openai/gpt-oss-20b in rotation, but stay below Groq's observed
+          # Keep explicit groq:openai/gpt-oss-20b manual runs below Groq's observed
           # 8k on-demand TPM/request envelope for long page-hygiene prompts.
           if [[ -z "$max_completion_tokens" && "$provider" == "groq" && "$models_input" == "openai/gpt-oss-20b" ]]; then
             max_completion_tokens="1400"
