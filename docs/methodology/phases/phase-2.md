@@ -6,7 +6,7 @@ Its purpose is to provide lightweight deterministic and API-based review infrast
 
 Phase 2 produces page-local **signals**, routes those signals to deterministic GitHub issues, and leaves signal acceptance, rejection, and closure decisions to manual review or later explicitly confirmed resolution workflows.
 
-This document reflects the repository state verified from committed repository files on **2026-06-14**. It does not claim that GitHub Actions workflows, provider calls, or issue-resolution prompts were re-run on that date.
+This document reflects the repository state verified from committed repository files on **2026-06-16**. It does not claim that GitHub Actions workflows, provider calls, or issue-resolution prompts were re-run on that date.
 
 ## Documentation structure
 
@@ -168,7 +168,7 @@ Non-canonical or legacy-support artifacts may also exist:
 scripts/phase-2/providers/mock.py
 ```
 
-These are not the canonical scheduled Phase 2 LLM execution path. The canonical shared LLM workflow is:
+These are not the canonical scheduled Phase 2 LLM execution path. The `.bak` workflow reflects older Groq-only and 20-minute-cadence assumptions and should not be used as operational documentation. The canonical shared LLM workflow is:
 
 ```text
 .github/workflows/check-agent-signal-collector.yml
@@ -241,7 +241,7 @@ Current Python runtime dependencies include:
 ```text
 mkdocs-material==9.7.6
 groq==1.4.0
-google-genai>=1.0.0,<2.0.0
+google-genai>=2.8.0,<3.0.0
 ```
 
 The operational provider secrets are:
@@ -633,6 +633,8 @@ provider: groq
 models: llama-3.3-70b-versatile,openai/gpt-oss-20b
 ```
 
+`openai/gpt-oss-20b` is available through direct `run_check_batch.py` use and manual workflow dispatch when explicitly selected. It is not part of the current scheduled provider/model rotation.
+
 ### Gemini provider
 
 The Gemini adapter is:
@@ -654,11 +656,13 @@ It calls Gemini through:
 client.models.generate_content(...)
 ```
 
-Recommended Gemini model:
+Current scheduled Gemini model:
 
 ```text
-gemini-2.5-flash
+gemini-3.5-flash
 ```
+
+`gemini-2.5-flash` remains supported by provider-level reduced-thinking configuration and may be selected manually, but it is not the current scheduled Gemini default.
 
 Gemini runs should use:
 
@@ -677,7 +681,7 @@ The Gemini adapter includes reduced-thinking configuration for strict-format out
 
 This setting improves strict-format check-agent output reliability but does not replace validation.
 
-For current Phase 2 automation, `gemini-2.5-flash` remains the documented recommended Gemini default. Other Gemini model names should not be added to the scheduled rotation unless they are first verified operationally and documented.
+For current Phase 2 automation, `gemini-3.5-flash` is the scheduled Gemini default. Other Gemini model names should not be added to the scheduled rotation unless they are first verified operationally and documented.
 
 ### Gemini retry behavior
 
@@ -1080,7 +1084,7 @@ python scripts/phase-2/run_check_batch.py \
   --page docs/stereotypes/classes/event.md \
   --agent page-hygiene-checker \
   --provider gemini \
-  --model gemini-2.5-flash \
+  --model gemini-3.5-flash \
   --mode generate \
   --max-runs 1 \
   --max-completion-tokens 8000 \
@@ -1108,6 +1112,75 @@ python scripts/phase-2/run_check_batch.py \
   --repo pedropaulofb/ontouml-according-to-the-machines \
   --allow-rejected-check-outputs
 ```
+
+## Operator option reference
+
+This section documents implemented runner options that are useful for maintainers but are not all shown in the common-command examples.
+
+### `run_page_structure_batch.py`
+
+| Option | Purpose |
+|---|---|
+| `--dry-run` | Print planned checker commands without generating output files or calling `issue_manager.py`. |
+| `--post` | Post generated reports with `Signal count > 0` through `issue_manager.py`. |
+| `--issue-dry-run` | With `--post`, call `issue_manager.py --dry-run` instead of creating GitHub issues or comments. |
+| `--repo` | Select the GitHub repository used by `issue_manager.py`. |
+| `--output-dir` | Set the output directory for generated page-structure reports. |
+| `--label` | Pass one or more labels to `issue_manager.py` when creating issues. |
+| `--max-signals` | Cap the number of structural signals reported per page. |
+| `--only-page` | Process one repository-relative page path only. |
+| `--continue-on-error` | Continue processing remaining pages after a checker or posting failure. |
+
+### `run_check_batch.py`
+
+| Option | Purpose |
+|---|---|
+| `--page` | Select one page. May be repeated. |
+| `--pages-glob` | Select pages by repository-relative glob. May be repeated. |
+| `--exclude-page` | Exclude one selected page. May be repeated. |
+| `--exclude-pages-glob` | Exclude pages matching a repository-relative glob. May be repeated. |
+| `--agent` | Select an LLM-based Phase 2 agent. May be repeated. |
+| `--provider` | Select one provider for the batch. |
+| `--model` | Select one provider-specific model. May be repeated. |
+| `--mode` | Choose `generate`, `dry-run`, or `post`. |
+| `--repo` | Required for `dry-run` and `post` modes. |
+| `--post-empty` | Forward zero-signal comments to `issue_manager.py`; otherwise missing zero-signal issues are skipped. |
+| `--output-root` | Set the root directory for generated comments. |
+| `--summary` | Write the Markdown batch summary to a custom path. |
+| `--sleep-seconds` | Sleep between individual LLM calls. |
+| `--max-runs` | Limit the number of selected planned runs. |
+| `--selection` | Use `first` or `rotate` selection. |
+| `--rotation-seed` | Use `hourly` or `daily` time-based rotation when no explicit rotation index is supplied. |
+| `--rotation-index` | Use an explicit non-negative rotation index for deterministic runs. |
+| `--fail-fast` | Stop after the first fatal failed individual run. |
+| `--plan-only` | Print and summarize planned runs without executing provider calls. |
+| `--max-completion-tokens` | Forward a completion-token cap to `run_check_agent.py`. |
+| `--allow-rejected-check-outputs` | Treat validation-rejected LLM outputs as nonfatal and preserve invalid artifacts. |
+
+### `run_check_agent.py`
+
+| Option | Purpose |
+|---|---|
+| `--agent` | Select `page-hygiene-checker` or `language-style-checker`. |
+| `--page` | Select the repository-relative canonical stereotype page. |
+| `--provider` | Select the LLM provider adapter. |
+| `--model` | Select the provider-specific model name. |
+| `--output` | Set the generated issue-comment output path. |
+| `--prompt` | Override the configured prompt path. |
+| `--prompt-id` | Override prompt metadata. |
+| `--commit-sha` | Override the commit SHA metadata; otherwise `git rev-parse HEAD` is used. |
+| `--review-date` | Override the review date in `YYYY-MM-DD` form. |
+| `--max-completion-tokens` | Set the provider completion-token cap. |
+
+### `issue_manager.py`
+
+| Option | Purpose |
+|---|---|
+| `--comment` | Select the generated Markdown issue-comment file. |
+| `--repo` | Select the GitHub repository in `owner/name` form. |
+| `--label` | Apply one or more labels when creating a new issue. |
+| `--dry-run` | Print the derived issue/comment action without calling GitHub. |
+| `--post-empty` | Create or post even when `Signal count` is `0`; by default, zero-signal comments are posted only if the issue already exists. |
 
 ## Execution policy
 
@@ -1148,10 +1221,10 @@ Scheduled check-agent signal collector
 It runs on this schedule:
 
 ```text
-13,33,53 * * * *
+13,43 * * * *
 ```
 
-That means it is scheduled every 20 minutes, at minutes 13, 33, and 53 UTC.
+That means it is scheduled every 30 minutes, at minutes 13 and 43 UTC.
 
 The workflow is also manually triggerable through `workflow_dispatch`.
 
@@ -1171,8 +1244,7 @@ Scheduled provider/model rotation:
 
 ```text
 groq:llama-3.3-70b-versatile
-groq:openai/gpt-oss-20b
-gemini:gemini-2.5-flash
+gemini:gemini-3.5-flash
 ```
 
 Effective scheduled defaults:
@@ -1184,7 +1256,7 @@ rotation_seed: hourly
 max_runs: 1
 sleep_seconds: 0
 agents: page-hygiene-checker,language-style-checker
-provider/model rotation: groq:llama-3.3-70b-versatile, groq:openai/gpt-oss-20b, gemini:gemini-2.5-flash
+provider/model rotation: groq:llama-3.3-70b-versatile, gemini:gemini-3.5-flash
 pages: all canonical class and relation stereotype pages, excluding index.md
 ```
 
@@ -1270,12 +1342,12 @@ The workflow uploads `.tmp/phase-2` as an artifact even if the check-agent run f
 
 Earlier operational notes reported that recent Phase 2 Gemini testing showed:
 
-- successful GitHub Actions execution for `gemini-2.5-flash`;
+- earlier successful GitHub Actions execution for `gemini-2.5-flash`; the current scheduled workflow selects `gemini-3.5-flash`;
 - valid generated issue-comment structure after adding reduced-thinking configuration and increasing Gemini completion tokens;
 - transient Gemini provider failures with `503 UNAVAILABLE`;
 - validation rejections caused by overly long `Location` fragments before the prompt target was tightened from 160 characters to 140 characters.
 
-These are operational observations retained from the earlier documentation. They are not guaranteed future behavior and were not independently revalidated by this documentation update.
+These are operational observations retained from earlier documentation. They are not guaranteed future behavior and were not independently revalidated by this documentation update. The current scheduled workflow should be treated as authoritative for current provider/model rotation.
 
 ## Manual signal-review and issue-resolution prompt support
 
@@ -1445,8 +1517,8 @@ Completed:
 - `issue_manager.py` updates matching existing comments instead of posting duplicates;
 - `.github/workflows/check-agent-signal-collector.yml` runs scheduled rotating LLM check-agent collection;
 - scheduled runs can create or update GitHub issues/comments in `post` mode;
-- scheduled provider/model rotation includes Groq and Gemini;
-- Gemini uses `gemini-2.5-flash` as the recommended scheduled default;
+- scheduled provider/model rotation includes `groq:llama-3.3-70b-versatile` and `gemini:gemini-3.5-flash`;
+- Gemini uses `gemini-3.5-flash` as the current scheduled default;
 - Gemini runs use `max_completion_tokens=8000` in the canonical workflow when no manual override is supplied;
 - generated output paths are ignored by `.gitignore`;
 - `close-page-hygiene-signal-issue-v1.0.0.md` exists as the manual issue-review and resolution prompt for `page-hygiene-checker` issues;
@@ -1476,19 +1548,19 @@ Deferred outside Phase 2:
 
 ## Recommended next implementation steps
 
-### Step 1 — Replace the stale Phase 2 documentation
+### Step 1 — Keep Phase 2 documentation aligned with active workflow defaults
 
-Replace the repository's current Phase 2 documentation with this updated version.
+When workflow cadence, provider/model rotation, dependency bounds, prompt IDs, output paths, or runner parameters change, update this page and the project phases overview in the same commit.
 
 Suggested commit message:
 
 ```bash
-docs(phase-2): align documentation with current signal-review prompts
+docs(phase-2): align methodology with current check-agent workflow
 ```
 
 ### Step 2 — Clean up non-canonical Phase 2 support artifacts
 
-Clarify or remove non-canonical support artifacts if they are no longer needed.
+Clarify, move to the archive, or remove non-canonical support artifacts if they are no longer needed.
 
 Current candidates:
 
@@ -1549,8 +1621,8 @@ Phase 2 can be considered complete when:
 - The two LLM-based check agents run periodically through the scheduled rotating workflow.
 - The active LLM providers are `groq` and `gemini`.
 - Gemini support is documented inline in this Phase 2 page rather than split into a separate provider-only methodology page.
-- The recommended Gemini model for Phase 2 check-agent automation is `gemini-2.5-flash`.
-- The scheduled provider/model rotation includes `groq:llama-3.3-70b-versatile`, `groq:openai/gpt-oss-20b`, and `gemini:gemini-2.5-flash`.
+- The current scheduled Gemini model for Phase 2 check-agent automation is `gemini-3.5-flash`.
+- The scheduled provider/model rotation includes `groq:llama-3.3-70b-versatile` and `gemini:gemini-3.5-flash`.
 - Gemini runs use a larger completion-token budget and reduced-thinking configuration to improve strict-format output reliability.
 - The prompts target 140-character `Location` fragments while the validator hard limit remains 160 characters.
 - Issue routing is one GitHub issue per page and check agent.
