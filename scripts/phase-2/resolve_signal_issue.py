@@ -50,6 +50,14 @@ REASON_CODES = {
 }
 
 ISSUE_TITLE_RE = re.compile(r"^Check signal: (?P<agent>[a-z0-9-]+): (?P<page>[^\s]+)$")
+GENERATION_REVIEW_LOG_HEADER = "| Date | Phase | Agent | Action | Prompt ID | Prompt Title | Inputs | Notes |"
+GENERATION_REVIEW_LOG_SEPARATOR_RE = re.compile(
+    r"^\|\s*-+\s*\|\s*-+\s*\|\s*-+\s*\|\s*-+\s*\|\s*-+\s*\|\s*-+\s*\|\s*-+\s*\|\s*-+\s*\|\s*$"
+)
+LEGACY_AUTO_RESOLVER_LOG_RE = re.compile(
+    r"^\s*-\s+\d{4}-\d{2}-\d{2}:\s+Phase 2 automated resolver applied accepted "
+    r"(?P<agent>[a-z0-9-]+) signal edits from issue #(?P<issue>\d+)\.\s*$"
+)
 TRANSIENT_ERROR_MARKERS = (
     "429",
     "500",
@@ -504,6 +512,92 @@ def validate_plan(plan: dict[str, Any], issue: IssueSnapshot, page_text: str) ->
         raise ResolverError("No-accepted-change comments must not contain {{PR_URL}} placeholder.")
 
 
+def markdown_table_cell(value: str) -> str:
+    """Return text that is safe enough for a simple Markdown table cell."""
+    return value.replace("\n", " ").replace("|", "\\|").strip()
+
+
+def resolver_prompt_metadata(agent: str) -> tuple[str, str]:
+    """Return the resolver prompt ID and title for a supported agent."""
+    if agent == "page-hygiene-checker":
+        return (
+            "resolve-page-hygiene-signal-issue-v1.1.0",
+            "Phase 2 automated resolver: page-hygiene signals v1.1.0",
+        )
+    if agent == "language-style-checker":
+        return (
+            "resolve-language-style-signal-issue-v1.1.0",
+            "Phase 2 automated resolver: language-style signals v1.1.0",
+        )
+    raise ResolverError(f"Unsupported resolver agent for log metadata: {agent}")
+
+
+def render_generation_review_log_row(plan: dict[str, Any]) -> str:
+    """Render the Phase 2 automated resolver log entry as a table row."""
+    stamp = datetime.now(timezone.utc).strftime("%Y-%m-%d")
+    agent = str(plan["agent"])
+    issue = int(plan["issue_number"])
+    prompt_id, prompt_title = resolver_prompt_metadata(agent)
+    cells = [
+        stamp,
+        "Phase 2",
+        "Phase 2 automated resolver",
+        "Signal resolution",
+        prompt_id,
+        prompt_title,
+        f"GitHub issue #{issue}",
+        (
+            f"Applied accepted {agent} signal edits through automated Phase 2 resolution; "
+            "not a conceptual or source-faithfulness validation."
+        ),
+    ]
+    return "| " + " | ".join(markdown_table_cell(cell) for cell in cells) + " |"
+
+
+def remove_legacy_auto_resolver_log_lines(page_text: str, plan: dict[str, Any]) -> str:
+    """Remove obsolete bullet-style automated resolver log entries for this issue."""
+    expected_agent = str(plan["agent"])
+    expected_issue = str(plan["issue_number"])
+    retained_lines: list[str] = []
+
+    for line in page_text.splitlines():
+        match = LEGACY_AUTO_RESOLVER_LOG_RE.match(line)
+        if match and match.group("agent") == expected_agent and match.group("issue") == expected_issue:
+            continue
+        retained_lines.append(line)
+
+    return "\n".join(retained_lines) + ("\n" if page_text.endswith("\n") else "")
+
+
+def append_generation_review_log_row(page_text: str, plan: dict[str, Any]) -> str:
+    """Append a resolver entry inside the Generation and Review Log table."""
+    row = render_generation_review_log_row(plan)
+    updated = remove_legacy_auto_resolver_log_lines(page_text, plan)
+
+    if row in updated:
+        return updated
+
+    lines = updated.rstrip("\n").splitlines()
+    header_index: int | None = None
+    for index, line in enumerate(lines):
+        if line.strip() == GENERATION_REVIEW_LOG_HEADER:
+            header_index = index
+
+    if header_index is None:
+        raise ResolverError("Generation and Review Log table header was not found.")
+
+    separator_index = header_index + 1
+    if separator_index >= len(lines) or not GENERATION_REVIEW_LOG_SEPARATOR_RE.match(lines[separator_index].strip()):
+        raise ResolverError("Generation and Review Log table separator row was not found.")
+
+    insert_index = separator_index + 1
+    while insert_index < len(lines) and lines[insert_index].strip().startswith("|"):
+        insert_index += 1
+
+    lines.insert(insert_index, row)
+    return "\n".join(lines).rstrip() + "\n"
+
+
 def apply_edits(page_text: str, plan: dict[str, Any]) -> str:
     updated = page_text
     for group in plan["signal_groups"]:
@@ -512,14 +606,7 @@ def apply_edits(page_text: str, plan: dict[str, Any]) -> str:
         for edit in group["edits"]:
             updated = updated.replace(edit["current_text"], edit["proposed_text"], 1)
 
-    stamp = datetime.now(timezone.utc).strftime("%Y-%m-%d")
-    log_entry = (
-        f"\n- {stamp}: Phase 2 automated resolver applied accepted "
-        f"{plan['agent']} signal edits from issue #{plan['issue_number']}.\n"
-    )
-    if "## Generation and Review Log" in updated and log_entry.strip() not in updated:
-        updated = updated.rstrip() + log_entry
-    return updated
+    return append_generation_review_log_row(updated, plan)
 
 
 def run_structure_check(page: str) -> None:
