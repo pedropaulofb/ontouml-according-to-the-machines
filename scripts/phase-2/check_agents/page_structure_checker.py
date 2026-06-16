@@ -105,9 +105,7 @@ def is_skeleton_page(markdown: str) -> bool:
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
-        description=(
-            "Run the deterministic Phase 2 page-structure checker for one " "canonical stereotype Markdown page."
-        )
+        description=("Run the deterministic Phase 2 page-structure checker for one canonical stereotype Markdown page.")
     )
 
     parser.add_argument(
@@ -216,8 +214,7 @@ def get_commit_sha(repo_root: Path, override: str | None) -> str:
         )
     except (subprocess.CalledProcessError, FileNotFoundError) as exc:
         raise PageStructureCheckerError(
-            "Could not determine commit SHA with `git rev-parse HEAD`. "
-            "Run from a Git checkout or provide --commit-sha."
+            "Could not determine commit SHA with `git rev-parse HEAD`. Run from a Git checkout or provide --commit-sha."
         ) from exc
 
     sha = result.stdout.strip()
@@ -433,8 +430,7 @@ def detect_duplicate_required_headings(headings_by_title: dict[str, list[Heading
         location="Page structure",
         observation=("The page contains duplicate required heading(s): " + "; ".join(duplicates) + "."),
         rationale=(
-            "Duplicate required headings make section boundaries ambiguous for "
-            "both readers and automated check agents."
+            "Duplicate required headings make section boundaries ambiguous for both readers and automated check agents."
         ),
         recommendation="Review the duplicate heading(s) and merge, rename, or remove the unintended duplicate.",
         suggested_repair=None,
@@ -494,7 +490,7 @@ def detect_heading_order_issue(headings_by_title: dict[str, list[Heading]]) -> S
         ),
         recommendation="Review whether the required headings should be reordered to match the canonical sequence.",
         suggested_repair=(
-            "Reorder the affected sections only after confirming that their content " "moves with the correct heading."
+            "Reorder the affected sections only after confirming that their content moves with the correct heading."
         ),
         details={"observed_order": observed_labels, "expected_order": expected_subset_order},
     )
@@ -730,7 +726,7 @@ def render_signal(signal: Signal, page_path: str) -> str:
 def render_summary(signals: list[Signal], total_signal_count: int, omitted_count: int) -> str:
     """Render the summary paragraph."""
     if not signals:
-        return "The deterministic page-structure checker found no structural signals " "within the configured scope."
+        return "The deterministic page-structure checker found no structural signals within the configured scope."
 
     omitted_sentence = (
         f" {omitted_count} additional structural signal(s) were omitted because this run is capped."

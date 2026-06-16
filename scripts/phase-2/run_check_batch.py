@@ -24,7 +24,6 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Iterable, Sequence
 
-
 DEFAULT_AGENTS = ["page-hygiene-checker", "language-style-checker"]
 DEFAULT_PROVIDER = "groq"
 DEFAULT_MODELS = ["llama-3.3-70b-versatile", "openai/gpt-oss-20b"]
@@ -96,9 +95,7 @@ class CompletedRun:
 
 
 def parse_args() -> argparse.Namespace:
-    parser = argparse.ArgumentParser(
-        description="Run Phase 2 check agents across pages, agents, and models."
-    )
+    parser = argparse.ArgumentParser(description="Run Phase 2 check agents across pages, agents, and models.")
 
     parser.add_argument(
         "--repo-root",
@@ -109,10 +106,7 @@ def parse_args() -> argparse.Namespace:
         "--page",
         action="append",
         default=[],
-        help=(
-            "Repository-relative Markdown page to check. May be passed multiple "
-            "times."
-        ),
+        help=("Repository-relative Markdown page to check. May be passed multiple times."),
     )
     parser.add_argument(
         "--pages-glob",
@@ -127,10 +121,7 @@ def parse_args() -> argparse.Namespace:
         "--exclude-page",
         action="append",
         default=[],
-        help=(
-            "Repository-relative Markdown page to exclude from the selected page set. "
-            "May be passed multiple times."
-        ),
+        help=("Repository-relative Markdown page to exclude from the selected page set. May be passed multiple times."),
     )
     parser.add_argument(
         "--exclude-pages-glob",
@@ -146,10 +137,7 @@ def parse_args() -> argparse.Namespace:
         action="append",
         default=[],
         choices=DEFAULT_AGENTS,
-        help=(
-            "Check agent to run. May be passed multiple times. Defaults to both "
-            "LLM-based Phase 2 agents."
-        ),
+        help=("Check agent to run. May be passed multiple times. Defaults to both LLM-based Phase 2 agents."),
     )
     parser.add_argument(
         "--provider",
@@ -160,10 +148,7 @@ def parse_args() -> argparse.Namespace:
         "--model",
         action="append",
         default=[],
-        help=(
-            "Model to use. May be passed multiple times. Defaults to "
-            f"{', '.join(DEFAULT_MODELS)!r}."
-        ),
+        help=(f"Model to use. May be passed multiple times. Defaults to {', '.join(DEFAULT_MODELS)!r}."),
     )
     parser.add_argument(
         "--mode",
@@ -194,18 +179,14 @@ def parse_args() -> argparse.Namespace:
     )
     parser.add_argument(
         "--summary",
-        help=(
-            "Path for the Markdown batch summary. Defaults to "
-            ".tmp/phase-2/batch-summary.md under --repo-root."
-        ),
+        help=("Path for the Markdown batch summary. Defaults to .tmp/phase-2/batch-summary.md under --repo-root."),
     )
     parser.add_argument(
         "--sleep-seconds",
         type=float,
         default=DEFAULT_SLEEP_SECONDS,
         help=(
-            "Seconds to sleep between individual LLM calls. Defaults to "
-            f"{DEFAULT_SLEEP_SECONDS:g}. Use 0 for no delay."
+            f"Seconds to sleep between individual LLM calls. Defaults to {DEFAULT_SLEEP_SECONDS:g}. Use 0 for no delay."
         ),
     )
     parser.add_argument(
@@ -231,18 +212,12 @@ def parse_args() -> argparse.Namespace:
         "--rotation-seed",
         choices=["hourly", "daily"],
         default="hourly",
-        help=(
-            "Time seed used by --selection rotate when --rotation-index is not set. "
-            "Defaults to 'hourly'."
-        ),
+        help=("Time seed used by --selection rotate when --rotation-index is not set. Defaults to 'hourly'."),
     )
     parser.add_argument(
         "--rotation-index",
         type=int,
-        help=(
-            "Explicit non-negative rotation index for --selection rotate. "
-            "Mostly useful for deterministic tests."
-        ),
+        help=("Explicit non-negative rotation index for --selection rotate. Mostly useful for deterministic tests."),
     )
     parser.add_argument(
         "--fail-fast",
@@ -429,9 +404,7 @@ def select_runs(
     if selection == "rotate":
         if rotation_index is not None and rotation_index < 0:
             raise ValueError("--rotation-index must be non-negative when provided.")
-        applied_rotation_index = (
-            rotation_index if rotation_index is not None else current_rotation_index(rotation_seed)
-        )
+        applied_rotation_index = rotation_index if rotation_index is not None else current_rotation_index(rotation_seed)
         offset = applied_rotation_index % len(selected_pool)
         selected_pool = selected_pool[offset:] + selected_pool[:offset]
     elif selection != "first":
@@ -662,10 +635,7 @@ def run_one(
         planned=planned,
         max_completion_tokens=max_completion_tokens,
     )
-    print(
-        f"[{planned.index}] {planned.agent} / {planned.provider} / "
-        f"{planned.model} / {planned.page}"
-    )
+    print(f"[{planned.index}] {planned.agent} / {planned.provider} / {planned.model} / {planned.page}")
     check_result = run_subprocess(check_command, repo_root)
     echo_child_output(check_result)
 
@@ -684,8 +654,7 @@ def run_one(
 
         if allow_rejected_check_outputs and is_rejected_check_output(check_result):
             warning = (
-                "check-agent output was rejected by validation; treating as "
-                "nonfatal and skipping issue_manager.py."
+                "check-agent output was rejected by validation; treating as nonfatal and skipping issue_manager.py."
             )
             print(
                 f"::warning title=Rejected check-agent output::{planned.agent} / "
@@ -770,9 +739,7 @@ def markdown_escape(value: object) -> str:
 def summarize_completed_runs(completed_runs: Sequence[CompletedRun]) -> tuple[int, int, int]:
     """Return accepted, rejected, and fatal-failure counts."""
     accepted_count = sum(
-        1
-        for run in completed_runs
-        if run.check_status == RUN_STATUS_OK and run.issue_status != RUN_STATUS_FAILED
+        1 for run in completed_runs if run.check_status == RUN_STATUS_OK and run.issue_status != RUN_STATUS_FAILED
     )
     rejected_count = sum(1 for run in completed_runs if run.rejected)
     fatal_failure_count = sum(1 for run in completed_runs if run.fatal_failed)
@@ -782,9 +749,7 @@ def summarize_completed_runs(completed_runs: Sequence[CompletedRun]) -> tuple[in
 def status_for_summary(completed: CompletedRun | None, plan_only: bool) -> tuple[str, str]:
     """Return status and message text for one summary row."""
     if completed is None:
-        return (RUN_STATUS_SKIPPED if plan_only else "not-run"), (
-            "planned only" if plan_only else "not executed"
-        )
+        return (RUN_STATUS_SKIPPED if plan_only else "not-run"), ("planned only" if plan_only else "not executed")
 
     if completed.check_status == RUN_STATUS_PROVIDER_FAILED:
         return RUN_STATUS_PROVIDER_FAILED, completed.message
@@ -825,8 +790,7 @@ def write_summary(
     lines.append(f"Selection: `{selection}`")
     lines.append(f"Rotation seed: `{rotation_seed}`")
     lines.append(
-        "Rotation index: "
-        + (f"`{applied_rotation_index}`" if applied_rotation_index is not None else "`n/a`")
+        "Rotation index: " + (f"`{applied_rotation_index}`" if applied_rotation_index is not None else "`n/a`")
     )
     lines.append(f"Plan only: `{str(plan_only).lower()}`")
     lines.append(f"Available runs: `{available_run_count}`")
@@ -838,9 +802,7 @@ def write_summary(
     lines.append("")
     lines.append("## Runs")
     lines.append("")
-    lines.append(
-        "| # | Status | Page | Agent | Provider | Model | Output | Log | Message |"
-    )
+    lines.append("| # | Status | Page | Agent | Provider | Model | Output | Log | Message |")
     lines.append("|---:|---|---|---|---|---|---|---|---|")
 
     completed_by_index = {run.planned.index: run for run in completed_runs}
@@ -1000,8 +962,7 @@ def main() -> int:
     rejected_outputs = [completed for completed in completed_runs if completed.rejected]
     if rejected_outputs:
         print(
-            "Batch completed successfully with "
-            f"{len(rejected_outputs)} nonfatal rejected check-agent output(s).",
+            f"Batch completed successfully with {len(rejected_outputs)} nonfatal rejected check-agent output(s).",
             file=sys.stderr,
         )
         return 0

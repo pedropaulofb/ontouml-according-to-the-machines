@@ -36,9 +36,7 @@ def _api_key() -> str:
     """Return the configured Gemini API key or raise a provider error."""
     key = os.getenv("GOOGLE_API_KEY") or os.getenv("GEMINI_API_KEY")
     if not key:
-        raise GeminiProviderError(
-            "Neither GOOGLE_API_KEY nor GEMINI_API_KEY environment variable is set."
-        )
+        raise GeminiProviderError("Neither GOOGLE_API_KEY nor GEMINI_API_KEY environment variable is set.")
     return key
 
 
@@ -140,10 +138,7 @@ def _generate_content_with_retries(
     if last_exc is None:
         raise GeminiProviderError("Gemini API call failed without an exception.")
 
-    raise GeminiProviderError(
-        "Gemini API call failed after "
-        f"{attempts_made} attempt(s): {last_exc}"
-    ) from last_exc
+    raise GeminiProviderError(f"Gemini API call failed after {attempts_made} attempt(s): {last_exc}") from last_exc
 
 
 def generate_review(

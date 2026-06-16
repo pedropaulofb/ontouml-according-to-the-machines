@@ -1,0 +1,22 @@
+[tool.ruff]
+line-length = 120
+target-version = "py312"
+extend-exclude = [
+  ".tmp",
+  "archive",
+  "scripts/local",
+  "site",
+]
+
+[tool.ruff.lint]
+select = [
+  "E4",
+  "E7",
+  "E9",
+  "F",
+  "I",
+]
+fixable = ["ALL"]
+
+[tool.ruff.format]
+line-ending = "lf"

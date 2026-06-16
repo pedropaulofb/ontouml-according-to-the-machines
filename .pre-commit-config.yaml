@@ -1,0 +1,66 @@
+minimum_pre_commit_version: "4.0.0"
+default_stages:
+  - pre-commit
+
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v5.0.0
+    hooks:
+      - id: trailing-whitespace
+        args:
+          - --markdown-linebreak-ext=md
+      - id: end-of-file-fixer
+      - id: mixed-line-ending
+        args:
+          - --fix=lf
+      - id: check-yaml
+      - id: check-json
+      - id: check-toml
+      - id: check-merge-conflict
+      - id: check-added-large-files
+        args:
+          - --maxkb=50000
+      - id: check-case-conflict
+      - id: detect-private-key
+
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.9.10
+    hooks:
+      - id: ruff
+        args:
+          - --fix
+        files: ^scripts/.*\.py$
+        exclude: ^scripts/local/
+      - id: ruff-format
+        files: ^scripts/.*\.py$
+        exclude: ^scripts/local/
+
+  - repo: https://github.com/rhysd/actionlint
+    rev: v1.7.12
+    hooks:
+      - id: actionlint
+
+  - repo: local
+    hooks:
+      - id: python-compile-scripts
+        name: Compile Python scripts
+        entry: python scripts/pre_commit/compile_python_scripts.py
+        language: system
+        pass_filenames: false
+        files: ^scripts/.*\.py$
+        exclude: ^scripts/local/
+
+      - id: page-structure-checker
+        name: Check canonical stereotype page structure
+        entry: python scripts/pre_commit/check_page_structure.py
+        language: system
+        files: ^docs/stereotypes/(classes|relations)/[^/]+\.md$
+        exclude: ^docs/stereotypes/(classes|relations)/index\.md$
+
+      - id: mkdocs-build-strict
+        name: Build MkDocs site in strict mode
+        entry: mkdocs build --strict --site-dir .tmp/mkdocs-site
+        language: system
+        pass_filenames: false
+        stages:
+          - manual

@@ -15,4 +15,3 @@
 ### Consulted Sources
 
 ## Generation and Review Log
-

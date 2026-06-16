@@ -7,7 +7,6 @@ validation can be tested without consuming API quota.
 
 from __future__ import annotations
 
-
 AGENT_ID = "general-page-checker"
 PROMPT_ID = "page-reviewer-v1.0.3"
 
@@ -91,8 +90,7 @@ def generate_review(
             f"{omitted_note} This is not a substantive LLM check."
         )
         signals = "\n\n".join(
-            _build_methodology_signal(index, section)
-            for index, section in enumerate(reported_sections, start=1)
+            _build_methodology_signal(index, section) for index, section in enumerate(reported_sections, start=1)
         )
 
     return f"""## Check signal report: {agent_value} / {provider_value} / {model_value} — {review_date}

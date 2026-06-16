@@ -31,7 +31,6 @@ import sys
 from dataclasses import dataclass
 from pathlib import Path
 
-
 DEFAULT_REPO = "pedropaulofb/ontouml-according-to-the-machines"
 DEFAULT_OUTPUT_DIR = ".tmp/phase-2/page-structure-checker"
 
@@ -61,9 +60,7 @@ class PageStructureBatchError(RuntimeError):
 
 
 def parse_args() -> argparse.Namespace:
-    parser = argparse.ArgumentParser(
-        description="Run page-structure-checker once across all stereotype pages."
-    )
+    parser = argparse.ArgumentParser(description="Run page-structure-checker once across all stereotype pages.")
 
     parser.add_argument(
         "--repo",
@@ -108,10 +105,7 @@ def parse_args() -> argparse.Namespace:
         "--label",
         action="append",
         default=[],
-        help=(
-            "Optional GitHub issue label to pass to issue_manager.py when creating issues. "
-            "May be repeated."
-        ),
+        help=("Optional GitHub issue label to pass to issue_manager.py when creating issues. May be repeated."),
     )
 
     parser.add_argument(
@@ -124,10 +118,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument(
         "--only-page",
         default=None,
-        help=(
-            "Optional repository-relative page path to process only one page, "
-            "useful for testing."
-        ),
+        help=("Optional repository-relative page path to process only one page, useful for testing."),
     )
 
     parser.add_argument(
@@ -367,17 +358,9 @@ def print_summary(results: list[PageRunResult], *, dry_run: bool) -> None:
     total = len(results)
     checker_failures = [result for result in results if result.checker_return_code != 0]
     parsed_results = [result for result in results if result.signal_count is not None]
-    pages_with_signals = [
-        result for result in parsed_results if result.signal_count and result.signal_count > 0
-    ]
-    issue_manager_runs = [
-        result for result in results if result.issue_manager_return_code is not None
-    ]
-    issue_manager_failures = [
-        result
-        for result in issue_manager_runs
-        if result.issue_manager_return_code != 0
-    ]
+    pages_with_signals = [result for result in parsed_results if result.signal_count and result.signal_count > 0]
+    issue_manager_runs = [result for result in results if result.issue_manager_return_code is not None]
+    issue_manager_failures = [result for result in issue_manager_runs if result.issue_manager_return_code != 0]
 
     print(f"Pages processed: {total}")
     print(f"Checker failures: {len(checker_failures)}")
@@ -392,13 +375,7 @@ def print_summary(results: list[PageRunResult], *, dry_run: bool) -> None:
     print()
     print("Outputs:")
     for result in results:
-        signal_text = (
-            "dry-run"
-            if dry_run
-            else "unknown"
-            if result.signal_count is None
-            else str(result.signal_count)
-        )
+        signal_text = "dry-run" if dry_run else "unknown" if result.signal_count is None else str(result.signal_count)
         print(
             f"- {result.page} -> {result.output_path} ; "
             f"Signal count: {signal_text} ; Issue manager: {result.issue_manager_mode}"
@@ -472,8 +449,7 @@ def main() -> int:
             results.append(result)
 
             failed = result.checker_return_code != 0 or (
-                result.issue_manager_return_code is not None
-                and result.issue_manager_return_code != 0
+                result.issue_manager_return_code is not None and result.issue_manager_return_code != 0
             )
 
             if failed and not args.continue_on_error:
@@ -484,10 +460,7 @@ def main() -> int:
 
         has_failures = any(
             result.checker_return_code != 0
-            or (
-                result.issue_manager_return_code is not None
-                and result.issue_manager_return_code != 0
-            )
+            or (result.issue_manager_return_code is not None and result.issue_manager_return_code != 0)
             for result in results
         )
 

@@ -76,8 +76,7 @@ def _extract_content(response: Any) -> str:
         content = response.choices[0].message.content
     except Exception as exc:
         raise GroqProviderError(
-            "Groq response did not contain choices[0].message.content "
-            f"({_response_diagnostic(response)})."
+            f"Groq response did not contain choices[0].message.content ({_response_diagnostic(response)})."
         ) from exc
 
     return content if isinstance(content, str) else ""
@@ -153,10 +152,7 @@ def _generate_with_retries(
     if last_error is None:
         raise GroqProviderError("Groq API call failed without an exception.")
 
-    raise GroqProviderError(
-        "Groq API call failed after "
-        f"{attempt_number} attempt(s): {last_error}"
-    ) from last_error
+    raise GroqProviderError(f"Groq API call failed after {attempt_number} attempt(s): {last_error}") from last_error
 
 
 def generate_review(

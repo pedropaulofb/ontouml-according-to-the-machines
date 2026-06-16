@@ -43,7 +43,6 @@ import tempfile
 from dataclasses import dataclass
 from pathlib import Path
 
-
 REQUIRED_COMMENT_FRAGMENTS = [
     "### Run metadata",
     "### Summary judgment",
@@ -247,8 +246,7 @@ def require_identity_value(value: str | None, field_name: str) -> str:
 
     if "\n" in normalized or "\r" in normalized or "-->" in normalized:
         raise IssueManagerError(
-            f"Comment metadata {field_name} contains characters that cannot be used "
-            "inside a stable identity marker."
+            f"Comment metadata {field_name} contains characters that cannot be used inside a stable identity marker."
         )
 
     return normalized
@@ -340,9 +338,7 @@ def extract_review_comment_metadata(comment_text: str) -> ReviewCommentMetadata:
     try:
         signal_count = int(signal_count_raw)
     except ValueError as exc:
-        raise IssueManagerError(
-            f"Signal count is not an integer: {signal_count_raw}"
-        ) from exc
+        raise IssueManagerError(f"Signal count is not an integer: {signal_count_raw}") from exc
 
     if signal_count < 0:
         raise IssueManagerError(f"Signal count must not be negative: {signal_count}")
@@ -364,12 +360,9 @@ def derive_page_identity(reviewed_page: str) -> str:
     prefix = "docs/stereotypes/"
 
     if not normalized.startswith(prefix):
-        raise IssueManagerError(
-            "Reviewed page must be under docs/stereotypes/: "
-            f"{reviewed_page}"
-        )
+        raise IssueManagerError(f"Reviewed page must be under docs/stereotypes/: {reviewed_page}")
 
-    remainder = normalized[len(prefix):]
+    remainder = normalized[len(prefix) :]
 
     if not remainder.endswith(".md"):
         raise IssueManagerError(f"Reviewed page must be a Markdown file: {reviewed_page}")
@@ -379,8 +372,7 @@ def derive_page_identity(reviewed_page: str) -> str:
     parts = identity.split("/")
     if len(parts) != 2 or parts[0] not in {"classes", "relations"} or not parts[1]:
         raise IssueManagerError(
-            "Reviewed page must match docs/stereotypes/{classes|relations}/<id>.md: "
-            f"{reviewed_page}"
+            f"Reviewed page must match docs/stereotypes/{{classes|relations}}/<id>.md: {reviewed_page}"
         )
 
     return identity
@@ -474,10 +466,7 @@ def search_open_issue(repo: str, issue_title: str) -> GitHubIssue | None:
     )
 
     if result.returncode != 0:
-        raise IssueManagerError(
-            "Failed to search GitHub issues.\n"
-            f"{result.stderr.strip() or result.stdout.strip()}"
-        )
+        raise IssueManagerError(f"Failed to search GitHub issues.\n{result.stderr.strip() or result.stdout.strip()}")
 
     try:
         issues = json.loads(result.stdout)
@@ -562,10 +551,7 @@ def create_issue(repo: str, title: str, body: str, labels: list[str]) -> GitHubI
             )
 
         if result.returncode != 0:
-            raise IssueManagerError(
-                "Failed to create GitHub issue.\n"
-                f"{result.stderr.strip() or result.stdout.strip()}"
-            )
+            raise IssueManagerError(f"Failed to create GitHub issue.\n{result.stderr.strip() or result.stdout.strip()}")
 
         output = result.stdout.strip()
         issue_number = parse_issue_number_from_create_output(output)
@@ -573,9 +559,7 @@ def create_issue(repo: str, title: str, body: str, labels: list[str]) -> GitHubI
         if issue_number is None:
             found_issue = search_open_issue(repo, title)
             if found_issue is None:
-                raise IssueManagerError(
-                    "Issue was created, but its number could not be determined."
-                )
+                raise IssueManagerError("Issue was created, but its number could not be determined.")
             return found_issue
 
         return GitHubIssue(number=issue_number, title=title, url=output or None)
@@ -600,8 +584,7 @@ def list_issue_comments(repo: str, issue_number: int) -> list[GitHubIssueComment
 
     if result.returncode != 0:
         raise IssueManagerError(
-            "Failed to list GitHub issue comments.\n"
-            f"{result.stderr.strip() or result.stdout.strip()}"
+            f"Failed to list GitHub issue comments.\n{result.stderr.strip() or result.stdout.strip()}"
         )
 
     try:
@@ -687,8 +670,7 @@ def post_issue_comment(repo: str, issue_number: int, comment_body: str) -> None:
 
     if result.returncode != 0:
         raise IssueManagerError(
-            "Failed to post GitHub issue comment.\n"
-            f"{result.stderr.strip() or result.stdout.strip()}"
+            f"Failed to post GitHub issue comment.\n{result.stderr.strip() or result.stdout.strip()}"
         )
 
 
@@ -714,8 +696,7 @@ def update_issue_comment(repo: str, comment_id: int, comment_body: str) -> None:
 
     if result.returncode != 0:
         raise IssueManagerError(
-            "Failed to update GitHub issue comment.\n"
-            f"{result.stderr.strip() or result.stdout.strip()}"
+            f"Failed to update GitHub issue comment.\n{result.stderr.strip() or result.stdout.strip()}"
         )
 
 
@@ -757,9 +738,7 @@ def print_dry_run(
     print("If no matching comment exists, would post a new comment.")
 
     if metadata.signal_count == 0 and not post_empty:
-        print(
-            "If no issue exists, would skip issue creation because Signal count is 0."
-        )
+        print("If no issue exists, would skip issue creation because Signal count is 0.")
     else:
         print("If no issue exists, would create the issue and post a new comment.")
 

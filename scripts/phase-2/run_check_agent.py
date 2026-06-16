@@ -29,7 +29,6 @@ from datetime import date
 from pathlib import Path
 from typing import Callable
 
-
 DEFAULT_MAX_COMPLETION_TOKENS = 3000
 NO_SIGNALS_SENTENCE = "None identified within the configured check-agent scope."
 
@@ -68,9 +67,7 @@ SIGNAL_FIELD_PATTERN = re.compile(
     re.MULTILINE,
 )
 
-LOCATION_PATTERN = re.compile(
-    r'^Section: "(?P<section>.*?)"; Fragment: "(?P<fragment>.*?)"$'
-)
+LOCATION_PATTERN = re.compile(r'^Section: "(?P<section>.*?)"; Fragment: "(?P<fragment>.*?)"$')
 
 UNRESOLVED_TEMPLATE_PATTERNS = [
     "{provider}",
@@ -104,9 +101,7 @@ EXPLANATORY_PROMPT_TEXT_PATTERNS = [
     "Add at most S-002 and S-003",
 ]
 
-MARKDOWN_HEADING_PATTERN = re.compile(
-    r"^(?P<hashes>#{1,6})\s+(?P<title>.+?)\s*#*\s*$"
-)
+MARKDOWN_HEADING_PATTERN = re.compile(r"^(?P<hashes>#{1,6})\s+(?P<title>.+?)\s*#*\s*$")
 
 FENCED_BLOCK_PATTERN = re.compile(r"^\s*(```|~~~)")
 
@@ -209,9 +204,7 @@ class CheckAgentRunnerError(RuntimeError):
 
 
 def parse_args() -> argparse.Namespace:
-    parser = argparse.ArgumentParser(
-        description="Run one agent-aware LLM check against one canonical stereotype page."
-    )
+    parser = argparse.ArgumentParser(description="Run one agent-aware LLM check against one canonical stereotype page.")
 
     parser.add_argument(
         "--agent",
@@ -250,10 +243,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument(
         "--prompt-id",
         default=None,
-        help=(
-            "Optional prompt metadata override. Defaults to the selected agent's "
-            "configured prompt ID."
-        ),
+        help=("Optional prompt metadata override. Defaults to the selected agent's configured prompt ID."),
     )
     parser.add_argument(
         "--commit-sha",
@@ -269,10 +259,7 @@ def parse_args() -> argparse.Namespace:
         "--max-completion-tokens",
         type=int,
         default=DEFAULT_MAX_COMPLETION_TOKENS,
-        help=(
-            "Maximum completion tokens requested from the provider. Default: "
-            f"{DEFAULT_MAX_COMPLETION_TOKENS}."
-        ),
+        help=(f"Maximum completion tokens requested from the provider. Default: {DEFAULT_MAX_COMPLETION_TOKENS}."),
     )
 
     return parser.parse_args()
@@ -288,9 +275,7 @@ def resolve_repo_relative_path(repo_root: Path, relative_path: str) -> Path:
     candidate = Path(relative_path)
 
     if candidate.is_absolute():
-        raise CheckAgentRunnerError(
-            f"Expected repository-relative path, got absolute path: {relative_path}"
-        )
+        raise CheckAgentRunnerError(f"Expected repository-relative path, got absolute path: {relative_path}")
 
     resolved = (repo_root / candidate).resolve()
 
@@ -334,8 +319,7 @@ def get_commit_sha(repo_root: Path, override: str | None) -> str:
         )
     except (subprocess.CalledProcessError, FileNotFoundError) as exc:
         raise CheckAgentRunnerError(
-            "Could not determine commit SHA with `git rev-parse HEAD`. "
-            "Run from a Git checkout or provide --commit-sha."
+            "Could not determine commit SHA with `git rev-parse HEAD`. Run from a Git checkout or provide --commit-sha."
         ) from exc
 
     sha = result.stdout.strip()
@@ -361,9 +345,7 @@ def validate_agent_slug(agent: str) -> str:
     """Validate and return a check-agent slug."""
     normalized = agent.strip()
     if not AGENT_SLUG_PATTERN.fullmatch(normalized):
-        raise CheckAgentRunnerError(
-            "Agent must be a lowercase slug containing only letters, numbers, and hyphens."
-        )
+        raise CheckAgentRunnerError("Agent must be a lowercase slug containing only letters, numbers, and hyphens.")
     return normalized
 
 
@@ -422,9 +404,7 @@ def load_provider(provider_name: str) -> Callable[..., str]:
 
     if module_name is None:
         supported = ", ".join(sorted(SUPPORTED_PROVIDERS))
-        raise CheckAgentRunnerError(
-            f"Unsupported provider: {provider_name}. Supported providers: {supported}."
-        )
+        raise CheckAgentRunnerError(f"Unsupported provider: {provider_name}. Supported providers: {supported}.")
 
     try:
         module = importlib.import_module(module_name)
@@ -438,12 +418,9 @@ def load_provider(provider_name: str) -> Callable[..., str]:
     try:
         generate_review = getattr(module, "generate_review")
     except AttributeError as exc:
-        raise CheckAgentRunnerError(
-            f"Provider adapter {module_name!r} does not define generate_review."
-        ) from exc
+        raise CheckAgentRunnerError(f"Provider adapter {module_name!r} does not define generate_review.") from exc
 
     return generate_review
-
 
 
 def clean_metadata_value(value: str) -> str:
@@ -571,10 +548,7 @@ def remove_markdown_sections(text: str, excluded_sections: set[str]) -> str:
             heading_level = len(heading_match.group("hashes"))
             heading_title = normalize_markdown_section_title(heading_match.group("title"))
 
-            if (
-                skip_until_heading_level is not None
-                and heading_level <= skip_until_heading_level
-            ):
+            if skip_until_heading_level is not None and heading_level <= skip_until_heading_level:
                 skip_until_heading_level = None
 
             if skip_until_heading_level is None and heading_title in excluded_sections:
@@ -603,9 +577,7 @@ def scope_page_content_for_agent(
     )
 
     if not scoped_content.strip():
-        raise CheckAgentRunnerError(
-            "Language-style input scoping removed all page content; refusing to call provider."
-        )
+        raise CheckAgentRunnerError("Language-style input scoping removed all page content; refusing to call provider.")
 
     return (
         scoped_content,
@@ -616,7 +588,9 @@ def scope_page_content_for_agent(
 
 def extract_signal_fields(signal_block: str) -> list[tuple[str, str]]:
     """Extract bullet fields from one signal block in order."""
-    return [(match.group("field"), match.group("value").strip()) for match in SIGNAL_FIELD_PATTERN.finditer(signal_block)]
+    return [
+        (match.group("field"), match.group("value").strip()) for match in SIGNAL_FIELD_PATTERN.finditer(signal_block)
+    ]
 
 
 def field_value(fields: list[tuple[str, str]], field_name: str) -> str | None:
@@ -700,9 +674,7 @@ def validate_optional_replacement_fields(
     proposed = field_value(fields, "proposed_text")
 
     if (current is None) != (proposed is None):
-        errors.append(
-            f"{signal_id} must include current_text and proposed_text together, or omit both."
-        )
+        errors.append(f"{signal_id} must include current_text and proposed_text together, or omit both.")
         return
 
     if current is None or proposed is None:
@@ -760,11 +732,7 @@ def validate_signal_block(
         if field_name not in field_names:
             errors.append(f"{signal_id} is missing required field: {field_name}")
 
-    extra_fields = [
-        field_name
-        for field_name in field_names
-        if field_name not in set(required_order + optional_order)
-    ]
+    extra_fields = [field_name for field_name in field_names if field_name not in set(required_order + optional_order)]
     for field_name in extra_fields:
         errors.append(f"{signal_id} has unexpected field: {field_name}")
 
@@ -791,17 +759,12 @@ def validate_signal_block(
     if location is not None:
         location_match = LOCATION_PATTERN.fullmatch(location)
         if location_match is None:
-            errors.append(
-                f'{signal_id} has invalid Location format; expected Section: "..."; Fragment: "...".'
-            )
+            errors.append(f'{signal_id} has invalid Location format; expected Section: "..."; Fragment: "...".')
         else:
             section = location_match.group("section")
             normalized_section = normalize_markdown_section_title(section)
 
-            if (
-                contract.slug == "language-style-checker"
-                and normalized_section in LANGUAGE_STYLE_EXCLUDED_SECTIONS
-            ):
+            if contract.slug == "language-style-checker" and normalized_section in LANGUAGE_STYLE_EXCLUDED_SECTIONS:
                 errors.append(
                     f"{signal_id} is located in an excluded non-reader-facing section "
                     f"for language-style-checker: {section}"
@@ -835,18 +798,13 @@ def validate_issue_comment(
     if not text.strip():
         return ["Output is empty."]
 
-    expected_report_title = (
-        f"## Check signal report: {contract.slug} / {provider} / {model} — {review_date}"
-    )
+    expected_report_title = f"## Check signal report: {contract.slug} / {provider} / {model} — {review_date}"
     first_non_empty_line = next(
         (line.strip() for line in text.splitlines() if line.strip()),
         "",
     )
     if first_non_empty_line != expected_report_title:
-        errors.append(
-            "Report title mismatch: expected "
-            f"{expected_report_title!r}, found {first_non_empty_line!r}"
-        )
+        errors.append(f"Report title mismatch: expected {expected_report_title!r}, found {first_non_empty_line!r}")
 
     for fragment in REQUIRED_OUTPUT_FRAGMENTS:
         if fragment not in text:
@@ -880,9 +838,7 @@ def validate_issue_comment(
         if actual_value is None:
             errors.append(f"Missing metadata row: {key}")
         elif actual_value != expected_value:
-            errors.append(
-                f"Metadata mismatch for {key}: expected {expected_value}, found {actual_value}"
-            )
+            errors.append(f"Metadata mismatch for {key}: expected {expected_value}, found {actual_value}")
 
     declared_signal_count = extract_signal_count(text)
     signal_blocks = extract_signal_blocks(text)
@@ -915,16 +871,12 @@ def validate_issue_comment(
 
     if declared_signal_count is not None and declared_signal_count > 0:
         if NO_SIGNALS_SENTENCE in signals_section:
-            errors.append(
-                "Signal count is greater than 0, but the Signals section contains the no-signals sentence."
-            )
+            errors.append("Signal count is greater than 0, but the Signals section contains the no-signals sentence.")
 
         for expected_index, (signal_id, title, block_body) in enumerate(signal_blocks, start=1):
             expected_id = f"S-{expected_index:03d}"
             if signal_id != expected_id:
-                errors.append(
-                    f"Signal IDs must be sequential: expected {expected_id}, found {signal_id}."
-                )
+                errors.append(f"Signal IDs must be sequential: expected {expected_id}, found {signal_id}.")
 
             validate_signal_block(
                 signal_id=signal_id,
@@ -935,16 +887,10 @@ def validate_issue_comment(
             )
 
     for claim in find_unsafe_source_validation_claims(text):
-        errors.append(
-            "Output appears to claim use of out-of-scope evidence: "
-            f"{claim}"
-        )
+        errors.append(f"Output appears to claim use of out-of-scope evidence: {claim}")
 
     for recommendation in find_automatic_mutation_recommendations(text):
-        errors.append(
-            "Output appears to recommend repository or issue mutation: "
-            f"{recommendation}"
-        )
+        errors.append(f"Output appears to recommend repository or issue mutation: {recommendation}")
 
     return errors
 
