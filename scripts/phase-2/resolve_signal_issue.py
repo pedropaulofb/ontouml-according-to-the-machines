@@ -589,6 +589,38 @@ def create_pr(repo: str, issue: IssueSnapshot, branch_prefix: str) -> str:
     ).strip()
 
 
+def update_pr_branch(repo: str, pr_url: str) -> None:
+    """Rebase the pull request branch onto the latest base branch."""
+    run(
+        [
+            "gh",
+            "pr",
+            "update-branch",
+            pr_url,
+            "--repo",
+            repo,
+            "--rebase",
+        ]
+    )
+
+
+def enable_pr_auto_merge(repo: str, pr_url: str) -> None:
+    """Enable squash auto-merge for a pull request after required checks pass."""
+    run(
+        [
+            "gh",
+            "pr",
+            "merge",
+            pr_url,
+            "--repo",
+            repo,
+            "--auto",
+            "--squash",
+            "--delete-branch",
+        ]
+    )
+
+
 def comment_issue(repo: str, issue_number_value: int, body: str) -> None:
     with tempfile.NamedTemporaryFile("w", encoding="utf-8", delete=False) as tmp:
         tmp.write(body.rstrip() + "\n")
@@ -667,6 +699,8 @@ def main() -> int:
             page_path.write_text(updated, encoding="utf-8")
             run_structure_check(issue.reviewed_page)
             pr_url = create_pr(args.repo, issue, args.branch_prefix)
+            update_pr_branch(args.repo, pr_url)
+            enable_pr_auto_merge(args.repo, pr_url)
             comment = plan["issue_comment"].replace("{{PR_URL}}", pr_url)
             comment_and_close(args.repo, issue, comment, "completed")
         else:
