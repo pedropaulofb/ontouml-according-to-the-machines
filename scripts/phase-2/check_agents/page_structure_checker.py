@@ -11,7 +11,8 @@ It checks:
 - duplicate required headings;
 - malformed required heading levels;
 - unexpected level-2 sections;
-- empty required sections.
+- empty required sections;
+- Generation and Review Log table structure.
 
 The output is compatible with the Phase 2 signal-comment structure consumed by
 scripts/phase-2/issue_manager.py after the signal-terminology migration.
@@ -51,6 +52,24 @@ EXPECTED_H2_TITLES = {title for level, title in EXPECTED_HEADINGS if level == 2}
 
 REQUIRED_SECTION_TITLES = {title for _level, title in EXPECTED_HEADINGS}
 
+REVIEW_LOG_SECTION_TITLE = "Generation and Review Log"
+REVIEW_LOG_TABLE_HEADER = [
+    "Date",
+    "Phase",
+    "Agent",
+    "Action",
+    "Prompt ID",
+    "Prompt Title",
+    "Inputs",
+    "Notes",
+]
+REVIEW_LOG_REQUIRED_COLUMNS = {
+    "Date": 0,
+    "Phase": 1,
+    "Agent": 2,
+    "Action": 3,
+}
+
 PLACEHOLDER_TEXTS = {
     "tbd in a later phase.",
     "tbd.",
@@ -61,6 +80,15 @@ HEADING_PATTERN = re.compile(
     r"^(?P<marks>#{1,6})[ \t]+(?P<title>.*?)(?:[ \t]+#+[ \t]*)?$",
     re.MULTILINE,
 )
+
+REVIEW_LOG_BULLET_PATTERN = re.compile(
+    r"^[-*]\s+\d{4}-\d{2}-\d{2}:\s+Phase\s+2\s+automated\s+resolver\b",
+    re.IGNORECASE,
+)
+
+DATE_PATTERN = re.compile(r"^\d{4}-\d{2}-\d{2}$")
+PHASE_PATTERN = re.compile(r"^Phase\s+[1-9][0-9]*$")
+TABLE_SEPARATOR_CELL_PATTERN = re.compile(r"^:?-{3,}:?$")
 
 
 class PageStructureCheckerError(RuntimeError):
@@ -569,6 +597,200 @@ def detect_empty_required_sections(markdown: str, headings: list[Heading]) -> Si
     )
 
 
+def split_markdown_table_row(line: str) -> list[str] | None:
+    """Split a Markdown table row into cells, respecting escaped pipe characters."""
+    stripped = line.strip()
+
+    if not stripped.startswith("|") or not stripped.endswith("|"):
+        return None
+
+    cells: list[str] = []
+    current: list[str] = []
+    escaped = False
+
+    # Skip the leading pipe and split on unescaped internal pipes. The trailing
+    # pipe is not included in the range.
+    for char in stripped[1:-1]:
+        if char == "|" and not escaped:
+            cells.append("".join(current).strip().replace(r"\|", "|"))
+            current = []
+            escaped = False
+            continue
+
+        current.append(char)
+        escaped = char == "\\" and not escaped
+        if char != "\\":
+            escaped = False
+
+    cells.append("".join(current).strip().replace(r"\|", "|"))
+    return cells
+
+
+def is_review_log_separator_row(cells: list[str]) -> bool:
+    """Return whether cells form a valid Markdown table separator row."""
+    return len(cells) == len(REVIEW_LOG_TABLE_HEADER) and all(
+        TABLE_SEPARATOR_CELL_PATTERN.fullmatch(cell.strip()) for cell in cells
+    )
+
+
+def nonempty_noncomment_review_log_lines(section_text: str) -> list[tuple[int, str]]:
+    """Return non-empty non-comment lines from the review-log section body.
+
+    The returned line numbers are 1-based offsets within the section body.
+    """
+    lines: list[tuple[int, str]] = []
+
+    for index, raw_line in enumerate(section_text.splitlines(), start=1):
+        line = raw_line.strip()
+
+        if not line:
+            continue
+
+        if line.startswith("<!--") and line.endswith("-->"):
+            continue
+
+        lines.append((index, line))
+
+    return lines
+
+
+def detect_generation_review_log_table(markdown: str, headings: list[Heading]) -> Signal | None:
+    """Validate the Generation and Review Log table contract.
+
+    This check intentionally treats the review log as part of the deterministic
+    stereotype-page structure. It is skipped for explicit skeleton pages because
+    those pages may intentionally contain empty required sections.
+    """
+    if is_skeleton_page(markdown):
+        return None
+
+    matching_headings = [
+        heading for heading in headings if heading.level == 2 and heading.title == REVIEW_LOG_SECTION_TITLE
+    ]
+
+    if not matching_headings:
+        return None
+
+    heading = min(matching_headings, key=lambda item: item.line)
+    markdown_lines = markdown.splitlines()
+    body = section_body(markdown_lines, heading, headings)
+    content_lines = nonempty_noncomment_review_log_lines(body)
+
+    problems: list[str] = []
+    details: dict[str, object] = {}
+
+    if not content_lines:
+        return None
+
+    header_offset, header_line = content_lines[0]
+    header_cells = split_markdown_table_row(header_line)
+
+    if header_cells != REVIEW_LOG_TABLE_HEADER:
+        problems.append("The Generation and Review Log section must start with the expected 8-column table header.")
+        details["expected_header"] = REVIEW_LOG_TABLE_HEADER
+        details["observed_header_line"] = header_line
+
+    if len(content_lines) < 2:
+        problems.append("The Generation and Review Log table is missing its separator row.")
+    else:
+        separator_offset, separator_line = content_lines[1]
+        separator_cells = split_markdown_table_row(separator_line)
+        if separator_cells is None or not is_review_log_separator_row(separator_cells):
+            problems.append(
+                "The Generation and Review Log table header must be followed by an 8-column Markdown separator row."
+            )
+            details["observed_separator_line"] = separator_line
+            details["separator_line"] = heading.line + separator_offset
+
+    malformed_rows: list[str] = []
+    non_table_lines: list[str] = []
+    bullet_log_lines: list[str] = []
+    invalid_date_rows: list[str] = []
+    invalid_phase_rows: list[str] = []
+    empty_required_cell_rows: list[str] = []
+
+    for offset, line in content_lines[2:]:
+        absolute_line = heading.line + offset
+
+        if REVIEW_LOG_BULLET_PATTERN.match(line):
+            bullet_log_lines.append(f"line {absolute_line}: `{line}`")
+
+        cells = split_markdown_table_row(line)
+        if cells is None:
+            non_table_lines.append(f"line {absolute_line}: `{line}`")
+            continue
+
+        if len(cells) != len(REVIEW_LOG_TABLE_HEADER):
+            malformed_rows.append(
+                f"line {absolute_line}: expected {len(REVIEW_LOG_TABLE_HEADER)} cells, observed {len(cells)}"
+            )
+            continue
+
+        for column_name, column_index in REVIEW_LOG_REQUIRED_COLUMNS.items():
+            if not cells[column_index].strip():
+                empty_required_cell_rows.append(f"line {absolute_line}: `{column_name}` is empty")
+
+        date_cell = cells[0].strip()
+        phase_cell = cells[1].strip()
+
+        if date_cell and not DATE_PATTERN.fullmatch(date_cell):
+            invalid_date_rows.append(f"line {absolute_line}: `{date_cell}`")
+
+        if phase_cell and not PHASE_PATTERN.fullmatch(phase_cell):
+            invalid_phase_rows.append(f"line {absolute_line}: `{phase_cell}`")
+
+    if bullet_log_lines:
+        problems.append(
+            "The Generation and Review Log section contains bullet-style automated resolver log entries outside the table."
+        )
+        details["bullet_log_lines"] = bullet_log_lines
+
+    if non_table_lines:
+        problems.append("The Generation and Review Log section contains non-table content after the table header.")
+        details["non_table_lines"] = non_table_lines
+
+    if malformed_rows:
+        problems.append("One or more Generation and Review Log rows do not have exactly 8 table cells.")
+        details["malformed_rows"] = malformed_rows
+
+    if empty_required_cell_rows:
+        problems.append("One or more Generation and Review Log rows have empty required cells.")
+        details["empty_required_cells"] = empty_required_cell_rows
+
+    if invalid_date_rows:
+        problems.append("One or more Generation and Review Log rows use a non-ISO date value.")
+        details["invalid_dates"] = invalid_date_rows
+
+    if invalid_phase_rows:
+        problems.append("One or more Generation and Review Log rows use an unexpected phase value.")
+        details["invalid_phases"] = invalid_phase_rows
+
+    if not problems:
+        return None
+
+    return make_signal(
+        title="Generation and Review Log table is malformed",
+        severity="high",
+        location=f"Section: `## {REVIEW_LOG_SECTION_TITLE}` at line {heading.line}",
+        observation=" ".join(problems),
+        rationale=(
+            "The Generation and Review Log is a structured table used to preserve "
+            "page provenance and review traceability. Non-table log entries or malformed "
+            "rows break the documented page format and can make automated edits visible "
+            "as ordinary page prose."
+        ),
+        recommendation=(
+            "Rewrite the Generation and Review Log section as a Markdown table with the "
+            "canonical 8-column header and one table row per log entry."
+        ),
+        suggested_repair=(
+            "Move any bullet-style resolver log entry into the table using the columns: "
+            "Date, Phase, Agent, Action, Prompt ID, Prompt Title, Inputs, and Notes."
+        ),
+        details=details,
+    )
+
+
 def collect_signals(markdown: str) -> list[Signal]:
     """Collect deterministic page-structure signals in priority order."""
     headings = parse_headings(markdown)
@@ -583,6 +805,7 @@ def collect_signals(markdown: str) -> list[Signal]:
 
     if not is_skeleton_page(markdown):
         detectors.append(lambda: detect_empty_required_sections(markdown, headings))
+        detectors.append(lambda: detect_generation_review_log_table(markdown, headings))
 
     detectors.append(lambda: detect_unexpected_level_two_sections(headings))
 
