@@ -1,0 +1,101 @@
+name: Phase 2 automated signal resolver
+
+on:
+  schedule:
+    - cron: "17 */4 * * *"
+  workflow_dispatch:
+    inputs:
+      issue:
+        description: "Issue number or URL to resolve. Leave empty to resolve the oldest eligible open issue."
+        required: false
+        type: string
+      provider:
+        description: "LLM provider"
+        required: false
+        default: "gemini"
+        type: choice
+        options:
+          - gemini
+          - groq
+      model:
+        description: "Provider model"
+        required: false
+        default: "gemini-3.5-flash"
+        type: string
+      dry_run:
+        description: "Generate and validate the resolution plan without GitHub writes"
+        required: false
+        default: false
+        type: boolean
+
+permissions:
+  contents: write
+  issues: write
+  pull-requests: write
+
+concurrency:
+  group: phase-2-automated-signal-resolver
+  cancel-in-progress: false
+
+jobs:
+  resolve-signal-issue:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+
+      - name: Install Python dependencies
+        run: python -m pip install -r requirements.txt
+
+      - name: Configure Git author
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+      - name: Resolve Phase 2 signal issue
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GITHUB_TOKEN: ${{ github.token }}
+          GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          ISSUE_INPUT: ${{ github.event.inputs.issue }}
+          PROVIDER_INPUT: ${{ github.event.inputs.provider }}
+          MODEL_INPUT: ${{ github.event.inputs.model }}
+          DRY_RUN_INPUT: ${{ github.event.inputs.dry_run }}
+        run: |
+          set -euo pipefail
+
+          provider="${PROVIDER_INPUT:-gemini}"
+          model="${MODEL_INPUT:-gemini-3.5-flash}"
+
+          args=(
+            --repo "${{ github.repository }}"
+            --provider "$provider"
+            --model "$model"
+          )
+
+          if [[ -n "${ISSUE_INPUT:-}" ]]; then
+            args+=(--issue "$ISSUE_INPUT")
+          fi
+
+          if [[ "${DRY_RUN_INPUT:-false}" == "true" ]]; then
+            args+=(--dry-run)
+          fi
+
+          python scripts/phase-2/resolve_signal_issue.py "${args[@]}"
+
+      - name: Upload resolver plan
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: phase-2-resolver-plan
+          path: .tmp/phase-2/resolver
+          if-no-files-found: ignore
