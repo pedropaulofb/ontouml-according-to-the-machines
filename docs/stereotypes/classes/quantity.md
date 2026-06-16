@@ -2,7 +2,7 @@
 
 ## Description
 
-Quantity is used for representing amounts or portions of matter as identifiable individuals in conceptual models. The supplied sources distinguish undifferentiated amounts of matter from model individuals with determinate identity and countability. On that basis, Quantity functions as the modeling counterpart for otherwise non-countable matter when it must be represented as an individual with identity-sensitive semantics.
+Quantity is used for representing amounts or portions of matter as identifiable individuals in conceptual models. The supplied sources distinguish undifferentiated amounts of matter from model individuals with determinate identity and countability. On that basis, Quantity functions as the modeling counterpart for matter that is not inherently countable when it must be represented as an individual with identity-sensitive semantics.
 
 Across the intermediate files, Quantity is characterized as an objectified or maximally self-connected portion of matter. One source makes this characterization explicitly topological and reserves Quantity for substantials rather than quality values or measurements. Another source cautions that Quantity should not be treated as homeomerous in a problematic infinite-divisibility sense, while still allowing quantities to be composed of other quantities.
 
@@ -43,3 +43,4 @@ TBD in a later phase.
 | Date | Phase | Agent | Action | Prompt ID | Prompt Title | Inputs | Notes |
 |---|---|---|---|---|---|---|---|
 | 2026-06-05 | Phase 1 | GPT-5.5 Thinking | Consolidation | prompt-phase-1-consolidation-v1.0.0 | Phase 1 Consolidation — Direct Main Commit for One Stereotype | 2026-06-05t0926-guizzardi-2005-thesis-chapter-05.md, 2026-06-05t0928-guizzardi-2005-thesis-chapter-06.md, 2026-06-05t0930-guizzardi-2005-thesis-chapter-08.md, 2026-06-05t1024-guizzardi-2022-ufo-full-document.md | First consolidated stereotype page generated from Phase 1 source-specific intermediate files at 2026-06-05t1819; not final expert-validated documentation. |
+- 2026-06-16: Phase 2 automated resolver applied accepted language-style-checker signal edits from issue #6.
