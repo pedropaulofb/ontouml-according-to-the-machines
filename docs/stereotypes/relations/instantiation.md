@@ -2,7 +2,7 @@
 
 ## Description
 
-Instantiation is a classification relation connecting an instance-bearing entity to a type or universal it falls under. In the supplied sources, this relation is commonly used between individuals and universals or types, and in multi-level settings it is also used between lower-order and higher-order types. The relation is symbolized as `::` in some formalizations.
+Instantiation is a classification relation connecting an instance-bearing entity to a type or universal that it falls under. In the supplied sources, this relation is commonly used between individuals and universals or types, and in multi-level settings it is also used between lower-order and higher-order types. The relation is symbolized as `::` in some formalizations.
 
 Instantiation is constrained differently from related relations. One source presents its first argument as an individual and its second argument as a universal, distinguishing it from set membership and inherence. The extension of a universal is the set of its instances, but the universal itself is not identified with that extension and must be treated intensionally. The same source also distinguishes Instantiation from exemplification: Instantiation relates an individual directly to a universal, while exemplification of a moment universal is mediated by a particular moment inhering in an individual.
 
@@ -52,3 +52,4 @@ TBD in a later phase.
 | Date | Phase | Agent | Action | Prompt ID | Prompt Title | Inputs | Notes |
 |---|---|---|---|---|---|---|---|
 | 2026-06-06 | Phase 1 | GPT-5.5 Thinking | Consolidation | prompt-phase-1-consolidation-v1.0.0 | Phase 1 Consolidation — Direct Main Commit for One Stereotype | 2026-06-05t0928-guizzardi-2005-thesis-chapter-06.md, 2026-06-05t1024-guizzardi-2022-ufo-full-document.md, 2026-06-05t1037-guizzardi-2016-events-endurants-full-document.md, 2026-06-05t1040-carvalho-2017-multi-level-ontology-based-conceptual-modeling-full-document.md, 2026-06-05t1040-guizzardi-2015-powertypes-full-document.md, 2026-06-05t1042-botti-benevides-2019-events-sroiq-full-document.md | First consolidated stereotype page generated from Phase 1 source-specific intermediate files at 2026-06-06t0056; not final expert-validated documentation. |
+- 2026-06-16: Phase 2 automated resolver applied accepted language-style-checker signal edits from issue #15.
