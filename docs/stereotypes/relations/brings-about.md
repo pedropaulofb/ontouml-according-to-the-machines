@@ -6,17 +6,17 @@ BringsAbout relates an Event to a Situation that results from the Event's occurr
 
 Several source-specific accounts treat BringsAbout as part of a theory of events as changes in the world. In this view, events map the world from situations that activate dispositions or trigger events to situations brought about by those events. BringsAbout therefore links an Event to the resulting Situation, rather than directly to an enduring entity. One source further describes brought-about situations as situations in which endurants may be created, destroyed, changed, or participate in specific ways.
 
-The formal accounts represented in the intermediate files characterize each Event as bringing about a unique Situation. One source describes this as a unique maximal Situation embodying the Event's effects at the moment it ends, while another states that each Event brings about exactly one Situation in its FOL formalization.
+Formal accounts characterize each Event as bringing about a unique Situation. One source describes this as a unique maximal Situation embodying the Event's effects at the moment it ends, while another states that each Event brings about exactly one Situation in its FOL formalization.
 
 BringsAbout is also used in source accounts of causation between events. A common pattern is that one Event brings about a Situation and that Situation triggers, or activates dispositions manifested as, another Event; under the relevant source accounts, the first Event then causes or directly causes the second. One source also uses BringsAbout in the definition of HistoricalDependence, where an Event or one of its parts brings about a Situation that triggers another Event, or brings about a Situation necessary for such triggering.
 
 ## Stereotype Profile
 
-TBD in a later phase.
+To be determined.
 
 ## Examples
 
-TBD in a later phase.
+To be determined.
 
 ## References
 
@@ -48,3 +48,4 @@ TBD in a later phase.
 | Date | Phase | Agent | Action | Prompt ID | Prompt Title | Inputs | Notes |
 |---|---|---|---|---|---|---|---|
 | 2026-06-05 | Phase 1 | GPT-5.5 Thinking | Consolidation | prompt-phase-1-consolidation-v1.0.0 | Phase 1 Consolidation — Direct Main Commit for One Stereotype | 2026-06-05t1024-guizzardi-2013-events-full-document.md, 2026-06-05t1031-almeida-falbo-guizzardi-2019-events-as-entities-full-document.md, 2026-06-05t1037-guizzardi-2016-events-endurants-full-document.md, 2026-06-05t1042-botti-benevides-2019-events-sroiq-full-document.md | Corrected consolidated stereotype page generated from Phase 1 source-specific intermediate files at 2026-06-05t2319; not final expert-validated documentation. Supersedes prior incomplete consolidation; skeletal initial-state limitation bypassed at user request. |
+| 2026-06-17 | Phase 2 | Phase 2 automated resolver | Signal resolution | resolve-language-style-signal-issue-v1.2.0 | Phase 2 automated resolver: language-style signals v1.2.0 | GitHub issue #14 | Applied accepted language-style-checker signal edits through automated Phase 2 resolution; not a conceptual or source-faithfulness validation. |
