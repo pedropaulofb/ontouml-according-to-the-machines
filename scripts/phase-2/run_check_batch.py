@@ -143,7 +143,11 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument(
         "--allow-provider-failures",
         action="store_true",
-        help="Treat provider/model call failures as nonfatal so scheduled rotation can continue in later runs.",
+        help=(
+            "Treat transient provider-side availability failures as nonfatal. "
+            "Quota, rate-limit, authentication, configuration, and request-shape "
+            "failures remain fatal."
+        ),
     )
     return parser.parse_args()
 
@@ -279,29 +283,145 @@ def is_rejected_check_output(result: subprocess.CompletedProcess[str]) -> bool:
     return result.returncode != 0 and CHECK_VALIDATION_FAILURE_MARKER in result.stderr
 
 
-def provider_failure_message(result: subprocess.CompletedProcess[str]) -> str | None:
+@dataclass(frozen=True)
+class ProviderFailureClassification:
+    """User-facing classification for one provider-call failure."""
+
+    kind: str
+    message: str
+    nonfatal_when_allowed: bool
+
+
+NONFATAL_PROVIDER_FAILURE_KINDS = {
+    "provider_unavailable",
+    "empty_response",
+}
+
+
+def explicit_provider_error_kind(stderr: str) -> str | None:
+    """Return a provider_error_kind marker emitted by provider adapters, if present."""
+    match = re.search(r"provider_error_kind=([a-z_]+)", stderr.lower())
+    return match.group(1) if match else None
+
+
+def classify_provider_failure(result: subprocess.CompletedProcess[str]) -> ProviderFailureClassification | None:
+    """Classify provider-call failures into nonfatal provider-side noise or actionable failures.
+
+    Only transient provider availability/capacity failures are allowed to become
+    nonfatal. Quota/rate-limit, authentication, configuration, request-size, and
+    unknown failures remain fatal because they usually require repository or
+    workflow action.
+    """
     if result.returncode == 0:
         return None
+
     stderr = result.stderr.strip()
     if CHECK_VALIDATION_FAILURE_MARKER in stderr or "Provider call failed:" not in stderr:
         return None
 
     lower = stderr.lower()
-    if "request too large" in lower or "error code: 413" in lower or "context length" in lower:
-        return "Provider call failed. Reason: request_too_large. Suggested remediation: reduce --max-completion-tokens, reduce input scope, or remove the model from rotation."
-    if "empty response" in lower:
-        return "Provider call failed. Reason: empty_response. Suggested remediation: retry later or remove the model from rotation if empty responses persist."
-    if (
-        "429" in lower
-        or "rate_limit" in lower
-        or "rate limit" in lower
-        or "quota" in lower
-        or "resource_exhausted" in lower
-    ):
-        return "Provider call failed. Reason: rate_or_quota_limited. Suggested remediation: reduce workflow frequency or remove the model from rotation."
-    if "environment variable is not set" in lower:
-        return "Provider call failed. Reason: missing_provider_secret. Suggested remediation: configure the required repository secret or remove the provider/model from rotation."
-    return "Provider call failed. Reason: provider_call_failed. Suggested remediation: inspect the per-run log stderr."
+    kind = explicit_provider_error_kind(lower)
+
+    if kind is None:
+        if any(
+            marker in lower
+            for marker in (
+                "429",
+                "rate_limit",
+                "rate limit",
+                "quota",
+                "resource_exhausted",
+                "too many requests",
+                "tpm",
+                "rpm",
+                "tokens per minute",
+                "requests per day",
+            )
+        ):
+            kind = "rate_or_quota_limited"
+        elif any(
+            marker in lower
+            for marker in (
+                "environment variable is not set",
+                "invalid api key",
+                "authentication",
+                "unauthorized",
+                "forbidden",
+                "401",
+                "403",
+            )
+        ):
+            kind = "auth_or_configuration"
+        elif any(
+            marker in lower
+            for marker in ("request too large", "error code: 413", "context length", "maximum context length")
+        ):
+            kind = "request_too_large"
+        elif "empty response" in lower:
+            kind = "empty_response"
+        elif any(
+            marker in lower
+            for marker in (
+                "too busy",
+                "busy",
+                "overloaded",
+                "capacity",
+                "temporarily unavailable",
+                "service_unavailable",
+                "unavailable",
+                "timeout",
+                "timed out",
+                "connection reset",
+                "connection error",
+                "500",
+                "502",
+                "503",
+                "504",
+            )
+        ):
+            kind = "provider_unavailable"
+        else:
+            kind = "unknown_provider_error"
+
+    nonfatal_when_allowed = kind in NONFATAL_PROVIDER_FAILURE_KINDS
+
+    if kind == "provider_unavailable":
+        message = (
+            "Provider call failed. Reason: provider_unavailable. This usually indicates "
+            "temporary provider-side load, outage, timeout, or capacity pressure."
+        )
+    elif kind == "empty_response":
+        message = (
+            "Provider call failed. Reason: empty_response. The provider returned no usable text; "
+            "this is treated as provider-side noise when transient provider failures are allowed."
+        )
+    elif kind == "rate_or_quota_limited":
+        message = (
+            "Provider call failed. Reason: rate_or_quota_limited. Action required: reduce workflow "
+            "frequency, reduce token usage, change model rotation, or adjust provider quota."
+        )
+    elif kind == "auth_or_configuration":
+        message = (
+            "Provider call failed. Reason: auth_or_configuration. Action required: check repository "
+            "secrets, API keys, provider access, or workflow configuration."
+        )
+    elif kind == "request_too_large":
+        message = (
+            "Provider call failed. Reason: request_too_large. Action required: reduce "
+            "--max-completion-tokens, reduce input scope, or remove this model from rotation."
+        )
+    elif kind == "invalid_request":
+        message = (
+            "Provider call failed. Reason: invalid_request. Action required: inspect provider/model "
+            "parameters, model availability, request payload, or SDK compatibility."
+        )
+    else:
+        message = (
+            "Provider call failed. Reason: unknown_provider_error. Action required: inspect the "
+            "per-run log stderr before suppressing this failure type."
+        )
+
+    return ProviderFailureClassification(kind=kind, message=message, nonfatal_when_allowed=nonfatal_when_allowed)
 
 
 def write_log(
@@ -453,11 +573,15 @@ def run_one(
                 planned, RUN_STATUS_REJECTED, check_result.returncode, RUN_STATUS_SKIPPED, None, warning
             )
 
-        provider_failure = provider_failure_message(check_result)
+        provider_failure = classify_provider_failure(check_result)
         if provider_failure is not None:
-            severity = "nonfatal" if allow_provider_failures else "fatal"
+            provider_failure_is_nonfatal = allow_provider_failures and provider_failure.nonfatal_when_allowed
+            severity = "nonfatal" if provider_failure_is_nonfatal else "fatal"
+            annotation = "warning" if provider_failure_is_nonfatal else "error"
             print(
-                f"::warning title=Provider failure ({severity})::{planned.agent} / {planned.provider} / {planned.model} / {planned.page}: {provider_failure}",
+                f"::{annotation} title=Provider failure ({severity}: {provider_failure.kind})::"
+                f"{planned.agent} / {planned.provider} / {planned.model} / {planned.page}: "
+                f"{provider_failure.message}",
                 file=sys.stderr,
             )
             return CompletedRun(
@@ -466,8 +590,8 @@ def run_one(
                 check_result.returncode,
                 RUN_STATUS_SKIPPED,
                 None,
-                provider_failure,
-                provider_failure_is_nonfatal=allow_provider_failures,
+                provider_failure.message,
+                provider_failure_is_nonfatal=provider_failure_is_nonfatal,
             )
 
         return CompletedRun(

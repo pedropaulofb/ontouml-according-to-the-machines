@@ -48,6 +48,10 @@ TRANSIENT_ERROR_MARKERS = (
     "temporarily unavailable",
     "timeout",
     "timed out",
+    "too busy",
+    "overloaded",
+    "capacity",
+    "try again later",
 )
 
 NON_RETRYABLE_ERROR_MARKERS = (
@@ -142,6 +146,30 @@ def _is_retryable_error(exc: Exception) -> bool:
     return any(marker in diagnostic_upper for marker in TRANSIENT_ERROR_MARKERS)
 
 
+def _provider_error_kind(exc: Exception) -> str:
+    """Return a stable error category for workflow-level failure handling."""
+    diagnostic_lower = _diagnostic(exc).lower()
+    diagnostic_upper = _diagnostic(exc).upper()
+    if any(marker in diagnostic_lower for marker in QUOTA_OR_RATE_LIMIT_MARKERS):
+        return "rate_or_quota_limited"
+    if "empty response" in diagnostic_lower:
+        return "empty_response"
+    if "request too large" in diagnostic_lower or "413" in diagnostic_lower or "context length" in diagnostic_lower:
+        return "request_too_large"
+    if any(
+        marker in diagnostic_lower
+        for marker in ("invalid api key", "authentication", "unauthorized", "forbidden", "401", "403")
+    ):
+        return "auth_or_configuration"
+    if any(
+        marker in diagnostic_lower for marker in ("400", "404", "422", "invalid request", "bad request", "not found")
+    ):
+        return "invalid_request"
+    if any(marker in diagnostic_upper for marker in TRANSIENT_ERROR_MARKERS):
+        return "provider_unavailable"
+    return "unknown_provider_error"
+
+
 def _generate_content_with_retries(
     *,
     client: genai.Client,
@@ -170,7 +198,10 @@ def _generate_content_with_retries(
 
     if last_exc is None:
         raise GeminiProviderError("Gemini API call failed without an exception.")
-    raise GeminiProviderError(f"Gemini API call failed after {attempts_made} attempt(s): {last_exc}") from last_exc
+    kind = _provider_error_kind(last_exc)
+    raise GeminiProviderError(
+        f"Gemini API call failed after {attempts_made} attempt(s); provider_error_kind={kind}: {last_exc}"
+    ) from last_exc
 
 
 def generate_review(

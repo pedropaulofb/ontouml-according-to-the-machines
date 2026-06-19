@@ -41,6 +41,10 @@ TRANSIENT_ERROR_MARKERS = (
     "timed out",
     "connection error",
     "connection reset",
+    "too busy",
+    "overloaded",
+    "capacity",
+    "try again later",
     "unavailable",
 )
 
@@ -89,6 +93,27 @@ def _is_retryable_exception(exc: Exception) -> bool:
     if any(marker in diagnostic for marker in NON_RETRYABLE_ERROR_MARKERS):
         return False
     return any(marker in diagnostic for marker in TRANSIENT_ERROR_MARKERS)
+
+
+def _provider_error_kind(exc: Exception) -> str:
+    """Return a stable error category for workflow-level failure handling."""
+    diagnostic = _diagnostic(exc)
+    if _is_quota_or_rate_limit_error(exc):
+        return "rate_or_quota_limited"
+    if "empty response" in diagnostic:
+        return "empty_response"
+    if "request too large" in diagnostic or "413" in diagnostic or "context length" in diagnostic:
+        return "request_too_large"
+    if any(
+        marker in diagnostic
+        for marker in ("invalid api key", "authentication", "unauthorized", "forbidden", "401", "403")
+    ):
+        return "auth_or_configuration"
+    if any(marker in diagnostic for marker in ("400", "404", "422", "invalid request", "bad request", "not found")):
+        return "invalid_request"
+    if any(marker in diagnostic for marker in TRANSIENT_ERROR_MARKERS):
+        return "provider_unavailable"
+    return "unknown_provider_error"
 
 
 def _response_diagnostic(response: Any) -> str:
@@ -170,6 +195,7 @@ def generate_chat_completion(
     if last_error is None:
         raise OpenAICompatibleProviderError(f"{provider_label} API call failed without an exception.")
 
+    kind = _provider_error_kind(last_error)
     raise OpenAICompatibleProviderError(
-        f"{provider_label} API call failed after {attempt_number} attempt(s): {last_error}"
+        f"{provider_label} API call failed after {attempt_number} attempt(s); provider_error_kind={kind}: {last_error}"
     ) from last_error

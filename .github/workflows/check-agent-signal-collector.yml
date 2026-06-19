@@ -192,8 +192,7 @@ jobs:
           uses_sambanova=false
 
           if [[ -n "$provider_model_specs" ]]; then
-            provider_model_specs_normalized="${provider_model_specs//$'\n'/,}"
-            IFS=',' read -ra specs <<< "$provider_model_specs_normalized"
+            IFS=',' read -ra specs <<< "$provider_model_specs"
             for spec in "${specs[@]}"; do
               spec="$(trim "$spec")"
               if [[ -z "$spec" ]]; then
