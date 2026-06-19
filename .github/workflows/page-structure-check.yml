@@ -1,4 +1,4 @@
-name: Phase 2 page-structure check
+name: Page-structure check
 
 on:
   pull_request:
