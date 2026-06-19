@@ -43,31 +43,23 @@ REQUIRED_OUTPUT_FRAGMENTS = [
 ]
 
 FORBIDDEN_CHECKBOX_PATTERNS = ["- [ ]", "- [x]", "- [X]"]
-
 SEVERITY_VALUES = {"low", "medium", "high"}
 CONFIDENCE_VALUES = {"low", "medium", "high"}
 
-SIGNAL_HEADING_PATTERN = re.compile(
-    r"^####\s+(S-\d{3})\s+—\s+(.+)$",
-    re.MULTILINE,
-)
-
-SIGNAL_COUNT_PATTERN = re.compile(
-    r"^\|\s*Signal count\s*\|\s*`?(\d+)`?\s*\|\s*$",
-    re.IGNORECASE | re.MULTILINE,
-)
-
-METADATA_ROW_PATTERN = re.compile(
-    r"^\|\s*(?P<key>[^|]+?)\s*\|\s*(?P<value>.*?)\s*\|\s*$",
-    re.MULTILINE,
-)
-
-SIGNAL_FIELD_PATTERN = re.compile(
-    r"^- (?P<field>[A-Za-z_]+): (?P<value>.*)$",
-    re.MULTILINE,
-)
-
+SIGNAL_HEADING_PATTERN = re.compile(r"^####\s+(S-\d{3})\s+—\s+(.+)$", re.MULTILINE)
+SIGNAL_COUNT_PATTERN = re.compile(r"^\|\s*Signal count\s*\|\s*`?(\d+)`?\s*\|\s*$", re.IGNORECASE | re.MULTILINE)
+METADATA_ROW_PATTERN = re.compile(r"^\|\s*(?P<key>[^|]+?)\s*\|\s*(?P<value>.*?)\s*\|\s*$", re.MULTILINE)
+SIGNAL_FIELD_PATTERN = re.compile(r"^- (?P<field>[A-Za-z_]+): (?P<value>.*)$", re.MULTILINE)
 LOCATION_PATTERN = re.compile(r'^Section: "(?P<section>.*?)"; Fragment: "(?P<fragment>.*?)"$')
+MARKDOWN_HEADING_PATTERN = re.compile(r"^(?P<hashes>#{1,6})\s+(?P<title>.+?)\s*#*\s*$")
+FENCED_BLOCK_PATTERN = re.compile(r"^\s*(```|~~~)")
+
+LANGUAGE_STYLE_EXCLUDED_SECTIONS = {
+    "references",
+    "direct citations",
+    "consulted sources",
+    "generation and review log",
+}
 
 UNRESOLVED_TEMPLATE_PATTERNS = [
     "{provider}",
@@ -101,17 +93,6 @@ EXPLANATORY_PROMPT_TEXT_PATTERNS = [
     "Add at most S-002 and S-003",
 ]
 
-MARKDOWN_HEADING_PATTERN = re.compile(r"^(?P<hashes>#{1,6})\s+(?P<title>.+?)\s*#*\s*$")
-
-FENCED_BLOCK_PATTERN = re.compile(r"^\s*(```|~~~)")
-
-LANGUAGE_STYLE_EXCLUDED_SECTIONS = {
-    "references",
-    "direct citations",
-    "consulted sources",
-    "generation and review log",
-}
-
 SOURCE_VALIDATION_CLAIM_PATTERN = re.compile(
     r"\b(validated|verified|checked|confirmed|compared|reviewed|consulted|inspected)\b"
     r"[^.\n]{0,120}"
@@ -119,13 +100,11 @@ SOURCE_VALIDATION_CLAIM_PATTERN = re.compile(
     r"external sources?|external OntoUML materials?|related pages?|previous issue comments?)\b",
     re.IGNORECASE,
 )
-
 NEGATION_NEAR_SOURCE_CLAIM_PATTERN = re.compile(
     r"\b(did not|does not|not|without|no)\b[^.\n]{0,80}"
     r"\b(validated|verify|verified|checked|check|confirmed|compared|reviewed|consulted|inspected)\b",
     re.IGNORECASE,
 )
-
 AUTOMATIC_MUTATION_PATTERN = re.compile(
     r"\b(automatically\s+)?("
     r"commit|commits|committed|"
@@ -136,11 +115,7 @@ AUTOMATIC_MUTATION_PATTERN = re.compile(
     r")\b",
     re.IGNORECASE,
 )
-
-ACTION_LINE_PATTERN = re.compile(
-    r"^- Recommendation:\s*(.+)$",
-    re.MULTILINE,
-)
+ACTION_LINE_PATTERN = re.compile(r"^- Recommendation:\s*(.+)$", re.MULTILINE)
 
 
 @dataclass(frozen=True)
@@ -159,12 +134,7 @@ AGENT_CONTRACTS: dict[str, AgentContract] = {
         slug="page-hygiene-checker",
         prompt_path="prompts/phase-2/page-hygiene-checker-v1.0.2.md",
         prompt_id="page-hygiene-checker-v1.0.2",
-        allowed_categories={
-            "reference_hygiene",
-            "markdown_hygiene",
-            "encoding_hygiene",
-            "review_log_hygiene",
-        },
+        allowed_categories={"reference_hygiene", "markdown_hygiene", "encoding_hygiene", "review_log_hygiene"},
         summary_sentences={
             "No page-hygiene signals were identified within the configured scope.",
             "Minor page-hygiene signals were identified; they mainly affect readability or reviewability.",
@@ -176,13 +146,7 @@ AGENT_CONTRACTS: dict[str, AgentContract] = {
         slug="language-style-checker",
         prompt_path="prompts/phase-2/language-style-checker-v1.0.2.md",
         prompt_id="language-style-checker-v1.0.2",
-        allowed_categories={
-            "grammar",
-            "spelling",
-            "clarity",
-            "professional_style",
-            "project_self_reference",
-        },
+        allowed_categories={"grammar", "spelling", "clarity", "professional_style", "project_self_reference"},
         summary_sentences={
             "No language-style signals were identified within the configured scope.",
             "Minor language-style signals were identified; they mainly affect readability or professional style.",
@@ -192,10 +156,11 @@ AGENT_CONTRACTS: dict[str, AgentContract] = {
     ),
 }
 
-
 SUPPORTED_PROVIDERS: dict[str, str] = {
-    "groq": "providers.groq",
+    "cerebras": "providers.cerebras",
     "gemini": "providers.gemini",
+    "groq": "providers.groq",
+    "sambanova": "providers.sambanova",
 }
 
 
@@ -205,96 +170,60 @@ class CheckAgentRunnerError(RuntimeError):
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="Run one agent-aware LLM check against one canonical stereotype page.")
-
+    parser.add_argument("--agent", required=True, choices=sorted(AGENT_CONTRACTS), help="Check-agent slug to run.")
     parser.add_argument(
-        "--agent",
-        required=True,
-        choices=sorted(AGENT_CONTRACTS),
-        help="Check-agent slug to run.",
-    )
-    parser.add_argument(
-        "--page",
-        required=True,
-        help="Repository-relative path to the canonical stereotype Markdown page.",
+        "--page", required=True, help="Repository-relative path to the canonical stereotype Markdown page."
     )
     parser.add_argument(
         "--provider",
         required=True,
-        help="LLM provider adapter to use. Supported values: groq, gemini.",
+        choices=sorted(SUPPORTED_PROVIDERS),
+        help="LLM provider adapter to use.",
     )
-    parser.add_argument(
-        "--model",
-        required=True,
-        help="Provider-specific model name to use and report in metadata.",
-    )
-    parser.add_argument(
-        "--output",
-        required=True,
-        help="Path where the generated issue comment should be written.",
-    )
+    parser.add_argument("--model", required=True, help="Provider-specific model name to use and report in metadata.")
+    parser.add_argument("--output", required=True, help="Path where the generated issue comment should be written.")
     parser.add_argument(
         "--prompt",
         default=None,
-        help=(
-            "Optional repository-relative prompt path override. Defaults to the "
-            "configured prompt for the selected agent."
-        ),
+        help="Optional repository-relative prompt path override. Defaults to the configured prompt for the selected agent.",
     )
     parser.add_argument(
         "--prompt-id",
         default=None,
-        help=("Optional prompt metadata override. Defaults to the selected agent's configured prompt ID."),
+        help="Optional prompt metadata override. Defaults to the selected agent's configured prompt ID.",
     )
-    parser.add_argument(
-        "--commit-sha",
-        default=None,
-        help="Optional commit SHA override. If omitted, git rev-parse HEAD is used.",
-    )
-    parser.add_argument(
-        "--review-date",
-        default=None,
-        help="Optional review date override in YYYY-MM-DD form. Defaults to today's date.",
-    )
+    parser.add_argument("--commit-sha", default=None, help="Optional commit SHA override.")
+    parser.add_argument("--review-date", default=None, help="Optional review date override in YYYY-MM-DD form.")
     parser.add_argument(
         "--max-completion-tokens",
         type=int,
         default=DEFAULT_MAX_COMPLETION_TOKENS,
-        help=(f"Maximum completion tokens requested from the provider. Default: {DEFAULT_MAX_COMPLETION_TOKENS}."),
+        help=f"Maximum completion tokens requested from the provider. Default: {DEFAULT_MAX_COMPLETION_TOKENS}.",
     )
-
     return parser.parse_args()
 
 
 def get_repo_root() -> Path:
-    """Return the repository root based on this script's location."""
     return Path(__file__).resolve().parents[2]
 
 
 def resolve_repo_relative_path(repo_root: Path, relative_path: str) -> Path:
-    """Resolve and validate a repository-relative path."""
     candidate = Path(relative_path)
-
     if candidate.is_absolute():
         raise CheckAgentRunnerError(f"Expected repository-relative path, got absolute path: {relative_path}")
-
     resolved = (repo_root / candidate).resolve()
-
     try:
         resolved.relative_to(repo_root.resolve())
     except ValueError as exc:
         raise CheckAgentRunnerError(f"Path escapes repository root: {relative_path}") from exc
-
     return resolved
 
 
 def read_text_file(path: Path, description: str) -> str:
-    """Read a UTF-8 text file or raise a user-facing error."""
     if not path.exists():
         raise CheckAgentRunnerError(f"{description} does not exist: {path}")
-
     if not path.is_file():
         raise CheckAgentRunnerError(f"{description} is not a file: {path}")
-
     try:
         return path.read_text(encoding="utf-8")
     except UnicodeDecodeError as exc:
@@ -302,47 +231,33 @@ def read_text_file(path: Path, description: str) -> str:
 
 
 def get_commit_sha(repo_root: Path, override: str | None) -> str:
-    """Return the explicit commit SHA override or the current Git HEAD SHA."""
     if override is not None:
         sha = override.strip()
         if not sha:
             raise CheckAgentRunnerError("--commit-sha was provided but is empty.")
         return sha
-
     try:
-        result = subprocess.run(
-            ["git", "rev-parse", "HEAD"],
-            cwd=repo_root,
-            check=True,
-            capture_output=True,
-            text=True,
-        )
+        result = subprocess.run(["git", "rev-parse", "HEAD"], cwd=repo_root, check=True, capture_output=True, text=True)
     except (subprocess.CalledProcessError, FileNotFoundError) as exc:
         raise CheckAgentRunnerError(
             "Could not determine commit SHA with `git rev-parse HEAD`. Run from a Git checkout or provide --commit-sha."
         ) from exc
-
     sha = result.stdout.strip()
     if not sha:
         raise CheckAgentRunnerError("`git rev-parse HEAD` returned an empty commit SHA.")
-
     return sha
 
 
 def get_review_date(override: str | None) -> str:
-    """Return a validated review date."""
     if override is None:
         return date.today().isoformat()
-
     normalized = override.strip()
     if not re.fullmatch(r"\d{4}-\d{2}-\d{2}", normalized):
         raise CheckAgentRunnerError("--review-date must use YYYY-MM-DD format.")
-
     return normalized
 
 
 def validate_agent_slug(agent: str) -> str:
-    """Validate and return a check-agent slug."""
     normalized = agent.strip()
     if not AGENT_SLUG_PATTERN.fullmatch(normalized):
         raise CheckAgentRunnerError("Agent must be a lowercase slug containing only letters, numbers, and hyphens.")
@@ -350,7 +265,6 @@ def validate_agent_slug(agent: str) -> str:
 
 
 def derive_prompt_id(prompt_path: str) -> str:
-    """Derive a prompt ID from a prompt file path."""
     return Path(prompt_path).name.removesuffix(".md")
 
 
@@ -368,7 +282,6 @@ def build_review_input(
     page_content: str,
     input_scope_note: str,
 ) -> str:
-    """Build the complete prompt payload for provider adapters."""
     return f"""# Check-agent prompt
 
 {checker_prompt}
@@ -398,63 +311,45 @@ END_CANONICAL_STEREOTYPE_PAGE_MARKDOWN
 
 
 def load_provider(provider_name: str) -> Callable[..., str]:
-    """Load a provider adapter by name."""
     normalized = provider_name.strip().lower()
     module_name = SUPPORTED_PROVIDERS.get(normalized)
-
     if module_name is None:
         supported = ", ".join(sorted(SUPPORTED_PROVIDERS))
         raise CheckAgentRunnerError(f"Unsupported provider: {provider_name}. Supported providers: {supported}.")
-
     try:
         module = importlib.import_module(module_name)
     except ImportError as exc:
         raise CheckAgentRunnerError(
-            "Could not import provider adapter "
-            f"{normalized!r}. Check that scripts/phase-2/providers/{normalized}.py "
-            "exists and that the provider package is installed."
+            f"Could not import provider adapter {normalized!r}. Check scripts/phase-2/providers/{normalized}.py."
         ) from exc
-
     try:
-        generate_review = getattr(module, "generate_review")
+        return getattr(module, "generate_review")
     except AttributeError as exc:
         raise CheckAgentRunnerError(f"Provider adapter {module_name!r} does not define generate_review.") from exc
 
-    return generate_review
-
 
 def clean_metadata_value(value: str) -> str:
-    """Normalize a metadata-table cell value."""
     normalized = value.strip()
-
     if normalized.startswith("`") and normalized.endswith("`") and len(normalized) >= 2:
         normalized = normalized[1:-1].strip()
-
     return normalized
 
 
 def extract_metadata_table(comment_text: str) -> dict[str, str]:
-    """Extract metadata rows from all Markdown tables in the comment."""
     metadata: dict[str, str] = {}
-
     for match in METADATA_ROW_PATTERN.finditer(comment_text):
         key = clean_metadata_value(match.group("key")).lower()
         value = clean_metadata_value(match.group("value"))
-
         if key in {"field", "---"}:
             continue
-
         metadata[key] = value
-
     return metadata
 
 
 def extract_signal_count(text: str) -> int | None:
-    """Extract the declared signal count from the metadata table."""
     match = SIGNAL_COUNT_PATTERN.search(text)
     if not match:
         return None
-
     try:
         return int(match.group(1))
     except ValueError:
@@ -462,51 +357,32 @@ def extract_signal_count(text: str) -> int | None:
 
 
 def extract_summary_judgment(text: str) -> str | None:
-    """Extract the first non-empty paragraph under Summary judgment."""
-    match = re.search(
-        r"^### Summary judgment\s*\n(?P<body>.*?)(?=^###\s+|\Z)",
-        text,
-        flags=re.MULTILINE | re.DOTALL,
-    )
+    match = re.search(r"^### Summary judgment\s*\n(?P<body>.*?)(?=^###\s+|\Z)", text, flags=re.MULTILINE | re.DOTALL)
     if not match:
         return None
-
     for line in match.group("body").splitlines():
         stripped = line.strip()
         if stripped:
             return stripped
-
     return None
 
 
 def extract_signals_section(text: str) -> str:
-    """Return the text after the Signals heading."""
-    match = re.search(
-        r"^### Signals\s*\n(?P<body>.*)$",
-        text,
-        flags=re.MULTILINE | re.DOTALL,
-    )
-    if not match:
-        return ""
-
-    return match.group("body").strip()
+    match = re.search(r"^### Signals\s*\n(?P<body>.*)$", text, flags=re.MULTILINE | re.DOTALL)
+    return match.group("body").strip() if match else ""
 
 
 def extract_signal_blocks(text: str) -> list[tuple[str, str, str]]:
-    """Return signal tuples as (signal_id, title, body)."""
     matches = list(SIGNAL_HEADING_PATTERN.finditer(text))
     blocks: list[tuple[str, str, str]] = []
-
     for index, match in enumerate(matches):
         block_start = match.end()
         block_end = matches[index + 1].start() if index + 1 < len(matches) else len(text)
         blocks.append((match.group(1), match.group(2).strip(), text[block_start:block_end]))
-
     return blocks
 
 
 def strip_inline_code(value: str) -> str:
-    """Strip one layer of Markdown inline code from a field value."""
     normalized = value.strip()
     if normalized.startswith("`") and normalized.endswith("`") and len(normalized) >= 2:
         return normalized[1:-1].strip()
@@ -514,87 +390,57 @@ def strip_inline_code(value: str) -> str:
 
 
 def normalize_markdown_section_title(section: str) -> str:
-    """Normalize a Markdown heading or Location section value for scope checks."""
     normalized = section.strip()
-
     while normalized.startswith("#"):
         normalized = normalized[1:].strip()
-
     normalized = re.sub(r"\s+#*$", "", normalized).strip()
     return re.sub(r"\s+", " ", normalized).lower()
 
 
 def remove_markdown_sections(text: str, excluded_sections: set[str]) -> str:
-    """Remove Markdown sections whose normalized headings are excluded.
-
-    A removed section starts at the excluded heading and continues until the next
-    heading at the same or a higher level. Headings inside fenced code blocks are
-    ignored.
-    """
     kept_lines: list[str] = []
     skip_until_heading_level: int | None = None
     in_fenced_block = False
-
     for line in text.splitlines():
         if FENCED_BLOCK_PATTERN.match(line):
             if skip_until_heading_level is None:
                 kept_lines.append(line)
             in_fenced_block = not in_fenced_block
             continue
-
         heading_match = None if in_fenced_block else MARKDOWN_HEADING_PATTERN.match(line)
-
         if heading_match is not None:
             heading_level = len(heading_match.group("hashes"))
             heading_title = normalize_markdown_section_title(heading_match.group("title"))
-
             if skip_until_heading_level is not None and heading_level <= skip_until_heading_level:
                 skip_until_heading_level = None
-
             if skip_until_heading_level is None and heading_title in excluded_sections:
                 skip_until_heading_level = heading_level
                 continue
-
         if skip_until_heading_level is None:
             kept_lines.append(line)
-
     scoped_text = "\n".join(kept_lines).strip()
     return scoped_text + "\n" if scoped_text else ""
 
 
-def scope_page_content_for_agent(
-    *,
-    contract: AgentContract,
-    page_content: str,
-) -> tuple[str, str]:
-    """Return the page content visible to the selected check agent."""
+def scope_page_content_for_agent(*, contract: AgentContract, page_content: str) -> tuple[str, str]:
     if contract.slug != "language-style-checker":
         return page_content, "full canonical stereotype page"
-
-    scoped_content = remove_markdown_sections(
-        page_content,
-        LANGUAGE_STYLE_EXCLUDED_SECTIONS,
-    )
-
+    scoped_content = remove_markdown_sections(page_content, LANGUAGE_STYLE_EXCLUDED_SECTIONS)
     if not scoped_content.strip():
         raise CheckAgentRunnerError("Language-style input scoping removed all page content; refusing to call provider.")
-
     return (
         scoped_content,
-        "reader-facing page content only; excluded References, Direct Citations, "
-        "Consulted Sources, and Generation and Review Log sections",
+        "reader-facing page content only; excluded References, Direct Citations, Consulted Sources, and Generation and Review Log sections",
     )
 
 
 def extract_signal_fields(signal_block: str) -> list[tuple[str, str]]:
-    """Extract bullet fields from one signal block in order."""
     return [
         (match.group("field"), match.group("value").strip()) for match in SIGNAL_FIELD_PATTERN.finditer(signal_block)
     ]
 
 
 def field_value(fields: list[tuple[str, str]], field_name: str) -> str | None:
-    """Return the first field value with the requested name."""
     for key, value in fields:
         if key == field_name:
             return value
@@ -602,89 +448,57 @@ def field_value(fields: list[tuple[str, str]], field_name: str) -> str | None:
 
 
 def find_unsafe_source_validation_claims(text: str) -> list[str]:
-    """Find non-negated claims that the model used out-of-scope sources."""
     claims: list[str] = []
-
     for match in SOURCE_VALIDATION_CLAIM_PATTERN.finditer(text):
         window_start = max(0, match.start() - 120)
         window_end = min(len(text), match.end() + 40)
         context = text[window_start:window_end]
-
         if NEGATION_NEAR_SOURCE_CLAIM_PATTERN.search(context):
             continue
-
         claims.append(" ".join(match.group(0).split())[:180])
-
     return claims
 
 
 def find_automatic_mutation_recommendations(text: str) -> list[str]:
-    """Find recommendations to mutate repository or issue state."""
     recommendations: list[str] = []
-
     for match in ACTION_LINE_PATTERN.finditer(text):
         line = match.group(0)
         if AUTOMATIC_MUTATION_PATTERN.search(line):
             recommendations.append(line[:220])
-
     return recommendations
 
 
 def normalize_enum_field(text: str, field_name: str, allowed_values: set[str]) -> str:
-    """Wrap allowed enum values in backticks for one signal field."""
     allowed_pattern = "|".join(re.escape(value) for value in sorted(allowed_values))
-    return re.sub(
-        rf"^- {field_name}: ({allowed_pattern})\s*$",
-        rf"- {field_name}: `\1`",
-        text,
-        flags=re.MULTILINE,
-    )
+    return re.sub(rf"^- {field_name}: ({allowed_pattern})\s*$", rf"- {field_name}: `\1`", text, flags=re.MULTILINE)
 
 
 def normalize_issue_comment(text: str, contract: AgentContract) -> str:
-    """Apply safe mechanical repairs before validation.
-
-    This function must not reinterpret, add, remove, or rewrite substantive
-    signals. It only repairs predictable Markdown/template issues.
-    """
     normalized = text.strip() + "\n"
-
     normalized = normalize_enum_field(normalized, "Category", contract.allowed_categories)
     normalized = normalize_enum_field(normalized, "Severity", SEVERITY_VALUES)
     normalized = normalize_enum_field(normalized, "Confidence", CONFIDENCE_VALUES)
-
     normalized = re.sub(
         r"^- (current_text|proposed_text):\s*(None|N/A|Not applicable)\s*$\n?",
         "",
         normalized,
         flags=re.IGNORECASE | re.MULTILINE,
     )
-
     return normalized.strip() + "\n"
 
 
-def validate_optional_replacement_fields(
-    *,
-    signal_id: str,
-    fields: list[tuple[str, str]],
-    errors: list[str],
-) -> None:
-    """Validate current_text/proposed_text consistency."""
+def validate_optional_replacement_fields(*, signal_id: str, fields: list[tuple[str, str]], errors: list[str]) -> None:
     current = field_value(fields, "current_text")
     proposed = field_value(fields, "proposed_text")
-
     if (current is None) != (proposed is None):
         errors.append(f"{signal_id} must include current_text and proposed_text together, or omit both.")
         return
-
     if current is None or proposed is None:
         return
-
     for label, value in {"current_text": current, "proposed_text": proposed}.items():
         if not (value.startswith('"') and value.endswith('"') and len(value) >= 2):
             errors.append(f"{signal_id} {label} must be wrapped in double quotation marks.")
             continue
-
         inner_value = value[1:-1].strip()
         if not inner_value:
             errors.append(f"{signal_id} {label} must not be empty.")
@@ -702,28 +516,15 @@ def validate_signal_block(
     contract: AgentContract,
     errors: list[str],
 ) -> None:
-    """Validate one signal block."""
     if "**" in title or "`" in title or "[" in title or "]" in title:
         errors.append(f"{signal_id} title must not contain Markdown formatting.")
 
     fields = extract_signal_fields(body)
     field_names = [field for field, _value in fields]
-
-    required_order = [
-        "Category",
-        "Severity",
-        "Confidence",
-        "Location",
-        "Observation",
-        "Rationale",
-        "Recommendation",
-    ]
-
+    required_order = ["Category", "Severity", "Confidence", "Location", "Observation", "Rationale", "Recommendation"]
     optional_order = ["current_text", "proposed_text"]
-    allowed_order_without_optional = required_order
-    allowed_order_with_optional = required_order + optional_order
 
-    if field_names not in (allowed_order_without_optional, allowed_order_with_optional):
+    if field_names not in (required_order, required_order + optional_order):
         errors.append(
             f"{signal_id} fields must appear exactly as required, with optional current_text/proposed_text together after Recommendation."
         )
@@ -741,20 +542,12 @@ def validate_signal_block(
     confidence = field_value(fields, "Confidence")
     location = field_value(fields, "Location")
 
-    if category is not None:
-        normalized_category = strip_inline_code(category)
-        if normalized_category not in contract.allowed_categories:
-            errors.append(f"{signal_id} has invalid category: {normalized_category}")
-
-    if severity is not None:
-        normalized_severity = strip_inline_code(severity)
-        if normalized_severity not in SEVERITY_VALUES:
-            errors.append(f"{signal_id} has invalid severity: {normalized_severity}")
-
-    if confidence is not None:
-        normalized_confidence = strip_inline_code(confidence)
-        if normalized_confidence not in CONFIDENCE_VALUES:
-            errors.append(f"{signal_id} has invalid confidence: {normalized_confidence}")
+    if category is not None and strip_inline_code(category) not in contract.allowed_categories:
+        errors.append(f"{signal_id} has invalid category: {strip_inline_code(category)}")
+    if severity is not None and strip_inline_code(severity) not in SEVERITY_VALUES:
+        errors.append(f"{signal_id} has invalid severity: {strip_inline_code(severity)}")
+    if confidence is not None and strip_inline_code(confidence) not in CONFIDENCE_VALUES:
+        errors.append(f"{signal_id} has invalid confidence: {strip_inline_code(confidence)}")
 
     if location is not None:
         location_match = LOCATION_PATTERN.fullmatch(location)
@@ -763,13 +556,10 @@ def validate_signal_block(
         else:
             section = location_match.group("section")
             normalized_section = normalize_markdown_section_title(section)
-
             if contract.slug == "language-style-checker" and normalized_section in LANGUAGE_STYLE_EXCLUDED_SECTIONS:
                 errors.append(
-                    f"{signal_id} is located in an excluded non-reader-facing section "
-                    f"for language-style-checker: {section}"
+                    f"{signal_id} is located in an excluded non-reader-facing section for language-style-checker: {section}"
                 )
-
             fragment = location_match.group("fragment")
             if len(fragment) > 160:
                 errors.append(f"{signal_id} Location fragment exceeds 160 characters.")
@@ -788,36 +578,24 @@ def validate_issue_comment(
     page_path: str,
     commit_sha: str,
 ) -> list[str]:
-    """Return validation errors for a generated issue comment.
-
-    This is not conceptual validation. It checks whether the model output is
-    structurally usable and safe as raw candidate input for issue routing.
-    """
     errors: list[str] = []
-
     if not text.strip():
         return ["Output is empty."]
 
     expected_report_title = f"## Check signal report: {contract.slug} / {provider} / {model} — {review_date}"
-    first_non_empty_line = next(
-        (line.strip() for line in text.splitlines() if line.strip()),
-        "",
-    )
+    first_non_empty_line = next((line.strip() for line in text.splitlines() if line.strip()), "")
     if first_non_empty_line != expected_report_title:
         errors.append(f"Report title mismatch: expected {expected_report_title!r}, found {first_non_empty_line!r}")
 
     for fragment in REQUIRED_OUTPUT_FRAGMENTS:
         if fragment not in text:
             errors.append(f"Missing required output fragment: {fragment}")
-
     for unresolved in UNRESOLVED_TEMPLATE_PATTERNS:
         if unresolved in text:
             errors.append(f"Unresolved prompt/template placeholder found: {unresolved}")
-
     for prompt_text in EXPLANATORY_PROMPT_TEXT_PATTERNS:
         if prompt_text in text:
             errors.append(f"Output copied explanatory prompt text: {prompt_text}")
-
     for checkbox in FORBIDDEN_CHECKBOX_PATTERNS:
         if checkbox in text:
             errors.append(f"Forbidden task checkbox found: {checkbox}")
@@ -832,7 +610,6 @@ def validate_issue_comment(
         "reviewed page": page_path,
         "commit sha": commit_sha,
     }
-
     for key, expected_value in expected_metadata_values.items():
         actual_value = metadata.get(key)
         if actual_value is None:
@@ -848,10 +625,8 @@ def validate_issue_comment(
         errors.append("Missing or unparsable Signal count metadata row.")
     elif declared_signal_count != len(signal_blocks):
         errors.append(
-            f"Signal count mismatch: metadata says {declared_signal_count}, "
-            f"but {len(signal_blocks)} signal heading(s) were found."
+            f"Signal count mismatch: metadata says {declared_signal_count}, but {len(signal_blocks)} signal heading(s) were found."
         )
-
     if declared_signal_count is not None and declared_signal_count > 3:
         errors.append(f"Signal count exceeds prompt limit of 3: {declared_signal_count}")
 
@@ -872,23 +647,14 @@ def validate_issue_comment(
     if declared_signal_count is not None and declared_signal_count > 0:
         if NO_SIGNALS_SENTENCE in signals_section:
             errors.append("Signal count is greater than 0, but the Signals section contains the no-signals sentence.")
-
         for expected_index, (signal_id, title, block_body) in enumerate(signal_blocks, start=1):
             expected_id = f"S-{expected_index:03d}"
             if signal_id != expected_id:
                 errors.append(f"Signal IDs must be sequential: expected {expected_id}, found {signal_id}.")
-
-            validate_signal_block(
-                signal_id=signal_id,
-                title=title,
-                body=block_body,
-                contract=contract,
-                errors=errors,
-            )
+            validate_signal_block(signal_id=signal_id, title=title, body=block_body, contract=contract, errors=errors)
 
     for claim in find_unsafe_source_validation_claims(text):
         errors.append(f"Output appears to claim use of out-of-scope evidence: {claim}")
-
     for recommendation in find_automatic_mutation_recommendations(text):
         errors.append(f"Output appears to recommend repository or issue mutation: {recommendation}")
 
@@ -896,30 +662,23 @@ def validate_issue_comment(
 
 
 def write_output(path: Path, content: str) -> None:
-    """Write UTF-8 Markdown output with LF line endings."""
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text(content, encoding="utf-8", newline="\n")
 
 
 def make_invalid_output_path(output_path: Path) -> Path:
-    """Return the path used for invalid generated issue comments."""
     if output_path.suffix:
         return output_path.with_suffix(f".invalid{output_path.suffix}")
-
     return output_path.with_name(f"{output_path.name}.invalid.md")
 
 
 def resolve_output_path(repo_root: Path, output: str) -> Path:
-    """Resolve output path; relative paths are repository-relative."""
     output_path = Path(output)
-    if output_path.is_absolute():
-        return output_path
-    return repo_root / output_path
+    return output_path if output_path.is_absolute() else repo_root / output_path
 
 
 def main() -> int:
     args = parse_args()
-
     try:
         if args.max_completion_tokens <= 0:
             raise CheckAgentRunnerError("--max-completion-tokens must be greater than 0.")
@@ -939,13 +698,11 @@ def main() -> int:
         checker_prompt = read_text_file(prompt_file, "Check-agent prompt")
         page_content = read_text_file(page_file, "Canonical stereotype page")
         scoped_page_content, input_scope_note = scope_page_content_for_agent(
-            contract=contract,
-            page_content=page_content,
+            contract=contract, page_content=page_content
         )
 
         review_date = get_review_date(args.review_date)
         commit_sha = get_commit_sha(repo_root, args.commit_sha)
-
         provider_function = load_provider(provider)
         review_input = build_review_input(
             checker_prompt=checker_prompt,
@@ -986,11 +743,9 @@ def main() -> int:
             page_path=args.page,
             commit_sha=commit_sha,
         )
-
         if validation_errors:
             invalid_output_path = make_invalid_output_path(output_path)
             write_output(invalid_output_path, issue_comment)
-
             print("Generated issue comment failed validation:", file=sys.stderr)
             for error in validation_errors:
                 print(f"- {error}", file=sys.stderr)
@@ -1000,7 +755,6 @@ def main() -> int:
         write_output(output_path, issue_comment)
         print(f"Wrote issue comment to: {output_path}")
         return 0
-
     except CheckAgentRunnerError as exc:
         print(f"ERROR: {exc}", file=sys.stderr)
         return 1

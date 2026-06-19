@@ -24,7 +24,7 @@ import time
 from dataclasses import dataclass
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import Any
+from typing import Any, Callable
 
 SUPPORTED_AGENTS = {
     "page-hygiene-checker": "prompts/phase-2/resolve-page-hygiene-signal-issue-v1.2.0.md",
@@ -96,6 +96,17 @@ class IssueSnapshot:
     comments: list[dict[str, Any]]
 
 
+def positive_int(value: str) -> int:
+    """Parse a positive integer CLI value."""
+    try:
+        parsed = int(value)
+    except ValueError as exc:
+        raise argparse.ArgumentTypeError(f"expected a positive integer, got {value!r}") from exc
+    if parsed < 1:
+        raise argparse.ArgumentTypeError(f"expected a positive integer, got {value!r}")
+    return parsed
+
+
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="Automatically resolve one Phase 2 signal issue.")
     parser.add_argument("--repo", required=True, help="Repository in owner/name form.")
@@ -109,6 +120,15 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--provider", choices=["groq", "gemini"], default="gemini")
     parser.add_argument("--model", default="gemini-3.5-flash")
     parser.add_argument("--max-completion-tokens", type=int, default=8000)
+    parser.add_argument(
+        "--provider-max-attempts",
+        type=positive_int,
+        default=1,
+        help=(
+            "Maximum provider-call attempts per resolver run. The default is 1 to avoid "
+            "spending additional quota on immediate retries."
+        ),
+    )
     parser.add_argument(
         "--dry-run",
         action="store_true",
@@ -289,8 +309,8 @@ CURRENT REVIEWED PAGE CONTENT:
 """
 
 
-def _is_transient_error(exc: Exception) -> bool:
-    diagnostic = " ".join(
+def _error_diagnostic(exc: Exception) -> str:
+    return " ".join(
         [
             str(exc),
             str(getattr(exc, "code", "")),
@@ -298,15 +318,23 @@ def _is_transient_error(exc: Exception) -> bool:
             str(getattr(exc, "reason", "")),
         ]
     ).lower()
+
+
+def _is_transient_error(exc: Exception) -> bool:
+    diagnostic = _error_diagnostic(exc)
     return any(marker in diagnostic for marker in TRANSIENT_ERROR_MARKERS)
 
 
-def call_with_retries(operation_name: str, fn: Any) -> str:
+def call_with_retries(operation_name: str, fn: Callable[[], str], *, max_attempts: int = 1) -> str:
+    """Call a provider operation with a configurable attempt cap.
+
+    The default is a single attempt. Pass a value greater than 1 only when
+    provider quota is not constrained or immediate retries are explicitly desired.
+    """
     delays = (5.0, 15.0, 45.0)
-    total_attempts = len(delays) + 1
     last_exc: Exception | None = None
 
-    for attempt_number in range(1, total_attempts + 1):
+    for attempt_number in range(1, max_attempts + 1):
         try:
             content = fn()
             if isinstance(content, str) and content.strip():
@@ -314,16 +342,17 @@ def call_with_retries(operation_name: str, fn: Any) -> str:
             raise ResolverError(f"{operation_name} returned an empty response.")
         except Exception as exc:  # noqa: BLE001 - provider SDKs raise heterogeneous exceptions.
             last_exc = exc
-            if attempt_number == total_attempts or not _is_transient_error(exc):
+            if attempt_number == max_attempts or not _is_transient_error(exc):
                 break
-            time.sleep(delays[attempt_number - 1])
+            delay = delays[min(attempt_number - 1, len(delays) - 1)]
+            time.sleep(delay)
 
     if last_exc is None:
         raise ResolverError(f"{operation_name} failed without an exception.")
     raise ResolverError(f"{operation_name} failed after {attempt_number} attempt(s): {last_exc}") from last_exc
 
 
-def call_groq_json(model: str, review_input: str, max_completion_tokens: int) -> str:
+def call_groq_json(model: str, review_input: str, max_completion_tokens: int, max_attempts: int) -> str:
     if not os.getenv("GROQ_API_KEY"):
         raise ResolverError("GROQ_API_KEY environment variable is not set.")
 
@@ -343,10 +372,10 @@ def call_groq_json(model: str, review_input: str, max_completion_tokens: int) ->
         content = response.choices[0].message.content
         return content if isinstance(content, str) else ""
 
-    return call_with_retries("Groq resolver call", invoke)
+    return call_with_retries("Groq resolver call", invoke, max_attempts=max_attempts)
 
 
-def call_gemini_json(model: str, review_input: str, max_completion_tokens: int) -> str:
+def call_gemini_json(model: str, review_input: str, max_completion_tokens: int, max_attempts: int) -> str:
     api_key = os.getenv("GOOGLE_API_KEY") or os.getenv("GEMINI_API_KEY")
     if not api_key:
         raise ResolverError("Neither GOOGLE_API_KEY nor GEMINI_API_KEY environment variable is set.")
@@ -392,15 +421,22 @@ def call_gemini_json(model: str, review_input: str, max_completion_tokens: int) 
                     parts_text.append(part_text)
         return "".join(parts_text)
 
-    return call_with_retries("Gemini resolver call", invoke)
+    return call_with_retries("Gemini resolver call", invoke, max_attempts=max_attempts)
 
 
-def call_provider(provider: str, model: str, prompt: str, user_input: str, max_tokens: int) -> str:
+def call_provider(
+    provider: str,
+    model: str,
+    prompt: str,
+    user_input: str,
+    max_tokens: int,
+    max_attempts: int,
+) -> str:
     review_input = f"{prompt}\n\n## Input\n\n{user_input}"
     if provider == "groq":
-        return call_groq_json(model, review_input, max_tokens)
+        return call_groq_json(model, review_input, max_tokens, max_attempts)
     if provider == "gemini":
-        return call_gemini_json(model, review_input, max_tokens)
+        return call_gemini_json(model, review_input, max_tokens, max_attempts)
     raise ResolverError(f"Unsupported provider: {provider}")
 
 
@@ -768,6 +804,7 @@ def main() -> int:
             prompt,
             build_llm_input(issue, page_text),
             args.max_completion_tokens,
+            args.provider_max_attempts,
         )
         plan = parse_json(raw)
         validate_plan(plan, issue, page_text)

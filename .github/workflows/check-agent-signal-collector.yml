@@ -4,8 +4,8 @@ run-name: Scheduled check-agent signal collector (${{ github.event_name }})
 
 "on":
   schedule:
-    # Every 30 minutes, UTC. Offset away from minute 00 to reduce scheduler contention.
-    - cron: "13,43 * * * *"
+    # Every 20 minutes, UTC. Offset away from minute 00 to reduce scheduler contention.
+    - cron: "7,27,47 * * * *"
 
   workflow_dispatch:
     inputs:
@@ -26,10 +26,12 @@ run-name: Scheduled check-agent signal collector (${{ github.event_name }})
         default: groq
         options:
           - groq
+          - cerebras
+          - sambanova
           - gemini
 
       provider_model_specs:
-        description: "Optional comma-separated provider:model list. Overrides provider/models when set. Scheduled runs use Groq and Gemini defaults."
+        description: "Optional comma-separated provider:model list. Overrides provider/models when set. Scheduled runs use the configured multi-provider rotation."
         type: string
         required: false
         default: ""
@@ -71,7 +73,7 @@ run-name: Scheduled check-agent signal collector (${{ github.event_name }})
         default: "page-hygiene-checker,language-style-checker"
 
       models:
-        description: "Comma-separated provider-specific models used when provider_model_specs is empty. For Gemini, use values such as gemini-3.5-flash."
+        description: "Comma-separated provider-specific models used when provider_model_specs is empty."
         type: string
         required: true
         default: "llama-3.3-70b-versatile"
@@ -108,6 +110,8 @@ jobs:
     env:
       GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
       GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+      CEREBRAS_API_KEY: ${{ secrets.CEREBRAS_API_KEY }}
+      SAMBANOVA_API_KEY: ${{ secrets.SAMBANOVA_API_KEY }}
       GH_TOKEN: ${{ github.token }}
 
       WORKFLOW_MODE: ${{ github.event.inputs.mode }}
@@ -156,7 +160,7 @@ jobs:
           python - <<'PY'
           from importlib import metadata
 
-          for package in ("groq", "google-genai"):
+          for package in ("groq", "google-genai", "openai"):
               try:
                   version = metadata.version(package)
               except metadata.PackageNotFoundError:
@@ -173,7 +177,7 @@ jobs:
             printf '%s' "$1" | sed 's/^[[:space:]]*//;s/[[:space:]]*$//'
           }
 
-          default_periodic_provider_model_specs="groq:llama-3.3-70b-versatile,gemini:gemini-3.5-flash"
+          default_periodic_provider_model_specs="groq:llama-3.3-70b-versatile,cerebras:gpt-oss-120b,sambanova:DeepSeek-V3.1,groq:meta-llama/llama-4-scout-17b-16e-instruct,cerebras:zai-glm-4.7,gemini:gemini-3.1-flash-lite"
 
           provider="${WORKFLOW_PROVIDER:-groq}"
           provider_model_specs="${WORKFLOW_PROVIDER_MODEL_SPECS:-}"
@@ -184,6 +188,8 @@ jobs:
 
           uses_groq=false
           uses_gemini=false
+          uses_cerebras=false
+          uses_sambanova=false
 
           if [[ -n "$provider_model_specs" ]]; then
             IFS=',' read -ra specs <<< "$provider_model_specs"
@@ -200,6 +206,8 @@ jobs:
               case "$spec_provider" in
                 groq) uses_groq=true ;;
                 gemini) uses_gemini=true ;;
+                cerebras) uses_cerebras=true ;;
+                sambanova) uses_sambanova=true ;;
                 *)
                   echo "::error::Unsupported provider in provider_model_specs: ${spec_provider}"
                   exit 1
@@ -210,6 +218,8 @@ jobs:
             case "$provider" in
               groq) uses_groq=true ;;
               gemini) uses_gemini=true ;;
+              cerebras) uses_cerebras=true ;;
+              sambanova) uses_sambanova=true ;;
               *)
                 echo "::error::Unsupported provider: ${provider}"
                 exit 1
@@ -221,9 +231,16 @@ jobs:
             echo "::error::Missing required repository secret: GROQ_API_KEY"
             exit 1
           fi
-
           if [[ "$uses_gemini" == "true" && -z "${GEMINI_API_KEY:-}" ]]; then
             echo "::error::Missing required repository secret: GEMINI_API_KEY"
+            exit 1
+          fi
+          if [[ "$uses_cerebras" == "true" && -z "${CEREBRAS_API_KEY:-}" ]]; then
+            echo "::error::Missing required repository secret: CEREBRAS_API_KEY"
+            exit 1
+          fi
+          if [[ "$uses_sambanova" == "true" && -z "${SAMBANOVA_API_KEY:-}" ]]; then
+            echo "::error::Missing required repository secret: SAMBANOVA_API_KEY"
             exit 1
           fi
 
@@ -239,8 +256,11 @@ jobs:
             scripts/phase-2/run_check_agent.py \
             scripts/phase-2/run_check_batch.py \
             scripts/phase-2/issue_manager.py \
+            scripts/phase-2/providers/openai_compatible.py \
             scripts/phase-2/providers/groq.py \
-            scripts/phase-2/providers/gemini.py
+            scripts/phase-2/providers/gemini.py \
+            scripts/phase-2/providers/cerebras.py \
+            scripts/phase-2/providers/sambanova.py
 
       - name: Run check-agent signal collector
         shell: bash
@@ -252,7 +272,7 @@ jobs:
           }
 
           default_groq_models="llama-3.3-70b-versatile"
-          default_periodic_provider_model_specs="groq:llama-3.3-70b-versatile,gemini:gemini-3.5-flash"
+          default_periodic_provider_model_specs="groq:llama-3.3-70b-versatile,cerebras:gpt-oss-120b,sambanova:DeepSeek-V3.1,groq:meta-llama/llama-4-scout-17b-16e-instruct,cerebras:zai-glm-4.7,gemini:gemini-3.1-flash-lite"
 
           mode="${WORKFLOW_MODE:-post}"
           provider="${WORKFLOW_PROVIDER:-groq}"
@@ -268,7 +288,7 @@ jobs:
           max_completion_tokens="${WORKFLOW_MAX_COMPLETION_TOKENS:-}"
 
           if [[ -z "$rotation_index" && "${GITHUB_EVENT_NAME:-}" == "schedule" ]]; then
-            rotation_index="$(($(date -u +%s) / 1800))"
+            rotation_index="$(($(date -u +%s) / 1200))"
           fi
 
           if [[ -z "$provider_model_specs" && "${GITHUB_EVENT_NAME:-}" == "schedule" ]]; then
@@ -313,24 +333,21 @@ jobs:
             echo "Provider/model rotation specs: ${normalized_specs[*]}"
             echo "Selected provider/model spec: ${selected_provider_model_spec}"
           elif [[ "$provider" == "gemini" && "$models_input" == "$default_groq_models" ]]; then
-            echo "Provider is gemini and Groq default models were supplied; using gemini-3.5-flash."
-            models_input="gemini-3.5-flash"
+            echo "Provider is gemini and Groq default models were supplied; using gemini-3.1-flash-lite."
+            models_input="gemini-3.1-flash-lite"
           fi
 
-          # Keep explicit groq:openai/gpt-oss-20b manual runs below Groq's observed
-          # 8k on-demand TPM/request envelope for long page-hygiene prompts.
           if [[ -z "$max_completion_tokens" && "$provider" == "groq" && "$models_input" == "openai/gpt-oss-20b" ]]; then
             max_completion_tokens="1400"
           fi
 
-          if [[ -z "$max_completion_tokens" && "$provider" == "gemini" ]]; then
-            max_completion_tokens="8000"
+          if [[ -z "$max_completion_tokens" ]]; then
+            max_completion_tokens="3000"
           fi
 
           page_args=()
           if [[ -n "$pages_input" ]]; then
             pages_normalized="${pages_input//,/$'\n'}"
-
             while IFS= read -r page; do
               page="$(trim "$page")"
               if [[ -n "$page" ]]; then
@@ -394,7 +411,8 @@ jobs:
             --max-runs "$max_runs" \
             --sleep-seconds "$sleep_seconds" \
             "${completion_args[@]}" \
-            --allow-rejected-check-outputs
+            --allow-rejected-check-outputs \
+            --allow-provider-failures
 
       - name: Upload check-agent artifacts
         if: always()

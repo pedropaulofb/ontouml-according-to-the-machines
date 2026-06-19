@@ -1,14 +1,13 @@
 #!/usr/bin/env python3
-"""Run Phase 2 LLM check agents across pages, agents, and models.
+"""Run Phase 2 LLM check agents across pages, agents, providers, and models.
 
 The batch runner delegates individual LLM calls and output validation to
 `scripts/phase-2/run_check_agent.py`, and optionally delegates issue dry-runs
 or posting to `scripts/phase-2/issue_manager.py`.
 
-It supports both normal batch execution and rotating scheduled execution. The
-rotating mode is intended for a scheduled workflow that runs one
-(page, agent, model) triple per interval and gradually collects check-agent
-signals over time.
+It supports rotating scheduled execution where one provider/model triple is run
+per workflow interval and failures can be treated as nonfatal so the next
+scheduled rotation slot can proceed.
 """
 
 from __future__ import annotations
@@ -26,7 +25,7 @@ from typing import Iterable, Sequence
 
 DEFAULT_AGENTS = ["page-hygiene-checker", "language-style-checker"]
 DEFAULT_PROVIDER = "groq"
-DEFAULT_MODELS = ["llama-3.3-70b-versatile", "openai/gpt-oss-20b"]
+DEFAULT_MODELS = ["llama-3.3-70b-versatile", "meta-llama/llama-4-scout-17b-16e-instruct"]
 DEFAULT_OUTPUT_ROOT = Path(".tmp/phase-2")
 DEFAULT_SLEEP_SECONDS = 0.0
 SUMMARY_FILENAME = "batch-summary.md"
@@ -39,14 +38,11 @@ RUN_STATUS_FAILED = "failed"
 RUN_STATUS_PROVIDER_FAILED = "provider_failed"
 RUN_STATUS_REJECTED = "rejected"
 RUN_STATUS_SKIPPED = "skipped"
-
 CHECK_VALIDATION_FAILURE_MARKER = "Generated issue comment failed validation:"
 
 
 @dataclass(frozen=True)
 class PlannedRun:
-    """One page-agent-provider-model combination to execute."""
-
     index: int
     page: str
     agent: str
@@ -56,33 +52,29 @@ class PlannedRun:
     log_path: Path
 
 
-def filesystem_path(repo_root: Path, path: Path) -> Path:
-    """Resolve a possibly repo-relative path to an absolute filesystem path."""
-    return path if path.is_absolute() else repo_root / path
-
-
 @dataclass(frozen=True)
 class CompletedRun:
-    """Result of one planned run."""
-
     planned: PlannedRun
     check_status: str
     check_exit_code: int | None
     issue_status: str
     issue_exit_code: int | None
     message: str
+    provider_failure_is_nonfatal: bool = False
 
     @property
     def rejected(self) -> bool:
-        """Return whether the check-agent output was rejected by validation."""
         return self.check_status == RUN_STATUS_REJECTED
 
     @property
+    def provider_failed(self) -> bool:
+        return self.check_status == RUN_STATUS_PROVIDER_FAILED
+
+    @property
     def fatal_failed(self) -> bool:
-        """Return whether this run represents a real automation failure."""
         if self.check_status == RUN_STATUS_FAILED:
             return True
-        if self.check_status == RUN_STATUS_PROVIDER_FAILED:
+        if self.check_status == RUN_STATUS_PROVIDER_FAILED and not self.provider_failure_is_nonfatal:
             return True
         if self.issue_status == RUN_STATUS_FAILED:
             return True
@@ -90,178 +82,82 @@ class CompletedRun:
 
     @property
     def succeeded(self) -> bool:
-        """Return whether this run should allow the batch to exit successfully."""
         return not self.fatal_failed
 
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="Run Phase 2 check agents across pages, agents, and models.")
-
+    parser.add_argument("--repo-root", default=".", help="Repository root. Defaults to the current working directory.")
+    parser.add_argument("--page", action="append", default=[], help="Repository-relative Markdown page to check.")
     parser.add_argument(
-        "--repo-root",
-        default=".",
-        help="Repository root. Defaults to the current working directory.",
+        "--pages-glob", action="append", default=[], help="Repository-relative glob for Markdown pages."
     )
     parser.add_argument(
-        "--page",
-        action="append",
-        default=[],
-        help=("Repository-relative Markdown page to check. May be passed multiple times."),
+        "--exclude-page", action="append", default=[], help="Repository-relative Markdown page to exclude."
     )
     parser.add_argument(
-        "--pages-glob",
-        action="append",
-        default=[],
-        help=(
-            "Repository-relative glob for Markdown pages, for example "
-            '"docs/stereotypes/**/*.md". May be passed multiple times.'
-        ),
+        "--exclude-pages-glob", action="append", default=[], help="Repository-relative glob for pages to exclude."
     )
+    parser.add_argument("--agent", action="append", default=[], choices=DEFAULT_AGENTS, help="Check agent to run.")
     parser.add_argument(
-        "--exclude-page",
-        action="append",
-        default=[],
-        help=("Repository-relative Markdown page to exclude from the selected page set. May be passed multiple times."),
+        "--provider", default=DEFAULT_PROVIDER, help=f"LLM provider to use. Defaults to {DEFAULT_PROVIDER!r}."
     )
-    parser.add_argument(
-        "--exclude-pages-glob",
-        action="append",
-        default=[],
-        help=(
-            "Repository-relative glob for Markdown pages to exclude, for example "
-            '"docs/stereotypes/**/index.md". May be passed multiple times.'
-        ),
-    )
-    parser.add_argument(
-        "--agent",
-        action="append",
-        default=[],
-        choices=DEFAULT_AGENTS,
-        help=("Check agent to run. May be passed multiple times. Defaults to both LLM-based Phase 2 agents."),
-    )
-    parser.add_argument(
-        "--provider",
-        default=DEFAULT_PROVIDER,
-        help=f"LLM provider to use. Defaults to {DEFAULT_PROVIDER!r}.",
-    )
-    parser.add_argument(
-        "--model",
-        action="append",
-        default=[],
-        help=(f"Model to use. May be passed multiple times. Defaults to {', '.join(DEFAULT_MODELS)!r}."),
-    )
+    parser.add_argument("--model", action="append", default=[], help="Model to use. May be passed multiple times.")
     parser.add_argument(
         "--mode",
         choices=["generate", "dry-run", "post"],
         default="generate",
-        help=(
-            "Batch mode. 'generate' only writes comment files. 'dry-run' also "
-            "runs issue_manager.py --dry-run for valid outputs. 'post' also "
-            "runs issue_manager.py without --dry-run. Defaults to 'generate'."
-        ),
+        help="Batch mode. 'generate' only writes comment files; 'dry-run' or 'post' invoke issue_manager.py.",
+    )
+    parser.add_argument("--repo", help="GitHub repository full name, required for --mode dry-run or --mode post.")
+    parser.add_argument("--post-empty", action="store_true", help="Forward --post-empty to issue_manager.py.")
+    parser.add_argument(
+        "--output-root", default=str(DEFAULT_OUTPUT_ROOT), help="Root directory for generated comments."
+    )
+    parser.add_argument("--summary", help="Path for the Markdown batch summary.")
+    parser.add_argument(
+        "--sleep-seconds", type=float, default=DEFAULT_SLEEP_SECONDS, help="Seconds to sleep between runs."
     )
     parser.add_argument(
-        "--repo",
-        help=(
-            "GitHub repository full name, required for --mode dry-run or --mode "
-            "post, for example pedropaulofb/ontouml-according-to-the-machines."
-        ),
+        "--max-runs", type=int, help="Maximum number of planned combinations to execute after selection."
+    )
+    parser.add_argument("--selection", choices=["first", "rotate"], default="first", help="How to select runs.")
+    parser.add_argument(
+        "--rotation-seed", choices=["hourly", "daily"], default="hourly", help="Time seed for rotation."
     )
     parser.add_argument(
-        "--post-empty",
-        action="store_true",
-        help="Forward --post-empty to issue_manager.py in dry-run or post mode.",
+        "--rotation-index", type=int, help="Explicit non-negative rotation index for --selection rotate."
+    )
+    parser.add_argument("--fail-fast", action="store_true", help="Stop after the first fatal failed individual run.")
+    parser.add_argument(
+        "--plan-only", action="store_true", help="Print and summarize planned runs without executing them."
     )
     parser.add_argument(
-        "--output-root",
-        default=str(DEFAULT_OUTPUT_ROOT),
-        help=f"Root directory for generated comments. Defaults to {DEFAULT_OUTPUT_ROOT}.",
-    )
-    parser.add_argument(
-        "--summary",
-        help=("Path for the Markdown batch summary. Defaults to .tmp/phase-2/batch-summary.md under --repo-root."),
-    )
-    parser.add_argument(
-        "--sleep-seconds",
-        type=float,
-        default=DEFAULT_SLEEP_SECONDS,
-        help=(
-            f"Seconds to sleep between individual LLM calls. Defaults to {DEFAULT_SLEEP_SECONDS:g}. Use 0 for no delay."
-        ),
-    )
-    parser.add_argument(
-        "--max-runs",
-        type=int,
-        help=(
-            "Maximum number of planned combinations to execute after selection. "
-            "Use 1 with --selection rotate for one scheduled triple per run."
-        ),
-    )
-    parser.add_argument(
-        "--selection",
-        choices=["first", "rotate"],
-        default="first",
-        help=(
-            "How to select runs from the full page x agent x model plan before "
-            "applying --max-runs. 'first' keeps the sorted order. 'rotate' "
-            "rotates the full plan by --rotation-index, or by the selected "
-            "--rotation-seed when no explicit index is provided. Defaults to 'first'."
-        ),
-    )
-    parser.add_argument(
-        "--rotation-seed",
-        choices=["hourly", "daily"],
-        default="hourly",
-        help=("Time seed used by --selection rotate when --rotation-index is not set. Defaults to 'hourly'."),
-    )
-    parser.add_argument(
-        "--rotation-index",
-        type=int,
-        help=("Explicit non-negative rotation index for --selection rotate. Mostly useful for deterministic tests."),
-    )
-    parser.add_argument(
-        "--fail-fast",
-        action="store_true",
-        help="Stop after the first fatal failed individual run.",
-    )
-    parser.add_argument(
-        "--plan-only",
-        action="store_true",
-        help="Print and summarize the planned runs without executing them.",
-    )
-    parser.add_argument(
-        "--max-completion-tokens",
-        type=int,
-        help="Forward --max-completion-tokens to run_check_agent.py when set.",
+        "--max-completion-tokens", type=int, help="Forward --max-completion-tokens to run_check_agent.py."
     )
     parser.add_argument(
         "--allow-rejected-check-outputs",
         action="store_true",
-        help=(
-            "Treat check-agent output validation failures as nonfatal rejected "
-            "outputs. The invalid output artifact is kept, issue_manager.py is "
-            "not run, and the batch exits 0 unless a real automation failure "
-            "also occurs. Provider, configuration, and issue-manager failures "
-            "remain fatal."
-        ),
+        help="Treat check-agent output validation failures as nonfatal rejected outputs.",
     )
-
+    parser.add_argument(
+        "--allow-provider-failures",
+        action="store_true",
+        help="Treat provider/model call failures as nonfatal so scheduled rotation can continue in later runs.",
+    )
     return parser.parse_args()
 
 
 def normalize_repo_relative_path(path_value: str) -> str:
-    """Normalize a user-supplied page path to POSIX-style repo-relative text."""
     return Path(path_value).as_posix().lstrip("./")
 
 
 def safe_slug(value: str) -> str:
-    """Convert a provider, model, or page identity to a filename-safe slug."""
     slug = re.sub(r"[^A-Za-z0-9]+", "-", value).strip("-").lower()
     return slug or "unnamed"
 
 
 def page_identity(page: str) -> str:
-    """Return the stereotype-page identity used in output directories."""
     normalized = normalize_repo_relative_path(page)
     prefix = "docs/stereotypes/"
     if normalized.startswith(prefix):
@@ -271,15 +167,11 @@ def page_identity(page: str) -> str:
     return normalized
 
 
-def output_path_for(
-    *,
-    output_root: Path,
-    page: str,
-    agent: str,
-    provider: str,
-    model: str,
-) -> Path:
-    """Derive the batch output path for one planned run."""
+def filesystem_path(repo_root: Path, path: Path) -> Path:
+    return path if path.is_absolute() else repo_root / path
+
+
+def output_path_for(*, output_root: Path, page: str, agent: str, provider: str, model: str) -> Path:
     page_dir = safe_slug(page_identity(page).replace("/", "-"))
     provider_slug = safe_slug(provider)
     model_slug = safe_slug(model)
@@ -287,7 +179,6 @@ def output_path_for(
 
 
 def log_path_for(output_path: Path) -> Path:
-    """Derive the per-run batch log path for one output file."""
     return output_path.with_suffix(".batch.log")
 
 
@@ -298,18 +189,14 @@ def discover_pages(
     explicit_excluded_pages: Sequence[str],
     excluded_globs: Sequence[str],
 ) -> list[str]:
-    """Resolve explicit/globbed pages to sorted repo-relative paths with exclusions."""
     pages: set[str] = set()
-
     for page in explicit_pages:
         normalized = normalize_repo_relative_path(page)
         if not normalized.endswith(".md"):
             raise ValueError(f"Page is not a Markdown file: {page}")
         pages.add(normalized)
-
     for pattern in globs:
-        matches = sorted(repo_root.glob(pattern))
-        for match in matches:
+        for match in sorted(repo_root.glob(pattern)):
             if match.is_file() and match.suffix == ".md":
                 pages.add(match.relative_to(repo_root).as_posix())
 
@@ -318,63 +205,33 @@ def discover_pages(
         normalized = normalize_repo_relative_path(page)
         if normalized.endswith(".md"):
             excluded_pages.add(normalized)
-
     for pattern in excluded_globs:
-        matches = sorted(repo_root.glob(pattern))
-        for match in matches:
+        for match in sorted(repo_root.glob(pattern)):
             if match.is_file() and match.suffix == ".md":
                 excluded_pages.add(match.relative_to(repo_root).as_posix())
 
     pages -= excluded_pages
-
     if not pages:
         raise ValueError("No pages selected. Pass --page and/or --pages-glob.")
-
     missing = [page for page in sorted(pages) if not (repo_root / page).is_file()]
     if missing:
         missing_lines = "\n".join(f"- {page}" for page in missing)
         raise ValueError(f"Selected page(s) do not exist under repo root:\n{missing_lines}")
-
     return sorted(pages)
 
 
 def plan_runs(
-    *,
-    pages: Sequence[str],
-    agents: Sequence[str],
-    provider: str,
-    models: Sequence[str],
-    output_root: Path,
+    *, pages: Sequence[str], agents: Sequence[str], provider: str, models: Sequence[str], output_root: Path
 ) -> list[PlannedRun]:
-    """Create the full cross product of pages, agents, provider, and models."""
     combinations: Iterable[tuple[str, str, str]] = itertools.product(pages, agents, models)
     planned: list[PlannedRun] = []
-
     for index, (page, agent, model) in enumerate(combinations, start=1):
-        output_path = output_path_for(
-            output_root=output_root,
-            page=page,
-            agent=agent,
-            provider=provider,
-            model=model,
-        )
-        planned.append(
-            PlannedRun(
-                index=index,
-                page=page,
-                agent=agent,
-                provider=provider,
-                model=model,
-                output_path=output_path,
-                log_path=log_path_for(output_path),
-            )
-        )
-
+        output_path = output_path_for(output_root=output_root, page=page, agent=agent, provider=provider, model=model)
+        planned.append(PlannedRun(index, page, agent, provider, model, output_path, log_path_for(output_path)))
     return planned
 
 
 def current_rotation_index(seed: str) -> int:
-    """Return a UTC time-based rotation index for scheduled runs."""
     now = datetime.now(timezone.utc)
     if seed == "hourly":
         return int(now.timestamp() // 3600)
@@ -391,16 +248,13 @@ def select_runs(
     rotation_seed: str,
     rotation_index: int | None,
 ) -> tuple[list[PlannedRun], int | None]:
-    """Select a subset of planned runs using first-N or rotating selection."""
     if max_runs is not None and max_runs < 1:
         raise ValueError("--max-runs must be greater than 0 when provided.")
-
     if not planned_runs:
         return [], None
 
     selected_pool = list(planned_runs)
     applied_rotation_index: int | None = None
-
     if selection == "rotate":
         if rotation_index is not None and rotation_index < 0:
             raise ValueError("--rotation-index must be non-negative when provided.")
@@ -412,85 +266,42 @@ def select_runs(
 
     if max_runs is not None:
         selected_pool = selected_pool[:max_runs]
-
     return selected_pool, applied_rotation_index
 
 
 def run_subprocess(command: Sequence[str], repo_root: Path) -> subprocess.CompletedProcess[str]:
-    """Run a child command from the repository root and capture output."""
     return subprocess.run(
-        list(command),
-        cwd=repo_root,
-        text=True,
-        stdout=subprocess.PIPE,
-        stderr=subprocess.PIPE,
-        check=False,
+        list(command), cwd=repo_root, text=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, check=False
     )
 
 
 def is_rejected_check_output(result: subprocess.CompletedProcess[str]) -> bool:
-    """Return whether run_check_agent.py rejected an LLM output by validation.
-
-    Validation rejection is expected Phase 2 behavior: the candidate signal report
-    did not satisfy the configured check-agent contract, so it must not be posted.
-    Other failures, such as provider errors, missing files, authentication issues,
-    or configuration problems, remain fatal.
-    """
-    if result.returncode == 0:
-        return False
-    return CHECK_VALIDATION_FAILURE_MARKER in result.stderr
+    return result.returncode != 0 and CHECK_VALIDATION_FAILURE_MARKER in result.stderr
 
 
 def provider_failure_message(result: subprocess.CompletedProcess[str]) -> str | None:
-    """Return a provider-failure summary message for failed check-agent runs.
-
-    Provider failures are distinct from rejected check-agent outputs. Rejected
-    outputs indicate that an LLM response was produced but failed the local
-    issue-comment contract. Provider failures indicate that no usable response
-    was produced by the provider call itself.
-    """
     if result.returncode == 0:
         return None
-
     stderr = result.stderr.strip()
-    if CHECK_VALIDATION_FAILURE_MARKER in stderr:
-        return None
-    if "Provider call failed:" not in stderr:
+    if CHECK_VALIDATION_FAILURE_MARKER in stderr or "Provider call failed:" not in stderr:
         return None
 
-    if "Request too large" in stderr or "Error code: 413" in stderr:
-        return (
-            "Provider call failed. Reason: request_too_large. Suggested remediation: "
-            "reduce --max-completion-tokens for this provider/model combination, "
-            "use a smaller input scope, or remove the model from rotation."
-        )
-
-    if "returned an empty response" in stderr:
-        return (
-            "Provider call failed. Reason: empty_response. Suggested remediation: "
-            "retry later, add provider retry handling, or remove the model from "
-            "rotation if empty responses persist."
-        )
-
-    if "rate_limit_exceeded" in stderr or "Error code: 429" in stderr:
-        return (
-            "Provider call failed. Reason: rate_limited. Suggested remediation: "
-            "reduce workflow frequency, add provider retry/backoff handling, or "
-            "remove the model from rotation."
-        )
-
-    if "environment variable is not set" in stderr:
-        return (
-            "Provider call failed. Reason: missing_provider_secret. Suggested "
-            "remediation: configure the required provider secret or remove the "
-            "provider/model from rotation."
-        )
-
-    return (
-        "Provider call failed. Reason: provider_call_failed. Suggested remediation: "
-        "inspect the per-run log stderr for the provider error and adjust provider "
-        "credentials, limits, model, or request size."
-    )
+    lower = stderr.lower()
+    if "request too large" in lower or "error code: 413" in lower or "context length" in lower:
+        return "Provider call failed. Reason: request_too_large. Suggested remediation: reduce --max-completion-tokens, reduce input scope, or remove the model from rotation."
+    if "empty response" in lower:
+        return "Provider call failed. Reason: empty_response. Suggested remediation: retry later or remove the model from rotation if empty responses persist."
+    if (
+        "429" in lower
+        or "rate_limit" in lower
+        or "rate limit" in lower
+        or "quota" in lower
+        or "resource_exhausted" in lower
+    ):
+        return "Provider call failed. Reason: rate_or_quota_limited. Suggested remediation: reduce workflow frequency or remove the model from rotation."
+    if "environment variable is not set" in lower:
+        return "Provider call failed. Reason: missing_provider_secret. Suggested remediation: configure the required repository secret or remove the provider/model from rotation."
+    return "Provider call failed. Reason: provider_call_failed. Suggested remediation: inspect the per-run log stderr."
 
 
 def write_log(
@@ -502,7 +313,6 @@ def write_log(
     issue_command: Sequence[str] | None,
     issue_result: subprocess.CompletedProcess[str] | None,
 ) -> None:
-    """Write per-run command details, stdout, and stderr."""
     log_file = filesystem_path(repo_root, planned.log_path)
     log_file.parent.mkdir(parents=True, exist_ok=True)
     lines: list[str] = []
@@ -520,59 +330,51 @@ def write_log(
     lines.append("```text")
     lines.append(" ".join(check_command))
     lines.append("```")
-
     if check_result is not None:
-        lines.append(f"Exit code: {check_result.returncode}")
-        lines.append("")
-        lines.append("stdout:")
-        lines.append("```text")
-        lines.append(check_result.stdout.rstrip())
-        lines.append("```")
-        lines.append("")
-        lines.append("stderr:")
-        lines.append("```text")
-        lines.append(check_result.stderr.rstrip())
-        lines.append("```")
-
+        lines.extend(
+            [
+                f"Exit code: {check_result.returncode}",
+                "",
+                "stdout:",
+                "```text",
+                check_result.stdout.rstrip(),
+                "```",
+                "",
+                "stderr:",
+                "```text",
+                check_result.stderr.rstrip(),
+                "```",
+            ]
+        )
     if issue_command is not None:
-        lines.append("")
-        lines.append("## issue_manager.py")
-        lines.append("")
-        lines.append("Command:")
-        lines.append("```text")
-        lines.append(" ".join(issue_command))
-        lines.append("```")
-
+        lines.extend(["", "## issue_manager.py", "", "Command:", "```text", " ".join(issue_command), "```"])
     if issue_result is not None:
-        lines.append(f"Exit code: {issue_result.returncode}")
-        lines.append("")
-        lines.append("stdout:")
-        lines.append("```text")
-        lines.append(issue_result.stdout.rstrip())
-        lines.append("```")
-        lines.append("")
-        lines.append("stderr:")
-        lines.append("```text")
-        lines.append(issue_result.stderr.rstrip())
-        lines.append("```")
-
+        lines.extend(
+            [
+                f"Exit code: {issue_result.returncode}",
+                "",
+                "stdout:",
+                "```text",
+                issue_result.stdout.rstrip(),
+                "```",
+                "",
+                "stderr:",
+                "```text",
+                issue_result.stderr.rstrip(),
+                "```",
+            ]
+        )
     log_file.write_text("\n".join(lines) + "\n", encoding="utf-8")
 
 
 def echo_child_output(result: subprocess.CompletedProcess[str]) -> None:
-    """Echo captured child-process output to the batch runner console."""
     if result.stdout:
         print(result.stdout.rstrip())
     if result.stderr:
         print(result.stderr.rstrip(), file=sys.stderr)
 
 
-def build_check_command(
-    *,
-    planned: PlannedRun,
-    max_completion_tokens: int | None,
-) -> list[str]:
-    """Build the run_check_agent.py command for one planned run."""
+def build_check_command(*, planned: PlannedRun, max_completion_tokens: int | None) -> list[str]:
     command = [
         sys.executable,
         RUN_CHECK_AGENT_PATH.as_posix(),
@@ -592,17 +394,9 @@ def build_check_command(
     return command
 
 
-def build_issue_command(
-    *,
-    planned: PlannedRun,
-    mode: str,
-    repo: str,
-    post_empty: bool,
-) -> list[str] | None:
-    """Build the issue_manager.py command for one successful planned run."""
+def build_issue_command(*, planned: PlannedRun, mode: str, repo: str, post_empty: bool) -> list[str] | None:
     if mode == "generate":
         return None
-
     command = [
         sys.executable,
         ISSUE_MANAGER_PATH.as_posix(),
@@ -627,14 +421,10 @@ def run_one(
     post_empty: bool,
     max_completion_tokens: int | None,
     allow_rejected_check_outputs: bool,
+    allow_provider_failures: bool,
 ) -> CompletedRun:
-    """Execute one planned run and return its status."""
     filesystem_path(repo_root, planned.output_path).parent.mkdir(parents=True, exist_ok=True)
-
-    check_command = build_check_command(
-        planned=planned,
-        max_completion_tokens=max_completion_tokens,
-    )
+    check_command = build_check_command(planned=planned, max_completion_tokens=max_completion_tokens)
     print(f"[{planned.index}] {planned.agent} / {planned.provider} / {planned.model} / {planned.page}")
     check_result = run_subprocess(check_command, repo_root)
     echo_child_output(check_result)
@@ -651,52 +441,45 @@ def run_one(
             issue_command=None,
             issue_result=None,
         )
-
         if allow_rejected_check_outputs and is_rejected_check_output(check_result):
             warning = (
                 "check-agent output was rejected by validation; treating as nonfatal and skipping issue_manager.py."
             )
             print(
-                f"::warning title=Rejected check-agent output::{planned.agent} / "
-                f"{planned.provider} / {planned.model} / {planned.page}: {warning}",
+                f"::warning title=Rejected check-agent output::{planned.agent} / {planned.provider} / {planned.model} / {planned.page}: {warning}",
                 file=sys.stderr,
             )
             return CompletedRun(
-                planned=planned,
-                check_status=RUN_STATUS_REJECTED,
-                check_exit_code=check_result.returncode,
-                issue_status=RUN_STATUS_SKIPPED,
-                issue_exit_code=None,
-                message=warning,
+                planned, RUN_STATUS_REJECTED, check_result.returncode, RUN_STATUS_SKIPPED, None, warning
             )
 
         provider_failure = provider_failure_message(check_result)
         if provider_failure is not None:
+            severity = "nonfatal" if allow_provider_failures else "fatal"
+            print(
+                f"::warning title=Provider failure ({severity})::{planned.agent} / {planned.provider} / {planned.model} / {planned.page}: {provider_failure}",
+                file=sys.stderr,
+            )
             return CompletedRun(
-                planned=planned,
-                check_status=RUN_STATUS_PROVIDER_FAILED,
-                check_exit_code=check_result.returncode,
-                issue_status=RUN_STATUS_SKIPPED,
-                issue_exit_code=None,
-                message=provider_failure,
+                planned,
+                RUN_STATUS_PROVIDER_FAILED,
+                check_result.returncode,
+                RUN_STATUS_SKIPPED,
+                None,
+                provider_failure,
+                provider_failure_is_nonfatal=allow_provider_failures,
             )
 
         return CompletedRun(
-            planned=planned,
-            check_status=RUN_STATUS_FAILED,
-            check_exit_code=check_result.returncode,
-            issue_status=RUN_STATUS_SKIPPED,
-            issue_exit_code=None,
-            message="run_check_agent.py failed; issue_manager.py was not run.",
+            planned,
+            RUN_STATUS_FAILED,
+            check_result.returncode,
+            RUN_STATUS_SKIPPED,
+            None,
+            "run_check_agent.py failed; issue_manager.py was not run.",
         )
 
-    issue_command = build_issue_command(
-        planned=planned,
-        mode=mode,
-        repo=repo or "",
-        post_empty=post_empty,
-    )
-
+    issue_command = build_issue_command(planned=planned, mode=mode, repo=repo or "", post_empty=post_empty)
     if issue_command is not None:
         issue_result = run_subprocess(issue_command, repo_root)
         echo_child_output(issue_result)
@@ -712,55 +495,44 @@ def run_one(
 
     if issue_result is not None and issue_result.returncode != 0:
         return CompletedRun(
-            planned=planned,
-            check_status=RUN_STATUS_OK,
-            check_exit_code=check_result.returncode,
-            issue_status=RUN_STATUS_FAILED,
-            issue_exit_code=issue_result.returncode,
-            message="issue_manager.py failed.",
+            planned,
+            RUN_STATUS_OK,
+            check_result.returncode,
+            RUN_STATUS_FAILED,
+            issue_result.returncode,
+            "issue_manager.py failed.",
         )
 
     return CompletedRun(
-        planned=planned,
-        check_status=RUN_STATUS_OK,
-        check_exit_code=check_result.returncode,
-        issue_status=RUN_STATUS_OK if issue_command is not None else RUN_STATUS_SKIPPED,
-        issue_exit_code=issue_result.returncode if issue_result is not None else None,
-        message="completed successfully.",
+        planned,
+        RUN_STATUS_OK,
+        check_result.returncode,
+        RUN_STATUS_OK if issue_command is not None else RUN_STATUS_SKIPPED,
+        issue_result.returncode if issue_result is not None else None,
+        "completed successfully.",
     )
 
 
 def markdown_escape(value: object) -> str:
-    """Escape table-sensitive characters for Markdown summary cells."""
-    text = "" if value is None else str(value)
-    return text.replace("|", "\\|").replace("\n", " ")
+    return ("" if value is None else str(value)).replace("|", "\\|").replace("\n", " ")
 
 
-def summarize_completed_runs(completed_runs: Sequence[CompletedRun]) -> tuple[int, int, int]:
-    """Return accepted, rejected, and fatal-failure counts."""
+def summarize_completed_runs(completed_runs: Sequence[CompletedRun]) -> tuple[int, int, int, int]:
     accepted_count = sum(
         1 for run in completed_runs if run.check_status == RUN_STATUS_OK and run.issue_status != RUN_STATUS_FAILED
     )
     rejected_count = sum(1 for run in completed_runs if run.rejected)
+    provider_failure_count = sum(1 for run in completed_runs if run.provider_failed)
     fatal_failure_count = sum(1 for run in completed_runs if run.fatal_failed)
-    return accepted_count, rejected_count, fatal_failure_count
+    return accepted_count, rejected_count, provider_failure_count, fatal_failure_count
 
 
 def status_for_summary(completed: CompletedRun | None, plan_only: bool) -> tuple[str, str]:
-    """Return status and message text for one summary row."""
     if completed is None:
         return (RUN_STATUS_SKIPPED if plan_only else "not-run"), ("planned only" if plan_only else "not executed")
-
-    if completed.check_status == RUN_STATUS_PROVIDER_FAILED:
-        return RUN_STATUS_PROVIDER_FAILED, completed.message
-
     if completed.fatal_failed:
         return RUN_STATUS_FAILED, completed.message
-
-    if completed.rejected:
-        return RUN_STATUS_REJECTED, completed.message
-
-    return RUN_STATUS_OK, completed.message
+    return completed.check_status, completed.message
 
 
 def write_summary(
@@ -776,11 +548,10 @@ def write_summary(
     completed_runs: Sequence[CompletedRun],
     plan_only: bool,
 ) -> None:
-    """Write a Markdown batch summary."""
     summary_path.parent.mkdir(parents=True, exist_ok=True)
-
-    accepted_count, rejected_count, fatal_failure_count = summarize_completed_runs(completed_runs)
-
+    accepted_count, rejected_count, provider_failure_count, fatal_failure_count = summarize_completed_runs(
+        completed_runs
+    )
     lines: list[str] = []
     lines.append("# Phase 2 check batch summary")
     lines.append("")
@@ -798,18 +569,17 @@ def write_summary(
     lines.append(f"Completed runs: `{len(completed_runs)}`")
     lines.append(f"Accepted runs: `{accepted_count}`")
     lines.append(f"Rejected check-agent outputs: `{rejected_count}`")
+    lines.append(f"Provider failed runs: `{provider_failure_count}`")
     lines.append(f"Fatal failed runs: `{fatal_failure_count}`")
     lines.append("")
     lines.append("## Runs")
     lines.append("")
     lines.append("| # | Status | Page | Agent | Provider | Model | Output | Log | Message |")
     lines.append("|---:|---|---|---|---|---|---|---|---|")
-
     completed_by_index = {run.planned.index: run for run in completed_runs}
     for planned in planned_runs:
         completed = completed_by_index.get(planned.index)
         status, message = status_for_summary(completed, plan_only)
-
         lines.append(
             "| "
             + " | ".join(
@@ -827,18 +597,14 @@ def write_summary(
             )
             + " |"
         )
-
     summary_path.write_text("\n".join(lines) + "\n", encoding="utf-8")
 
 
 def validate_environment(repo_root: Path, mode: str, repo: str | None) -> None:
-    """Validate required files and mode-specific arguments."""
     if not repo_root.is_dir():
         raise ValueError(f"Repository root does not exist or is not a directory: {repo_root}")
-
     if not (repo_root / RUN_CHECK_AGENT_PATH).is_file():
         raise ValueError(f"Missing required script: {RUN_CHECK_AGENT_PATH}")
-
     if mode in {"dry-run", "post"}:
         if not repo:
             raise ValueError("--repo is required for --mode dry-run or --mode post.")
@@ -848,7 +614,6 @@ def validate_environment(repo_root: Path, mode: str, repo: str | None) -> None:
 
 def main() -> int:
     args = parse_args()
-
     repo_root = Path(args.repo_root).resolve()
     output_root = Path(args.output_root)
     summary_path = (
@@ -859,21 +624,11 @@ def main() -> int:
 
     try:
         validate_environment(repo_root, args.mode, args.repo)
-        pages = discover_pages(
-            repo_root,
-            args.page,
-            args.pages_glob,
-            args.exclude_page,
-            args.exclude_pages_glob,
-        )
+        pages = discover_pages(repo_root, args.page, args.pages_glob, args.exclude_page, args.exclude_pages_glob)
         agents = args.agent or DEFAULT_AGENTS
         models = args.model or DEFAULT_MODELS
         available_runs = plan_runs(
-            pages=pages,
-            agents=agents,
-            provider=args.provider,
-            models=models,
-            output_root=output_root,
+            pages=pages, agents=agents, provider=args.provider, models=models, output_root=output_root
         )
         planned_runs, applied_rotation_index = select_runs(
             planned_runs=available_runs,
@@ -892,15 +647,12 @@ def main() -> int:
     if applied_rotation_index is not None:
         print(f"Rotation seed: {args.rotation_seed}")
         print(f"Rotation index: {applied_rotation_index}")
-
     for planned in planned_runs:
         print(
-            f"- [{planned.index}] {planned.agent} / {planned.provider} / "
-            f"{planned.model} / {planned.page} -> {planned.output_path.as_posix()}"
+            f"- [{planned.index}] {planned.agent} / {planned.provider} / {planned.model} / {planned.page} -> {planned.output_path.as_posix()}"
         )
 
     completed_runs: list[CompletedRun] = []
-
     if args.plan_only:
         write_summary(
             summary_path=summary_path,
@@ -926,13 +678,12 @@ def main() -> int:
             post_empty=args.post_empty,
             max_completion_tokens=args.max_completion_tokens,
             allow_rejected_check_outputs=args.allow_rejected_check_outputs,
+            allow_provider_failures=args.allow_provider_failures,
         )
         completed_runs.append(completed)
-
         if args.fail_fast and completed.fatal_failed:
             print("Stopping after first fatal failed run because --fail-fast was set.")
             break
-
         if run_number < len(planned_runs) and args.sleep_seconds > 0:
             print(f"Sleeping for {args.sleep_seconds:g} seconds before next run...")
             time.sleep(args.sleep_seconds)
@@ -953,16 +704,19 @@ def main() -> int:
 
     fatal_failures = [completed for completed in completed_runs if completed.fatal_failed]
     if fatal_failures:
-        print(
-            f"Batch completed with {len(fatal_failures)} fatal failed run(s).",
-            file=sys.stderr,
-        )
+        print(f"Batch completed with {len(fatal_failures)} fatal failed run(s).", file=sys.stderr)
         return 1
 
-    rejected_outputs = [completed for completed in completed_runs if completed.rejected]
-    if rejected_outputs:
+    nonfatal_rejected = [completed for completed in completed_runs if completed.rejected]
+    nonfatal_provider_failures = [
+        completed
+        for completed in completed_runs
+        if completed.provider_failed and completed.provider_failure_is_nonfatal
+    ]
+    if nonfatal_rejected or nonfatal_provider_failures:
         print(
-            f"Batch completed successfully with {len(rejected_outputs)} nonfatal rejected check-agent output(s).",
+            f"Batch completed successfully with {len(nonfatal_rejected)} nonfatal rejected output(s) "
+            f"and {len(nonfatal_provider_failures)} nonfatal provider failure(s).",
             file=sys.stderr,
         )
         return 0

@@ -1,17 +1,11 @@
-"""Groq provider for Phase 2 page-review runs."""
+"""Shared OpenAI-compatible provider utilities for Phase 2 check-agent runs."""
 
 from __future__ import annotations
 
-import os
 import time
 from typing import Any
 
-from groq import Groq
-
-
-class GroqProviderError(RuntimeError):
-    """Raised when the Groq provider cannot complete a review."""
-
+from openai import OpenAI
 
 SYSTEM_MESSAGE = (
     "Return only the GitHub issue comment requested by the prompt. "
@@ -30,9 +24,9 @@ QUOTA_OR_RATE_LIMIT_MARKERS = (
     "resource_exhausted",
     "quota",
     "too many requests",
+    "requests per day",
     "tokens per minute",
     "tpm",
-    "requests per minute",
     "rpm",
 )
 
@@ -51,14 +45,24 @@ TRANSIENT_ERROR_MARKERS = (
 )
 
 NON_RETRYABLE_ERROR_MARKERS = (
+    "400",
+    "401",
+    "403",
+    "404",
+    "413",
+    "422",
     "request too large",
-    "error code: 413",
     "context length",
+    "maximum context length",
     "invalid api key",
     "authentication",
     "unauthorized",
     "forbidden",
 )
+
+
+class OpenAICompatibleProviderError(RuntimeError):
+    """Raised when an OpenAI-compatible provider cannot complete a review."""
 
 
 def _diagnostic(exc: Exception) -> str:
@@ -73,10 +77,14 @@ def _diagnostic(exc: Exception) -> str:
     ).lower()
 
 
-def _is_retryable_exception(exc: Exception) -> bool:
-    """Return whether a Groq exception looks transient enough to retry."""
+def _is_quota_or_rate_limit_error(exc: Exception) -> bool:
     diagnostic = _diagnostic(exc)
-    if any(marker in diagnostic for marker in QUOTA_OR_RATE_LIMIT_MARKERS):
+    return any(marker in diagnostic for marker in QUOTA_OR_RATE_LIMIT_MARKERS)
+
+
+def _is_retryable_exception(exc: Exception) -> bool:
+    diagnostic = _diagnostic(exc)
+    if _is_quota_or_rate_limit_error(exc):
         return False
     if any(marker in diagnostic for marker in NON_RETRYABLE_ERROR_MARKERS):
         return False
@@ -84,7 +92,6 @@ def _is_retryable_exception(exc: Exception) -> bool:
 
 
 def _response_diagnostic(response: Any) -> str:
-    """Return safe Groq response metadata for logs without exposing prompt text."""
     try:
         choice = response.choices[0]
     except Exception:
@@ -96,44 +103,31 @@ def _response_diagnostic(response: Any) -> str:
 
 
 def _extract_content(response: Any) -> str:
-    """Extract the generated message content from a Groq chat-completion response."""
     try:
         content = response.choices[0].message.content
     except Exception as exc:
-        raise GroqProviderError(
-            f"Groq response did not contain choices[0].message.content ({_response_diagnostic(response)})."
+        raise OpenAICompatibleProviderError(
+            f"OpenAI-compatible response did not contain choices[0].message.content ({_response_diagnostic(response)})."
         ) from exc
 
     return content if isinstance(content, str) else ""
 
 
-def _call_groq_once(
+def generate_chat_completion(
     *,
-    client: Groq,
+    provider_label: str,
+    api_key: str,
+    base_url: str,
     model: str,
     review_input: str,
     max_completion_tokens: int,
-) -> Any:
-    """Make one Groq chat-completion request."""
-    return client.chat.completions.create(
-        model=model,
-        messages=[
-            {"role": "system", "content": SYSTEM_MESSAGE},
-            {"role": "user", "content": review_input},
-        ],
-        temperature=0,
-        max_completion_tokens=max_completion_tokens,
-    )
-
-
-def _generate_with_retries(
-    *,
-    client: Groq,
-    model: str,
-    review_input: str,
-    max_completion_tokens: int,
+    extra_body: dict[str, Any] | None = None,
 ) -> str:
-    """Call Groq with one retry for transient errors and no retries for quota/rate limits."""
+    """Generate one strict check-agent comment through an OpenAI-compatible API."""
+    if max_completion_tokens <= 0:
+        raise OpenAICompatibleProviderError("max_completion_tokens must be greater than 0.")
+
+    client = OpenAI(base_url=base_url, api_key=api_key)
     total_attempts = len(RETRY_DELAYS_SECONDS) + 1
     last_error: Exception | None = None
     prompt_chars = len(review_input)
@@ -141,21 +135,27 @@ def _generate_with_retries(
 
     for attempt_number in range(1, total_attempts + 1):
         try:
-            response = _call_groq_once(
-                client=client,
-                model=model,
-                review_input=review_input,
-                max_completion_tokens=max_completion_tokens,
-            )
+            kwargs: dict[str, Any] = {
+                "model": model,
+                "messages": [
+                    {"role": "system", "content": SYSTEM_MESSAGE},
+                    {"role": "user", "content": review_input},
+                ],
+                "temperature": 0,
+                "max_completion_tokens": max_completion_tokens,
+            }
+            if extra_body:
+                kwargs["extra_body"] = extra_body
+
+            response = client.chat.completions.create(**kwargs)
             content = _extract_content(response)
             if content.strip():
                 return content.strip() + "\n"
 
-            diagnostic = _response_diagnostic(response)
-            last_error = GroqProviderError(
-                "Groq returned an empty response "
-                f"({diagnostic}; prompt_chars={prompt_chars}; prompt_bytes={prompt_bytes}; "
-                f"max_completion_tokens={max_completion_tokens})."
+            last_error = OpenAICompatibleProviderError(
+                f"{provider_label} returned an empty response "
+                f"({_response_diagnostic(response)}; prompt_chars={prompt_chars}; "
+                f"prompt_bytes={prompt_bytes}; max_completion_tokens={max_completion_tokens})."
             )
         except Exception as exc:  # noqa: BLE001 - provider SDKs raise heterogeneous exceptions.
             last_error = exc
@@ -168,35 +168,8 @@ def _generate_with_retries(
         time.sleep(RETRY_DELAYS_SECONDS[attempt_number - 1])
 
     if last_error is None:
-        raise GroqProviderError("Groq API call failed without an exception.")
+        raise OpenAICompatibleProviderError(f"{provider_label} API call failed without an exception.")
 
-    raise GroqProviderError(f"Groq API call failed after {attempt_number} attempt(s): {last_error}") from last_error
-
-
-def generate_review(
-    *,
-    review_input: str,
-    provider: str,
-    model: str,
-    review_date: str,
-    page_path: str,
-    commit_sha: str,
-    page_content: str,
-    max_completion_tokens: int,
-) -> str:
-    """Generate one Phase 2 page-review issue comment using Groq."""
-    del provider, review_date, page_path, commit_sha, page_content
-
-    if not os.getenv("GROQ_API_KEY"):
-        raise GroqProviderError("GROQ_API_KEY environment variable is not set.")
-
-    if max_completion_tokens <= 0:
-        raise GroqProviderError("max_completion_tokens must be greater than 0.")
-
-    client = Groq()
-    return _generate_with_retries(
-        client=client,
-        model=model,
-        review_input=review_input,
-        max_completion_tokens=max_completion_tokens,
-    )
+    raise OpenAICompatibleProviderError(
+        f"{provider_label} API call failed after {attempt_number} attempt(s): {last_error}"
+    ) from last_error

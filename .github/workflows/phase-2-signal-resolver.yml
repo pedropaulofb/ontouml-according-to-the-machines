@@ -2,7 +2,12 @@ name: Phase 2 automated signal resolver
 
 on:
   schedule:
-    - cron: "17 */4 * * *"
+    # 20 scheduled attempts per UTC day, spaced by approximately 72 minutes.
+    - cron: "5 0,6,12,18 * * *"
+    - cron: "17 1,7,13,19 * * *"
+    - cron: "29 2,8,14,20 * * *"
+    - cron: "41 3,9,15,21 * * *"
+    - cron: "53 4,10,16,22 * * *"
   workflow_dispatch:
     inputs:
       issue:
@@ -91,7 +96,7 @@ jobs:
             args+=(--dry-run)
           fi
 
-          python scripts/phase-2/resolve_signal_issue.py "${args[@]}"
+          python scripts/phase-2/resolve_signal_issue.py "${args[@]}" --provider-max-attempts 1
 
       - name: Upload resolver plan
         if: always()
