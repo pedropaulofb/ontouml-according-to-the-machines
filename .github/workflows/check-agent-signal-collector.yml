@@ -10,17 +10,17 @@ run-name: Scheduled check-agent signal collector (${{ github.event_name }})
   workflow_dispatch:
     inputs:
       mode:
-        description: "Issue-manager mode."
+        description: "Issue-manager mode for manual runs. Use dry-run for smoke tests; scheduled runs still post."
         type: choice
         required: true
-        default: post
+        default: dry-run
         options:
           - generate
           - dry-run
           - post
 
       provider:
-        description: "LLM provider adapter used when provider_model_specs is empty."
+        description: "Fallback single-provider adapter, used only when provider_model_specs is empty."
         type: choice
         required: true
         default: groq
@@ -31,13 +31,13 @@ run-name: Scheduled check-agent signal collector (${{ github.event_name }})
           - gemini
 
       provider_model_specs:
-        description: "Optional comma-separated provider:model list. Overrides provider/models when set. Scheduled runs use the configured multi-provider rotation."
+        description: "Primary rotation list. Comma-separated provider:model values. Leave default to use the full rotation."
         type: string
         required: false
-        default: ""
+        default: "groq:llama-3.3-70b-versatile,cerebras:gpt-oss-120b,sambanova:DeepSeek-V3.1,groq:meta-llama/llama-4-scout-17b-16e-instruct,cerebras:zai-glm-4.7,gemini:gemini-3.1-flash-lite"
 
       selection:
-        description: "How to select triples from the full page x agent x model plan. Scheduled provider:model rotation is applied before this runner selection."
+        description: "How to select triples. Keep rotate for normal manual and scheduled signal collection."
         type: choice
         required: true
         default: rotate
@@ -46,7 +46,7 @@ run-name: Scheduled check-agent signal collector (${{ github.event_name }})
           - first
 
       rotation_seed:
-        description: "Time seed for rotating selection when rotation_index is omitted."
+        description: "Fallback runner rotation seed. Ignored when provider_model_specs rotation_index is explicit."
         type: choice
         required: true
         default: hourly
@@ -55,13 +55,13 @@ run-name: Scheduled check-agent signal collector (${{ github.event_name }})
           - daily
 
       rotation_index:
-        description: "Optional explicit non-negative rotation index for deterministic manual runs."
+        description: "Optional model slot override: 0=Groq Llama, 1=Cerebras GPT-OSS, 2=SambaNova DeepSeek, 3=Groq Scout, 4=Cerebras GLM, 5=Gemini."
         type: string
         required: false
         default: ""
 
       pages:
-        description: "Optional comma- or newline-separated page list. If empty, all canonical stereotype pages are considered."
+        description: "Optional comma- or newline-separated page list for manual smoke tests. Empty means all canonical stereotype pages."
         type: string
         required: false
         default: ""
@@ -73,7 +73,7 @@ run-name: Scheduled check-agent signal collector (${{ github.event_name }})
         default: "page-hygiene-checker,language-style-checker"
 
       models:
-        description: "Comma-separated provider-specific models used when provider_model_specs is empty."
+        description: "Fallback comma-separated models, used only when provider_model_specs is empty."
         type: string
         required: true
         default: "llama-3.3-70b-versatile"
@@ -192,7 +192,8 @@ jobs:
           uses_sambanova=false
 
           if [[ -n "$provider_model_specs" ]]; then
-            IFS=',' read -ra specs <<< "$provider_model_specs"
+            provider_model_specs_normalized="${provider_model_specs//$'\n'/,}"
+            IFS=',' read -ra specs <<< "$provider_model_specs_normalized"
             for spec in "${specs[@]}"; do
               spec="$(trim "$spec")"
               if [[ -z "$spec" ]]; then
@@ -287,12 +288,15 @@ jobs:
           sleep_seconds="${WORKFLOW_SLEEP_SECONDS:-0}"
           max_completion_tokens="${WORKFLOW_MAX_COMPLETION_TOKENS:-}"
 
-          if [[ -z "$rotation_index" && "${GITHUB_EVENT_NAME:-}" == "schedule" ]]; then
-            rotation_index="$(($(date -u +%s) / 1200))"
-          fi
-
           if [[ -z "$provider_model_specs" && "${GITHUB_EVENT_NAME:-}" == "schedule" ]]; then
             provider_model_specs="$default_periodic_provider_model_specs"
+          fi
+
+          if [[ -z "$rotation_index" && "$selection" == "rotate" && -n "$provider_model_specs" ]]; then
+            # Use the same 20-minute provider:model slot calculation for scheduled
+            # runs and default manual runs. Manual dispatch can still set
+            # rotation_index explicitly for deterministic model smoke tests.
+            rotation_index="$(($(date -u +%s) / 1200))"
           fi
 
           if [[ -n "$provider_model_specs" ]]; then
