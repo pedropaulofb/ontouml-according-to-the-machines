@@ -203,6 +203,8 @@ prompts/phase-2/close-page-hygiene-signal-issue-v1.0.0.md
 prompts/phase-2/close-language-style-signal-issue-v1.0.0.md
 prompts/phase-2/resolve-page-hygiene-signal-issue-v1.2.0.md
 prompts/phase-2/resolve-language-style-signal-issue-v1.2.0.md
+prompts/phase-2/resolve-page-hygiene-signal-issue-v1.2.1.md
+prompts/phase-2/resolve-language-style-signal-issue-v1.2.1.md
 scripts/phase-2/run_check_agent.py
 scripts/phase-2/run_check_batch.py
 scripts/phase-2/issue_manager.py
@@ -761,8 +763,8 @@ Its scheduled workflow is:
 Its resolver prompts are:
 
 ```text
-prompts/phase-2/resolve-page-hygiene-signal-issue-v1.2.0.md
-prompts/phase-2/resolve-language-style-signal-issue-v1.2.0.md
+prompts/phase-2/resolve-page-hygiene-signal-issue-v1.2.1.md
+prompts/phase-2/resolve-language-style-signal-issue-v1.2.1.md
 ```
 
 The resolver operates on only these agents:
@@ -916,8 +918,8 @@ Current resolver prompt metadata:
 
 | Agent | Prompt ID | Prompt title |
 |---|---|---|
-| `page-hygiene-checker` | `resolve-page-hygiene-signal-issue-v1.2.0` | `Phase 2 automated resolver: page-hygiene signals v1.2.0` |
-| `language-style-checker` | `resolve-language-style-signal-issue-v1.2.0` | `Phase 2 automated resolver: language-style signals v1.2.0` |
+| `page-hygiene-checker` | `resolve-page-hygiene-signal-issue-v1.2.1` | `Phase 2 automated resolver: page-hygiene signals v1.2.1` |
+| `language-style-checker` | `resolve-language-style-signal-issue-v1.2.1` | `Phase 2 automated resolver: language-style signals v1.2.1` |
 
 Legacy bullet-style resolver log entries are removed for the same issue when the resolver applies accepted edits.
 
@@ -2144,8 +2146,8 @@ It protects:
 Phase 2 includes two automated resolver prompts:
 
 ```text
-prompts/phase-2/resolve-page-hygiene-signal-issue-v1.2.0.md
-prompts/phase-2/resolve-language-style-signal-issue-v1.2.0.md
+prompts/phase-2/resolve-page-hygiene-signal-issue-v1.2.1.md
+prompts/phase-2/resolve-language-style-signal-issue-v1.2.1.md
 ```
 
 These prompts are implemented for:
@@ -2168,7 +2170,7 @@ They return strict JSON resolution plans and do not directly perform GitHub writ
 The page-hygiene automated resolver prompt is:
 
 ```text
-prompts/phase-2/resolve-page-hygiene-signal-issue-v1.2.0.md
+prompts/phase-2/resolve-page-hygiene-signal-issue-v1.2.1.md
 ```
 
 It may accept only deterministic, local, meaning-preserving editorial edits within the page-hygiene checker scope:
@@ -2185,7 +2187,7 @@ It must reject conceptual validation, source-faithfulness validation, quote veri
 The language-style automated resolver prompt is:
 
 ```text
-prompts/phase-2/resolve-language-style-signal-issue-v1.2.0.md
+prompts/phase-2/resolve-language-style-signal-issue-v1.2.1.md
 ```
 
 It may accept only deterministic, local, meaning-preserving editorial edits within the language-style checker scope:
@@ -2262,8 +2264,8 @@ Completed:
 - `close-page-hygiene-signal-issue-v1.0.0.md` exists as the manual issue-review and resolution prompt for `page-hygiene-checker` issues;
 - `close-language-style-signal-issue-v1.0.0.md` exists as the manual issue-review and resolution prompt for `language-style-checker` issues;
 - the earlier plan for a third `page-structure-checker` closure prompt has been discarded;
-- `resolve-page-hygiene-signal-issue-v1.2.0.md` exists as the automated resolver prompt for `page-hygiene-checker` issues;
-- `resolve-language-style-signal-issue-v1.2.0.md` exists as the automated resolver prompt for `language-style-checker` issues;
+- `resolve-page-hygiene-signal-issue-v1.2.1.md` exists as the automated resolver prompt for `page-hygiene-checker` issues;
+- `resolve-language-style-signal-issue-v1.2.1.md` exists as the automated resolver prompt for `language-style-checker` issues;
 - `resolve_signal_issue.py` implements automated resolver orchestration;
 - `.github/workflows/phase-2-signal-resolver.yml` runs scheduled and manual automated signal resolution;
 - the automated resolver selects the oldest eligible open signal issue when no issue is provided;
