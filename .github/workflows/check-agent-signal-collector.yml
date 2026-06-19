@@ -247,7 +247,7 @@ jobs:
           gh --version
           gh auth status
 
-      - name: Compile Phase 2 scripts
+      - name: Compile signal scripts
         shell: bash
         run: |
           set -euo pipefail
