@@ -462,6 +462,30 @@ def parse_json(text: str) -> dict[str, Any]:
     return parsed
 
 
+def normalize_rejected_group_edits(plan: dict[str, Any]) -> int:
+    """Normalize harmless schema drift for rejected signal groups only.
+
+    Resolver prompts require every signal group to include an ``edits`` array.
+    Some models express "no edits" in rejected groups by omitting ``edits`` or
+    returning ``null``. That is safe to normalize because rejected groups never
+    apply file changes. Accepted groups remain strictly validated.
+    """
+    groups = plan.get("signal_groups")
+    if not isinstance(groups, list):
+        return 0
+
+    normalized = 0
+    for group in groups:
+        if not isinstance(group, dict):
+            continue
+        if group.get("decision") != "reject_for_phase_2_automation":
+            continue
+        if "edits" not in group or group.get("edits") is None:
+            group["edits"] = []
+            normalized += 1
+    return normalized
+
+
 def validate_plan(plan: dict[str, Any], issue: IssueSnapshot, page_text: str) -> None:
     if plan.get("issue_number") != issue.number:
         raise ResolverError("Plan issue_number does not match the selected issue.")
@@ -778,6 +802,24 @@ def comment_and_close(repo: str, issue: IssueSnapshot, body: str, state_reason: 
     close_issue(repo, issue.number, state_reason)
 
 
+def resolver_output_dir() -> Path:
+    """Return the resolver artifact directory, creating it when needed."""
+    output_dir = Path(".tmp/phase-2/resolver")
+    output_dir.mkdir(parents=True, exist_ok=True)
+    return output_dir
+
+
+def write_text_artifact(output_dir: Path, filename: str, content: str) -> None:
+    """Write a text diagnostic artifact without hiding resolver failures."""
+    suffix = "" if content.endswith("\n") else "\n"
+    (output_dir / filename).write_text(content + suffix, encoding="utf-8")
+
+
+def write_json_artifact(output_dir: Path, filename: str, value: Any) -> None:
+    """Write a JSON diagnostic artifact without hiding resolver failures."""
+    (output_dir / filename).write_text(json.dumps(value, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
+
+
 def main() -> int:
     args = parse_args()
     try:
@@ -797,20 +839,41 @@ def main() -> int:
         page_path = Path(issue.reviewed_page)
         page_text = load_text(page_path)
         prompt = load_text(Path(SUPPORTED_AGENTS[issue.agent]))
+        output_dir = resolver_output_dir()
 
-        raw = call_provider(
-            args.provider,
-            args.model,
-            prompt,
-            build_llm_input(issue, page_text),
-            args.max_completion_tokens,
-            args.provider_max_attempts,
-        )
-        plan = parse_json(raw)
-        validate_plan(plan, issue, page_text)
+        try:
+            raw = call_provider(
+                args.provider,
+                args.model,
+                prompt,
+                build_llm_input(issue, page_text),
+                args.max_completion_tokens,
+                args.provider_max_attempts,
+            )
+        except ResolverError as exc:
+            write_text_artifact(output_dir, f"issue-{issue.number}-provider-error.txt", str(exc))
+            raise
 
-        output_dir = Path(".tmp/phase-2/resolver")
-        output_dir.mkdir(parents=True, exist_ok=True)
+        write_text_artifact(output_dir, f"issue-{issue.number}-raw-response.txt", raw)
+
+        try:
+            plan = parse_json(raw)
+            write_json_artifact(output_dir, f"issue-{issue.number}-parsed-plan.json", plan)
+
+            normalized_count = normalize_rejected_group_edits(plan)
+            if normalized_count:
+                write_text_artifact(
+                    output_dir,
+                    f"issue-{issue.number}-normalization.txt",
+                    f"Normalized {normalized_count} rejected signal group edits value(s) to [].",
+                )
+                write_json_artifact(output_dir, f"issue-{issue.number}-normalized-plan.json", plan)
+
+            validate_plan(plan, issue, page_text)
+        except ResolverError as exc:
+            write_text_artifact(output_dir, f"issue-{issue.number}-plan-error.txt", str(exc))
+            raise
+
         output_path = output_dir / f"issue-{issue.number}-plan.json"
         output_path.write_text(json.dumps(plan, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
 
