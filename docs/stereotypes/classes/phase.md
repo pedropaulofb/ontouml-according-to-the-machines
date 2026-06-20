@@ -10,15 +10,15 @@ Several sources describe Phase in terms of phase partitions. A phase partition s
 
 The scope of Phase is not uniform across the supplied sources. Earlier accounts focus on phases of substance sortals or substantials, while later OntoUML 2-oriented accounts generalize Phase beyond substantial types to endurant-type taxonomies more broadly when contingent intrinsic classification conditions are present. Source-specific extensions discuss Phase classifications for relators, powertype instances interpreted as endurants, and multi-level settings in which a second-order type specializing Phase may be based on a Substantial Universal.
 
-Phase can also serve as a structural representation of lifecycle states and change. Some sources treat phase partitions as connection points between structural models and behavioral models: events and conditions may promote transitions between phases. In historical-semantics contexts, termination is treated as a change in Phase rather than removal from the universe of discourse, with the resulting Phase representing the historical nature of the terminated endurant.
+Phase can also serve as a structural representation of lifecycle states and change. Some sources treat phase partitions as connection points between structural models and behavioral models: events and conditions may promote transitions between phases. In historical semantics contexts, termination is treated as a change in Phase rather than removal from the universe of discourse, with the resulting Phase representing the historical nature of the terminated endurant.
 
 ## Stereotype Profile
 
-TBD in a later phase.
+Under development.
 
 ## Examples
 
-TBD in a later phase.
+Under development.
 
 ## References
 
@@ -57,3 +57,4 @@ TBD in a later phase.
 | Date | Phase | Agent | Action | Prompt ID | Prompt Title | Inputs | Notes |
 |---|---|---|---|---|---|---|---|
 | 2026-06-05 | Phase 1 | GPT-5.5 Thinking | Consolidation | prompt-phase-1-consolidation-v1.0.0 | Phase 1 Consolidation — Direct Main Commit for One Stereotype | 2026-06-05t0921-guizzardi-2005-thesis-chapter-04.md, 2026-06-05t0930-guizzardi-2005-thesis-chapter-08.md, 2026-06-05t1024-guizzardi-2018-endurant-types-full-document.md, 2026-06-05t1024-guizzardi-2022-ufo-full-document.md, 2026-06-05t1025-guarino-guizzardi-2015-relationships-full-document.md, 2026-06-05t1031-almeida-falbo-guizzardi-2019-events-as-entities-full-document.md, 2026-06-05t1037-guizzardi-2016-events-endurants-full-document.md, 2026-06-05t1037-guizzardi-2021-types-taxonomic-structures-full-document.md, 2026-06-05t1040-carvalho-2017-multi-level-ontology-based-conceptual-modeling-full-document.md, 2026-06-05t1040-guizzardi-2015-powertypes-full-document.md | First consolidated stereotype page generated from Phase 1 source-specific intermediate files at 2026-06-05t1806; not final expert-validated documentation. |
+| 2026-06-20 | Phase 2 | Phase 2 automated resolver | Signal resolution | resolve-language-style-signal-issue-v1.2.1 | Phase 2 automated resolver: language-style signals v1.2.1 | GitHub issue #64 | Applied accepted language-style-checker signal edits through automated Phase 2 resolution; not a conceptual or source-faithfulness validation. |
