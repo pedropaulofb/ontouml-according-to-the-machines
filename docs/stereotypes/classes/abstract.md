@@ -24,10 +24,11 @@ TBD in a later phase.
 
 ### Consulted Sources
 
-- Guizzardi, G. (2005). Ontological Foundations for Structural Conceptual Models. PhD thesis, University of Twente.. Scope: Chapter 4.
+- Guizzardi, G. (2005). Ontological Foundations for Structural Conceptual Models. PhD thesis, University of Twente. Scope: Chapter 4.
 
 ## Generation and Review Log
 
 | Date | Phase | Agent | Action | Prompt ID | Prompt Title | Inputs | Notes |
 |---|---|---|---|---|---|---|---|
 | 2026-06-05 | Phase 1 | GPT-5.5 Thinking | Consolidation | prompt-phase-1-consolidation-v1.0.0 | Phase 1 Consolidation — Direct Main Commit for One Stereotype | 2026-06-05t0921-guizzardi-2005-thesis-chapter-04.md | First consolidated stereotype page generated from Phase 1 source-specific intermediate files at 2026-06-05t1642; not final expert-validated documentation. |
+| 2026-06-21 | Phase 2 | Phase 2 automated resolver | Signal resolution | resolve-page-hygiene-signal-issue-v1.2.1 | Phase 2 automated resolver: page-hygiene signals v1.2.1 | GitHub issue #89 | Applied accepted page-hygiene-checker signal edits through automated Phase 2 resolution; not a conceptual or source-faithfulness validation. |
