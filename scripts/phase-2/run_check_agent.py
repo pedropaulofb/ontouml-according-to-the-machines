@@ -31,6 +31,7 @@ from typing import Callable
 
 DEFAULT_MAX_COMPLETION_TOKENS = 3000
 NO_SIGNALS_SENTENCE = "None identified within the configured check-agent scope."
+MAX_LOCATION_FRAGMENT_CHARS = 160
 
 AGENT_SLUG_PATTERN = re.compile(r"^[a-z0-9][a-z0-9-]*$")
 
@@ -57,6 +58,10 @@ METADATA_ROW_PATTERN = re.compile(
 )
 SIGNAL_FIELD_PATTERN = re.compile(r"^- (?P<field>[A-Za-z_]+): (?P<value>.*)$", re.MULTILINE)
 LOCATION_PATTERN = re.compile(r'^Section: "(?P<section>.*?)"; Fragment: "(?P<fragment>.*?)"$')
+LOCATION_LINE_PATTERN = re.compile(
+    r'^(?P<prefix>- Location: Section: "[^"]*"; Fragment: ")(?P<fragment>[^"]*)(?P<suffix>")\s*$',
+    re.MULTILINE,
+)
 MARKDOWN_HEADING_PATTERN = re.compile(r"^(?P<hashes>#{1,6})\s+(?P<title>.+?)\s*#*\s*$")
 FENCED_BLOCK_PATTERN = re.compile(r"^\s*(```|~~~)")
 
@@ -536,6 +541,52 @@ def has_high_severity_signal(text: str) -> bool:
     return False
 
 
+def shorten_location_fragment(fragment: str, max_chars: int = MAX_LOCATION_FRAGMENT_CHARS) -> str:
+    """Return a compact prefix fragment that respects the Location contract."""
+    normalized = re.sub(r"\s+", " ", fragment).strip()
+    if len(normalized) <= max_chars:
+        return normalized
+
+    window = normalized[: max_chars + 1]
+    minimum_useful_cutoff = min(80, max_chars // 2)
+    best_cutoff = -1
+
+    for separators in ((". ", "; ", ": "), (", ",), (" ",)):
+        for separator in separators:
+            position = window.rfind(separator, 0, max_chars + 1)
+            if position == -1:
+                continue
+            cutoff = position + 1 if separator[0] in ".;:" else position
+            if cutoff > best_cutoff:
+                best_cutoff = cutoff
+        if best_cutoff >= minimum_useful_cutoff:
+            break
+
+    if best_cutoff >= minimum_useful_cutoff:
+        shortened = normalized[:best_cutoff]
+    else:
+        shortened = normalized[:max_chars]
+
+    shortened = shortened.rstrip(" ,;:")
+    return shortened or normalized[:max_chars].strip()
+
+
+def normalize_location_fragments(text: str) -> tuple[str, int]:
+    """Shorten overlong Location fragments without changing other signal fields."""
+    replacements = 0
+
+    def replace_location(match: re.Match[str]) -> str:
+        nonlocal replacements
+        fragment = match.group("fragment")
+        shortened = shorten_location_fragment(fragment)
+        if shortened == fragment:
+            return match.group(0)
+        replacements += 1
+        return f"{match.group('prefix')}{shortened}{match.group('suffix')}"
+
+    return LOCATION_LINE_PATTERN.sub(replace_location, text), replacements
+
+
 def normalize_schema_level_drift(
     *,
     text: str,
@@ -568,6 +619,11 @@ def normalize_schema_level_drift(
     if replacement_summary is not None and replacement_summary in contract.summary_sentences:
         normalized = replace_summary_judgment_sentence(normalized, replacement_summary)
         changes.append("normalized known Summary judgment sentence variant")
+
+    normalized, shortened_location_count = normalize_location_fragments(normalized)
+    if shortened_location_count:
+        plural_suffix = "s" if shortened_location_count != 1 else ""
+        changes.append(f"shortened {shortened_location_count} overlong Location fragment{plural_suffix}")
 
     return normalized.strip() + "\n", changes
 
@@ -671,8 +727,8 @@ def validate_signal_block(
                     f"{signal_id} is located in an excluded non-reader-facing section for language-style-checker: {section}"
                 )
             fragment = location_match.group("fragment")
-            if len(fragment) > 160:
-                errors.append(f"{signal_id} Location fragment exceeds 160 characters.")
+            if len(fragment) > MAX_LOCATION_FRAGMENT_CHARS:
+                errors.append(f"{signal_id} Location fragment exceeds {MAX_LOCATION_FRAGMENT_CHARS} characters.")
 
     validate_optional_replacement_fields(signal_id=signal_id, fields=fields, errors=errors)
 
