@@ -10,17 +10,17 @@ For OntoUML 2-oriented sources, Category decorates rigid non-sortals whose insta
 
 ## Stereotype Profile
 
-TBD in a later phase.
+To be defined.
 
 ## Examples
 
-TBD in a later phase.
+To be defined.
 
 ## References
 
 ### Direct Citations
 
-- “We use the stereotype ´categoryª to represent a rigid mixin that subsumes different kinds” — Source: Guizzardi, G. (2005). Ontological Foundations for Structural Conceptual Models. PhD thesis, University of Twente.; Locator: Chapter 4, Section 4.2.4, p. 112.
+- “We use the stereotype "category" to represent a rigid mixin that subsumes different kinds” — Source: Guizzardi, G. (2005). Ontological Foundations for Structural Conceptual Models. PhD thesis, University of Twente.; Locator: Chapter 4, Section 4.2.4, p. 112.
 - “some mixins represent properties that are essential to some of its instances and accidental to others” — Source: Guizzardi, G. (2005). Ontological Foundations for Structural Conceptual Models. PhD thesis, University of Twente.; Locator: Chapter 4, Section 4.2.4, p. 113.
 - “rigid mixins (categories) cannot be subsumed by anti-rigid ones” — Source: Guizzardi, G. (2005). Ontological Foundations for Structural Conceptual Models. PhD thesis, University of Twente.; Locator: Chapter 4, Section 4.2.4, p. 113.
 - “categories: rigid types that define essential properties for their instances” — Source: Guizzardi, G., Botti Benevides, A., Fonseca, C. M., Porello, D., Almeida, J. P. A., & Prince Sales, T. (2022). UFO: Unified foundational ontology. Applied ontology, 17(1), 167-210.; Locator: p. 6, Section 1.
@@ -44,3 +44,5 @@ TBD in a later phase.
 | Date | Phase | Agent | Action | Prompt ID | Prompt Title | Inputs | Notes |
 |---|---|---|---|---|---|---|---|
 | 2026-06-05 | Phase 1 | GPT-5.5 Thinking | Consolidation | prompt-phase-1-consolidation-v1.0.0 | Phase 1 Consolidation — Direct Main Commit for One Stereotype | 2026-06-05t0921-guizzardi-2005-thesis-chapter-04.md, 2026-06-05t0930-guizzardi-2005-thesis-chapter-08.md, 2026-06-05t1024-guizzardi-2018-endurant-types-full-document.md, 2026-06-05t1024-guizzardi-2022-ufo-full-document.md, 2026-06-05t1037-guizzardi-2021-types-taxonomic-structures-full-document.md, 2026-06-05t1040-carvalho-2017-multi-level-ontology-based-conceptual-modeling-full-document.md | First consolidated stereotype page generated from Phase 1 source-specific intermediate files at 2026-06-05t1508; not final expert-validated documentation. |
+| 2026-06-21 | Phase 2 | Phase 2 automated resolver | Signal resolution | resolve-page-hygiene-signal-issue-v1.2.1 | Phase 2 automated resolver: page-hygiene signals v1.2.1 | GitHub issue #105 | Applied accepted page-hygiene-checker signal edits through automated Phase 2 resolution; not a conceptual or source-faithfulness validation. |
+| 2026-06-21 | Phase 2 | Phase 2 automated resolver | Signal resolution | resolve-language-style-signal-issue-v1.2.1 | Phase 2 automated resolver: language-style signals v1.2.1 | GitHub issue #106 | Applied accepted language-style-checker signal edits through automated Phase 2 resolution; not a conceptual or source-faithfulness validation. |
