@@ -47,8 +47,14 @@ SEVERITY_VALUES = {"low", "medium", "high"}
 CONFIDENCE_VALUES = {"low", "medium", "high"}
 
 SIGNAL_HEADING_PATTERN = re.compile(r"^####\s+(S-\d{3})\s+—\s+(.+)$", re.MULTILINE)
-SIGNAL_COUNT_PATTERN = re.compile(r"^\|\s*Signal count\s*\|\s*`?(\d+)`?\s*\|\s*$", re.IGNORECASE | re.MULTILINE)
-METADATA_ROW_PATTERN = re.compile(r"^\|\s*(?P<key>[^|]+?)\s*\|\s*(?P<value>.*?)\s*\|\s*$", re.MULTILINE)
+SIGNAL_COUNT_PATTERN = re.compile(
+    r"^\|\s*Signal count\s*\|\s*`?(\d+)`?\s*\|\s*$",
+    re.IGNORECASE | re.MULTILINE,
+)
+METADATA_ROW_PATTERN = re.compile(
+    r"^\|\s*(?P<key>[^|]+?)\s*\|\s*(?P<value>.*?)\s*\|\s*$",
+    re.MULTILINE,
+)
 SIGNAL_FIELD_PATTERN = re.compile(r"^- (?P<field>[A-Za-z_]+): (?P<value>.*)$", re.MULTILINE)
 LOCATION_PATTERN = re.compile(r'^Section: "(?P<section>.*?)"; Fragment: "(?P<fragment>.*?)"$')
 MARKDOWN_HEADING_PATTERN = re.compile(r"^(?P<hashes>#{1,6})\s+(?P<title>.+?)\s*#*\s*$")
@@ -117,6 +123,24 @@ AUTOMATIC_MUTATION_PATTERN = re.compile(
 )
 ACTION_LINE_PATTERN = re.compile(r"^- Recommendation:\s*(.+)$", re.MULTILINE)
 
+SUMMARY_SENTENCE_NORMALIZATIONS = {
+    "Page-hygiene signals were identified; they mainly affect readability or reviewability.": (
+        "Minor page-hygiene signals were identified; they mainly affect readability or reviewability."
+    ),
+    "Language-style signals were identified; they mainly affect readability or professional style.": (
+        "Minor language-style signals were identified; they mainly affect readability or professional style."
+    ),
+}
+
+HIGH_SEVERITY_SUMMARY_NORMALIZATIONS = {
+    "Page-hygiene signals were identified; they mainly affect readability or reviewability.": (
+        "Page-hygiene signals were identified that may affect traceability, provenance, or reviewability."
+    ),
+    "Language-style signals were identified; they mainly affect readability or professional style.": (
+        "Language-style signals were identified that may affect standalone professional documentation quality."
+    ),
+}
+
 
 @dataclass(frozen=True)
 class AgentContract:
@@ -175,10 +199,7 @@ def parse_args() -> argparse.Namespace:
         "--page", required=True, help="Repository-relative path to the canonical stereotype Markdown page."
     )
     parser.add_argument(
-        "--provider",
-        required=True,
-        choices=sorted(SUPPORTED_PROVIDERS),
-        help="LLM provider adapter to use.",
+        "--provider", required=True, choices=sorted(SUPPORTED_PROVIDERS), help="LLM provider adapter to use."
     )
     parser.add_argument("--model", required=True, help="Provider-specific model name to use and report in metadata.")
     parser.add_argument("--output", required=True, help="Path where the generated issue comment should be written.")
@@ -470,7 +491,85 @@ def find_automatic_mutation_recommendations(text: str) -> list[str]:
 
 def normalize_enum_field(text: str, field_name: str, allowed_values: set[str]) -> str:
     allowed_pattern = "|".join(re.escape(value) for value in sorted(allowed_values))
-    return re.sub(rf"^- {field_name}: ({allowed_pattern})\s*$", rf"- {field_name}: `\1`", text, flags=re.MULTILINE)
+    return re.sub(
+        rf"^- {field_name}: ({allowed_pattern})\s*$",
+        rf"- {field_name}: `\1`",
+        text,
+        flags=re.MULTILINE,
+    )
+
+
+def replace_first_non_empty_line(text: str, replacement: str) -> str:
+    lines = text.splitlines()
+    for index, line in enumerate(lines):
+        if line.strip():
+            lines[index] = replacement
+            return "\n".join(lines).strip() + "\n"
+    return text
+
+
+def replace_summary_judgment_sentence(text: str, replacement: str) -> str:
+    section_match = re.search(
+        r"^### Summary judgment\s*\n(?P<body>.*?)(?=^###\s+|\Z)",
+        text,
+        flags=re.MULTILINE | re.DOTALL,
+    )
+    if section_match is None:
+        return text
+    body = section_match.group("body")
+    body_lines = body.splitlines()
+    for index, line in enumerate(body_lines):
+        if line.strip():
+            leading_whitespace = line[: len(line) - len(line.lstrip())]
+            body_lines[index] = f"{leading_whitespace}{replacement}"
+            new_body = "\n".join(body_lines)
+            return text[: section_match.start("body")] + new_body + text[section_match.end("body") :]
+    return text
+
+
+def has_high_severity_signal(text: str) -> bool:
+    """Return whether any emitted signal declares high severity."""
+    for _signal_id, _title, block_body in extract_signal_blocks(text):
+        severity = field_value(extract_signal_fields(block_body), "Severity")
+        if severity is not None and strip_inline_code(severity) == "high":
+            return True
+    return False
+
+
+def normalize_schema_level_drift(
+    *,
+    text: str,
+    contract: AgentContract,
+    provider: str,
+    model: str,
+    review_date: str,
+) -> tuple[str, list[str]]:
+    """Apply narrow wrapper-format normalizations before strict validation.
+
+    This function is deliberately conservative. It does not add, remove, or
+    rewrite signals. It only repairs contract-level drift that is mechanically
+    recoverable from deterministic run inputs and already-present metadata.
+    """
+    normalized = text
+    changes: list[str] = []
+
+    expected_title = f"## Check signal report: {contract.slug} / {provider} / {model} — {review_date}"
+    title_without_model = f"## Check signal report: {contract.slug} / {provider} — {review_date}"
+    first_non_empty_line = next((line.strip() for line in normalized.splitlines() if line.strip()), "")
+    metadata = extract_metadata_table(normalized)
+    if first_non_empty_line == title_without_model and metadata.get("model") == model:
+        normalized = replace_first_non_empty_line(normalized, expected_title)
+        changes.append("inserted missing model into report title")
+
+    summary = extract_summary_judgment(normalized)
+    replacement_summary = SUMMARY_SENTENCE_NORMALIZATIONS.get(summary or "")
+    if has_high_severity_signal(normalized):
+        replacement_summary = HIGH_SEVERITY_SUMMARY_NORMALIZATIONS.get(summary or "", replacement_summary)
+    if replacement_summary is not None and replacement_summary in contract.summary_sentences:
+        normalized = replace_summary_judgment_sentence(normalized, replacement_summary)
+        changes.append("normalized known Summary judgment sentence variant")
+
+    return normalized.strip() + "\n", changes
 
 
 def normalize_issue_comment(text: str, contract: AgentContract) -> str:
@@ -523,8 +622,10 @@ def validate_signal_block(
     field_names = [field for field, _value in fields]
     required_order = ["Category", "Severity", "Confidence", "Location", "Observation", "Rationale", "Recommendation"]
     optional_order = ["current_text", "proposed_text"]
+    allowed_order_without_optional = required_order
+    allowed_order_with_optional = required_order + optional_order
 
-    if field_names not in (required_order, required_order + optional_order):
+    if field_names not in (allowed_order_without_optional, allowed_order_with_optional):
         errors.append(
             f"{signal_id} fields must appear exactly as required, with optional current_text/proposed_text together after Recommendation."
         )
@@ -533,8 +634,9 @@ def validate_signal_block(
         if field_name not in field_names:
             errors.append(f"{signal_id} is missing required field: {field_name}")
 
-    extra_fields = [field_name for field_name in field_names if field_name not in set(required_order + optional_order)]
-    for field_name in extra_fields:
+    for field_name in [
+        field_name for field_name in field_names if field_name not in set(required_order + optional_order)
+    ]:
         errors.append(f"{signal_id} has unexpected field: {field_name}")
 
     category = field_value(fields, "Category")
@@ -542,12 +644,20 @@ def validate_signal_block(
     confidence = field_value(fields, "Confidence")
     location = field_value(fields, "Location")
 
-    if category is not None and strip_inline_code(category) not in contract.allowed_categories:
-        errors.append(f"{signal_id} has invalid category: {strip_inline_code(category)}")
-    if severity is not None and strip_inline_code(severity) not in SEVERITY_VALUES:
-        errors.append(f"{signal_id} has invalid severity: {strip_inline_code(severity)}")
-    if confidence is not None and strip_inline_code(confidence) not in CONFIDENCE_VALUES:
-        errors.append(f"{signal_id} has invalid confidence: {strip_inline_code(confidence)}")
+    if category is not None:
+        normalized_category = strip_inline_code(category)
+        if normalized_category not in contract.allowed_categories:
+            errors.append(f"{signal_id} has invalid category: {normalized_category}")
+
+    if severity is not None:
+        normalized_severity = strip_inline_code(severity)
+        if normalized_severity not in SEVERITY_VALUES:
+            errors.append(f"{signal_id} has invalid severity: {normalized_severity}")
+
+    if confidence is not None:
+        normalized_confidence = strip_inline_code(confidence)
+        if normalized_confidence not in CONFIDENCE_VALUES:
+            errors.append(f"{signal_id} has invalid confidence: {normalized_confidence}")
 
     if location is not None:
         location_match = LOCATION_PATTERN.fullmatch(location)
@@ -590,12 +700,15 @@ def validate_issue_comment(
     for fragment in REQUIRED_OUTPUT_FRAGMENTS:
         if fragment not in text:
             errors.append(f"Missing required output fragment: {fragment}")
+
     for unresolved in UNRESOLVED_TEMPLATE_PATTERNS:
         if unresolved in text:
             errors.append(f"Unresolved prompt/template placeholder found: {unresolved}")
+
     for prompt_text in EXPLANATORY_PROMPT_TEXT_PATTERNS:
         if prompt_text in text:
             errors.append(f"Output copied explanatory prompt text: {prompt_text}")
+
     for checkbox in FORBIDDEN_CHECKBOX_PATTERNS:
         if checkbox in text:
             errors.append(f"Forbidden task checkbox found: {checkbox}")
@@ -627,6 +740,7 @@ def validate_issue_comment(
         errors.append(
             f"Signal count mismatch: metadata says {declared_signal_count}, but {len(signal_blocks)} signal heading(s) were found."
         )
+
     if declared_signal_count is not None and declared_signal_count > 3:
         errors.append(f"Signal count exceeds prompt limit of 3: {declared_signal_count}")
 
@@ -655,6 +769,7 @@ def validate_issue_comment(
 
     for claim in find_unsafe_source_validation_claims(text):
         errors.append(f"Output appears to claim use of out-of-scope evidence: {claim}")
+
     for recommendation in find_automatic_mutation_recommendations(text):
         errors.append(f"Output appears to recommend repository or issue mutation: {recommendation}")
 
@@ -674,7 +789,9 @@ def make_invalid_output_path(output_path: Path) -> Path:
 
 def resolve_output_path(repo_root: Path, output: str) -> Path:
     output_path = Path(output)
-    return output_path if output_path.is_absolute() else repo_root / output_path
+    if output_path.is_absolute():
+        return output_path
+    return repo_root / output_path
 
 
 def main() -> int:
@@ -698,11 +815,13 @@ def main() -> int:
         checker_prompt = read_text_file(prompt_file, "Check-agent prompt")
         page_content = read_text_file(page_file, "Canonical stereotype page")
         scoped_page_content, input_scope_note = scope_page_content_for_agent(
-            contract=contract, page_content=page_content
+            contract=contract,
+            page_content=page_content,
         )
 
         review_date = get_review_date(args.review_date)
         commit_sha = get_commit_sha(repo_root, args.commit_sha)
+
         provider_function = load_provider(provider)
         review_input = build_review_input(
             checker_prompt=checker_prompt,
@@ -733,6 +852,16 @@ def main() -> int:
             raise CheckAgentRunnerError(f"Provider call failed: {exc}") from exc
 
         issue_comment = normalize_issue_comment(issue_comment, contract)
+        issue_comment, schema_normalizations = normalize_schema_level_drift(
+            text=issue_comment,
+            contract=contract,
+            provider=provider,
+            model=args.model,
+            review_date=review_date,
+        )
+        for normalization in schema_normalizations:
+            print(f"Applied check-agent output normalization: {normalization}", file=sys.stderr)
+
         validation_errors = validate_issue_comment(
             text=issue_comment,
             contract=contract,
@@ -743,6 +872,7 @@ def main() -> int:
             page_path=args.page,
             commit_sha=commit_sha,
         )
+
         if validation_errors:
             invalid_output_path = make_invalid_output_path(output_path)
             write_output(invalid_output_path, issue_comment)
@@ -755,6 +885,7 @@ def main() -> int:
         write_output(output_path, issue_comment)
         print(f"Wrote issue comment to: {output_path}")
         return 0
+
     except CheckAgentRunnerError as exc:
         print(f"ERROR: {exc}", file=sys.stderr)
         return 1
