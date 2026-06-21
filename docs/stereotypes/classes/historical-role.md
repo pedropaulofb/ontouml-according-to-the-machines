@@ -2,13 +2,13 @@
 
 ## Description
 
-HistoricalRole is the class stereotype for a role an endurant instantiates because it participated in one or more past events of a relevant type. In the Phase 1 sources, this attribution is grounded in historical semantics: once the relevant event participation is part of fixed history, the role attribution is grounded in that past participation rather than in a current relational context.
+HistoricalRole is the class stereotype for a role an endurant instantiates because it participated in one or more past events of a relevant type. This attribution is grounded in historical semantics: once the relevant event participation is part of fixed history, the role attribution is grounded in that past participation rather than in a current relational context.
 
 A HistoricalRole must be related to an Event type through a Participation association. The source-specific contribution states that, for this association, the minimum cardinality at the association end attached to the Event type must be one. This expresses that each instance of the HistoricalRole must have participated in at least one event of the relevant type.
 
 The consolidated evidence distinguishes HistoricalRole from Role in current relational contexts. Current relationship-based role playing is represented through Role, Relator, and Mediation, whereas historical role playing is represented through HistoricalRole, Event, and Participation. This distinction is tied to the immutability and accumulation of past events in the cited historical semantics.
 
-One input source uses ProcessualRole rather than the later target label HistoricalRole. In that source, ProcessualRole classifies endurants synchronically according to how they participate in events, with the synchronic classification inferred from a diachronic, historical classification. The same source states that the `plays` relation is an instantiation relation from objects to processual roles, and that processual roles are induced by participation universals that classify events. Because the source does not itself use the HistoricalRole label, these ProcessualRole-based claims is considered provisional and subject to later validation pending later expert validation.
+One input source uses ProcessualRole rather than the later target label HistoricalRole. In that source, ProcessualRole classifies endurants synchronically according to how they participate in events, with the synchronic classification inferred from a diachronic, historical classification. The same source states that the `plays` relation is an instantiation relation from objects to processual roles, and that processual roles are induced by participation universals that classify events. Because the source does not itself use the HistoricalRole label, these ProcessualRole-based claims are considered provisional and subject to pending expert validation.
 
 ## Stereotype Profile
 
@@ -40,3 +40,4 @@ TBD in a later phase.
 |---|---|---|---|---|---|---|---|
 | 2026-06-05 | Phase 1 | GPT-5.5 Thinking | Consolidation | prompt-phase-1-consolidation-v1.0.0 | Phase 1 Consolidation — Direct Main Commit for One Stereotype | 2026-06-05t1031-almeida-falbo-guizzardi-2019-events-as-entities-full-document.md, 2026-06-05t1042-botti-benevides-2019-events-sroiq-full-document.md | First consolidated stereotype page generated from Phase 1 source-specific intermediate files at 2026-06-05t1711; not final expert-validated documentation. |
 | 2026-06-21 | Phase 2 | Phase 2 automated resolver | Signal resolution | resolve-language-style-signal-issue-v1.2.1 | Phase 2 automated resolver: language-style signals v1.2.1 | GitHub issue #78 | Applied accepted language-style-checker signal edits through automated Phase 2 resolution; not a conceptual or source-faithfulness validation. |
+| 2026-06-21 | Phase 2 | Phase 2 automated resolver | Signal resolution | resolve-language-style-signal-issue-v1.2.1 | Phase 2 automated resolver: language-style signals v1.2.1 | GitHub issue #117 | Applied accepted language-style-checker signal edits through automated Phase 2 resolution; not a conceptual or source-faithfulness validation. |
