@@ -147,8 +147,16 @@ def generate_chat_completion(
     review_input: str,
     max_completion_tokens: int,
     extra_body: dict[str, Any] | None = None,
+    extra_request_kwargs: dict[str, Any] | None = None,
 ) -> str:
-    """Generate one strict check-agent comment through an OpenAI-compatible API."""
+    """Generate one strict check-agent comment through an OpenAI-compatible API.
+
+    ``extra_body`` is for provider-specific OpenAI-compatible extensions that
+    must be merged into the JSON request body by the OpenAI client.
+    ``extra_request_kwargs`` is for standard request parameters, such as
+    reasoning controls supported by the provider and by the installed OpenAI
+    SDK version.
+    """
     if max_completion_tokens <= 0:
         raise OpenAICompatibleProviderError("max_completion_tokens must be greater than 0.")
 
@@ -171,6 +179,8 @@ def generate_chat_completion(
             }
             if extra_body:
                 kwargs["extra_body"] = extra_body
+            if extra_request_kwargs:
+                kwargs.update(extra_request_kwargs)
 
             response = client.chat.completions.create(**kwargs)
             content = _extract_content(response)

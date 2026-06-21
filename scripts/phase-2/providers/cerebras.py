@@ -31,9 +31,13 @@ def generate_review(
         raise CerebrasProviderError("CEREBRAS_API_KEY environment variable is not set.")
 
     extra_body: dict[str, Any] | None = None
+    extra_request_kwargs: dict[str, Any] | None = None
     if model == "zai-glm-4.7":
-        # Cerebras documents these GLM controls for OpenAI-compatible calls.
+        # GLM 4.7 enables reasoning by default. For strict Markdown signal
+        # generation, disable reasoning so the completion budget is available
+        # for the required issue-comment content instead of hidden reasoning.
         extra_body = {"clear_thinking": False}
+        extra_request_kwargs = {"reasoning_effort": "none"}
 
     try:
         return generate_chat_completion(
@@ -44,6 +48,7 @@ def generate_review(
             review_input=review_input,
             max_completion_tokens=max_completion_tokens,
             extra_body=extra_body,
+            extra_request_kwargs=extra_request_kwargs,
         )
     except OpenAICompatibleProviderError as exc:
         raise CerebrasProviderError(str(exc)) from exc
