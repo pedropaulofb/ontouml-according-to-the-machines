@@ -6,7 +6,7 @@ SubCollectionOf is a parthood relation for collectives. The supplied source-spec
 
 The sources characterize SubCollectionOf as arising from refinements of the unifying relation that determines a collection. Under that refinement condition, the relation is treated as transitive, and membership may propagate from the subcollection to the larger collection: an entity that is a member of the subcollection is also a member of the larger collection. The Chapter 8 contribution additionally assigns SubCollectionOf the meta-properties non-reflexivity, anti-symmetry, transitivity, and weak supplementation.
 
-When the relation is fully specified, the part end is described as having cardinality one and exactly one. The Chapter 8 contribution also distinguishes SubCollectionOf from SubQuantityOf by allowing both shareable and non-shareable cases, while the Chapter 5 contribution describes the subcollection as essential to the collection in the modeled sense.
+When the relation is fully specified, the part end is described as having cardinality of exactly one. The Chapter 8 contribution also distinguishes SubCollectionOf from SubQuantityOf by allowing both shareable and non-shareable cases, while the Chapter 5 contribution describes the subcollection as essential to the collection in the modeled sense.
 
 ## Stereotype Profile
 
@@ -36,3 +36,4 @@ TBD in a later phase.
 | Date | Phase | Agent | Action | Prompt ID | Prompt Title | Inputs | Notes |
 |---|---|---|---|---|---|---|---|
 | 2026-06-06 | Phase 1 | GPT-5.5 Thinking | Consolidation | prompt-phase-1-consolidation-v1.0.0 | Phase 1 Consolidation — Direct Main Commit for One Stereotype | 2026-06-05t0926-guizzardi-2005-thesis-chapter-05.md, 2026-06-05t0930-guizzardi-2005-thesis-chapter-08.md | First consolidated stereotype page generated from Phase 1 source-specific intermediate files at 2026-06-06t0149; not final expert-validated documentation. |
+| 2026-06-21 | Phase 2 | Phase 2 automated resolver | Signal resolution | resolve-language-style-signal-issue-v1.2.1 | Phase 2 automated resolver: language-style signals v1.2.1 | GitHub issue #94 | Applied accepted language-style-checker signal edits through automated Phase 2 resolution; not a conceptual or source-faithfulness validation. |
