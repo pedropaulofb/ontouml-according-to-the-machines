@@ -6,9 +6,17 @@ updates:
     schedule:
       interval: "weekly"
     groups:
-      python-dependencies:
+      python-dependencies-patch-minor:
         patterns:
           - "*"
+        update-types:
+          - "patch"
+          - "minor"
+      python-dependencies-major:
+        patterns:
+          - "*"
+        update-types:
+          - "major"
     commit-message:
       prefix: "build(deps)"
 
@@ -17,8 +25,16 @@ updates:
     schedule:
       interval: "weekly"
     groups:
-      github-actions:
+      github-actions-patch-minor:
         patterns:
           - "*"
+        update-types:
+          - "patch"
+          - "minor"
+      github-actions-major:
+        patterns:
+          - "*"
+        update-types:
+          - "major"
     commit-message:
       prefix: "ci(deps)"

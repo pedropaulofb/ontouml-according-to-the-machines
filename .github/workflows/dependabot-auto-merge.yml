@@ -24,11 +24,55 @@ jobs:
     if: >
       github.repository == 'pedropaulofb/ontouml-according-to-the-machines' &&
       github.event.pull_request.user.login == 'dependabot[bot]' &&
-      github.event.pull_request.draft == false
+      github.event.pull_request.draft == false &&
+      startsWith(github.event.pull_request.head.ref, 'dependabot/')
 
     steps:
-      - name: Enable auto-merge for Dependabot PR
-        run: gh pr merge --auto --merge --delete-branch "$PR_URL"
+      - name: Dependabot metadata
+        id: metadata
+        uses: dependabot/fetch-metadata@d7267f607e9d3fb96fc2fbe83e0af444713e90b7
+        with:
+          github-token: "${{ secrets.GITHUB_TOKEN }}"
+
+      - name: Validate changed files
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          gh pr diff "$PR_URL" --name-only > changed-files.txt
+
+          echo "Changed files:"
+          cat changed-files.txt
+
+          unexpected_files="$(
+            grep -Ev '^requirements(-dev)?\.txt$|^\.github/workflows/[^/]+\.ya?ml$' changed-files.txt || true
+          )"
+
+          if [[ -n "$unexpected_files" ]]; then
+            echo "::error::Unexpected files in Dependabot PR:"
+            echo "$unexpected_files"
+            exit 1
+          fi
         env:
           PR_URL: ${{ github.event.pull_request.html_url }}
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Enable auto-merge for patch and minor updates
+        if: >
+          steps.metadata.outputs.update-type == 'version-update:semver-patch' ||
+          steps.metadata.outputs.update-type == 'version-update:semver-minor'
+        run: >
+          gh pr merge "$PR_URL"
+          --auto
+          --squash
+          --delete-branch
+          --match-head-commit "$HEAD_SHA"
+        env:
+          PR_URL: ${{ github.event.pull_request.html_url }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Leave major updates for manual review
+        if: steps.metadata.outputs.update-type == 'version-update:semver-major'
+        run: |
+          echo "Major dependency update detected; auto-merge intentionally not enabled."
