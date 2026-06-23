@@ -34,7 +34,7 @@ run-name: Scheduled check-agent signal collector (${{ github.event_name }})
         description: "Primary rotation list. Comma-separated provider:model values. Leave default to use the full rotation."
         type: string
         required: false
-        default: "groq:llama-3.3-70b-versatile,cerebras:gpt-oss-120b,sambanova:DeepSeek-V3.1,groq:meta-llama/llama-4-scout-17b-16e-instruct,cerebras:zai-glm-4.7,gemini:gemini-3.1-flash-lite"
+        default: "groq:llama-3.3-70b-versatile,cerebras:gpt-oss-120b,sambanova:DeepSeek-V3.1,sambanova:Meta-Llama-3.3-70B-Instruct,cerebras:zai-glm-4.7,gemini:gemini-3.1-flash-lite"
 
       selection:
         description: "How to select triples. Keep rotate for normal manual and scheduled signal collection."
@@ -55,7 +55,7 @@ run-name: Scheduled check-agent signal collector (${{ github.event_name }})
           - daily
 
       rotation_index:
-        description: "Optional model slot override: 0=Groq Llama, 1=Cerebras GPT-OSS, 2=SambaNova DeepSeek, 3=Groq Scout, 4=Cerebras GLM, 5=Gemini."
+        description: "Optional model slot override: 0=Groq Llama, 1=Cerebras GPT-OSS, 2=SambaNova DeepSeek, 3=SambaNova Llama, 4=Cerebras GLM, 5=Gemini."
         type: string
         required: false
         default: ""
@@ -177,7 +177,7 @@ jobs:
             printf '%s' "$1" | sed 's/^[[:space:]]*//;s/[[:space:]]*$//'
           }
 
-          default_periodic_provider_model_specs="groq:llama-3.3-70b-versatile,cerebras:gpt-oss-120b,sambanova:DeepSeek-V3.1,groq:meta-llama/llama-4-scout-17b-16e-instruct,cerebras:zai-glm-4.7,gemini:gemini-3.1-flash-lite"
+          default_periodic_provider_model_specs="groq:llama-3.3-70b-versatile,cerebras:gpt-oss-120b,sambanova:DeepSeek-V3.1,sambanova:Meta-Llama-3.3-70B-Instruct,cerebras:zai-glm-4.7,gemini:gemini-3.1-flash-lite"
 
           provider="${WORKFLOW_PROVIDER:-groq}"
           provider_model_specs="${WORKFLOW_PROVIDER_MODEL_SPECS:-}"
@@ -272,7 +272,7 @@ jobs:
           }
 
           default_groq_models="llama-3.3-70b-versatile"
-          default_periodic_provider_model_specs="groq:llama-3.3-70b-versatile,cerebras:gpt-oss-120b,sambanova:DeepSeek-V3.1,groq:meta-llama/llama-4-scout-17b-16e-instruct,cerebras:zai-glm-4.7,gemini:gemini-3.1-flash-lite"
+          default_periodic_provider_model_specs="groq:llama-3.3-70b-versatile,cerebras:gpt-oss-120b,sambanova:DeepSeek-V3.1,sambanova:Meta-Llama-3.3-70B-Instruct,cerebras:zai-glm-4.7,gemini:gemini-3.1-flash-lite"
 
           mode="${WORKFLOW_MODE:-post}"
           provider="${WORKFLOW_PROVIDER:-groq}"

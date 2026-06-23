@@ -25,7 +25,7 @@ from typing import Iterable, Sequence
 
 DEFAULT_AGENTS = ["page-hygiene-checker", "language-style-checker"]
 DEFAULT_PROVIDER = "groq"
-DEFAULT_MODELS = ["llama-3.3-70b-versatile", "meta-llama/llama-4-scout-17b-16e-instruct"]
+DEFAULT_MODELS = ["llama-3.3-70b-versatile"]
 DEFAULT_OUTPUT_ROOT = Path(".tmp/phase-2")
 DEFAULT_SLEEP_SECONDS = 0.0
 SUMMARY_FILENAME = "batch-summary.md"
@@ -72,17 +72,11 @@ class CompletedRun:
 
     @property
     def fatal_failed(self) -> bool:
-        if self.check_status == RUN_STATUS_FAILED:
-            return True
-        if self.check_status == RUN_STATUS_PROVIDER_FAILED and not self.provider_failure_is_nonfatal:
-            return True
-        if self.issue_status == RUN_STATUS_FAILED:
-            return True
-        return False
-
-    @property
-    def succeeded(self) -> bool:
-        return not self.fatal_failed
+        return (
+            self.check_status == RUN_STATUS_FAILED
+            or (self.check_status == RUN_STATUS_PROVIDER_FAILED and not self.provider_failure_is_nonfatal)
+            or self.issue_status == RUN_STATUS_FAILED
+        )
 
 
 def parse_args() -> argparse.Namespace:
@@ -145,8 +139,7 @@ def parse_args() -> argparse.Namespace:
         action="store_true",
         help=(
             "Treat transient provider-side availability failures as nonfatal. "
-            "Quota, rate-limit, authentication, configuration, and request-shape "
-            "failures remain fatal."
+            "Quota, rate-limit, authentication, configuration, and request-shape failures remain fatal."
         ),
     )
     return parser.parse_args()
@@ -285,43 +278,28 @@ def is_rejected_check_output(result: subprocess.CompletedProcess[str]) -> bool:
 
 @dataclass(frozen=True)
 class ProviderFailureClassification:
-    """User-facing classification for one provider-call failure."""
-
     kind: str
     message: str
     nonfatal_when_allowed: bool
 
 
-NONFATAL_PROVIDER_FAILURE_KINDS = {
-    "provider_unavailable",
-    "empty_response",
-}
+NONFATAL_PROVIDER_FAILURE_KINDS = {"provider_unavailable", "empty_response"}
 
 
 def explicit_provider_error_kind(stderr: str) -> str | None:
-    """Return a provider_error_kind marker emitted by provider adapters, if present."""
     match = re.search(r"provider_error_kind=([a-z_]+)", stderr.lower())
     return match.group(1) if match else None
 
 
 def classify_provider_failure(result: subprocess.CompletedProcess[str]) -> ProviderFailureClassification | None:
-    """Classify provider-call failures into nonfatal provider-side noise or actionable failures.
-
-    Only transient provider availability/capacity failures are allowed to become
-    nonfatal. Quota/rate-limit, authentication, configuration, request-size, and
-    unknown failures remain fatal because they usually require repository or
-    workflow action.
-    """
     if result.returncode == 0:
         return None
-
     stderr = result.stderr.strip()
     if CHECK_VALIDATION_FAILURE_MARKER in stderr or "Provider call failed:" not in stderr:
         return None
 
     lower = stderr.lower()
     kind = explicit_provider_error_kind(lower)
-
     if kind is None:
         if any(
             marker in lower
@@ -352,10 +330,7 @@ def classify_provider_failure(result: subprocess.CompletedProcess[str]) -> Provi
             )
         ):
             kind = "auth_or_configuration"
-        elif any(
-            marker in lower
-            for marker in ("request too large", "error code: 413", "context length", "maximum context length")
-        ):
+        elif any(marker in lower for marker in ("request too large", "error code: 413", "context length")):
             kind = "request_too_large"
         elif "empty response" in lower:
             kind = "empty_response"
@@ -383,45 +358,41 @@ def classify_provider_failure(result: subprocess.CompletedProcess[str]) -> Provi
         else:
             kind = "unknown_provider_error"
 
-    nonfatal_when_allowed = kind in NONFATAL_PROVIDER_FAILURE_KINDS
-
-    if kind == "provider_unavailable":
-        message = (
-            "Provider call failed. Reason: provider_unavailable. This usually indicates "
-            "temporary provider-side load, outage, timeout, or capacity pressure."
-        )
-    elif kind == "empty_response":
-        message = (
-            "Provider call failed. Reason: empty_response. The provider returned no usable text; "
-            "this is treated as provider-side noise when transient provider failures are allowed."
-        )
-    elif kind == "rate_or_quota_limited":
-        message = (
-            "Provider call failed. Reason: rate_or_quota_limited. Action required: reduce workflow "
-            "frequency, reduce token usage, change model rotation, or adjust provider quota."
-        )
-    elif kind == "auth_or_configuration":
-        message = (
-            "Provider call failed. Reason: auth_or_configuration. Action required: check repository "
-            "secrets, API keys, provider access, or workflow configuration."
-        )
-    elif kind == "request_too_large":
-        message = (
-            "Provider call failed. Reason: request_too_large. Action required: reduce "
-            "--max-completion-tokens, reduce input scope, or remove this model from rotation."
-        )
-    elif kind == "invalid_request":
-        message = (
-            "Provider call failed. Reason: invalid_request. Action required: inspect provider/model "
-            "parameters, model availability, request payload, or SDK compatibility."
-        )
-    else:
-        message = (
-            "Provider call failed. Reason: unknown_provider_error. Action required: inspect the "
-            "per-run log stderr before suppressing this failure type."
-        )
-
-    return ProviderFailureClassification(kind=kind, message=message, nonfatal_when_allowed=nonfatal_when_allowed)
+    messages = {
+        "provider_unavailable": (
+            "Provider call failed. Reason: provider_unavailable. This usually indicates temporary provider-side "
+            "load, outage, timeout, or capacity pressure."
+        ),
+        "empty_response": (
+            "Provider call failed. Reason: empty_response. The provider returned no usable text; this is treated "
+            "as provider-side noise when transient provider failures are allowed."
+        ),
+        "rate_or_quota_limited": (
+            "Provider call failed. Reason: rate_or_quota_limited. Action required: reduce workflow frequency, "
+            "reduce token usage, change model rotation, or adjust provider quota."
+        ),
+        "auth_or_configuration": (
+            "Provider call failed. Reason: auth_or_configuration. Action required: check repository secrets, "
+            "API keys, provider access, or workflow configuration."
+        ),
+        "request_too_large": (
+            "Provider call failed. Reason: request_too_large. Action required: reduce --max-completion-tokens, "
+            "reduce input scope, or remove this model from rotation."
+        ),
+        "invalid_request": (
+            "Provider call failed. Reason: invalid_request. Action required: inspect provider/model parameters, "
+            "model availability, request payload, or SDK compatibility."
+        ),
+        "unknown_provider_error": (
+            "Provider call failed. Reason: unknown_provider_error. Action required: inspect the per-run log stderr "
+            "before suppressing this failure type."
+        ),
+    }
+    return ProviderFailureClassification(
+        kind=kind,
+        message=messages.get(kind, messages["unknown_provider_error"]),
+        nonfatal_when_allowed=kind in NONFATAL_PROVIDER_FAILURE_KINDS,
+    )
 
 
 def write_log(
@@ -435,21 +406,22 @@ def write_log(
 ) -> None:
     log_file = filesystem_path(repo_root, planned.log_path)
     log_file.parent.mkdir(parents=True, exist_ok=True)
-    lines: list[str] = []
-    lines.append(f"# Batch log for run {planned.index}")
-    lines.append("")
-    lines.append(f"Page: {planned.page}")
-    lines.append(f"Agent: {planned.agent}")
-    lines.append(f"Provider: {planned.provider}")
-    lines.append(f"Model: {planned.model}")
-    lines.append(f"Output: {planned.output_path.as_posix()}")
-    lines.append("")
-    lines.append("## run_check_agent.py")
-    lines.append("")
-    lines.append("Command:")
-    lines.append("```text")
-    lines.append(" ".join(check_command))
-    lines.append("```")
+    lines: list[str] = [
+        f"# Batch log for run {planned.index}",
+        "",
+        f"Page: {planned.page}",
+        f"Agent: {planned.agent}",
+        f"Provider: {planned.provider}",
+        f"Model: {planned.model}",
+        f"Output: {planned.output_path.as_posix()}",
+        "",
+        "## run_check_agent.py",
+        "",
+        "Command:",
+        "```text",
+        " ".join(check_command),
+        "```",
+    ]
     if check_result is not None:
         lines.extend(
             [
@@ -549,9 +521,6 @@ def run_one(
     check_result = run_subprocess(check_command, repo_root)
     echo_child_output(check_result)
 
-    issue_command: list[str] | None = None
-    issue_result: subprocess.CompletedProcess[str] | None = None
-
     if check_result.returncode != 0:
         write_log(
             repo_root=repo_root,
@@ -575,13 +544,12 @@ def run_one(
 
         provider_failure = classify_provider_failure(check_result)
         if provider_failure is not None:
-            provider_failure_is_nonfatal = allow_provider_failures and provider_failure.nonfatal_when_allowed
-            severity = "nonfatal" if provider_failure_is_nonfatal else "fatal"
-            annotation = "warning" if provider_failure_is_nonfatal else "error"
+            is_nonfatal = allow_provider_failures and provider_failure.nonfatal_when_allowed
+            severity = "nonfatal" if is_nonfatal else "fatal"
+            annotation = "warning" if is_nonfatal else "error"
             print(
                 f"::{annotation} title=Provider failure ({severity}: {provider_failure.kind})::"
-                f"{planned.agent} / {planned.provider} / {planned.model} / {planned.page}: "
-                f"{provider_failure.message}",
+                f"{planned.agent} / {planned.provider} / {planned.model} / {planned.page}: {provider_failure.message}",
                 file=sys.stderr,
             )
             return CompletedRun(
@@ -591,7 +559,7 @@ def run_one(
                 RUN_STATUS_SKIPPED,
                 None,
                 provider_failure.message,
-                provider_failure_is_nonfatal=provider_failure_is_nonfatal,
+                provider_failure_is_nonfatal=is_nonfatal,
             )
 
         return CompletedRun(
@@ -604,8 +572,8 @@ def run_one(
         )
 
     issue_command = build_issue_command(planned=planned, mode=mode, repo=repo or "", post_empty=post_empty)
-    if issue_command is not None:
-        issue_result = run_subprocess(issue_command, repo_root)
+    issue_result = run_subprocess(issue_command, repo_root) if issue_command is not None else None
+    if issue_result is not None:
         echo_child_output(issue_result)
 
     write_log(
@@ -676,30 +644,29 @@ def write_summary(
     accepted_count, rejected_count, provider_failure_count, fatal_failure_count = summarize_completed_runs(
         completed_runs
     )
-    lines: list[str] = []
-    lines.append("# Phase 2 check batch summary")
-    lines.append("")
-    lines.append(f"Generated at: {datetime.now().isoformat(timespec='seconds')}")
-    lines.append(f"Repository root: `{repo_root}`")
-    lines.append(f"Mode: `{mode}`")
-    lines.append(f"Selection: `{selection}`")
-    lines.append(f"Rotation seed: `{rotation_seed}`")
-    lines.append(
-        "Rotation index: " + (f"`{applied_rotation_index}`" if applied_rotation_index is not None else "`n/a`")
-    )
-    lines.append(f"Plan only: `{str(plan_only).lower()}`")
-    lines.append(f"Available runs: `{available_run_count}`")
-    lines.append(f"Selected/planned runs: `{len(planned_runs)}`")
-    lines.append(f"Completed runs: `{len(completed_runs)}`")
-    lines.append(f"Accepted runs: `{accepted_count}`")
-    lines.append(f"Rejected check-agent outputs: `{rejected_count}`")
-    lines.append(f"Provider failed runs: `{provider_failure_count}`")
-    lines.append(f"Fatal failed runs: `{fatal_failure_count}`")
-    lines.append("")
-    lines.append("## Runs")
-    lines.append("")
-    lines.append("| # | Status | Page | Agent | Provider | Model | Output | Log | Message |")
-    lines.append("|---:|---|---|---|---|---|---|---|---|")
+    lines: list[str] = [
+        "# Phase 2 check batch summary",
+        "",
+        f"Generated at: {datetime.now().isoformat(timespec='seconds')}",
+        f"Repository root: `{repo_root}`",
+        f"Mode: `{mode}`",
+        f"Selection: `{selection}`",
+        f"Rotation seed: `{rotation_seed}`",
+        "Rotation index: " + (f"`{applied_rotation_index}`" if applied_rotation_index is not None else "`n/a`"),
+        f"Plan only: `{str(plan_only).lower()}`",
+        f"Available runs: `{available_run_count}`",
+        f"Selected/planned runs: `{len(planned_runs)}`",
+        f"Completed runs: `{len(completed_runs)}`",
+        f"Accepted runs: `{accepted_count}`",
+        f"Rejected check-agent outputs: `{rejected_count}`",
+        f"Provider failed runs: `{provider_failure_count}`",
+        f"Fatal failed runs: `{fatal_failure_count}`",
+        "",
+        "## Runs",
+        "",
+        "| # | Status | Page | Agent | Provider | Model | Output | Log | Message |",
+        "|---:|---|---|---|---|---|---|---|---|",
+    ]
     completed_by_index = {run.planned.index: run for run in completed_runs}
     for planned in planned_runs:
         completed = completed_by_index.get(planned.index)
