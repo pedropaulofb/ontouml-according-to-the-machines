@@ -2,12 +2,8 @@ name: Automated signal resolver
 
 on:
   schedule:
-    # 20 scheduled attempts per UTC day, spaced by approximately 72 minutes.
-    - cron: "5 0,6,12,18 * * *"
-    - cron: "17 1,7,13,19 * * *"
-    - cron: "29 2,8,14,20 * * *"
-    - cron: "41 3,9,15,21 * * *"
-    - cron: "53 4,10,16,22 * * *"
+    # Six scheduled attempts per UTC day, every four hours.
+    - cron: "5 */4 * * *"
   workflow_dispatch:
     inputs:
       issue:
@@ -26,6 +22,11 @@ on:
         description: "Provider model"
         required: false
         default: "gemini-3.5-flash"
+        type: string
+      fallback_model:
+        description: "Fallback Gemini model used once when the primary Gemini model fails with provider unavailability."
+        required: false
+        default: "gemini-3.1-pro-preview"
         type: string
       dry_run:
         description: "Generate and validate the resolution plan without GitHub writes"
@@ -75,28 +76,65 @@ jobs:
           ISSUE_INPUT: ${{ github.event.inputs.issue }}
           PROVIDER_INPUT: ${{ github.event.inputs.provider }}
           MODEL_INPUT: ${{ github.event.inputs.model }}
+          FALLBACK_MODEL_INPUT: ${{ github.event.inputs.fallback_model }}
           DRY_RUN_INPUT: ${{ github.event.inputs.dry_run }}
         run: |
           set -euo pipefail
 
           provider="${PROVIDER_INPUT:-gemini}"
           model="${MODEL_INPUT:-gemini-3.5-flash}"
+          fallback_model="${FALLBACK_MODEL_INPUT:-gemini-3.1-pro-preview}"
 
-          args=(
-            --repo "${{ github.repository }}"
-            --provider "$provider"
-            --model "$model"
-          )
+          run_resolver() {
+            local run_provider="$1"
+            local run_model="$2"
 
-          if [[ -n "${ISSUE_INPUT:-}" ]]; then
-            args+=(--issue "$ISSUE_INPUT")
+            local run_args=(
+              --repo "${{ github.repository }}"
+              --provider "$run_provider"
+              --model "$run_model"
+            )
+
+            if [[ -n "${ISSUE_INPUT:-}" ]]; then
+              run_args+=(--issue "$ISSUE_INPUT")
+            fi
+
+            if [[ "${DRY_RUN_INPUT:-false}" == "true" ]]; then
+              run_args+=(--dry-run)
+            fi
+
+            python scripts/phase-2/resolve_signal_issue.py "${run_args[@]}" --provider-max-attempts 1
+          }
+
+          provider_unavailable_error_detected() {
+            local output_dir=".tmp/phase-2/resolver"
+            local marker_pattern="503|ServiceUnavailable|service_unavailable|provider_unavailable|temporarily unavailable"
+
+            [[ -d "$output_dir" ]] || return 1
+
+            local error_file
+            for error_file in "$output_dir"/issue-*-provider-error.txt; do
+              [[ -e "$error_file" ]] || continue
+              if grep -qiE "$marker_pattern" "$error_file"; then
+                return 0
+              fi
+            done
+
+            return 1
+          }
+
+          rm -rf .tmp/phase-2/resolver
+
+          if run_resolver "$provider" "$model"; then
+            exit 0
           fi
 
-          if [[ "${DRY_RUN_INPUT:-false}" == "true" ]]; then
-            args+=(--dry-run)
+          if [[ "$provider" == "gemini" && "$model" != "$fallback_model" ]] && provider_unavailable_error_detected; then
+            echo "::warning::Primary Gemini resolver model failed with provider unavailability. Running fallback model once: ${fallback_model}"
+            run_resolver "gemini" "$fallback_model"
+          else
+            exit 1
           fi
-
-          python scripts/phase-2/resolve_signal_issue.py "${args[@]}" --provider-max-attempts 1
 
       - name: Upload resolver plan
         if: always()

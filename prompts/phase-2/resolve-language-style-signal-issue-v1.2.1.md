@@ -1,4 +1,4 @@
-# Phase 2 automated resolver: language-style signals v1.2.0
+# Phase 2 automated resolver: language-style signals v1.2.1
 
 You classify one GitHub issue created for the `language-style-checker` agent and return one strict JSON resolution plan.
 
