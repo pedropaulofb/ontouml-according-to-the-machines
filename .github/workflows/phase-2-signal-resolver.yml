@@ -88,6 +88,7 @@ jobs:
           run_resolver() {
             local run_provider="$1"
             local run_model="$2"
+            local run_issue="${3:-${ISSUE_INPUT:-}}"
 
             local run_args=(
               --repo "${{ github.repository }}"
@@ -95,8 +96,8 @@ jobs:
               --model "$run_model"
             )
 
-            if [[ -n "${ISSUE_INPUT:-}" ]]; then
-              run_args+=(--issue "$ISSUE_INPUT")
+            if [[ -n "$run_issue" ]]; then
+              run_args+=(--issue "$run_issue")
             fi
 
             if [[ "${DRY_RUN_INPUT:-false}" == "true" ]]; then
@@ -106,9 +107,9 @@ jobs:
             python scripts/phase-2/resolve_signal_issue.py "${run_args[@]}" --provider-max-attempts 1
           }
 
-          provider_unavailable_error_detected() {
+          provider_unavailable_issue_number() {
             local output_dir=".tmp/phase-2/resolver"
-            local marker_pattern="503|ServiceUnavailable|service_unavailable|provider_unavailable|temporarily unavailable"
+            local marker_pattern="503|ServiceUnavailable|service_unavailable|provider_unavailable|status.*unavailable|temporarily unavailable"
 
             [[ -d "$output_dir" ]] || return 1
 
@@ -116,11 +117,29 @@ jobs:
             for error_file in "$output_dir"/issue-*-provider-error.txt; do
               [[ -e "$error_file" ]] || continue
               if grep -qiE "$marker_pattern" "$error_file"; then
-                return 0
+                local filename
+                local issue_number
+                filename="$(basename "$error_file")"
+                issue_number="${filename#issue-}"
+                issue_number="${issue_number%-provider-error.txt}"
+                if [[ "$issue_number" =~ ^[0-9]+$ ]]; then
+                  printf '%s\n' "$issue_number"
+                  return 0
+                fi
               fi
             done
 
             return 1
+          }
+
+          preserve_primary_provider_error_artifacts() {
+            local output_dir=".tmp/phase-2/resolver"
+            local error_file
+            for error_file in "$output_dir"/issue-*-provider-error.txt; do
+              [[ -e "$error_file" ]] || continue
+              cp "$error_file" "${error_file%-provider-error.txt}-primary-provider-error.txt"
+              rm -f "$error_file"
+            done
           }
 
           rm -rf .tmp/phase-2/resolver
@@ -129,9 +148,11 @@ jobs:
             exit 0
           fi
 
-          if [[ "$provider" == "gemini" && "$model" != "$fallback_model" ]] && provider_unavailable_error_detected; then
+          fallback_issue=""
+          if [[ "$provider" == "gemini" && "$model" != "$fallback_model" ]] && fallback_issue="$(provider_unavailable_issue_number)"; then
             echo "::warning::Primary Gemini resolver model failed with provider unavailability. Running fallback model once: ${fallback_model}"
-            run_resolver "gemini" "$fallback_model"
+            preserve_primary_provider_error_artifacts
+            run_resolver "gemini" "$fallback_model" "${ISSUE_INPUT:-$fallback_issue}"
           else
             exit 1
           fi
