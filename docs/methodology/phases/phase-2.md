@@ -6,13 +6,13 @@ Its purpose is to provide lightweight deterministic and API-based review infrast
 
 Phase 2 still does **not** perform deep content validation, source-faithfulness analysis, cross-page semantic comparison, OntoUML/UFO semantic validation, or conceptual adequacy assessment. Phase 2 signals remain candidate observations until they are reviewed or resolved within the documented workflow.
 
-This document reflects the repository state verified from committed repository files on **2026-06-19**, with the latest observed Phase 2 commit:
+This document reflects the repository state verified from committed repository files on **2026-06-25**, with the current repository commit:
 
 ```text
-3b83c3de2de66726757fd18feb08ea017390b4f6
+4a3a9199bf691703ce412870ea2f38c728d98ef7
 ```
 
-That commit refines signal-collector failure handling so transient provider-side availability failures can remain nonfatal while quota, rate-limit, authentication, configuration, request-shape, and unknown provider failures remain actionable workflow failures.
+That commit keeps `gemini-3.5-flash` as the primary automated Gemini resolver model, adds `gemini-3.1-pro-preview` as an immediate fallback model only for provider-unavailability or 503-like primary Gemini failures, and reduces scheduled automated resolver execution to one scheduled attempt every four hours.
 
 ## Documentation structure
 
@@ -186,7 +186,7 @@ Check signal: page-hygiene-checker: classes/event
 
 ## Current implementation status
 
-The current implementation includes check execution, output validation, page-plus-agent issue routing, duplicate-control for comments, scheduled LLM collection, Groq, Gemini, Cerebras, and SambaNova provider support for signal generation, manual signal-review prompts for the two LLM-based agents, automated signal-resolution prompts for those agents, deterministic patch application, PR creation, branch update by rebase, squash auto-merge enablement, and issue closure.
+The current implementation includes check execution, output validation, page-plus-agent issue routing, duplicate-control for comments, scheduled LLM collection, Groq, Gemini, Cerebras, and SambaNova provider support for signal generation, manual signal-review prompts for the two LLM-based agents, automated signal-resolution prompts for those agents, deterministic patch application, PR creation, branch update by rebase, squash auto-merge enablement, issue closure, and an immediate workflow-level Gemini fallback for automated resolver provider-unavailability failures.
 
 There is no current dedicated manual or automated closure prompt for `page-structure-checker`; page-structure issues remain subject to direct maintainer review and normal PR review.
 
@@ -270,6 +270,10 @@ The current implementation can:
 - provide manual, confirmation-gated issue-review workflows for `page-hygiene-checker` and `language-style-checker` issues;
 - select the oldest eligible open `page-hygiene-checker` or `language-style-checker` signal issue for automated resolution;
 - manually resolve a selected issue through `workflow_dispatch`;
+- keep `gemini-3.5-flash` as the primary Gemini model for automated signal resolution;
+- run `gemini-3.1-pro-preview` once as an immediate fallback resolver model when the primary Gemini resolver call fails with provider-unavailability or 503-like diagnostics;
+- fail normally when the primary resolver call fails for non-provider-unavailability reasons;
+- fail normally when the fallback resolver model also fails;
 - generate and validate a strict JSON resolution plan;
 - apply accepted exact local edits;
 - insert automated resolver entries into the `Generation and Review Log` table;
@@ -287,7 +291,9 @@ These capabilities do not mean every scheduled LLM output is valid. Invalid mode
 --allow-rejected-check-outputs
 ```
 
-Transient provider-side availability failures and empty provider responses can remain nonfatal in the canonical scheduled workflow when `--allow-provider-failures` is used. Quota, rate-limit, authentication, configuration, request-shape, unknown provider, resolver, and issue-manager failures remain fatal unless the relevant retry or wrapper logic succeeds.
+Transient provider-side availability failures and empty provider responses can remain nonfatal in the canonical scheduled signal-collector workflow when `--allow-provider-failures` is used. Quota, rate-limit, authentication, configuration, request-shape, unknown provider, resolver, and issue-manager failures remain fatal unless the relevant retry or wrapper logic succeeds.
+
+The automated resolver workflow has a different failure-handling policy. It does not suppress primary resolver failures in general. It performs one immediate second Gemini model attempt only when the primary Gemini resolver run fails with provider-unavailability or 503-like diagnostics.
 
 ### Current limitations and operational risks
 
@@ -304,6 +310,8 @@ The current implementation still has these limitations and risks:
 - scheduled LLM signal-collection runs intentionally collect signals gradually rather than executing the full matrix in one workflow execution;
 - automated resolver output quality depends on strict JSON compliance by the selected model;
 - accepted resolver edits must be exact local replacements and may fail if `current_text` no longer occurs exactly once;
+- resolver fallback detection is marker-based and currently depends on provider-error artifacts under `.tmp/phase-2/resolver`;
+- the resolver fallback is workflow-level behavior, not a general `resolve_signal_issue.py` CLI option;
 - the resolver closes the source signal issue after resolver completion, not after the PR has actually merged;
 - PR merge still depends on repository settings, branch protection, required checks, and auto-merge availability;
 - `gh pr update-branch --rebase` can fail if the branch cannot be cleanly rebased;
@@ -413,6 +421,8 @@ Generated local and CI outputs include paths such as:
 .tmp/phase-2/<agent>/<page-id>/issue-comment-<provider>-<model>.batch.log
 .tmp/phase-2/batch-summary.md
 .tmp/phase-2/resolver/issue-<issue-number>-plan.json
+.tmp/phase-2/resolver/issue-<issue-number>-provider-error.txt
+.tmp/phase-2/resolver/issue-<issue-number>-primary-provider-error.txt
 issue-comment.md
 issue-comment.invalid.md
 ```
@@ -839,6 +849,99 @@ Rejected groups must have an empty `edits` array.
 
 The wrapper validates that accepted `current_text` values occur exactly once in the current reviewed page before applying the edit.
 
+### Resolver provider and fallback behavior
+
+The resolver script supports these providers:
+
+```text
+groq
+gemini
+```
+
+The resolver script default provider and model are:
+
+```text
+provider: gemini
+model: gemini-3.5-flash
+```
+
+The resolver script also has:
+
+```text
+--provider-max-attempts
+```
+
+with default:
+
+```text
+1
+```
+
+The scheduled resolver workflow explicitly runs each resolver model invocation with:
+
+```text
+--provider-max-attempts 1
+```
+
+This means the scheduled resolver workflow does not perform a delayed retry or backoff loop for a failed resolver provider call.
+
+The scheduled resolver workflow uses these Gemini model defaults:
+
+```text
+primary model: gemini-3.5-flash
+fallback model: gemini-3.1-pro-preview
+```
+
+The fallback behavior is implemented in `.github/workflows/phase-2-signal-resolver.yml`, not as a general `resolve_signal_issue.py` command-line option.
+
+The workflow-level fallback sequence is:
+
+```text
+run resolver once with the selected primary provider/model
+→ if the run succeeds, exit successfully
+→ if the provider is gemini, the primary model differs from the fallback model, and the provider-error artifact contains provider-unavailability or 503-like diagnostics, run the fallback Gemini model once for the same issue
+→ otherwise fail the workflow normally
+```
+
+Provider-unavailability detection scans resolver error artifacts under:
+
+```text
+.tmp/phase-2/resolver
+```
+
+for marker text matching diagnostics such as:
+
+```text
+503
+ServiceUnavailable
+service_unavailable
+provider_unavailable
+status.*unavailable
+temporarily unavailable
+```
+
+When the fallback path is taken, the workflow preserves the primary provider-error artifact by renaming the relevant file from:
+
+```text
+issue-<issue-number>-provider-error.txt
+```
+
+to:
+
+```text
+issue-<issue-number>-primary-provider-error.txt
+```
+
+Then it runs the fallback model once.
+
+The fallback does **not** hide non-provider failures:
+
+- if the primary call fails for quota, rate-limit, authentication, configuration, invalid request, output-validation, plan-validation, GitHub, or other non-provider-unavailability reasons, the workflow fails normally;
+- if the primary call fails for an unrecognized provider error that does not match the workflow marker pattern, the workflow fails normally;
+- if the fallback model also fails, the workflow fails normally.
+
+Manual dispatch can override `model` and `fallback_model`. If the selected primary model is already the same as `fallback_model`, the workflow does not run a fallback attempt.
+
 ### Resolver accepted-change flow
 
 When the plan contains accepted changes, the implemented flow is:
@@ -914,12 +1017,14 @@ Accepted automated edits create a `Generation and Review Log` table row with thi
 | <date> | Phase 2 | Phase 2 automated resolver | Signal resolution | <resolver-prompt-id> | <resolver-prompt-title> | GitHub issue #<issue-number> | Applied accepted <agent> signal edits through automated Phase 2 resolution; not a conceptual or source-faithfulness validation. |
 ```
 
-Current resolver prompt metadata:
+Current resolver prompt metadata as emitted by `resolve_signal_issue.py`:
 
 | Agent | Prompt ID | Prompt title |
 |---|---|---|
 | `page-hygiene-checker` | `resolve-page-hygiene-signal-issue-v1.2.1` | `Phase 2 automated resolver: page-hygiene signals v1.2.1` |
 | `language-style-checker` | `resolve-language-style-signal-issue-v1.2.1` | `Phase 2 automated resolver: language-style signals v1.2.1` |
+
+The `resolve-language-style-signal-issue-v1.2.1.md` prompt file heading uses `v1.2.1`. The current `resolve-page-hygiene-signal-issue-v1.2.1.md` path is the active wrapper route for page-hygiene resolution, while the wrapper metadata above is authoritative for review-log rows.
 
 Legacy bullet-style resolver log entries are removed for the same issue when the resolver applies accepted edits.
 
@@ -957,6 +1062,8 @@ Dry-run mode:
 - does not create a pull request;
 - does not comment on or close the issue.
 
+The scheduled resolver workflow applies the same primary-model and fallback-model sequence in dry-run mode when manually dispatched with `dry_run: true`; GitHub write actions remain disabled by the resolver script after successful plan validation.
+
 ### Resolver workflow
 
 The automated resolver workflow is:
@@ -974,14 +1081,10 @@ Automated signal resolver
 Schedule:
 
 ```text
-5 0,6,12,18 * * *
-17 1,7,13,19 * * *
-29 2,8,14,20 * * *
-41 3,9,15,21 * * *
-53 4,10,16,22 * * *
+5 */4 * * *
 ```
 
-This means it is scheduled for 20 attempts per UTC day, spaced by approximately 72 minutes.
+This means it is scheduled once every four hours, at minute 5 UTC, for six scheduled attempts per UTC day.
 
 Manual dispatch inputs:
 
@@ -990,6 +1093,7 @@ Manual dispatch inputs:
 | `issue` | Issue number or URL. Empty means oldest eligible open issue. |
 | `provider` | `gemini` or `groq`; default `gemini`. |
 | `model` | Provider model; default `gemini-3.5-flash`. |
+| `fallback_model` | Fallback Gemini model used once when the primary Gemini model fails with provider unavailability; default `gemini-3.1-pro-preview`. |
 | `dry_run` | Generate and validate a resolution plan without GitHub writes. |
 
 Workflow permissions:
@@ -1064,10 +1168,10 @@ The direct batch-runner defaults remain Groq-oriented:
 
 ```text
 provider: groq
-models: llama-3.3-70b-versatile,meta-llama/llama-4-scout-17b-16e-instruct
+models: llama-3.3-70b-versatile
 ```
 
-Both default Groq models are also represented in the current scheduled provider/model rotation.
+The default Groq model is also represented in the current scheduled provider/model rotation.
 
 ### Gemini provider
 
@@ -1104,7 +1208,7 @@ Signal-generation runs use a workflow default of:
 --max-completion-tokens 3000
 ```
 
-The automated resolver remains separate and still defaults to `gemini-3.5-flash` with `--max-completion-tokens 8000`.
+The automated resolver remains separate. It defaults to primary `gemini-3.5-flash` with `--max-completion-tokens 8000`, and the resolver workflow can run one immediate fallback attempt with `gemini-3.1-pro-preview` only for provider-unavailability or 503-like primary Gemini failures.
 
 The Gemini adapter includes reduced-thinking configuration for strict-format output reliability:
 
@@ -1115,8 +1219,7 @@ The Gemini adapter includes reduced-thinking configuration for strict-format out
 
 This setting improves strict-format output reliability but does not replace validation.
 
-For current Phase 2 signal generation, `gemini-3.1-flash-lite` is the scheduled Gemini default. Other Gemini model names should not be added to the scheduled rotation unless they are first verified operationally and documented.
-
+For current Phase 2 signal generation, `gemini-3.1-flash-lite` is the scheduled Gemini default. Other Gemini model names should not be added to the scheduled signal-generation rotation unless they are first verified operationally and documented.
 
 ### Cerebras provider
 
@@ -1157,10 +1260,11 @@ scripts/phase-2/providers/sambanova.py
 
 It also uses the shared OpenAI-compatible provider utility.
 
-Current scheduled SambaNova model:
+Current scheduled SambaNova models:
 
 ```text
 DeepSeek-V3.1
+Meta-Llama-3.3-70B-Instruct
 ```
 
 The adapter requires `SAMBANOVA_API_KEY` and defaults to:
@@ -1201,6 +1305,22 @@ unavailable
 ```
 
 Validation failures are not retried. A structurally invalid model output is treated as a rejected check-agent output or resolver failure, not as a transient provider failure.
+
+### Automated resolver provider behavior
+
+The automated resolver uses provider calls differently from scheduled signal generation.
+
+For resolver runs:
+
+- `resolve_signal_issue.py` defaults to `--provider-max-attempts 1`;
+- the scheduled resolver workflow also passes `--provider-max-attempts 1`;
+- no resolver provider retry or backoff loop occurs in the scheduled workflow;
+- the workflow-level Gemini fallback is not a retry of the same model;
+- the fallback is one immediate attempt with a second model, `gemini-3.1-pro-preview`;
+- fallback is restricted to primary Gemini provider-unavailability or 503-like failures;
+- non-provider failures remain fatal.
+
+This distinction is important: scheduled signal generation may use provider-level transient retry and nonfatal provider-failure classification, while automated signal resolution uses a narrower primary-model/fallback-model sequence and fails normally outside that sequence.
 
 ## Explicitly excluded Phase 2 checks
 
@@ -1558,7 +1678,6 @@ Default models:
 
 ```text
 llama-3.3-70b-versatile
-meta-llama/llama-4-scout-17b-16e-instruct
 ```
 
 Default output root:
@@ -1660,6 +1779,8 @@ python scripts/phase-2/resolve_signal_issue.py \
 
 The resolver must be run from a clean repository checkout with GitHub CLI authentication and the relevant provider API key.
 
+The immediate fallback from `gemini-3.5-flash` to `gemini-3.1-pro-preview` is implemented by the GitHub Actions workflow. A local command-line run of `resolve_signal_issue.py` does not automatically select a fallback model unless the operator reproduces the workflow logic manually.
+
 ## Operator option reference
 
 This section documents implemented runner options that are useful for maintainers but are not all shown in the common-command examples.
@@ -1743,6 +1864,8 @@ This section documents implemented runner options that are useful for maintainer
 | `--dry-run` | Generate and validate a plan without modifying files or writing to GitHub. |
 | `--branch-prefix` | Branch prefix for accepted-change PRs; default `phase-2/auto-resolve`. |
 
+The workflow input `fallback_model` belongs to `.github/workflows/phase-2-signal-resolver.yml`; it is not a `resolve_signal_issue.py` argument.
+
 ## Execution policy
 
 ### Page-structure execution
@@ -1807,7 +1930,7 @@ Scheduled provider/model rotation:
 groq:llama-3.3-70b-versatile
 cerebras:gpt-oss-120b
 sambanova:DeepSeek-V3.1
-groq:meta-llama/llama-4-scout-17b-16e-instruct
+sambanova:Meta-Llama-3.3-70B-Instruct
 cerebras:zai-glm-4.7
 gemini:gemini-3.1-flash-lite
 ```
@@ -1822,7 +1945,7 @@ max_runs: 1
 sleep_seconds: 0
 max_completion_tokens: 3000
 agents: page-hygiene-checker,language-style-checker
-provider/model rotation: groq:llama-3.3-70b-versatile, cerebras:gpt-oss-120b, sambanova:DeepSeek-V3.1, groq:meta-llama/llama-4-scout-17b-16e-instruct, cerebras:zai-glm-4.7, gemini:gemini-3.1-flash-lite
+provider/model rotation: groq:llama-3.3-70b-versatile, cerebras:gpt-oss-120b, sambanova:DeepSeek-V3.1, sambanova:Meta-Llama-3.3-70B-Instruct, cerebras:zai-glm-4.7, gemini:gemini-3.1-flash-lite
 pages: all canonical class and relation stereotype pages, excluding index.md
 ```
 
@@ -1860,14 +1983,10 @@ Automated signal resolver
 It runs on this schedule:
 
 ```text
-5 0,6,12,18 * * *
-17 1,7,13,19 * * *
-29 2,8,14,20 * * *
-41 3,9,15,21 * * *
-53 4,10,16,22 * * *
+5 */4 * * *
 ```
 
-That means it is scheduled for 20 attempts per UTC day, spaced by approximately 72 minutes.
+That means it is scheduled once every four hours, at minute 5 UTC, for six scheduled attempts per UTC day.
 
 The workflow is also manually triggerable through `workflow_dispatch`.
 
@@ -1876,6 +1995,7 @@ Effective scheduled defaults:
 ```text
 provider: gemini
 model: gemini-3.5-flash
+fallback_model: gemini-3.1-pro-preview
 provider_max_attempts: 1
 issue: oldest eligible open page-hygiene-checker or language-style-checker signal issue
 dry_run: false
@@ -1886,7 +2006,10 @@ Manual dispatch can:
 - resolve one explicit issue;
 - select `gemini` or `groq`;
 - select a provider model;
+- select a fallback Gemini model;
 - run in dry-run mode.
+
+The scheduled resolver workflow first tries the selected provider/model once. With the default scheduled configuration, this means one `gemini-3.5-flash` attempt. If that attempt fails with provider-unavailability or 503-like diagnostics, the workflow immediately tries `gemini-3.1-pro-preview` once for the same issue. It does not wait and retry the same model. It does not suppress non-provider-unavailability failures. It does not suppress fallback failures.
 
 The resolver writes plan artifacts under:
 
@@ -2027,7 +2150,9 @@ Earlier operational notes reported that recent Phase 2 Gemini testing showed:
 
 Later operational updates added:
 
-- automated signal issue resolution on a 20-attempts-per-day schedule;
+- automated signal issue resolution on a reduced schedule of one attempt every four hours;
+- `gemini-3.5-flash` as the primary automated Gemini resolver model;
+- immediate one-shot fallback to `gemini-3.1-pro-preview` only for provider-unavailability or 503-like primary Gemini resolver failures;
 - accepted resolver edits converted into pull requests;
 - issue comments and issue closure for accepted and rejected automated resolver outcomes;
 - PR branch update by rebase before auto-merge enablement;
@@ -2035,7 +2160,7 @@ Later operational updates added:
 - structured resolver log entries in the `Generation and Review Log` table;
 - deterministic page-structure validation of the `Generation and Review Log` table;
 - scheduled signal-generation rotation across Groq, Cerebras, SambaNova, and Gemini;
-- workflow-level failure classification that keeps nonactionable provider availability noise nonfatal while keeping quota, rate-limit, authentication, configuration, request-shape, and unknown provider failures actionable.
+- workflow-level signal-collector failure classification that keeps nonactionable provider availability noise nonfatal while keeping quota, rate-limit, authentication, configuration, request-shape, and unknown provider failures actionable.
 
 These observations are not guarantees of future provider behavior. The committed workflows and scripts should be treated as authoritative for current automation behavior.
 
@@ -2190,6 +2315,12 @@ The language-style automated resolver prompt is:
 prompts/phase-2/resolve-language-style-signal-issue-v1.2.1.md
 ```
 
+The current prompt file heading is:
+
+```text
+Phase 2 automated resolver: language-style signals v1.2.1
+```
+
 It may accept only deterministic, local, meaning-preserving editorial edits within the language-style checker scope:
 
 - grammar;
@@ -2268,6 +2399,9 @@ Completed:
 - `resolve-language-style-signal-issue-v1.2.1.md` exists as the automated resolver prompt for `language-style-checker` issues;
 - `resolve_signal_issue.py` implements automated resolver orchestration;
 - `.github/workflows/phase-2-signal-resolver.yml` runs scheduled and manual automated signal resolution;
+- the automated resolver schedule is one scheduled attempt every four hours;
+- the automated resolver keeps `gemini-3.5-flash` as the primary Gemini resolver model;
+- the automated resolver workflow uses `gemini-3.1-pro-preview` as a one-shot immediate fallback model only for provider-unavailability or 503-like primary Gemini failures;
 - the automated resolver selects the oldest eligible open signal issue when no issue is provided;
 - the automated resolver can run in dry-run mode;
 - the automated resolver validates strict JSON plans;
@@ -2305,12 +2439,12 @@ Deferred outside Phase 2:
 
 ### Step 1 — Commit this methodology alignment
 
-Update the canonical Phase 2 methodology page to reflect the current provider rotation, workflow naming, retry policy, and actionable-failure behavior.
+Update the canonical Phase 2 methodology page to reflect the current resolver schedule, primary Gemini resolver model, immediate fallback-model behavior, provider rotation, workflow naming, retry policy, and actionable-failure behavior.
 
 Suggested commit message:
 
 ```bash
-docs(phase-2): align current automation state
+docs(phase-2): align resolver fallback methodology
 ```
 
 ### Step 2 — Align adjacent methodology pages
@@ -2389,6 +2523,7 @@ Phase 2 can be considered complete when:
 - the absence of a dedicated `page-structure-checker` closure prompt is documented as intentional;
 - the two automated resolver prompts for LLM-based signal issues exist and are documented;
 - the automated resolver can select eligible issues, validate strict JSON plans, apply accepted exact edits, reject unsafe or out-of-scope signals for automation, create PRs, enable squash auto-merge, and close source signal issues;
+- the automated resolver schedule, primary Gemini model, and fallback-model behavior are documented;
 - the repository permissions and branch-protection settings allow the automated resolver workflow to complete its intended path.
 
 ## Generation and review log
@@ -2414,6 +2549,9 @@ Phase 2 can be considered complete when:
 - The planned `page-structure-checker` closure prompt was discarded; deterministic page-structure signals remain subject to direct maintainer review.
 - Automated signal resolution is implemented for `page-hygiene-checker` and `language-style-checker` issues.
 - Automated resolver prompts return strict JSON plans and classify non-accepted cases as `reject_for_phase_2_automation`.
+- The automated resolver keeps `gemini-3.5-flash` as the primary Gemini resolver model.
+- The automated resolver workflow uses `gemini-3.1-pro-preview` once as an immediate fallback model only for provider-unavailability or 503-like primary Gemini failures.
+- The automated resolver schedule is one scheduled attempt every four hours.
 - Accepted automated resolver edits must be exact local replacements and pass deterministic validation.
 - Accepted automated resolver edits are logged as rows in the `Generation and Review Log` table.
 - Automated resolver PRs are updated by rebase and configured for squash auto-merge after required checks pass.
