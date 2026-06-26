@@ -26,7 +26,7 @@ on:
       fallback_model:
         description: "Fallback Gemini model used once when the primary Gemini model fails with provider unavailability."
         required: false
-        default: "gemini-3.1-pro-preview"
+        default: "gemini-2.5-flash"
         type: string
       dry_run:
         description: "Generate and validate the resolution plan without GitHub writes"
@@ -83,7 +83,7 @@ jobs:
 
           provider="${PROVIDER_INPUT:-gemini}"
           model="${MODEL_INPUT:-gemini-3.5-flash}"
-          fallback_model="${FALLBACK_MODEL_INPUT:-gemini-3.1-pro-preview}"
+          fallback_model="${FALLBACK_MODEL_INPUT:-gemini-2.5-flash}"
 
           run_resolver() {
             local run_provider="$1"
