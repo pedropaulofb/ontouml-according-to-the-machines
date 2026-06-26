@@ -84,11 +84,33 @@ jobs:
           provider="${PROVIDER_INPUT:-gemini}"
           model="${MODEL_INPUT:-gemini-3.5-flash}"
           fallback_model="${FALLBACK_MODEL_INPUT:-gemini-2.5-flash}"
+          dry_run="${DRY_RUN_INPUT:-false}"
+          issue_label="${ISSUE_INPUT:-oldest eligible open issue}"
+
+          echo "::group::Resolver execution configuration"
+          echo "Provider: ${provider}"
+          echo "Primary model: ${model}"
+          echo "Fallback model: ${fallback_model}"
+          echo "Issue target: ${issue_label}"
+          echo "Dry run: ${dry_run}"
+          echo "Repository: ${{ github.repository }}"
+          echo "Workflow event: ${GITHUB_EVENT_NAME}"
+          echo "::endgroup::"
+
+          echo "::notice::Resolver configured with provider=${provider}; primary_model=${model}; fallback_model=${fallback_model}; issue=${issue_label}; dry_run=${dry_run}"
 
           run_resolver() {
             local run_provider="$1"
             local run_model="$2"
             local run_issue="${3:-${ISSUE_INPUT:-}}"
+            local run_label="${4:-primary}"
+
+            local run_issue_label="oldest eligible open issue"
+            if [[ -n "$run_issue" ]]; then
+              run_issue_label="$run_issue"
+            fi
+
+            echo "::notice::Running ${run_label} resolver attempt: provider=${run_provider}; model=${run_model}; issue=${run_issue_label}; dry_run=${dry_run}"
 
             local run_args=(
               --repo "${{ github.repository }}"
@@ -100,7 +122,7 @@ jobs:
               run_args+=(--issue "$run_issue")
             fi
 
-            if [[ "${DRY_RUN_INPUT:-false}" == "true" ]]; then
+            if [[ "$dry_run" == "true" ]]; then
               run_args+=(--dry-run)
             fi
 
@@ -134,27 +156,56 @@ jobs:
 
           preserve_primary_provider_error_artifacts() {
             local output_dir=".tmp/phase-2/resolver"
+            local preserved_count=0
             local error_file
+
             for error_file in "$output_dir"/issue-*-provider-error.txt; do
               [[ -e "$error_file" ]] || continue
               cp "$error_file" "${error_file%-provider-error.txt}-primary-provider-error.txt"
               rm -f "$error_file"
+              preserved_count=$((preserved_count + 1))
             done
+
+            echo "::notice::Preserved ${preserved_count} primary provider-error artifact(s) for post-run inspection."
           }
 
           rm -rf .tmp/phase-2/resolver
 
-          if run_resolver "$provider" "$model"; then
+          if run_resolver "$provider" "$model" "${ISSUE_INPUT:-}" "primary"; then
+            echo "::notice::Primary resolver attempt succeeded: provider=${provider}; model=${model}; fallback_used=false"
             exit 0
+          else
+            primary_exit_code=$?
+            echo "::warning::Primary resolver attempt failed with exit code ${primary_exit_code}: provider=${provider}; model=${model}. Checking fallback eligibility."
           fi
 
           fallback_issue=""
-          if [[ "$provider" == "gemini" && "$model" != "$fallback_model" ]] && fallback_issue="$(provider_unavailable_issue_number)"; then
-            echo "::warning::Primary Gemini resolver model failed with provider unavailability. Running fallback model once: ${fallback_model}"
-            preserve_primary_provider_error_artifacts
-            run_resolver "gemini" "$fallback_model" "${ISSUE_INPUT:-$fallback_issue}"
+
+          if [[ "$provider" != "gemini" ]]; then
+            echo "::error::Fallback skipped: provider=${provider}; fallback is only configured for Gemini resolver runs."
+            exit "$primary_exit_code"
+          fi
+
+          if [[ "$model" == "$fallback_model" ]]; then
+            echo "::error::Fallback skipped: primary model and fallback model are both ${fallback_model}."
+            exit "$primary_exit_code"
+          fi
+
+          if ! fallback_issue="$(provider_unavailable_issue_number)"; then
+            echo "::error::Fallback skipped: primary failure did not match provider-unavailability markers, or no provider-error artifact was produced."
+            exit "$primary_exit_code"
+          fi
+
+          echo "::warning::Primary Gemini resolver model failed with provider unavailability for issue #${fallback_issue}. Running fallback model once: ${fallback_model}"
+          preserve_primary_provider_error_artifacts
+
+          if run_resolver "gemini" "$fallback_model" "${ISSUE_INPUT:-$fallback_issue}" "fallback"; then
+            echo "::notice::Fallback resolver attempt succeeded: provider=gemini; model=${fallback_model}; fallback_used=true; issue=${ISSUE_INPUT:-$fallback_issue}"
+            exit 0
           else
-            exit 1
+            fallback_exit_code=$?
+            echo "::error::Fallback resolver attempt failed with exit code ${fallback_exit_code}: provider=gemini; model=${fallback_model}; issue=${ISSUE_INPUT:-$fallback_issue}"
+            exit "$fallback_exit_code"
           fi
 
       - name: Upload resolver plan
