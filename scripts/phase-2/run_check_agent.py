@@ -189,6 +189,7 @@ SUPPORTED_PROVIDERS: dict[str, str] = {
     "cerebras": "providers.cerebras",
     "gemini": "providers.gemini",
     "groq": "providers.groq",
+    "openrouter": "providers.openrouter",
     "sambanova": "providers.sambanova",
 }
 

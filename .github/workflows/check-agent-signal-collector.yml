@@ -29,12 +29,13 @@ run-name: Scheduled check-agent signal collector (${{ github.event_name }})
           - cerebras
           - sambanova
           - gemini
+          - openrouter
 
       provider_model_specs:
         description: "Primary rotation list. Comma-separated provider:model values. Leave default to use the full rotation."
         type: string
         required: false
-        default: "groq:llama-3.3-70b-versatile,cerebras:gpt-oss-120b,sambanova:DeepSeek-V3.1,sambanova:Meta-Llama-3.3-70B-Instruct,cerebras:zai-glm-4.7,gemini:gemini-3.1-flash-lite"
+        default: "groq:llama-3.3-70b-versatile,cerebras:gpt-oss-120b,sambanova:DeepSeek-V3.1,sambanova:Meta-Llama-3.3-70B-Instruct,cerebras:zai-glm-4.7,gemini:gemini-3.1-flash-lite,openrouter:nvidia/nemotron-3-ultra-550b-a55b:free,openrouter:poolside/laguna-m.1:free"
 
       selection:
         description: "How to select triples. Keep rotate for normal manual and scheduled signal collection."
@@ -55,7 +56,7 @@ run-name: Scheduled check-agent signal collector (${{ github.event_name }})
           - daily
 
       rotation_index:
-        description: "Optional model slot override: 0=Groq Llama, 1=Cerebras GPT-OSS, 2=SambaNova DeepSeek, 3=SambaNova Llama, 4=Cerebras GLM, 5=Gemini."
+        description: "Optional model slot override: 0=Groq Llama, 1=Cerebras GPT-OSS, 2=SambaNova DeepSeek, 3=SambaNova Llama, 4=Cerebras GLM, 5=Gemini, 6=OpenRouter Nemotron, 7=OpenRouter Laguna."
         type: string
         required: false
         default: ""
@@ -112,6 +113,7 @@ jobs:
       GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
       CEREBRAS_API_KEY: ${{ secrets.CEREBRAS_API_KEY }}
       SAMBANOVA_API_KEY: ${{ secrets.SAMBANOVA_API_KEY }}
+      OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
       GH_TOKEN: ${{ github.token }}
 
       WORKFLOW_MODE: ${{ github.event.inputs.mode }}
@@ -177,7 +179,14 @@ jobs:
             printf '%s' "$1" | sed 's/^[[:space:]]*//;s/[[:space:]]*$//'
           }
 
-          default_periodic_provider_model_specs="groq:llama-3.3-70b-versatile,cerebras:gpt-oss-120b,sambanova:DeepSeek-V3.1,sambanova:Meta-Llama-3.3-70B-Instruct,cerebras:zai-glm-4.7,gemini:gemini-3.1-flash-lite"
+          is_allowed_openrouter_model() {
+            case "$1" in
+              nvidia/nemotron-3-ultra-550b-a55b:free|poolside/laguna-m.1:free) return 0 ;;
+              *) return 1 ;;
+            esac
+          }
+
+          default_periodic_provider_model_specs="groq:llama-3.3-70b-versatile,cerebras:gpt-oss-120b,sambanova:DeepSeek-V3.1,sambanova:Meta-Llama-3.3-70B-Instruct,cerebras:zai-glm-4.7,gemini:gemini-3.1-flash-lite,openrouter:nvidia/nemotron-3-ultra-550b-a55b:free,openrouter:poolside/laguna-m.1:free"
 
           provider="${WORKFLOW_PROVIDER:-groq}"
           provider_model_specs="${WORKFLOW_PROVIDER_MODEL_SPECS:-}"
@@ -190,6 +199,7 @@ jobs:
           uses_gemini=false
           uses_cerebras=false
           uses_sambanova=false
+          uses_openrouter=false
 
           if [[ -n "$provider_model_specs" ]]; then
             IFS=',' read -ra specs <<< "$provider_model_specs"
@@ -203,11 +213,19 @@ jobs:
                 exit 1
               fi
               spec_provider="$(trim "${spec%%:*}")"
+              spec_model="$(trim "${spec#*:}")"
               case "$spec_provider" in
                 groq) uses_groq=true ;;
                 gemini) uses_gemini=true ;;
                 cerebras) uses_cerebras=true ;;
                 sambanova) uses_sambanova=true ;;
+                openrouter)
+                  uses_openrouter=true
+                  if ! is_allowed_openrouter_model "$spec_model"; then
+                    echo "::error::Unsupported OpenRouter model in provider_model_specs: ${spec_model}. Use only :free OpenRouter model IDs configured for this workflow."
+                    exit 1
+                  fi
+                  ;;
                 *)
                   echo "::error::Unsupported provider in provider_model_specs: ${spec_provider}"
                   exit 1
@@ -220,6 +238,7 @@ jobs:
               gemini) uses_gemini=true ;;
               cerebras) uses_cerebras=true ;;
               sambanova) uses_sambanova=true ;;
+              openrouter) uses_openrouter=true ;;
               *)
                 echo "::error::Unsupported provider: ${provider}"
                 exit 1
@@ -243,6 +262,10 @@ jobs:
             echo "::error::Missing required repository secret: SAMBANOVA_API_KEY"
             exit 1
           fi
+          if [[ "$uses_openrouter" == "true" && -z "${OPENROUTER_API_KEY:-}" ]]; then
+            echo "::error::Missing required repository secret: OPENROUTER_API_KEY"
+            exit 1
+          fi
 
           gh --version
           gh auth status
@@ -260,7 +283,8 @@ jobs:
             scripts/phase-2/providers/groq.py \
             scripts/phase-2/providers/gemini.py \
             scripts/phase-2/providers/cerebras.py \
-            scripts/phase-2/providers/sambanova.py
+            scripts/phase-2/providers/sambanova.py \
+            scripts/phase-2/providers/openrouter.py
 
       - name: Run check-agent signal collector
         shell: bash
@@ -271,8 +295,15 @@ jobs:
             printf '%s' "$1" | sed 's/^[[:space:]]*//;s/[[:space:]]*$//'
           }
 
+          is_allowed_openrouter_model() {
+            case "$1" in
+              nvidia/nemotron-3-ultra-550b-a55b:free|poolside/laguna-m.1:free) return 0 ;;
+              *) return 1 ;;
+            esac
+          }
+
           default_groq_models="llama-3.3-70b-versatile"
-          default_periodic_provider_model_specs="groq:llama-3.3-70b-versatile,cerebras:gpt-oss-120b,sambanova:DeepSeek-V3.1,sambanova:Meta-Llama-3.3-70B-Instruct,cerebras:zai-glm-4.7,gemini:gemini-3.1-flash-lite"
+          default_periodic_provider_model_specs="groq:llama-3.3-70b-versatile,cerebras:gpt-oss-120b,sambanova:DeepSeek-V3.1,sambanova:Meta-Llama-3.3-70B-Instruct,cerebras:zai-glm-4.7,gemini:gemini-3.1-flash-lite,openrouter:nvidia/nemotron-3-ultra-550b-a55b:free,openrouter:poolside/laguna-m.1:free"
 
           mode="${WORKFLOW_MODE:-post}"
           provider="${WORKFLOW_PROVIDER:-groq}"
@@ -333,11 +364,19 @@ jobs:
             models_input="$(trim "${selected_provider_model_spec#*:}")"
             rotation_index="$runner_rotation_index"
 
+            if [[ "$provider" == "openrouter" ]] && ! is_allowed_openrouter_model "$models_input"; then
+              echo "::error::Unsupported OpenRouter model in selected provider_model_specs slot: ${models_input}. Use only :free OpenRouter model IDs configured for this workflow."
+              exit 1
+            fi
+
             echo "Provider/model rotation specs: ${normalized_specs[*]}"
             echo "Selected provider/model spec: ${selected_provider_model_spec}"
           elif [[ "$provider" == "gemini" && "$models_input" == "$default_groq_models" ]]; then
             echo "Provider is gemini and Groq default models were supplied; using gemini-3.1-flash-lite."
             models_input="gemini-3.1-flash-lite"
+          elif [[ "$provider" == "openrouter" && "$models_input" == "$default_groq_models" ]]; then
+            echo "Provider is openrouter and Groq default models were supplied; using nvidia/nemotron-3-ultra-550b-a55b:free."
+            models_input="nvidia/nemotron-3-ultra-550b-a55b:free"
           fi
 
           if [[ -z "$max_completion_tokens" && "$provider" == "groq" && "$models_input" == "openai/gpt-oss-20b" ]]; then
@@ -377,6 +416,10 @@ jobs:
           for model in "${models[@]}"; do
             model="$(trim "$model")"
             if [[ -n "$model" ]]; then
+              if [[ "$provider" == "openrouter" ]] && ! is_allowed_openrouter_model "$model"; then
+                echo "::error::Unsupported OpenRouter model: ${model}. Use only :free OpenRouter model IDs configured for this workflow."
+                exit 1
+              fi
               model_args+=(--model "$model")
             fi
           done
