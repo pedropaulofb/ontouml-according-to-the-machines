@@ -1,4 +1,4 @@
-# Phase 2 — Lightweight Check-Agent and Automated Signal-Resolution Infrastructure
+﻿# Phase 2 — Lightweight Check-Agent and Automated Signal-Resolution Infrastructure
 
 Phase 2 is the second documented project phase of **OntoUML According to the Machines**.
 
@@ -6,13 +6,13 @@ Its purpose is to provide lightweight deterministic and API-based review infrast
 
 Phase 2 still does **not** perform deep content validation, source-faithfulness analysis, cross-page semantic comparison, OntoUML/UFO semantic validation, or conceptual adequacy assessment. Phase 2 signals remain candidate observations until they are reviewed or resolved within the documented workflow.
 
-This document reflects the repository state verified from committed repository files on **2026-06-25**, with the current repository commit:
+This document reflects the repository state verified from committed repository files on **2026-06-26**, with the current repository commit:
 
 ```text
-4a3a9199bf691703ce412870ea2f38c728d98ef7
+42d20ecf93dd1a366711f0a7f78018365e0a9fb8
 ```
 
-That commit keeps `gemini-3.5-flash` as the primary automated Gemini resolver model, adds `gemini-3.1-pro-preview` as an immediate fallback model only for provider-unavailability or 503-like primary Gemini failures, and reduces scheduled automated resolver execution to one scheduled attempt every four hours.
+That commit keeps `gemini-3.5-flash` as the primary automated Gemini resolver model, uses `gemini-2.5-flash` as an immediate fallback model only for provider-unavailability or 503-like primary Gemini failures, adds explicit resolver execution logging, and keeps scheduled automated resolver execution at one scheduled attempt every four hours.
 
 ## Documentation structure
 
@@ -186,7 +186,7 @@ Check signal: page-hygiene-checker: classes/event
 
 ## Current implementation status
 
-The current implementation includes check execution, output validation, page-plus-agent issue routing, duplicate-control for comments, scheduled LLM collection, Groq, Gemini, Cerebras, and SambaNova provider support for signal generation, manual signal-review prompts for the two LLM-based agents, automated signal-resolution prompts for those agents, deterministic patch application, PR creation, branch update by rebase, squash auto-merge enablement, issue closure, and an immediate workflow-level Gemini fallback for automated resolver provider-unavailability failures.
+The current implementation includes check execution, output validation, page-plus-agent issue routing, duplicate-control for comments, scheduled LLM collection, Groq, Gemini, Cerebras, SambaNova, and OpenRouter provider support for signal generation, archived manual signal-review prompts for the two LLM-based agents, automated signal-resolution prompts for those agents, deterministic patch application, PR creation, branch update by rebase, squash auto-merge enablement, issue closure, and an immediate workflow-level Gemini fallback for automated resolver provider-unavailability failures.
 
 There is no current dedicated manual or automated closure prompt for `page-structure-checker`; page-structure issues remain subject to direct maintainer review and normal PR review.
 
@@ -199,10 +199,8 @@ There is no current dedicated manual or automated closure prompt for `page-struc
 requirements.txt
 prompts/phase-2/page-hygiene-checker-v1.0.2.md
 prompts/phase-2/language-style-checker-v1.0.2.md
-prompts/phase-2/close-page-hygiene-signal-issue-v1.0.0.md
-prompts/phase-2/close-language-style-signal-issue-v1.0.0.md
-prompts/phase-2/resolve-page-hygiene-signal-issue-v1.2.0.md
-prompts/phase-2/resolve-language-style-signal-issue-v1.2.0.md
+archive/phase-2/manual-closure-prompts/close-page-hygiene-signal-issue-v1.0.0.md
+archive/phase-2/manual-closure-prompts/close-language-style-signal-issue-v1.0.0.md
 prompts/phase-2/resolve-page-hygiene-signal-issue-v1.2.1.md
 prompts/phase-2/resolve-language-style-signal-issue-v1.2.1.md
 scripts/phase-2/run_check_agent.py
@@ -217,6 +215,7 @@ scripts/phase-2/providers/groq.py
 scripts/phase-2/providers/gemini.py
 scripts/phase-2/providers/cerebras.py
 scripts/phase-2/providers/sambanova.py
+scripts/phase-2/providers/openrouter.py
 ```
 
 Non-canonical or legacy-support artifacts may also exist:
@@ -247,13 +246,14 @@ The current implementation can:
 - call Gemini models through `scripts/phase-2/providers/gemini.py`;
 - call Cerebras models through `scripts/phase-2/providers/cerebras.py`;
 - call SambaNova models through `scripts/phase-2/providers/sambanova.py`;
+- call the allowlisted free OpenRouter models through `scripts/phase-2/providers/openrouter.py`;
 - validate generated LLM signal comments against agent-specific contracts;
 - write valid generated comments to `.tmp/phase-2/`;
 - write invalid generated comments to `.invalid.md` files for debugging;
 - run page × agent × provider × model collection through the scheduled workflow;
 - run page × agent × model batches for one selected provider through `run_check_batch.py`;
 - select rotating scheduled combinations over time;
-- rotate scheduled signal generation across the configured six provider/model specs;
+- rotate scheduled signal generation across the configured eight provider/model specs;
 - run in `generate`, `dry-run`, or `post` mode;
 - write per-run logs and a batch summary under `.tmp/phase-2/`;
 - derive deterministic page-plus-agent issue titles;
@@ -271,7 +271,7 @@ The current implementation can:
 - select the oldest eligible open `page-hygiene-checker` or `language-style-checker` signal issue for automated resolution;
 - manually resolve a selected issue through `workflow_dispatch`;
 - keep `gemini-3.5-flash` as the primary Gemini model for automated signal resolution;
-- run `gemini-3.1-pro-preview` once as an immediate fallback resolver model when the primary Gemini resolver call fails with provider-unavailability or 503-like diagnostics;
+- run `gemini-2.5-flash` once as an immediate fallback resolver model when the primary Gemini resolver call fails with provider-unavailability or 503-like diagnostics;
 - fail normally when the primary resolver call fails for non-provider-unavailability reasons;
 - fail normally when the fallback resolver model also fails;
 - generate and validate a strict JSON resolution plan;
@@ -379,6 +379,7 @@ The scheduled LLM GitHub Actions workflow depends on:
 - `GEMINI_API_KEY` when Gemini is selected;
 - `CEREBRAS_API_KEY` when Cerebras is selected;
 - `SAMBANOVA_API_KEY` when SambaNova is selected;
+- `OPENROUTER_API_KEY` when OpenRouter is selected;
 - `GH_TOKEN`;
 - `contents: read`;
 - `issues: write`.
@@ -1138,6 +1139,7 @@ groq
 gemini
 cerebras
 sambanova
+openrouter
 ```
 
 The automated resolver currently supports only:
@@ -1153,6 +1155,7 @@ gemini
 | `gemini` | `scripts/phase-2/providers/gemini.py` | `GEMINI_API_KEY` in GitHub Actions; `GEMINI_API_KEY` or `GOOGLE_API_KEY` locally |
 | `cerebras` | `scripts/phase-2/providers/cerebras.py` | `CEREBRAS_API_KEY` |
 | `sambanova` | `scripts/phase-2/providers/sambanova.py` | `SAMBANOVA_API_KEY` |
+| `openrouter` | `scripts/phase-2/providers/openrouter.py` | `OPENROUTER_API_KEY` |
 
 ### Groq provider
 
@@ -1208,7 +1211,7 @@ Signal-generation runs use a workflow default of:
 --max-completion-tokens 3000
 ```
 
-The automated resolver remains separate. It defaults to primary `gemini-3.5-flash` with `--max-completion-tokens 8000`, and the resolver workflow can run one immediate fallback attempt with `gemini-3.1-pro-preview` only for provider-unavailability or 503-like primary Gemini failures.
+The automated resolver remains separate. It defaults to primary `gemini-3.5-flash` with `--max-completion-tokens 8000`, and the resolver workflow can run one immediate fallback attempt with `gemini-2.5-flash` only for provider-unavailability or 503-like primary Gemini failures.
 
 The Gemini adapter includes reduced-thinking configuration for strict-format output reliability:
 
@@ -1256,6 +1259,7 @@ The SambaNova adapter is:
 
 ```text
 scripts/phase-2/providers/sambanova.py
+scripts/phase-2/providers/openrouter.py
 ```
 
 It also uses the shared OpenAI-compatible provider utility.
@@ -1275,6 +1279,25 @@ https://api.sambanova.ai/v1
 
 `SAMBANOVA_BASE_URL` may override the base URL in local or alternate environments.
 
+
+### OpenRouter provider
+
+The OpenRouter adapter is:
+
+``` text
+scripts/phase-2/providers/openrouter.py
+```
+
+It also uses the shared OpenAI-compatible provider utility.
+
+Current scheduled OpenRouter models:
+
+``` text
+nvidia/nemotron-3-ultra-550b-a55b:free
+poolside/laguna-m.1:free
+```
+
+The adapter requires `OPENROUTER_API_KEY` and currently allowlists only these two free OpenRouter model IDs. The scheduled workflow also validates selected OpenRouter models against this allowlist.
 ### Signal-generation provider retry and failure-classification behavior
 
 The signal-generation providers include provider-level retry handling for transient provider/API failures.
@@ -1915,7 +1938,7 @@ The workflow is also manually triggerable through `workflow_dispatch`.
 Manual dispatch supports:
 
 - `generate`, `dry-run`, or `post` mode;
-- `groq`, `gemini`, `cerebras`, or `sambanova` provider selection;
+- `groq`, `gemini`, `cerebras`, `sambanova`, or `openrouter` provider selection;
 - comma-separated `models`;
 - comma- or newline-separated `provider_model_specs`;
 - comma- or newline-separated page lists;
@@ -1945,7 +1968,7 @@ max_runs: 1
 sleep_seconds: 0
 max_completion_tokens: 3000
 agents: page-hygiene-checker,language-style-checker
-provider/model rotation: groq:llama-3.3-70b-versatile, cerebras:gpt-oss-120b, sambanova:DeepSeek-V3.1, sambanova:Meta-Llama-3.3-70B-Instruct, cerebras:zai-glm-4.7, gemini:gemini-3.1-flash-lite
+provider/model rotation: groq:llama-3.3-70b-versatile, cerebras:gpt-oss-120b, sambanova:DeepSeek-V3.1, openrouter:nvidia/nemotron-3-ultra-550b-a55b:free, gemini:gemini-3.1-flash-lite, cerebras:zai-glm-4.7, sambanova:Meta-Llama-3.3-70B-Instruct, openrouter:poolside/laguna-m.1:free
 pages: all canonical class and relation stereotype pages, excluding index.md
 ```
 
@@ -1995,7 +2018,7 @@ Effective scheduled defaults:
 ```text
 provider: gemini
 model: gemini-3.5-flash
-fallback_model: gemini-3.1-pro-preview
+fallback_model: gemini-2.5-flash
 provider_max_attempts: 1
 issue: oldest eligible open page-hygiene-checker or language-style-checker signal issue
 dry_run: false
@@ -2009,7 +2032,7 @@ Manual dispatch can:
 - select a fallback Gemini model;
 - run in dry-run mode.
 
-The scheduled resolver workflow first tries the selected provider/model once. With the default scheduled configuration, this means one `gemini-3.5-flash` attempt. If that attempt fails with provider-unavailability or 503-like diagnostics, the workflow immediately tries `gemini-3.1-pro-preview` once for the same issue. It does not wait and retry the same model. It does not suppress non-provider-unavailability failures. It does not suppress fallback failures.
+The scheduled resolver workflow first tries the selected provider/model once. With the default scheduled configuration, this means one `gemini-3.5-flash` attempt. If that attempt fails with provider-unavailability or 503-like diagnostics, the workflow immediately tries `gemini-2.5-flash` once for the same issue. It does not wait and retry the same model. It does not suppress non-provider-unavailability failures. It does not suppress fallback failures.
 
 The resolver writes plan artifacts under:
 
@@ -2152,28 +2175,29 @@ Later operational updates added:
 
 - automated signal issue resolution on a reduced schedule of one attempt every four hours;
 - `gemini-3.5-flash` as the primary automated Gemini resolver model;
-- immediate one-shot fallback to `gemini-3.1-pro-preview` only for provider-unavailability or 503-like primary Gemini resolver failures;
+- immediate one-shot fallback to `gemini-2.5-flash` only for provider-unavailability or 503-like primary Gemini resolver failures;
+- explicit resolver execution notices identifying primary/fallback attempts, selected provider, model, issue target, and dry-run mode;
 - accepted resolver edits converted into pull requests;
 - issue comments and issue closure for accepted and rejected automated resolver outcomes;
 - PR branch update by rebase before auto-merge enablement;
 - squash auto-merge after required checks pass;
 - structured resolver log entries in the `Generation and Review Log` table;
 - deterministic page-structure validation of the `Generation and Review Log` table;
-- scheduled signal-generation rotation across Groq, Cerebras, SambaNova, and Gemini;
+- scheduled signal-generation rotation across Groq, Cerebras, SambaNova, Gemini, and OpenRouter;
 - workflow-level signal-collector failure classification that keeps nonactionable provider availability noise nonfatal while keeping quota, rate-limit, authentication, configuration, request-shape, and unknown provider failures actionable.
 
 These observations are not guarantees of future provider behavior. The committed workflows and scripts should be treated as authoritative for current automation behavior.
 
 ## Manual signal-review and issue-resolution prompt support
 
-Phase 2 includes two manual ChatGPT prompts for reviewing and resolving check-agent signal issues:
+Phase 2 keeps two archived manual ChatGPT prompts for reviewing and resolving check-agent signal issues:
 
 ```text
-prompts/phase-2/close-page-hygiene-signal-issue-v1.0.0.md
-prompts/phase-2/close-language-style-signal-issue-v1.0.0.md
+archive/phase-2/manual-closure-prompts/close-page-hygiene-signal-issue-v1.0.0.md
+archive/phase-2/manual-closure-prompts/close-language-style-signal-issue-v1.0.0.md
 ```
 
-These prompts are implemented for the two LLM-based check agents:
+These archived prompts were implemented for the two LLM-based check agents:
 
 ```text
 page-hygiene-checker
@@ -2222,7 +2246,7 @@ The manual prompts remain useful as fallback tooling. The automated resolver is 
 The page-hygiene manual issue-resolution prompt is:
 
 ```text
-prompts/phase-2/close-page-hygiene-signal-issue-v1.0.0.md
+archive/phase-2/manual-closure-prompts/close-page-hygiene-signal-issue-v1.0.0.md
 ```
 
 It focuses on `page-hygiene-checker` signals.
@@ -2241,7 +2265,7 @@ It should not validate source content, infer missing source support, evaluate On
 The language-style manual issue-resolution prompt is:
 
 ```text
-prompts/phase-2/close-language-style-signal-issue-v1.0.0.md
+archive/phase-2/manual-closure-prompts/close-language-style-signal-issue-v1.0.0.md
 ```
 
 It focuses on `language-style-checker` signals in reader-facing prose.
