@@ -34,7 +34,7 @@ They do not define or govern:
 | Phase | Name | Status | Main purpose |
 |---|---|---|---|
 | Phase 1 | [Groundwork and Initial Population](phase-1.md) | In progress | Generate source-specific intermediate files from selected high-yield sources and consolidate them into first canonical stereotype pages. |
-| Phase 2 | [Lightweight Check-Agent Infrastructure](phase-2.md) | Active / implemented infrastructure | Provide deterministic and LLM-based check-agent infrastructure that emits page-local signals, routes them to page-plus-agent GitHub issues, and supports manual confirmation-gated review of LLM signal issues. |
+| Phase 2 | [Lightweight Check-Agent Infrastructure](phase-2/index.md) | Active / implemented infrastructure | Provide deterministic and LLM-based check-agent infrastructure that emits page-local signals, routes them to page-plus-agent GitHub issues, and supports manual confirmation-gated review of LLM signal issues. |
 
 ## Phase relationship
 

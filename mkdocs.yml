@@ -43,7 +43,15 @@ nav:
     - Project Phases:
         - Overview: methodology/phases/index.md
         - Phase 1: methodology/phases/phase-1.md
-        - Phase 2: methodology/phases/phase-2.md
+        - Phase 2:
+          - Overview: methodology/phases/phase-2/index.md
+          - Scope and architecture: methodology/phases/phase-2/overview.md
+          - Check agents: methodology/phases/phase-2/check-agents.md
+          - Automated resolver: methodology/phases/phase-2/automated-resolver.md
+          - Providers: methodology/phases/phase-2/providers.md
+          - Signals and issues: methodology/phases/phase-2/signals-and-issues.md
+          - Execution and operations: methodology/phases/phase-2/execution-and-operations.md
+          - Prompts and status: methodology/phases/phase-2/prompts-and-status.md
   - Stereotypes:
       - Overview: stereotypes/index.md
       - Class Stereotypes:
