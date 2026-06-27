@@ -323,10 +323,19 @@ jobs:
           fi
 
           if [[ -z "$rotation_index" && "$selection" == "rotate" && -n "$provider_model_specs" ]]; then
-            # Use the same 20-minute provider:model slot calculation for scheduled
-            # runs and default manual runs. Manual dispatch can still set
-            # rotation_index explicitly for deterministic model smoke tests.
-            rotation_index="$(($(date -u +%s) / 1200))"
+            # Align provider:model rotation buckets with the cron schedule:
+            # 7,27,47 * * * *
+            #
+            # Without this offset, delayed runs near :20 or :40 can cross into the
+            # next Unix-anchored 20-minute bucket and select the next model slot.
+            rotation_period_seconds=1200
+            rotation_schedule_offset_seconds=420
+            rotation_timestamp="$(date -u +%s)"
+
+            rotation_index="$(( (rotation_timestamp - rotation_schedule_offset_seconds) / rotation_period_seconds ))"
+
+            echo "Rotation timestamp UTC: $(date -u --date="@${rotation_timestamp}" '+%Y-%m-%dT%H:%M:%SZ')"
+            echo "Raw provider/model rotation index: ${rotation_index}"
           fi
 
           if [[ -n "$provider_model_specs" ]]; then
@@ -369,8 +378,11 @@ jobs:
               exit 1
             fi
 
-            echo "Provider/model rotation specs: ${normalized_specs[*]}"
-            echo "Selected provider/model spec: ${selected_provider_model_spec}"
+          echo "Provider/model rotation specs: ${normalized_specs[*]}"
+          echo "Provider/model slot count: ${#normalized_specs[@]}"
+          echo "Provider/model slot index: ${provider_model_index}"
+          echo "Runner rotation index: ${runner_rotation_index}"
+          echo "Selected provider/model spec: ${selected_provider_model_spec}"
           elif [[ "$provider" == "gemini" && "$models_input" == "$default_groq_models" ]]; then
             echo "Provider is gemini and Groq default models were supplied; using gemini-3.1-flash-lite."
             models_input="gemini-3.1-flash-lite"
