@@ -27,8 +27,8 @@ from pathlib import Path
 from typing import Any, Callable
 
 SUPPORTED_AGENTS = {
-    "page-hygiene-checker": "prompts/phase-2/resolve-page-hygiene-signal-issue-v1.2.1.md",
-    "language-style-checker": "prompts/phase-2/resolve-language-style-signal-issue-v1.2.1.md",
+    "page-hygiene-checker": "prompts/phase-2/resolve-page-hygiene-signal-issue-v1.2.2.md",
+    "language-style-checker": "prompts/phase-2/resolve-language-style-signal-issue-v1.2.2.md",
 }
 
 AUTOMATED_ISSUE_AGENTS = (
@@ -581,13 +581,13 @@ def resolver_prompt_metadata(agent: str) -> tuple[str, str]:
     """Return the resolver prompt ID and title for a supported agent."""
     if agent == "page-hygiene-checker":
         return (
-            "resolve-page-hygiene-signal-issue-v1.2.1",
-            "Phase 2 automated resolver: page-hygiene signals v1.2.1",
+            "resolve-page-hygiene-signal-issue-v1.2.2",
+            "Phase 2 automated resolver: page-hygiene signals v1.2.2",
         )
     if agent == "language-style-checker":
         return (
-            "resolve-language-style-signal-issue-v1.2.1",
-            "Phase 2 automated resolver: language-style signals v1.2.1",
+            "resolve-language-style-signal-issue-v1.2.2",
+            "Phase 2 automated resolver: language-style signals v1.2.2",
         )
     raise ResolverError(f"Unsupported resolver agent for log metadata: {agent}")
 

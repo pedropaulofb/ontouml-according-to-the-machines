@@ -161,8 +161,8 @@ class AgentContract:
 AGENT_CONTRACTS: dict[str, AgentContract] = {
     "page-hygiene-checker": AgentContract(
         slug="page-hygiene-checker",
-        prompt_path="prompts/phase-2/page-hygiene-checker-v1.0.2.md",
-        prompt_id="page-hygiene-checker-v1.0.2",
+        prompt_path="prompts/phase-2/page-hygiene-checker-v1.0.3.md",
+        prompt_id="page-hygiene-checker-v1.0.3",
         allowed_categories={"reference_hygiene", "markdown_hygiene", "encoding_hygiene", "review_log_hygiene"},
         summary_sentences={
             "No page-hygiene signals were identified within the configured scope.",
@@ -173,8 +173,8 @@ AGENT_CONTRACTS: dict[str, AgentContract] = {
     ),
     "language-style-checker": AgentContract(
         slug="language-style-checker",
-        prompt_path="prompts/phase-2/language-style-checker-v1.0.2.md",
-        prompt_id="language-style-checker-v1.0.2",
+        prompt_path="prompts/phase-2/language-style-checker-v1.0.3.md",
+        prompt_id="language-style-checker-v1.0.3",
         allowed_categories={"grammar", "spelling", "clarity", "professional_style", "project_self_reference"},
         summary_sentences={
             "No language-style signals were identified within the configured scope.",
