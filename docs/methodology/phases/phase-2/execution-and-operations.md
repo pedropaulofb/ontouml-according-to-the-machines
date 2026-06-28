@@ -136,7 +136,7 @@ python scripts/phase-2/resolve_signal_issue.py \
 
 The resolver must be run from a clean repository checkout with GitHub CLI authentication and the relevant provider API key.
 
-The immediate fallback from `gemini-3.5-flash` to `gemini-3.1-pro-preview` is implemented by the GitHub Actions workflow. A local command-line run of `resolve_signal_issue.py` does not automatically select a fallback model unless the operator reproduces the workflow logic manually.
+The immediate fallback from `gemini-3.5-flash` to `gemini-2.5-flash` is implemented by the GitHub Actions workflow. A local command-line run of `resolve_signal_issue.py` does not automatically select a fallback model unless the operator reproduces the workflow logic manually.
 
 ## Operator option reference
 
@@ -284,12 +284,44 @@ When `provider_model_specs` is supplied, it overrides the `provider` and `models
 Scheduled provider/model rotation:
 
 ```text
-groq:llama-3.3-70b-versatile
-cerebras:gpt-oss-120b
-sambanova:DeepSeek-V3.1
-sambanova:Meta-Llama-3.3-70B-Instruct
-cerebras:zai-glm-4.7
-gemini:gemini-3.1-flash-lite
+0 groq:llama-3.3-70b-versatile
+1 cerebras:gpt-oss-120b
+2 sambanova:DeepSeek-V3.1
+3 openrouter:nvidia/nemotron-3-ultra-550b-a55b:free
+4 gemini:gemini-3.1-flash-lite
+5 cerebras:zai-glm-4.7
+6 sambanova:Meta-Llama-3.3-70B-Instruct
+7 openrouter:poolside/laguna-m.1:free
+```
+
+The scheduled workflow aligns provider/model rotation buckets with the cron offset.
+
+The cron schedule is:
+
+```text
+7,27,47 * * * *
+```
+
+The provider/model rotation period is 20 minutes, and the workflow subtracts the 7-minute schedule offset before deriving the raw rotation index:
+
+```text
+rotation_period_seconds: 1200
+rotation_schedule_offset_seconds: 420
+rotation_index: (rotation_timestamp - rotation_schedule_offset_seconds) / rotation_period_seconds
+```
+
+This keeps the rotation buckets aligned to the scheduled start minutes `:07`, `:27`, and `:47`. Without the offset, a delayed run near `:20` or `:40` could cross into the next Unix-anchored 20-minute bucket and select the next provider/model slot.
+
+The workflow emits provider/model rotation diagnostics:
+
+```text
+Rotation timestamp UTC
+Raw provider/model rotation index
+Provider/model rotation specs
+Provider/model slot count
+Provider/model slot index
+Runner rotation index
+Selected provider/model spec
 ```
 
 Effective scheduled defaults:
@@ -306,9 +338,9 @@ provider/model rotation: groq:llama-3.3-70b-versatile, cerebras:gpt-oss-120b, sa
 pages: all canonical class and relation stereotype pages, excluding index.md
 ```
 
-The workflow first rotates over provider/model specs, then delegates page/agent/model selection to `run_check_batch.py` with rotating selection.
+The workflow first rotates over provider/model specs and selects exactly one provider/model slot, then delegates page/agent/model selection to `run_check_batch.py` with rotating selection.
 
-The scheduled run therefore gradually rotates over page, agent, provider, and model combinations. It does not run the full matrix in one execution.
+The scheduled run therefore gradually rotates over page, agent, provider, and model combinations. It does not run the full matrix in one execution, and it does not switch to another provider/model slot if the selected provider/model fails.
 
 If a selected LLM output fails validation:
 
@@ -321,7 +353,8 @@ If a selected provider call fails:
 
 - transient provider-side availability failures and empty responses are emitted as warnings and remain nonfatal when `--allow-provider-failures` is active;
 - quota, rate-limit, authentication, configuration, request-shape, and unknown provider failures are emitted as errors and remain fatal;
-- issue-manager failures remain fatal.
+- issue-manager failures remain fatal;
+- this provider-failure classification is not provider/model fallback.
 
 ### Automated resolver execution
 
@@ -439,6 +472,7 @@ GROQ_API_KEY
 GEMINI_API_KEY
 CEREBRAS_API_KEY
 SAMBANOVA_API_KEY
+OPENROUTER_API_KEY
 ```
 
 Required workflow permissions:

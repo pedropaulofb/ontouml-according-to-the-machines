@@ -4,9 +4,9 @@
 
 ## Documentation structure
 
-This document is the canonical Phase 2 methodology page.
+This document is the canonical Phase 2 methodology overview page.
 
-Gemini provider support, check-agent execution, issue routing, and automated signal resolution are documented inline here. A separate `phase-2-gemini-provider.md` or resolver-only methodology page is not required unless a later documentation split is intentionally added to the MkDocs navigation.
+Provider support, check-agent execution, issue routing, and automated signal resolution are documented across the Phase 2 methodology pages linked from `index.md`.
 
 ## Purpose
 
@@ -185,8 +185,8 @@ There is no current dedicated manual or automated closure prompt for `page-struc
 .github/workflows/check-agent-signal-collector.yml
 .github/workflows/phase-2-signal-resolver.yml
 requirements.txt
-prompts/phase-2/page-hygiene-checker-v1.0.2.md
-prompts/phase-2/language-style-checker-v1.0.2.md
+prompts/phase-2/page-hygiene-checker-v1.0.3.md
+prompts/phase-2/language-style-checker-v1.0.3.md
 archive/phase-2/manual-closure-prompts/close-page-hygiene-signal-issue-v1.0.0.md
 archive/phase-2/manual-closure-prompts/close-language-style-signal-issue-v1.0.0.md
 prompts/phase-2/resolve-page-hygiene-signal-issue-v1.2.1.md
@@ -228,8 +228,8 @@ The current implementation can:
 - run the deterministic `page-structure-checker`;
 - validate the `Generation and Review Log` table structure in canonical stereotype pages;
 - run one LLM check-agent invocation through `run_check_agent.py`;
-- route `page-hygiene-checker` to `prompts/phase-2/page-hygiene-checker-v1.0.2.md`;
-- route `language-style-checker` to `prompts/phase-2/language-style-checker-v1.0.2.md`;
+- route `page-hygiene-checker` to `prompts/phase-2/page-hygiene-checker-v1.0.3.md`;
+- route `language-style-checker` to `prompts/phase-2/language-style-checker-v1.0.3.md`;
 - call Groq models through `scripts/phase-2/providers/groq.py`;
 - call Gemini models through `scripts/phase-2/providers/gemini.py`;
 - call Cerebras models through `scripts/phase-2/providers/cerebras.py`;
@@ -332,6 +332,7 @@ GROQ_API_KEY
 GEMINI_API_KEY
 CEREBRAS_API_KEY
 SAMBANOVA_API_KEY
+OPENROUTER_API_KEY
 ```
 
 The provider adapters use:
@@ -342,6 +343,7 @@ The provider adapters use:
 | `gemini` | reads `GEMINI_API_KEY` or `GOOGLE_API_KEY` | `GEMINI_API_KEY` |
 | `cerebras` | requires `CEREBRAS_API_KEY`; may use `CEREBRAS_BASE_URL` override | `CEREBRAS_API_KEY` |
 | `sambanova` | requires `SAMBANOVA_API_KEY`; may use `SAMBANOVA_BASE_URL` override | `SAMBANOVA_API_KEY` |
+| `openrouter` | requires `OPENROUTER_API_KEY` | `OPENROUTER_API_KEY` |
 
 `GOOGLE_API_KEY` is only a provider-code fallback for local or alternate environments. It is not the canonical workflow secret.
 

@@ -212,10 +212,10 @@ Completed:
 - `run_page_structure_batch.py` runs the deterministic page-structure checker across canonical stereotype pages;
 - `.github/workflows/page-structure-check.yml` runs the page-structure checker in CI;
 - the page-structure CI workflow uploads generated reports as artifacts and fails on structural signals;
-- `page-hygiene-checker-v1.0.2` exists as a dedicated LLM check-agent prompt;
-- `language-style-checker-v1.0.2` exists as a dedicated LLM check-agent prompt;
+- `page-hygiene-checker-v1.0.3` exists as a dedicated LLM check-agent prompt;
+- `language-style-checker-v1.0.3` exists as a dedicated LLM check-agent prompt;
 - `run_check_agent.py` runs the two LLM check agents through an agent-aware contract;
-- `run_check_agent.py` supports Groq, Gemini, Cerebras, and SambaNova provider adapters;
+- `run_check_agent.py` supports Groq, Gemini, Cerebras, SambaNova, and OpenRouter provider adapters;
 - `run_check_agent.py` validates generated LLM output and writes `.invalid.md` debugging files for invalid output;
 - `run_check_batch.py` supports page × agent × model execution for one selected provider;
 - `run_check_batch.py` supports rotating scheduled selection;
@@ -226,7 +226,7 @@ Completed:
 - `issue_manager.py` updates matching existing comments instead of posting duplicates;
 - `.github/workflows/check-agent-signal-collector.yml` runs scheduled rotating LLM check-agent collection;
 - scheduled runs can create or update GitHub issues/comments in `post` mode;
-- scheduled provider/model rotation includes Groq, Cerebras, SambaNova, and Gemini provider/model specs;
+- scheduled provider/model rotation includes eight Groq, Cerebras, SambaNova, Gemini, and OpenRouter provider/model specs;
 - Gemini uses `gemini-3.1-flash-lite` as the current scheduled signal-generation default;
 - scheduled signal-generation runs use `max_completion_tokens=3000` in the canonical workflow when no manual override is supplied;
 - generated output paths are ignored by `.gitignore`;
@@ -239,7 +239,7 @@ Completed:
 - `.github/workflows/phase-2-signal-resolver.yml` runs scheduled and manual automated signal resolution;
 - the automated resolver schedule is one scheduled attempt every four hours;
 - the automated resolver keeps `gemini-3.5-flash` as the primary Gemini resolver model;
-- the automated resolver workflow uses `gemini-3.1-pro-preview` as a one-shot immediate fallback model only for provider-unavailability or 503-like primary Gemini failures;
+- the automated resolver workflow uses `gemini-2.5-flash` as a one-shot immediate fallback model only for provider-unavailability or 503-like primary Gemini failures;
 - the automated resolver selects the oldest eligible open signal issue when no issue is provided;
 - the automated resolver can run in dry-run mode;
 - the automated resolver validates strict JSON plans;
@@ -356,7 +356,7 @@ Phase 2 can be considered complete when:
 - generated outputs remain uncommitted;
 - small batch execution works locally;
 - page-structure CI blocks structural regressions;
-- conservative scheduled LLM execution works with Groq, Gemini, Cerebras, and SambaNova;
+- conservative scheduled LLM execution works with Groq, Gemini, Cerebras, SambaNova, and OpenRouter;
 - the two manual issue-review and resolution prompts for the LLM-based agents exist and are documented;
 - the absence of a dedicated `page-structure-checker` closure prompt is documented as intentional;
 - the two automated resolver prompts for LLM-based signal issues exist and are documented;
@@ -373,10 +373,10 @@ Phase 2 can be considered complete when:
 - The `page-structure-checker` runs after canonical stereotype page modifications and blocks structural regressions in CI.
 - The `page-structure-checker` now validates the `Generation and Review Log` table schema.
 - The two LLM-based check agents run periodically through the scheduled rotating workflow.
-- The active LLM signal-generation providers are `groq`, `gemini`, `cerebras`, and `sambanova`.
+- The active LLM signal-generation providers are `groq`, `gemini`, `cerebras`, `sambanova`, and `openrouter`.
 - Gemini support is documented inline in this Phase 2 page rather than split into a separate provider-only methodology page.
 - The current scheduled Gemini model for Phase 2 check-agent signal generation is `gemini-3.1-flash-lite`.
-- The scheduled provider/model rotation includes six provider/model specs across Groq, Cerebras, SambaNova, and Gemini.
+- The scheduled provider/model rotation includes eight provider/model specs across Groq, Cerebras, SambaNova, Gemini, and OpenRouter.
 - Gemini runs use reduced-thinking configuration to improve strict-format output reliability.
 - The prompts target 140-character `Location` fragments while the validator hard limit remains 160 characters.
 - Issue routing is one GitHub issue per page and check agent.
@@ -388,7 +388,7 @@ Phase 2 can be considered complete when:
 - Automated signal resolution is implemented for `page-hygiene-checker` and `language-style-checker` issues.
 - Automated resolver prompts return strict JSON plans and classify non-accepted cases as `reject_for_phase_2_automation`.
 - The automated resolver keeps `gemini-3.5-flash` as the primary Gemini resolver model.
-- The automated resolver workflow uses `gemini-3.1-pro-preview` once as an immediate fallback model only for provider-unavailability or 503-like primary Gemini failures.
+- The automated resolver workflow uses `gemini-2.5-flash` once as an immediate fallback model only for provider-unavailability or 503-like primary Gemini failures.
 - The automated resolver schedule is one scheduled attempt every four hours.
 - Accepted automated resolver edits must be exact local replacements and pass deterministic validation.
 - Accepted automated resolver edits are logged as rows in the `Generation and Review Log` table.

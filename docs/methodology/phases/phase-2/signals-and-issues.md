@@ -181,8 +181,8 @@ Machine-readable signal data is currently agent- and version-dependent.
 Current status:
 
 - `page-structure-checker` emits YAML blocks because its output is generated deterministically by Python;
-- `page-hygiene-checker-v1.0.2` is Markdown-only;
-- `language-style-checker-v1.0.2` is Markdown-only;
+- `page-hygiene-checker-v1.0.3` is Markdown-only;
+- `language-style-checker-v1.0.3` is Markdown-only;
 - automated resolver prompts emit strict JSON resolution plans;
 - resolver plans are written under `.tmp/phase-2/resolver/`;
 - machine-readable signal blocks for LLM-based check-agent comments are deferred to a later prompt version or later tooling.

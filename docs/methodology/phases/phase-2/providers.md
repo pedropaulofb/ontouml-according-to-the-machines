@@ -131,7 +131,6 @@ The SambaNova adapter is:
 
 ```text
 scripts/phase-2/providers/sambanova.py
-scripts/phase-2/providers/openrouter.py
 ```
 
 It also uses the shared OpenAI-compatible provider utility.
@@ -170,9 +169,12 @@ poolside/laguna-m.1:free
 ```
 
 The adapter requires `OPENROUTER_API_KEY` and currently allowlists only these two free OpenRouter model IDs. The scheduled workflow also validates selected OpenRouter models against this allowlist.
+
 ### Signal-generation provider retry and failure-classification behavior
 
 The signal-generation providers include provider-level retry handling for transient provider/API failures.
+
+This retry and failure-classification behavior does not select an alternate provider/model slot.
 
 The configured provider retry delay for signal-generation providers is:
 
@@ -211,7 +213,7 @@ For resolver runs:
 - the scheduled resolver workflow also passes `--provider-max-attempts 1`;
 - no resolver provider retry or backoff loop occurs in the scheduled workflow;
 - the workflow-level Gemini fallback is not a retry of the same model;
-- the fallback is one immediate attempt with a second model, `gemini-3.1-pro-preview`;
+- the fallback is one immediate attempt with a second model, `gemini-2.5-flash`;
 - fallback is restricted to primary Gemini provider-unavailability or 503-like failures;
 - non-provider failures remain fatal.
 

@@ -135,7 +135,7 @@ The scheduled resolver workflow uses these Gemini model defaults:
 
 ```text
 primary model: gemini-3.5-flash
-fallback model: gemini-3.1-pro-preview
+fallback model: gemini-2.5-flash
 ```
 
 The fallback behavior is implemented in `.github/workflows/phase-2-signal-resolver.yml`, not as a general `resolve_signal_issue.py` command-line option.
@@ -339,7 +339,7 @@ Manual dispatch inputs:
 | `issue` | Issue number or URL. Empty means oldest eligible open issue. |
 | `provider` | `gemini` or `groq`; default `gemini`. |
 | `model` | Provider model; default `gemini-3.5-flash`. |
-| `fallback_model` | Fallback Gemini model used once when the primary Gemini model fails with provider unavailability; default `gemini-3.1-pro-preview`. |
+| `fallback_model` | Fallback Gemini model used once when the primary Gemini model fails with provider unavailability; default `gemini-2.5-flash`. |
 | `dry_run` | Generate and validate a resolution plan without GitHub writes. |
 
 Workflow permissions:

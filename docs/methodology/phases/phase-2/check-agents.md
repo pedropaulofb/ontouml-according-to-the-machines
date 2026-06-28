@@ -192,8 +192,8 @@ Required status check: Check stereotype page structure
 | Implementation status | Implemented in the active agent-aware LLM runner and scheduled workflow |
 | Runner | `scripts/phase-2/run_check_agent.py` |
 | Batch runner | `scripts/phase-2/run_check_batch.py` |
-| Prompt | `prompts/phase-2/page-hygiene-checker-v1.0.2.md` |
-| Supported active providers | `groq`, `gemini`, `cerebras`, `sambanova` |
+| Prompt | `prompts/phase-2/page-hygiene-checker-v1.0.3.md` |
+| Supported active providers | `groq`, `gemini`, `cerebras`, `sambanova`, `openrouter` |
 | Output | Structured Markdown signal comment |
 | Applies changes | No |
 | Target execution | Periodic conservative rotating batches |
@@ -230,7 +230,7 @@ It must not:
 - recommend conceptual rewrites;
 - recommend repository actions or workflow changes.
 
-The active `page-hygiene-checker-v1.0.2` prompt is Markdown-only. It emits one GitHub issue comment and does not emit YAML, JSON, or a separate machine-readable artifact.
+The active `page-hygiene-checker-v1.0.3` prompt is Markdown-only. It emits one GitHub issue comment and does not emit YAML, JSON, or a separate machine-readable artifact.
 
 `run_check_agent.py` validates the output against the configured page-hygiene contract. Invalid model output is written as `.invalid.md` and is not posted.
 
@@ -245,8 +245,8 @@ The active `page-hygiene-checker-v1.0.2` prompt is Markdown-only. It emits one G
 | Implementation status | Implemented in the active agent-aware LLM runner and scheduled workflow |
 | Runner | `scripts/phase-2/run_check_agent.py` |
 | Batch runner | `scripts/phase-2/run_check_batch.py` |
-| Prompt | `prompts/phase-2/language-style-checker-v1.0.2.md` |
-| Supported active providers | `groq`, `gemini`, `cerebras`, `sambanova` |
+| Prompt | `prompts/phase-2/language-style-checker-v1.0.3.md` |
+| Supported active providers | `groq`, `gemini`, `cerebras`, `sambanova`, `openrouter` |
 | Output | Structured Markdown signal comment |
 | Applies changes | No |
 | Target execution | Periodic conservative rotating batches |
@@ -318,7 +318,7 @@ When included, `current_text` and `proposed_text` must be emitted together, wrap
 
 It must not include `current_text` or `proposed_text` for issues inside protected content.
 
-The active `language-style-checker-v1.0.2` prompt is Markdown-only. It emits one GitHub issue comment and does not emit YAML, JSON, or a separate machine-readable artifact.
+The active `language-style-checker-v1.0.3` prompt is Markdown-only. It emits one GitHub issue comment and does not emit YAML, JSON, or a separate machine-readable artifact.
 
 `run_check_agent.py` validates the output against the configured language-style contract. Invalid model output is written as `.invalid.md` and is not posted.
 
