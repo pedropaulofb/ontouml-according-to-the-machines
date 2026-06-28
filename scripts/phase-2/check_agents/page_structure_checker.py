@@ -393,7 +393,7 @@ def detect_missing_required_headings(headings_by_title: dict[str, list[Heading]]
         ),
         rationale=(
             "Canonical stereotype pages must expose the expected sections so that "
-            "later check and resolution agents can evaluate the page consistently."
+            "later checks and resolver tooling can evaluate the page consistently."
         ),
         recommendation="Review whether the missing heading(s) should be added.",
         suggested_repair=(

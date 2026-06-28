@@ -74,6 +74,8 @@ Each log entry should record, when applicable:
 - main inputs used;
 - related issue, pull request, or commit reference.
 
+In the `Generation and Review Log` table, the `Agent` column is a broad provenance field. It may identify a human reviewer, LLM/model, deterministic tool, check agent, or automated process. It should not be read as meaning "Phase 2 check agent" unless the value is one of the documented check-agent slugs.
+
 A Phase 2 check-agent run that only creates a local report, workflow artifact, GitHub issue, or GitHub issue comment does **not** by itself require a new page-level generation and review log entry.
 
 A page-level log entry should be added when a Phase 2 signal leads to an accepted page change, a completed manual review of the page, or another substantive update to the canonical stereotype page.

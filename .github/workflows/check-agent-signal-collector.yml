@@ -56,7 +56,7 @@ run-name: Scheduled check-agent signal collector (${{ github.event_name }})
           - daily
 
       rotation_index:
-        description: "Optional model slot override: 0=Groq Llama, 1=Cerebras GPT-OSS, 2=SambaNova DeepSeek, 3=SambaNova Llama, 4=Cerebras GLM, 5=Gemini, 6=OpenRouter Nemotron, 7=OpenRouter Laguna."
+        description: "Optional provider/model slot override: 0=Groq Llama, 1=Cerebras GPT-OSS, 2=SambaNova DeepSeek, 3=OpenRouter Nemotron, 4=Gemini, 5=Cerebras GLM, 6=SambaNova Llama, 7=OpenRouter Laguna."
         type: string
         required: false
         default: ""
@@ -68,7 +68,7 @@ run-name: Scheduled check-agent signal collector (${{ github.event_name }})
         default: ""
 
       agents:
-        description: "Comma-separated agents."
+        description: "Comma-separated check-agent slugs."
         type: string
         required: true
         default: "page-hygiene-checker,language-style-checker"
@@ -278,7 +278,6 @@ jobs:
           python -m py_compile \
             scripts/phase-2/run_check_agent.py \
             scripts/phase-2/run_check_batch.py \
-            scripts/phase-2/model_run_statistics.py \
             scripts/phase-2/issue_manager.py \
             scripts/phase-2/providers/openai_compatible.py \
             scripts/phase-2/providers/groq.py \
@@ -319,12 +318,6 @@ jobs:
           sleep_seconds="${WORKFLOW_SLEEP_SECONDS:-0}"
           max_completion_tokens="${WORKFLOW_MAX_COMPLETION_TOKENS:-}"
 
-          stats_dir=".tmp/phase-2/model-run-statistics"
-          stats_specs_file="${stats_dir}/active-provider-model-specs.txt"
-          stats_summary_json=".tmp/phase-2/batch-summary.json"
-          mkdir -p "$stats_dir"
-          : > "$stats_specs_file"
-
           if [[ -z "$provider_model_specs" && "${GITHUB_EVENT_NAME:-}" == "schedule" ]]; then
             provider_model_specs="$default_periodic_provider_model_specs"
           fi
@@ -362,8 +355,6 @@ jobs:
               exit 1
             fi
 
-            printf '%s\n' "${normalized_specs[@]}" > "$stats_specs_file"
-
             provider_model_index=0
             runner_rotation_index="$rotation_index"
 
@@ -387,11 +378,11 @@ jobs:
               exit 1
             fi
 
-            echo "Provider/model rotation specs: ${normalized_specs[*]}"
-            echo "Provider/model slot count: ${#normalized_specs[@]}"
-            echo "Provider/model slot index: ${provider_model_index}"
-            echo "Runner rotation index: ${runner_rotation_index}"
-            echo "Selected provider/model spec: ${selected_provider_model_spec}"
+          echo "Provider/model rotation specs: ${normalized_specs[*]}"
+          echo "Provider/model slot count: ${#normalized_specs[@]}"
+          echo "Provider/model slot index: ${provider_model_index}"
+          echo "Runner rotation index: ${runner_rotation_index}"
+          echo "Selected provider/model spec: ${selected_provider_model_spec}"
           elif [[ "$provider" == "gemini" && "$models_input" == "$default_groq_models" ]]; then
             echo "Provider is gemini and Groq default models were supplied; using gemini-3.1-flash-lite."
             models_input="gemini-3.1-flash-lite"
@@ -445,12 +436,6 @@ jobs:
             fi
           done
 
-          if [[ ! -s "$stats_specs_file" ]]; then
-            for model in "${models[@]}"; do
-              printf '%s:%s\n' "$provider" "$model" >> "$stats_specs_file"
-            done
-          fi
-
           rotation_args=()
           if [[ -n "$rotation_index" ]]; then
             rotation_args+=(--rotation-index "$rotation_index")
@@ -480,40 +465,12 @@ jobs:
             --repo "$GITHUB_REPOSITORY" \
             --selection "$selection" \
             --rotation-seed "$rotation_seed" \
-            --summary-json "$stats_summary_json" \
             "${rotation_args[@]}" \
             --max-runs "$max_runs" \
             --sleep-seconds "$sleep_seconds" \
             "${completion_args[@]}" \
             --allow-rejected-check-outputs \
             --allow-provider-failures
-
-      - name: Update model run statistics
-        if: always()
-        shell: bash
-        run: |
-          set -euo pipefail
-
-          stats_specs_file=".tmp/phase-2/model-run-statistics/active-provider-model-specs.txt"
-          stats_summary_json=".tmp/phase-2/batch-summary.json"
-
-          if [[ ! -f "$stats_summary_json" ]]; then
-            echo "::warning title=Model run statistics skipped::Structured batch summary not found: ${stats_summary_json}"
-            exit 0
-          fi
-          if [[ ! -s "$stats_specs_file" ]]; then
-            echo "::warning title=Model run statistics skipped::Active provider/model specs file is missing or empty: ${stats_specs_file}"
-            exit 0
-          fi
-
-          if ! python scripts/phase-2/model_run_statistics.py \
-            --repo "$GITHUB_REPOSITORY" \
-            --summary-json "$stats_summary_json" \
-            --provider-model-specs-file "$stats_specs_file" \
-            --workflow-run-id "$GITHUB_RUN_ID" \
-            --workflow-run-attempt "$GITHUB_RUN_ATTEMPT"; then
-            echo "::warning title=Model run statistics update failed::Check model_run_statistics.py output above. Signal collection result is preserved."
-          fi
 
       - name: Upload check-agent artifacts
         if: always()

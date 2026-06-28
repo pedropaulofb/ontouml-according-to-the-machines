@@ -18,7 +18,7 @@ pages × check agents × models
 
 for one selected provider.
 
-Default active LLM agents:
+Default active LLM check agents:
 
 ```text
 page-hygiene-checker
@@ -238,9 +238,9 @@ This check remains CI-oriented and blocking:
 - it fails when structural signals are reported;
 - it does not create GitHub issues from CI.
 
-### LLM-agent execution
+### LLM check-agent execution
 
-The two LLM-based agents run periodically through the scheduled workflow:
+The two LLM-based check agents run periodically through the scheduled workflow:
 
 ```text
 page-hygiene-checker
