@@ -56,7 +56,7 @@ run-name: Scheduled check-agent signal collector (${{ github.event_name }})
           - daily
 
       rotation_index:
-        description: "Optional provider/model slot override: 0=Groq Llama, 1=Cerebras GPT-OSS, 2=SambaNova DeepSeek, 3=OpenRouter Nemotron, 4=Gemini, 5=Cerebras GLM, 6=SambaNova Llama, 7=OpenRouter Laguna."
+        description: "Optional model slot override: 0=Groq Llama, 1=Cerebras GPT-OSS, 2=SambaNova DeepSeek, 3=SambaNova Llama, 4=Cerebras GLM, 5=Gemini, 6=OpenRouter Nemotron, 7=OpenRouter Laguna."
         type: string
         required: false
         default: ""
@@ -68,7 +68,7 @@ run-name: Scheduled check-agent signal collector (${{ github.event_name }})
         default: ""
 
       agents:
-        description: "Comma-separated check-agent slugs."
+        description: "Comma-separated agents."
         type: string
         required: true
         default: "page-hygiene-checker,language-style-checker"

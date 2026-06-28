@@ -32,8 +32,8 @@ check agents
 → check-agent execution
 → output validation
 → page-plus-agent issue routing
-→ manual signal-review support for LLM-based check agents
-→ automated signal resolution for selected LLM-based check-agent signal issues
+→ manual signal-review support for LLM-based agents
+→ automated signal resolution for selected LLM-based signal issues
 → pull request creation
 → page-structure validation
 → squash auto-merge after required checks pass
@@ -56,8 +56,6 @@ Phase 2 check agents:
 - must not perform heavy semantic or source validation.
 
 The check-agent layer is signal collection only.
-
-For Phase 2, a check agent is a deterministic or LLM-based checker role, identified by a check-agent slug, that inspects one canonical stereotype page and emits structured candidate signals without modifying repository content or deciding signal outcomes.
 
 ### Issue-manager boundary
 
@@ -134,13 +132,13 @@ page-structure-checker
 
 page-hygiene-checker
 └── LLM-based
-└── runs through the check-agent-aware LLM runner
+└── runs through the agent-aware LLM runner
 └── runs periodically through the rotating scheduled workflow
 └── reports page-hygiene signals
 
 language-style-checker
 └── LLM-based
-└── runs through the check-agent-aware LLM runner
+└── runs through the agent-aware LLM runner
 └── runs periodically through the rotating scheduled workflow
 └── reports language/style signals
 ```
@@ -151,7 +149,7 @@ The implemented issue-routing model is:
 one GitHub issue per page + check agent
 ```
 
-Different providers and models executed by the same check agent for the same page post comments in the same issue.
+Different providers and models executed by the same agent for the same page post comments in the same issue.
 
 Actual issue title pattern:
 
@@ -176,7 +174,7 @@ Check signal: page-hygiene-checker: classes/event
 
 ## Current implementation status
 
-The current implementation includes check execution, output validation, page-plus-agent issue routing, duplicate-control for comments, scheduled LLM collection, Groq, Gemini, Cerebras, SambaNova, and OpenRouter provider support for signal generation, archived manual signal-review prompts for the two LLM-based check agents, automated signal-resolution prompts for those check agents, deterministic patch application, PR creation, branch update by rebase, squash auto-merge enablement, issue closure, and an immediate workflow-level Gemini fallback for automated resolver provider-unavailability failures.
+The current implementation includes check execution, output validation, page-plus-agent issue routing, duplicate-control for comments, scheduled LLM collection, Groq, Gemini, Cerebras, SambaNova, and OpenRouter provider support for signal generation, archived manual signal-review prompts for the two LLM-based agents, automated signal-resolution prompts for those agents, deterministic patch application, PR creation, branch update by rebase, squash auto-merge enablement, issue closure, and an immediate workflow-level Gemini fallback for automated resolver provider-unavailability failures.
 
 There is no current dedicated manual or automated closure prompt for `page-structure-checker`; page-structure issues remain subject to direct maintainer review and normal PR review.
 
@@ -240,8 +238,8 @@ The current implementation can:
 - validate generated LLM signal comments against agent-specific contracts;
 - write valid generated comments to `.tmp/phase-2/`;
 - write invalid generated comments to `.invalid.md` files for debugging;
-- run page × check agent × provider × model collection through the scheduled workflow;
-- run page × check agent × model batches for one selected provider through `run_check_batch.py`;
+- run page × agent × provider × model collection through the scheduled workflow;
+- run page × agent × model batches for one selected provider through `run_check_batch.py`;
 - select rotating scheduled combinations over time;
 - rotate scheduled signal generation across the configured eight provider/model specs;
 - run in `generate`, `dry-run`, or `post` mode;

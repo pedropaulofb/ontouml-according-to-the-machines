@@ -23,7 +23,7 @@ prompts/phase-2/resolve-page-hygiene-signal-issue-v1.2.1.md
 prompts/phase-2/resolve-language-style-signal-issue-v1.2.1.md
 ```
 
-The resolver operates only on signal issues produced by these check agents:
+The resolver operates on only these agents:
 
 ```text
 page-hygiene-checker
@@ -34,7 +34,7 @@ It does not support `page-structure-checker`.
 
 ### Resolver issue selection
 
-When no issue is supplied manually, the resolver selects the oldest open eligible issue for the supported check agents.
+When no issue is supplied manually, the resolver selects the oldest open eligible issue for the supported resolver agents.
 
 Eligibility requires the issue title to match:
 
@@ -265,7 +265,7 @@ Accepted automated edits create a `Generation and Review Log` table row with thi
 
 Current resolver prompt metadata as emitted by `resolve_signal_issue.py`:
 
-| Check agent | Prompt ID | Prompt title |
+| Agent | Prompt ID | Prompt title |
 |---|---|---|
 | `page-hygiene-checker` | `resolve-page-hygiene-signal-issue-v1.2.1` | `Phase 2 automated resolver: page-hygiene signals v1.2.1` |
 | `language-style-checker` | `resolve-language-style-signal-issue-v1.2.1` | `Phase 2 automated resolver: language-style signals v1.2.1` |

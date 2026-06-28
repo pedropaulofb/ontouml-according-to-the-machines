@@ -8,7 +8,7 @@
 
 | Property | Value |
 |---|---|
-| Check-agent slug | `page-structure-checker` |
+| Agent slug | `page-structure-checker` |
 | Type | Deterministic Python |
 | LLM required | No |
 | Phase | 2 |
@@ -185,11 +185,11 @@ Required status check: Check stereotype page structure
 
 | Property | Value |
 |---|---|
-| Check-agent slug | `page-hygiene-checker` |
+| Agent slug | `page-hygiene-checker` |
 | Type | Lightweight LLM |
 | LLM required | Yes |
 | Phase | 2 |
-| Implementation status | Implemented in the active check-agent-aware LLM runner and scheduled workflow |
+| Implementation status | Implemented in the active agent-aware LLM runner and scheduled workflow |
 | Runner | `scripts/phase-2/run_check_agent.py` |
 | Batch runner | `scripts/phase-2/run_check_batch.py` |
 | Prompt | `prompts/phase-2/page-hygiene-checker-v1.0.3.md` |
@@ -238,11 +238,11 @@ The active `page-hygiene-checker-v1.0.3` prompt is Markdown-only. It emits one G
 
 | Property | Value |
 |---|---|
-| Check-agent slug | `language-style-checker` |
+| Agent slug | `language-style-checker` |
 | Type | Lightweight LLM |
 | LLM required | Yes |
 | Phase | 2 |
-| Implementation status | Implemented in the active check-agent-aware LLM runner and scheduled workflow |
+| Implementation status | Implemented in the active agent-aware LLM runner and scheduled workflow |
 | Runner | `scripts/phase-2/run_check_agent.py` |
 | Batch runner | `scripts/phase-2/run_check_batch.py` |
 | Prompt | `prompts/phase-2/language-style-checker-v1.0.3.md` |
