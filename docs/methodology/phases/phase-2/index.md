@@ -6,13 +6,13 @@ Its purpose is to provide lightweight deterministic and API-based review infrast
 
 Phase 2 still does **not** perform deep content validation, source-faithfulness analysis, cross-page semantic comparison, OntoUML/UFO semantic validation, or conceptual adequacy assessment. Phase 2 signals remain candidate observations until they are reviewed or resolved within the documented workflow.
 
-This document reflects the repository state verified from committed repository files on **2026-06-26**, with the current repository commit:
+This document reflects the repository state verified from committed repository files on **2026-06-28**, with the current repository commit:
 
 ```text
-42d20ecf93dd1a366711f0a7f78018365e0a9fb8
+fed1de9630ee6f09c93262971a3fd14b53aa34fb
 ```
 
-That commit keeps `gemini-3.5-flash` as the primary automated Gemini resolver model, uses `gemini-2.5-flash` as an immediate fallback model only for provider-unavailability or 503-like primary Gemini failures, adds explicit resolver execution logging, and keeps scheduled automated resolver execution at one scheduled attempt every four hours.
+That commit aligns the scheduled check-agent signal-collector documentation with the current eight-slot provider/model rotation, the cron-offset rotation index calculation, the active LLM check-agent prompt versions, OpenRouter signal-generation support, and the separation between scheduled provider-failure classification and automated resolver fallback behavior.
 
 This index page is the entry point for the split Phase 2 methodology documentation. The original single-page Phase 2 document was split into topical pages to improve readability, navigation, and maintenance while preserving the original content in the linked subpages.
 
