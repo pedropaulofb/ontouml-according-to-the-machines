@@ -51,6 +51,7 @@ nav:
           - Providers: methodology/phases/phase-2/providers.md
           - Signals and issues: methodology/phases/phase-2/signals-and-issues.md
           - Execution and operations: methodology/phases/phase-2/execution-and-operations.md
+          - Model run statistics: methodology/phases/phase-2/model-run-statistics.md
           - Prompts and status: methodology/phases/phase-2/prompts-and-status.md
   - Stereotypes:
       - Overview: stereotypes/index.md

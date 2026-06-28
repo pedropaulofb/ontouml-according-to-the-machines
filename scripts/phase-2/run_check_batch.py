@@ -14,6 +14,7 @@ from __future__ import annotations
 
 import argparse
 import itertools
+import json
 import re
 import subprocess
 import sys
@@ -21,7 +22,7 @@ import time
 from dataclasses import dataclass
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import Iterable, Sequence
+from typing import Any, Iterable, Sequence
 
 DEFAULT_AGENTS = ["page-hygiene-checker", "language-style-checker"]
 DEFAULT_PROVIDER = "groq"
@@ -29,6 +30,7 @@ DEFAULT_MODELS = ["llama-3.3-70b-versatile"]
 DEFAULT_OUTPUT_ROOT = Path(".tmp/phase-2")
 DEFAULT_SLEEP_SECONDS = 0.0
 SUMMARY_FILENAME = "batch-summary.md"
+SUMMARY_JSON_SCHEMA_VERSION = 1
 
 RUN_CHECK_AGENT_PATH = Path("scripts/phase-2/run_check_agent.py")
 ISSUE_MANAGER_PATH = Path("scripts/phase-2/issue_manager.py")
@@ -53,6 +55,13 @@ class PlannedRun:
 
 
 @dataclass(frozen=True)
+class ProviderFailureClassification:
+    kind: str
+    message: str
+    nonfatal_when_allowed: bool
+
+
+@dataclass(frozen=True)
 class CompletedRun:
     planned: PlannedRun
     check_status: str
@@ -61,6 +70,7 @@ class CompletedRun:
     issue_exit_code: int | None
     message: str
     provider_failure_is_nonfatal: bool = False
+    provider_failure_kind: str | None = None
 
     @property
     def rejected(self) -> bool:
@@ -109,6 +119,7 @@ def parse_args() -> argparse.Namespace:
         "--output-root", default=str(DEFAULT_OUTPUT_ROOT), help="Root directory for generated comments."
     )
     parser.add_argument("--summary", help="Path for the Markdown batch summary.")
+    parser.add_argument("--summary-json", help="Path for a structured JSON batch summary.")
     parser.add_argument(
         "--sleep-seconds", type=float, default=DEFAULT_SLEEP_SECONDS, help="Seconds to sleep between runs."
     )
@@ -139,7 +150,7 @@ def parse_args() -> argparse.Namespace:
         action="store_true",
         help=(
             "Treat transient provider-side availability failures as nonfatal. "
-            "Quota, rate-limit, authentication, configuration, and request-shape failures remain fatal."
+            "Quota, rate-limit, authentication, configuration, request-shape, and unknown failures remain fatal."
         ),
     )
     return parser.parse_args()
@@ -274,13 +285,6 @@ def run_subprocess(command: Sequence[str], repo_root: Path) -> subprocess.Comple
 
 def is_rejected_check_output(result: subprocess.CompletedProcess[str]) -> bool:
     return result.returncode != 0 and CHECK_VALIDATION_FAILURE_MARKER in result.stderr
-
-
-@dataclass(frozen=True)
-class ProviderFailureClassification:
-    kind: str
-    message: str
-    nonfatal_when_allowed: bool
 
 
 NONFATAL_PROVIDER_FAILURE_KINDS = {"provider_unavailable", "empty_response"}
@@ -560,6 +564,7 @@ def run_one(
                 None,
                 provider_failure.message,
                 provider_failure_is_nonfatal=is_nonfatal,
+                provider_failure_kind=provider_failure.kind,
             )
 
         return CompletedRun(
@@ -627,6 +632,72 @@ def status_for_summary(completed: CompletedRun | None, plan_only: bool) -> tuple
     return completed.check_status, completed.message
 
 
+def planned_run_to_json(planned: PlannedRun) -> dict[str, Any]:
+    return {
+        "index": planned.index,
+        "page": planned.page,
+        "agent": planned.agent,
+        "provider": planned.provider,
+        "model": planned.model,
+        "output_path": planned.output_path.as_posix(),
+        "log_path": planned.log_path.as_posix(),
+    }
+
+
+def completed_run_to_json(completed: CompletedRun) -> dict[str, Any]:
+    return {
+        "planned": planned_run_to_json(completed.planned),
+        "check_status": completed.check_status,
+        "check_exit_code": completed.check_exit_code,
+        "issue_status": completed.issue_status,
+        "issue_exit_code": completed.issue_exit_code,
+        "message": completed.message,
+        "provider_failure_is_nonfatal": completed.provider_failure_is_nonfatal,
+        "provider_failure_kind": completed.provider_failure_kind,
+        "rejected": completed.rejected,
+        "provider_failed": completed.provider_failed,
+        "fatal_failed": completed.fatal_failed,
+    }
+
+
+def summary_payload(
+    *,
+    repo_root: Path,
+    mode: str,
+    selection: str,
+    rotation_seed: str,
+    applied_rotation_index: int | None,
+    available_run_count: int,
+    planned_runs: Sequence[PlannedRun],
+    completed_runs: Sequence[CompletedRun],
+    plan_only: bool,
+    max_completion_tokens: int | None,
+) -> dict[str, Any]:
+    accepted_count, rejected_count, provider_failure_count, fatal_failure_count = summarize_completed_runs(
+        completed_runs
+    )
+    return {
+        "schema_version": SUMMARY_JSON_SCHEMA_VERSION,
+        "generated_at_utc": datetime.now(timezone.utc).isoformat(timespec="seconds"),
+        "repo_root": str(repo_root),
+        "mode": mode,
+        "selection": selection,
+        "rotation_seed": rotation_seed,
+        "rotation_index": applied_rotation_index,
+        "available_run_count": available_run_count,
+        "selected_run_count": len(planned_runs),
+        "completed_run_count": len(completed_runs),
+        "accepted_run_count": accepted_count,
+        "rejected_run_count": rejected_count,
+        "provider_failed_run_count": provider_failure_count,
+        "fatal_failed_run_count": fatal_failure_count,
+        "plan_only": plan_only,
+        "max_completion_tokens": max_completion_tokens,
+        "planned_runs": [planned_run_to_json(planned) for planned in planned_runs],
+        "completed_runs": [completed_run_to_json(completed) for completed in completed_runs],
+    }
+
+
 def write_summary(
     *,
     summary_path: Path,
@@ -647,7 +718,7 @@ def write_summary(
     lines: list[str] = [
         "# Phase 2 check batch summary",
         "",
-        f"Generated at: {datetime.now().isoformat(timespec='seconds')}",
+        f"Generated at: {datetime.now(timezone.utc).isoformat(timespec='seconds')}",
         f"Repository root: `{repo_root}`",
         f"Mode: `{mode}`",
         f"Selection: `{selection}`",
@@ -691,6 +762,38 @@ def write_summary(
     summary_path.write_text("\n".join(lines) + "\n", encoding="utf-8")
 
 
+def write_summary_json(
+    *,
+    summary_json_path: Path | None,
+    repo_root: Path,
+    mode: str,
+    selection: str,
+    rotation_seed: str,
+    applied_rotation_index: int | None,
+    available_run_count: int,
+    planned_runs: Sequence[PlannedRun],
+    completed_runs: Sequence[CompletedRun],
+    plan_only: bool,
+    max_completion_tokens: int | None,
+) -> None:
+    if summary_json_path is None:
+        return
+    summary_json_path.parent.mkdir(parents=True, exist_ok=True)
+    payload = summary_payload(
+        repo_root=repo_root,
+        mode=mode,
+        selection=selection,
+        rotation_seed=rotation_seed,
+        applied_rotation_index=applied_rotation_index,
+        available_run_count=available_run_count,
+        planned_runs=planned_runs,
+        completed_runs=completed_runs,
+        plan_only=plan_only,
+        max_completion_tokens=max_completion_tokens,
+    )
+    summary_json_path.write_text(json.dumps(payload, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+
+
 def validate_environment(repo_root: Path, mode: str, repo: str | None) -> None:
     if not repo_root.is_dir():
         raise ValueError(f"Repository root does not exist or is not a directory: {repo_root}")
@@ -712,6 +815,7 @@ def main() -> int:
         if args.summary
         else filesystem_path(repo_root, output_root) / SUMMARY_FILENAME
     )
+    summary_json_path = (repo_root / args.summary_json).resolve() if args.summary_json else None
 
     try:
         validate_environment(repo_root, args.mode, args.repo)
@@ -757,7 +861,22 @@ def main() -> int:
             completed_runs=completed_runs,
             plan_only=True,
         )
+        write_summary_json(
+            summary_json_path=summary_json_path,
+            repo_root=repo_root,
+            mode=args.mode,
+            selection=args.selection,
+            rotation_seed=args.rotation_seed,
+            applied_rotation_index=applied_rotation_index,
+            available_run_count=len(available_runs),
+            planned_runs=planned_runs,
+            completed_runs=completed_runs,
+            plan_only=True,
+            max_completion_tokens=args.max_completion_tokens,
+        )
         print(f"Wrote batch summary to: {summary_path}")
+        if summary_json_path is not None:
+            print(f"Wrote structured batch summary to: {summary_json_path}")
         return 0
 
     for run_number, planned in enumerate(planned_runs, start=1):
@@ -791,7 +910,22 @@ def main() -> int:
         completed_runs=completed_runs,
         plan_only=False,
     )
+    write_summary_json(
+        summary_json_path=summary_json_path,
+        repo_root=repo_root,
+        mode=args.mode,
+        selection=args.selection,
+        rotation_seed=args.rotation_seed,
+        applied_rotation_index=applied_rotation_index,
+        available_run_count=len(available_runs),
+        planned_runs=planned_runs,
+        completed_runs=completed_runs,
+        plan_only=False,
+        max_completion_tokens=args.max_completion_tokens,
+    )
     print(f"Wrote batch summary to: {summary_path}")
+    if summary_json_path is not None:
+        print(f"Wrote structured batch summary to: {summary_json_path}")
 
     fatal_failures = [completed for completed in completed_runs if completed.fatal_failed]
     if fatal_failures:
