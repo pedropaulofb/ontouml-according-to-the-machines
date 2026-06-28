@@ -1,0 +1,18 @@
+cff-version: 1.2.0
+message: "If you use this repository, please cite it using the metadata from this file."
+type: software
+title: "OntoUML According to the Machines"
+authors:
+  - family-names: "Favato Barcelos"
+    given-names: "Pedro Paulo"
+abstract: >-
+  An unofficial, apocryphal LLM-generated guide to OntoUML, with structured
+  explanations, examples, and references for each stereotype.
+repository-code: "https://github.com/pedropaulofb/ontouml-according-to-the-machines"
+url: "https://pedropaulofb.github.io/ontouml-according-to-the-machines/"
+keywords:
+  - "OntoUML"
+  - "UFO"
+  - "ontology engineering"
+  - "conceptual modeling"
+  - "LLM-generated documentation"
