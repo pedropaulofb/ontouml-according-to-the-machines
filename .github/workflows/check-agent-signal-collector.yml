@@ -104,9 +104,8 @@ run-name: Scheduled check-agent signal collector (${{ github.event_name }})
         default: false
 
 permissions:
-  contents: write
+  contents: read
   issues: write
-  pull-requests: write
 
 jobs:
   collect-check-agent-signal:
@@ -137,6 +136,7 @@ jobs:
       WORKFLOW_MAX_RUNS: ${{ github.event.inputs.max_runs }}
       WORKFLOW_SLEEP_SECONDS: ${{ github.event.inputs.sleep_seconds }}
       WORKFLOW_MAX_COMPLETION_TOKENS: ${{ github.event.inputs.max_completion_tokens }}
+      WORKFLOW_UPDATE_MODEL_STATISTICS: ${{ github.event.inputs.update_model_statistics }}
 
     steps:
       - name: Check out repository
@@ -144,6 +144,7 @@ jobs:
         with:
           ref: ${{ github.ref_name }}
           fetch-depth: 0
+          persist-credentials: false
 
       - name: Set up Python
         uses: actions/setup-python@v6
@@ -182,6 +183,8 @@ jobs:
 
       - name: Validate required secrets and tools
         shell: bash
+        env:
+          PHASE2_AUTOMATION_TOKEN: ${{ secrets.PHASE2_AUTOMATION_TOKEN }}
         run: |
           set -euo pipefail
 
@@ -275,6 +278,14 @@ jobs:
           if [[ "$uses_openrouter" == "true" && -z "${OPENROUTER_API_KEY:-}" ]]; then
             echo "::error::Missing required repository secret: OPENROUTER_API_KEY"
             exit 1
+          fi
+
+          if [[ "${GITHUB_EVENT_NAME:-}" == "schedule" || "${WORKFLOW_UPDATE_MODEL_STATISTICS:-}" == "true" ]]; then
+            if [[ -z "${PHASE2_AUTOMATION_TOKEN:-}" ]]; then
+              echo "::error::Missing required repository secret: PHASE2_AUTOMATION_TOKEN"
+              exit 1
+            fi
+            echo "::add-mask::${PHASE2_AUTOMATION_TOKEN}"
           fi
 
           gh --version
@@ -483,47 +494,27 @@ jobs:
             --allow-rejected-check-outputs \
             --allow-provider-failures
 
-      - name: Prepare model run statistics branch
-        id: model_statistics_branch
-        if: ${{ always() && (github.event_name == 'schedule' || github.event.inputs.update_model_statistics == 'true') }}
-        shell: bash
-        run: |
-          set -euo pipefail
-
-          statistics_branch="automation/model-run-statistics"
-          statistics_page="docs/methodology/phases/phase-2/model-run-statistics.md"
-
-          git fetch --no-tags origin "${GITHUB_REF_NAME}"
-          if git ls-remote --exit-code --heads origin "$statistics_branch" >/dev/null 2>&1; then
-            git fetch --no-tags origin "$statistics_branch"
-            git checkout -B "$statistics_branch" "origin/${GITHUB_REF_NAME}"
-
-            if git show "origin/${statistics_branch}:${statistics_page}" >/dev/null 2>&1; then
-              git checkout "origin/${statistics_branch}" -- "$statistics_page"
-              echo "Reused pending statistics page from origin/${statistics_branch}."
-            fi
-          else
-            git checkout -B "$statistics_branch" "origin/${GITHUB_REF_NAME}"
-          fi
-
-          echo "branch=${statistics_branch}" >> "$GITHUB_OUTPUT"
-          echo "page=${statistics_page}" >> "$GITHUB_OUTPUT"
-
       - name: Update model run statistics page
         id: model_statistics
-        if: ${{ always() && steps.model_statistics_branch.outcome == 'success' && (github.event_name == 'schedule' || github.event.inputs.update_model_statistics == 'true') }}
+        if: ${{ always() && (github.event_name == 'schedule' || github.event.inputs.update_model_statistics == 'true') }}
         shell: bash
         run: |
           set -euo pipefail
 
           echo "updated=false" >> "$GITHUB_OUTPUT"
 
+          # Refresh the target branch before reading and rewriting the persistent
+          # Markdown counter page. Workflow-level concurrency reduces overlap
+          # between scheduled runs, but this also avoids starting from stale
+          # statistics when another commit reached the branch first.
+          git pull --ff-only origin "${GITHUB_REF_NAME}"
+
           if [[ ! -f .tmp/phase-2/batch-summary.md ]]; then
             echo "::warning::No batch summary found; skipping model run statistics update."
             exit 0
           fi
 
-          statistics_page="${{ steps.model_statistics_branch.outputs.page }}"
+          statistics_page="docs/methodology/phases/phase-2/model-run-statistics.md"
           default_periodic_provider_model_specs="groq:llama-3.3-70b-versatile,cerebras:gpt-oss-120b,sambanova:DeepSeek-V3.1,openrouter:nvidia/nemotron-3-ultra-550b-a55b:free,gemini:gemini-3.1-flash-lite,cerebras:zai-glm-4.7,sambanova:Meta-Llama-3.3-70B-Instruct,openrouter:poolside/laguna-m.1:free"
           provider_model_specs="${WORKFLOW_PROVIDER_MODEL_SPECS:-}"
 
@@ -549,11 +540,18 @@ jobs:
       - name: Commit model run statistics page
         if: ${{ always() && steps.model_statistics.outcome == 'success' && steps.model_statistics.outputs.updated == 'true' && (github.event_name == 'schedule' || github.event.inputs.update_model_statistics == 'true') }}
         shell: bash
+        env:
+          PHASE2_AUTOMATION_TOKEN: ${{ secrets.PHASE2_AUTOMATION_TOKEN }}
         run: |
           set -euo pipefail
 
-          statistics_branch="${{ steps.model_statistics_branch.outputs.branch }}"
-          statistics_page="${{ steps.model_statistics_branch.outputs.page }}"
+          statistics_page="docs/methodology/phases/phase-2/model-run-statistics.md"
+
+          if [[ -z "${PHASE2_AUTOMATION_TOKEN:-}" ]]; then
+            echo "::error::Missing required repository secret: PHASE2_AUTOMATION_TOKEN"
+            exit 1
+          fi
+          echo "::add-mask::${PHASE2_AUTOMATION_TOKEN}"
 
           git add "$statistics_page"
           if git diff --cached --quiet; then
@@ -561,32 +559,14 @@ jobs:
             exit 0
           fi
 
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git config user.name "phase2-automation"
+          git config user.email "phase2-automation@users.noreply.github.com"
           git commit -m "docs: update check-agent model run statistics"
-          git push --force-with-lease origin HEAD:"${statistics_branch}"
 
-          pr_body_file="$(mktemp)"
-          cat > "$pr_body_file" <<EOF
-          Automated update generated by workflow run ${GITHUB_RUN_ID}.
-
-          This PR updates the cumulative check-agent model-run statistics page:
-
-          - \`${statistics_page}\`
-
-          The scheduled collector writes to this branch instead of pushing directly to \`${GITHUB_REF_NAME}\`, because that branch is protected and requires status checks before updates.
-          EOF
-
-          if pr_number="$(gh pr view "$statistics_branch" --repo "$GITHUB_REPOSITORY" --json number --jq '.number' 2>/dev/null)"; then
-            gh pr edit "$pr_number" --repo "$GITHUB_REPOSITORY" --body-file "$pr_body_file"
-            echo "Updated existing model run statistics PR #${pr_number}."
-          else
-            gh pr create \
-              --repo "$GITHUB_REPOSITORY" \
-              --base "$GITHUB_REF_NAME" \
-              --head "$statistics_branch" \
-              --title "docs: update check-agent model run statistics" \
-              --body-file "$pr_body_file"
+          push_url="https://x-access-token:${PHASE2_AUTOMATION_TOKEN}@github.com/${GITHUB_REPOSITORY}.git"
+          if ! git push "$push_url" HEAD:"${GITHUB_REF_NAME}"; then
+            echo "::error::Failed to push model run statistics to ${GITHUB_REF_NAME}. Ensure PHASE2_AUTOMATION_TOKEN has contents:write access and is allowed to update the protected branch or bypass the applicable branch protection/ruleset."
+            exit 1
           fi
 
       - name: Upload check-agent artifacts
