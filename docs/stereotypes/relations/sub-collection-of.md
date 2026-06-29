@@ -10,11 +10,11 @@ When the relation is fully specified, the part end is described as having cardin
 
 ## Stereotype Profile
 
-TBD in a later phase.
+To be determined.
 
 ## Examples
 
-TBD in a later phase.
+To be determined.
 
 ## References
 
@@ -37,3 +37,4 @@ TBD in a later phase.
 |---|---|---|---|---|---|---|---|
 | 2026-06-06 | Phase 1 | GPT-5.5 Thinking | Consolidation | prompt-phase-1-consolidation-v1.0.0 | Phase 1 Consolidation — Direct Main Commit for One Stereotype | 2026-06-05t0926-guizzardi-2005-thesis-chapter-05.md, 2026-06-05t0930-guizzardi-2005-thesis-chapter-08.md | First consolidated stereotype page generated from Phase 1 source-specific intermediate files at 2026-06-06t0149; not final expert-validated documentation. |
 | 2026-06-21 | Phase 2 | Phase 2 automated resolver | Signal resolution | resolve-language-style-signal-issue-v1.2.1 | Phase 2 automated resolver: language-style signals v1.2.1 | GitHub issue #94 | Applied accepted language-style-checker signal edits through automated Phase 2 resolution; not a conceptual or source-faithfulness validation. |
+| 2026-06-29 | Phase 2 | Phase 2 automated resolver | Signal resolution | resolve-language-style-signal-issue-v1.2.2 | Phase 2 automated resolver: language-style signals v1.2.2 | GitHub issue #161 | Applied accepted language-style-checker signal edits through automated Phase 2 resolution; not a conceptual or source-faithfulness validation. |
