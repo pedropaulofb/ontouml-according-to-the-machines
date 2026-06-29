@@ -10,7 +10,7 @@ Statistics collection started on: `2026-06-29T12:18:18Z`
 
 Counts shown on this page only include executions recorded since that start time.
 
-Last generated: `2026-06-29T22:19:25Z`
+Last generated: `2026-06-29T23:32:49Z`
 
 ## Cumulative table
 
@@ -23,7 +23,7 @@ Last generated: `2026-06-29T22:19:25Z`
 | `openrouter` | `nvidia/nemotron-3-ultra-550b-a55b:free` | 1 | 0 | 1 | 1 | 0 | 0 | `rejected` | `skipped` | `2026-06-29T17:17:56Z` |
 | `openrouter` | `poolside/laguna-m.1:free` | 0 | 0 | 0 | 0 | 0 | 0 |  |  |  |
 | `sambanova` | `DeepSeek-V3.1` | 2 | 2 | 0 | 0 | 0 | 0 | `ok` | `ok` | `2026-06-29T22:19:25Z` |
-| `sambanova` | `Meta-Llama-3.3-70B-Instruct` | 1 | 1 | 0 | 0 | 0 | 0 | `ok` | `ok` | `2026-06-29T21:06:21Z` |
+| `sambanova` | `Meta-Llama-3.3-70B-Instruct` | 2 | 2 | 0 | 0 | 0 | 0 | `ok` | `ok` | `2026-06-29T23:32:49Z` |
 
 ## Status derivation
 
@@ -92,7 +92,7 @@ This page intentionally does not store secrets, raw prompts, raw completions, pr
     }
   ],
   "collection_start_utc": "2026-06-29T12:18:18Z",
-  "generated_at": "2026-06-29T22:19:25Z",
+  "generated_at": "2026-06-29T23:32:49Z",
   "models": {
     "cerebras:gpt-oss-120b": {
       "called": 1,
@@ -221,22 +221,22 @@ This page intentionally does not store secrets, raw prompts, raw completions, pr
       "valid": 2
     },
     "sambanova:Meta-Llama-3.3-70B-Instruct": {
-      "called": 1,
+      "called": 2,
       "invalid": 0,
       "last_check_status": "ok",
       "last_event_name": "schedule",
       "last_issue_status": "ok",
       "last_overall_status": "ok",
       "last_run_attempt": "1",
-      "last_run_id": "28402650374",
-      "last_run_utc": "2026-06-29T21:06:21Z",
+      "last_run_id": "28409638610",
+      "last_run_utc": "2026-06-29T23:32:49Z",
       "model": "Meta-Llama-3.3-70B-Instruct",
       "provider": "sambanova",
       "provider_failed": 0,
       "rejected": 0,
       "runner_failed": 0,
       "spec": "sambanova:Meta-Llama-3.3-70B-Instruct",
-      "valid": 1
+      "valid": 2
     }
   },
   "schema_version": 1,
@@ -300,6 +300,16 @@ This page intentionally does not store secrets, raw prompts, raw completions, pr
       "overall_status": "ok",
       "provider": "sambanova",
       "timestamp_utc": "2026-06-29T22:19:25Z"
+    },
+    "28409638610|1|Scheduled check-agent signal collector|66|sambanova|Meta-Llama-3.3-70B-Instruct|ok|ok|ok": {
+      "check_status": "ok",
+      "commit_sha": "3acdb521bdea83effe1959a6bbac738acda29cee",
+      "event_name": "schedule",
+      "issue_status": "ok",
+      "model": "Meta-Llama-3.3-70B-Instruct",
+      "overall_status": "ok",
+      "provider": "sambanova",
+      "timestamp_utc": "2026-06-29T23:32:49Z"
     },
     "local|0|local|1|cerebras|zai-glm-4.7|failed|failed|failed": {
       "check_status": "failed",
