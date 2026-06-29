@@ -26,6 +26,7 @@ This index page is the entry point for the split Phase 2 methodology documentati
 | [Providers](providers.md) | LLM provider support, provider-specific notes, retry behavior, and resolver provider behavior. |
 | [Signals and issues](signals-and-issues.md) | Signal terminology, signal output structure, validation/rejection policy, structured signal data, issue routing, issue bodies, and duplicate control. |
 | [Execution and operations](execution-and-operations.md) | Batch execution, resolver commands, operator options, execution policy, free-model strategy, GitHub Actions policy, branch protection, and operational observations. |
+| [Model run statistics](model-run-statistics.md) | Cumulative provider/model execution counters for the scheduled check-agent signal collector. |
 | [Prompts and status](prompts-and-status.md) | Manual and automated prompt support, future work, migration status, next implementation steps, completion criteria, and generation/review log. |
 
 ## Preservation note

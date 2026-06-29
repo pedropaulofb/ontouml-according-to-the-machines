@@ -664,19 +664,23 @@ def write_summary(
         "",
         "## Runs",
         "",
-        "| # | Status | Page | Agent | Provider | Model | Output | Log | Message |",
-        "|---:|---|---|---|---|---|---|---|---|",
+        "| # | Status | Check status | Issue status | Page | Agent | Provider | Model | Output | Log | Message |",
+        "|---:|---|---|---|---|---|---|---|---|---|---|",
     ]
     completed_by_index = {run.planned.index: run for run in completed_runs}
     for planned in planned_runs:
         completed = completed_by_index.get(planned.index)
         status, message = status_for_summary(completed, plan_only)
+        check_status = completed.check_status if completed is not None else status
+        issue_status = completed.issue_status if completed is not None else status
         lines.append(
             "| "
             + " | ".join(
                 [
                     str(planned.index),
                     f"`{markdown_escape(status)}`",
+                    f"`{markdown_escape(check_status)}`",
+                    f"`{markdown_escape(issue_status)}`",
                     f"`{markdown_escape(planned.page)}`",
                     f"`{markdown_escape(planned.agent)}`",
                     f"`{markdown_escape(planned.provider)}`",

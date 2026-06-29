@@ -97,8 +97,14 @@ run-name: Scheduled check-agent signal collector (${{ github.event_name }})
         required: false
         default: ""
 
+      update_model_statistics:
+        description: "Update the cumulative model-run statistics Markdown page. Scheduled runs always update it."
+        type: boolean
+        required: true
+        default: false
+
 permissions:
-  contents: read
+  contents: write
   issues: write
 
 jobs:
@@ -106,7 +112,9 @@ jobs:
     name: Collect rotating check-agent signal
     runs-on: ubuntu-latest
 
-    # No concurrency block: scheduled runs are intentionally allowed to overlap.
+    concurrency:
+      group: check-agent-signal-collector-${{ github.ref }}
+      cancel-in-progress: false
 
     env:
       GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
@@ -133,6 +141,7 @@ jobs:
       - name: Check out repository
         uses: actions/checkout@v7
         with:
+          ref: ${{ github.ref_name }}
           fetch-depth: 0
 
       - name: Set up Python
@@ -278,6 +287,7 @@ jobs:
           python -m py_compile \
             scripts/phase-2/run_check_agent.py \
             scripts/phase-2/run_check_batch.py \
+            scripts/phase-2/update_model_run_statistics.py \
             scripts/phase-2/issue_manager.py \
             scripts/phase-2/providers/openai_compatible.py \
             scripts/phase-2/providers/groq.py \
@@ -471,6 +481,61 @@ jobs:
             "${completion_args[@]}" \
             --allow-rejected-check-outputs \
             --allow-provider-failures
+
+      - name: Update model run statistics page
+        id: model_statistics
+        if: ${{ always() && (github.event_name == 'schedule' || github.event.inputs.update_model_statistics == 'true') }}
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          # Refresh the target branch before reading and rewriting the persistent
+          # Markdown counter page. Workflow-level concurrency reduces overlap
+          # between scheduled runs, but this also avoids starting from stale
+          # statistics when another commit reached the branch first.
+          git pull --ff-only origin "${GITHUB_REF_NAME}"
+
+          if [[ ! -f .tmp/phase-2/batch-summary.md ]]; then
+            echo "::warning::No batch summary found; skipping model run statistics update."
+            exit 0
+          fi
+
+          default_periodic_provider_model_specs="groq:llama-3.3-70b-versatile,cerebras:gpt-oss-120b,sambanova:DeepSeek-V3.1,openrouter:nvidia/nemotron-3-ultra-550b-a55b:free,gemini:gemini-3.1-flash-lite,cerebras:zai-glm-4.7,sambanova:Meta-Llama-3.3-70B-Instruct,openrouter:poolside/laguna-m.1:free"
+          provider_model_specs="${WORKFLOW_PROVIDER_MODEL_SPECS:-}"
+
+          if [[ -z "$provider_model_specs" && "${GITHUB_EVENT_NAME:-}" == "schedule" ]]; then
+            provider_model_specs="$default_periodic_provider_model_specs"
+          fi
+          if [[ -z "$provider_model_specs" ]]; then
+            provider_model_specs="${WORKFLOW_PROVIDER:-groq}:${WORKFLOW_MODELS:-llama-3.3-70b-versatile}"
+          fi
+
+          python scripts/phase-2/update_model_run_statistics.py \
+            --summary .tmp/phase-2/batch-summary.md \
+            --statistics-page docs/methodology/phases/phase-2/model-run-statistics.md \
+            --provider-model-specs "$provider_model_specs" \
+            --run-id "$GITHUB_RUN_ID" \
+            --run-attempt "$GITHUB_RUN_ATTEMPT" \
+            --workflow "$GITHUB_WORKFLOW" \
+            --event-name "$GITHUB_EVENT_NAME" \
+            --commit-sha "$GITHUB_SHA"
+
+      - name: Commit model run statistics page
+        if: ${{ always() && steps.model_statistics.outcome == 'success' && (github.event_name == 'schedule' || github.event.inputs.update_model_statistics == 'true') }}
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          git add docs/methodology/phases/phase-2/model-run-statistics.md
+          if git diff --cached --quiet; then
+            echo "No model run statistics changes to commit."
+            exit 0
+          fi
+
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git commit -m "docs: update check-agent model run statistics"
+          git push origin HEAD:"${GITHUB_REF_NAME}"
 
       - name: Upload check-agent artifacts
         if: always()

@@ -479,11 +479,13 @@ Required workflow permissions:
 
 ```yaml
 permissions:
-  contents: read
+  contents: write
   issues: write
 ```
 
 The workflow uploads `.tmp/phase-2` as an artifact even if the check-agent run fails or produces rejected outputs.
+
+The scheduled check-agent workflow also updates `docs/methodology/phases/phase-2/model-run-statistics.md` with cumulative provider/model execution counters. The counters are derived from `run_check_batch.py` check-status fields, not from LLM self-reporting. This repository-file persistence requires direct write access to the target branch and uses workflow-level concurrency to reduce overlapping counter updates.
 
 ### Automated resolver workflow
 
