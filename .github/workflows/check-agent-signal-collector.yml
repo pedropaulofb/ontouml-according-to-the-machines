@@ -106,6 +106,7 @@ run-name: Scheduled check-agent signal collector (${{ github.event_name }})
 permissions:
   contents: write
   issues: write
+  pull-requests: write
 
 jobs:
   collect-check-agent-signal:
@@ -277,7 +278,7 @@ jobs:
           fi
 
           gh --version
-          gh auth status
+          echo "gh API access confirmed for: $(gh api "repos/${GITHUB_REPOSITORY}" --jq '.full_name')"
 
       - name: Compile signal scripts
         shell: bash
@@ -388,11 +389,11 @@ jobs:
               exit 1
             fi
 
-          echo "Provider/model rotation specs: ${normalized_specs[*]}"
-          echo "Provider/model slot count: ${#normalized_specs[@]}"
-          echo "Provider/model slot index: ${provider_model_index}"
-          echo "Runner rotation index: ${runner_rotation_index}"
-          echo "Selected provider/model spec: ${selected_provider_model_spec}"
+            echo "Provider/model rotation specs: ${normalized_specs[*]}"
+            echo "Provider/model slot count: ${#normalized_specs[@]}"
+            echo "Provider/model slot index: ${provider_model_index}"
+            echo "Runner rotation index: ${runner_rotation_index}"
+            echo "Selected provider/model spec: ${selected_provider_model_spec}"
           elif [[ "$provider" == "gemini" && "$models_input" == "$default_groq_models" ]]; then
             echo "Provider is gemini and Groq default models were supplied; using gemini-3.1-flash-lite."
             models_input="gemini-3.1-flash-lite"
@@ -482,24 +483,47 @@ jobs:
             --allow-rejected-check-outputs \
             --allow-provider-failures
 
-      - name: Update model run statistics page
-        id: model_statistics
+      - name: Prepare model run statistics branch
+        id: model_statistics_branch
         if: ${{ always() && (github.event_name == 'schedule' || github.event.inputs.update_model_statistics == 'true') }}
         shell: bash
         run: |
           set -euo pipefail
 
-          # Refresh the target branch before reading and rewriting the persistent
-          # Markdown counter page. Workflow-level concurrency reduces overlap
-          # between scheduled runs, but this also avoids starting from stale
-          # statistics when another commit reached the branch first.
-          git pull --ff-only origin "${GITHUB_REF_NAME}"
+          statistics_branch="automation/model-run-statistics"
+          statistics_page="docs/methodology/phases/phase-2/model-run-statistics.md"
+
+          git fetch --no-tags origin "${GITHUB_REF_NAME}"
+          if git ls-remote --exit-code --heads origin "$statistics_branch" >/dev/null 2>&1; then
+            git fetch --no-tags origin "$statistics_branch"
+            git checkout -B "$statistics_branch" "origin/${GITHUB_REF_NAME}"
+
+            if git show "origin/${statistics_branch}:${statistics_page}" >/dev/null 2>&1; then
+              git checkout "origin/${statistics_branch}" -- "$statistics_page"
+              echo "Reused pending statistics page from origin/${statistics_branch}."
+            fi
+          else
+            git checkout -B "$statistics_branch" "origin/${GITHUB_REF_NAME}"
+          fi
+
+          echo "branch=${statistics_branch}" >> "$GITHUB_OUTPUT"
+          echo "page=${statistics_page}" >> "$GITHUB_OUTPUT"
+
+      - name: Update model run statistics page
+        id: model_statistics
+        if: ${{ always() && steps.model_statistics_branch.outcome == 'success' && (github.event_name == 'schedule' || github.event.inputs.update_model_statistics == 'true') }}
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          echo "updated=false" >> "$GITHUB_OUTPUT"
 
           if [[ ! -f .tmp/phase-2/batch-summary.md ]]; then
             echo "::warning::No batch summary found; skipping model run statistics update."
             exit 0
           fi
 
+          statistics_page="${{ steps.model_statistics_branch.outputs.page }}"
           default_periodic_provider_model_specs="groq:llama-3.3-70b-versatile,cerebras:gpt-oss-120b,sambanova:DeepSeek-V3.1,openrouter:nvidia/nemotron-3-ultra-550b-a55b:free,gemini:gemini-3.1-flash-lite,cerebras:zai-glm-4.7,sambanova:Meta-Llama-3.3-70B-Instruct,openrouter:poolside/laguna-m.1:free"
           provider_model_specs="${WORKFLOW_PROVIDER_MODEL_SPECS:-}"
 
@@ -512,7 +536,7 @@ jobs:
 
           python scripts/phase-2/update_model_run_statistics.py \
             --summary .tmp/phase-2/batch-summary.md \
-            --statistics-page docs/methodology/phases/phase-2/model-run-statistics.md \
+            --statistics-page "$statistics_page" \
             --provider-model-specs "$provider_model_specs" \
             --run-id "$GITHUB_RUN_ID" \
             --run-attempt "$GITHUB_RUN_ATTEMPT" \
@@ -520,13 +544,18 @@ jobs:
             --event-name "$GITHUB_EVENT_NAME" \
             --commit-sha "$GITHUB_SHA"
 
+          echo "updated=true" >> "$GITHUB_OUTPUT"
+
       - name: Commit model run statistics page
-        if: ${{ always() && steps.model_statistics.outcome == 'success' && (github.event_name == 'schedule' || github.event.inputs.update_model_statistics == 'true') }}
+        if: ${{ always() && steps.model_statistics.outcome == 'success' && steps.model_statistics.outputs.updated == 'true' && (github.event_name == 'schedule' || github.event.inputs.update_model_statistics == 'true') }}
         shell: bash
         run: |
           set -euo pipefail
 
-          git add docs/methodology/phases/phase-2/model-run-statistics.md
+          statistics_branch="${{ steps.model_statistics_branch.outputs.branch }}"
+          statistics_page="${{ steps.model_statistics_branch.outputs.page }}"
+
+          git add "$statistics_page"
           if git diff --cached --quiet; then
             echo "No model run statistics changes to commit."
             exit 0
@@ -535,7 +564,30 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git commit -m "docs: update check-agent model run statistics"
-          git push origin HEAD:"${GITHUB_REF_NAME}"
+          git push --force-with-lease origin HEAD:"${statistics_branch}"
+
+          pr_body_file="$(mktemp)"
+          cat > "$pr_body_file" <<EOF
+          Automated update generated by workflow run ${GITHUB_RUN_ID}.
+
+          This PR updates the cumulative check-agent model-run statistics page:
+
+          - \`${statistics_page}\`
+
+          The scheduled collector writes to this branch instead of pushing directly to \`${GITHUB_REF_NAME}\`, because that branch is protected and requires status checks before updates.
+          EOF
+
+          if pr_number="$(gh pr view "$statistics_branch" --repo "$GITHUB_REPOSITORY" --json number --jq '.number' 2>/dev/null)"; then
+            gh pr edit "$pr_number" --repo "$GITHUB_REPOSITORY" --body-file "$pr_body_file"
+            echo "Updated existing model run statistics PR #${pr_number}."
+          else
+            gh pr create \
+              --repo "$GITHUB_REPOSITORY" \
+              --base "$GITHUB_REF_NAME" \
+              --head "$statistics_branch" \
+              --title "docs: update check-agent model run statistics" \
+              --body-file "$pr_body_file"
+          fi
 
       - name: Upload check-agent artifacts
         if: always()
