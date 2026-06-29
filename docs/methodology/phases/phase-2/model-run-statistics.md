@@ -6,13 +6,13 @@ This page stores cumulative execution statistics for the scheduled Phase 2 check
 
 The table is updated by GitHub Actions from deterministic Python-side batch statuses. It does not use LLM self-reporting, raw completions, prompts, provider responses, or token-usage estimates.
 
-Last generated: `2026-06-29T17:17:56Z`
+Last generated: `2026-06-29T19:20:30Z`
 
 ## Cumulative table
 
 | Provider | Model | # called | # valid | # invalid | # rejected | # provider failed | # runner failed | Last check status | Last issue status | Last run UTC |
 |---|---|---:|---:|---:|---:|---:|---:|---|---|---|
-| `cerebras` | `gpt-oss-120b` | 0 | 0 | 0 | 0 | 0 | 0 |  |  |  |
+| `cerebras` | `gpt-oss-120b` | 1 | 1 | 0 | 0 | 0 | 0 | `ok` | `ok` | `2026-06-29T19:20:30Z` |
 | `cerebras` | `zai-glm-4.7` | 0 | 0 | 0 | 0 | 0 | 0 |  |  |  |
 | `gemini` | `gemini-3.1-flash-lite` | 1 | 0 | 1 | 1 | 0 | 0 | `rejected` | `skipped` | `2026-06-29T12:18:18Z` |
 | `groq` | `llama-3.3-70b-versatile` | 0 | 0 | 0 | 0 | 0 | 0 |  |  |  |
@@ -87,25 +87,25 @@ This page intentionally does not store secrets, raw prompts, raw completions, pr
       "spec": "openrouter:poolside/laguna-m.1:free"
     }
   ],
-  "generated_at": "2026-06-29T17:17:56Z",
+  "generated_at": "2026-06-29T19:20:30Z",
   "models": {
     "cerebras:gpt-oss-120b": {
-      "called": 0,
+      "called": 1,
       "invalid": 0,
-      "last_check_status": "",
-      "last_event_name": "",
-      "last_issue_status": "",
-      "last_overall_status": "",
-      "last_run_attempt": "",
-      "last_run_id": "",
-      "last_run_utc": "",
+      "last_check_status": "ok",
+      "last_event_name": "schedule",
+      "last_issue_status": "ok",
+      "last_overall_status": "ok",
+      "last_run_attempt": "1",
+      "last_run_id": "28396798231",
+      "last_run_utc": "2026-06-29T19:20:30Z",
       "model": "gpt-oss-120b",
       "provider": "cerebras",
       "provider_failed": 0,
       "rejected": 0,
       "runner_failed": 0,
       "spec": "cerebras:gpt-oss-120b",
-      "valid": 0
+      "valid": 1
     },
     "cerebras:zai-glm-4.7": {
       "called": 0,
@@ -265,6 +265,16 @@ This page intentionally does not store secrets, raw prompts, raw completions, pr
       "overall_status": "rejected",
       "provider": "openrouter",
       "timestamp_utc": "2026-06-29T17:17:56Z"
+    },
+    "28396798231|1|Scheduled check-agent signal collector|65|cerebras|gpt-oss-120b|ok|ok|ok": {
+      "check_status": "ok",
+      "commit_sha": "b92b397198b72db4241799a71b6252e54eee51b5",
+      "event_name": "schedule",
+      "issue_status": "ok",
+      "model": "gpt-oss-120b",
+      "overall_status": "ok",
+      "provider": "cerebras",
+      "timestamp_utc": "2026-06-29T19:20:30Z"
     }
   }
 }
