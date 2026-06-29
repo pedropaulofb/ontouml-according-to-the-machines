@@ -486,6 +486,90 @@ def normalize_rejected_group_edits(plan: dict[str, Any]) -> int:
     return normalized
 
 
+def line_numbers_for_exact_text(text: str, needle: str) -> list[int]:
+    """Return 1-based line numbers where ``needle`` occurs exactly in ``text``."""
+    if not needle:
+        return []
+
+    line_numbers: list[int] = []
+    start = 0
+    while True:
+        index = text.find(needle, start)
+        if index == -1:
+            return line_numbers
+        line_numbers.append(text.count("\n", 0, index) + 1)
+        start = index + len(needle)
+
+
+def nearest_markdown_heading(lines: list[str], line_number: int) -> str:
+    """Return the nearest preceding Markdown heading for a 1-based line number."""
+    for index in range(min(line_number, len(lines)), 0, -1):
+        stripped = lines[index - 1].strip()
+        if stripped.startswith("#"):
+            heading = stripped.lstrip("#").strip()
+            return heading or stripped
+    return ""
+
+
+def format_match_locations(page_text: str, line_numbers: list[int]) -> str:
+    """Render concise human-readable locations for matched text."""
+    if not line_numbers:
+        return "none"
+
+    lines = page_text.splitlines()
+    locations: list[str] = []
+    for line_number in line_numbers:
+        heading = nearest_markdown_heading(lines, line_number)
+        if heading:
+            locations.append(f"line {line_number} under heading {heading!r}")
+        else:
+            locations.append(f"line {line_number}")
+    return "; ".join(locations)
+
+
+def truncate_for_diagnostic(value: str, limit: int = 500) -> str:
+    """Return a bounded diagnostic representation of user/page/model-provided text."""
+    if len(value) <= limit:
+        return value
+    return f"{value[:limit]}... [truncated; {len(value)} characters total]"
+
+
+def current_text_match_error(
+    *,
+    issue: IssueSnapshot,
+    group_id: str,
+    group_index: int,
+    edit_index: int,
+    current_text: str,
+    page_text: str,
+    match_lines: list[int],
+) -> str:
+    """Build a cause-oriented validation error for unsafe accepted edit targets."""
+    if not match_lines:
+        cause = "The accepted edit target does not exist in the current reviewed page."
+    else:
+        cause = (
+            "The accepted edit target is ambiguous because it matches more than "
+            "one location in the current reviewed page."
+        )
+
+    rendered_group = group_id or f"group index {group_index}"
+    return "\n".join(
+        [
+            "Accepted edit current_text must occur exactly once in the current page.",
+            f"Issue: #{issue.number} — {issue.title}",
+            f"Page: {issue.reviewed_page}",
+            f"Signal group: {rendered_group}",
+            f"Edit index: {edit_index}",
+            f"Cause: {cause}",
+            f"Matched location(s): {format_match_locations(page_text, match_lines)}",
+            "Invalid current_text:",
+            repr(truncate_for_diagnostic(current_text)),
+            "Result: no reviewed page was changed, no pull request was created, and the issue remains open.",
+        ]
+    )
+
+
 def validate_plan(plan: dict[str, Any], issue: IssueSnapshot, page_text: str) -> None:
     if plan.get("issue_number") != issue.number:
         raise ResolverError("Plan issue_number does not match the selected issue.")
@@ -526,6 +610,7 @@ def validate_plan(plan: dict[str, Any], issue: IssueSnapshot, page_text: str) ->
 
         if decision == "accept":
             accepted += 1
+            group_id = str(group.get("group_id") or "")
             if reason_code != "in_scope_exact_edit":
                 raise ResolverError("Accepted groups must use reason_code=in_scope_exact_edit.")
             if not edits:
@@ -549,9 +634,18 @@ def validate_plan(plan: dict[str, Any], issue: IssueSnapshot, page_text: str) ->
                     raise ResolverError("Accepted edit current_text and proposed_text must differ.")
                 if "{{" in current or "}}" in current or "{{" in proposed or "}}" in proposed:
                     raise ResolverError("Accepted edits must not contain template placeholders.")
-                if page_text.count(current) != 1:
+                match_lines = line_numbers_for_exact_text(page_text, current)
+                if len(match_lines) != 1:
                     raise ResolverError(
-                        f"Accepted edit current_text must occur exactly once in the current page: {current[:120]!r}"
+                        current_text_match_error(
+                            issue=issue,
+                            group_id=group_id,
+                            group_index=index,
+                            edit_index=edit_index,
+                            current_text=current,
+                            page_text=page_text,
+                            match_lines=match_lines,
+                        )
                     )
                 if current in seen_current:
                     raise ResolverError(f"Duplicate current_text across accepted edits: {current[:120]!r}")
