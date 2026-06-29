@@ -217,10 +217,40 @@ def empty_state() -> dict[str, Any]:
     return {
         "schema_version": STATE_SCHEMA_VERSION,
         "generated_at": None,
+        "collection_start_utc": None,
         "active_rotation": [],
         "models": {},
         "seen_events": {},
     }
+
+
+def earliest_seen_event_timestamp(state: dict[str, Any]) -> str:
+    """Return the earliest persisted counted-event timestamp, if available."""
+
+    timestamps: list[str] = []
+    seen_events = state.get("seen_events", {})
+    if not isinstance(seen_events, dict):
+        return ""
+    for raw_event in seen_events.values():
+        if not isinstance(raw_event, dict):
+            continue
+        timestamp = str(raw_event.get("timestamp_utc", "") or "").strip()
+        if timestamp:
+            timestamps.append(timestamp)
+    return min(timestamps) if timestamps else ""
+
+
+def ensure_collection_start_utc(state: dict[str, Any]) -> str:
+    """Set collection_start_utc from persisted event evidence when missing."""
+
+    current = str(state.get("collection_start_utc") or "").strip()
+    if current:
+        state["collection_start_utc"] = current
+        return current
+
+    earliest = earliest_seen_event_timestamp(state)
+    state["collection_start_utc"] = earliest or None
+    return earliest
 
 
 def extract_state(page_text: str) -> dict[str, Any]:
@@ -244,9 +274,11 @@ def extract_state(page_text: str) -> dict[str, Any]:
         return empty_state()
     state.setdefault("schema_version", STATE_SCHEMA_VERSION)
     state.setdefault("generated_at", None)
+    state.setdefault("collection_start_utc", None)
     state.setdefault("active_rotation", [])
     state.setdefault("models", {})
     state.setdefault("seen_events", {})
+    ensure_collection_start_utc(state)
     return state
 
 
@@ -337,6 +369,7 @@ def apply_summary_runs(
     timestamp_utc: str,
 ) -> tuple[int, int]:
     normalize_existing_models(state)
+    ensure_collection_start_utc(state)
     state["active_rotation"] = [
         {"provider": spec.provider, "model": spec.model, "spec": spec.spec} for spec in active_specs
     ]
@@ -392,6 +425,7 @@ def apply_summary_runs(
         }
         added += 1
 
+    ensure_collection_start_utc(state)
     state["generated_at"] = timestamp_utc
     return added, ignored
 
@@ -405,6 +439,7 @@ def sorted_model_records(state: dict[str, Any]) -> list[dict[str, Any]]:
 
 def render_markdown(state: dict[str, Any]) -> str:
     generated_at = state.get("generated_at") or "not generated yet"
+    collection_start_utc = ensure_collection_start_utc(state) or "not recorded yet"
     lines: list[str] = [
         "# Phase 2 — Model Run Statistics",
         "",
@@ -413,6 +448,10 @@ def render_markdown(state: dict[str, Any]) -> str:
         "This page stores cumulative execution statistics for the scheduled Phase 2 check-agent signal collector.",
         "",
         "The table is updated by GitHub Actions from deterministic Python-side batch statuses. It does not use LLM self-reporting, raw completions, prompts, provider responses, or token-usage estimates.",
+        "",
+        f"Statistics collection started on: `{collection_start_utc}`",
+        "",
+        "Counts shown on this page only include executions recorded since that start time.",
         "",
         f"Last generated: `{generated_at}`",
         "",
@@ -589,10 +628,15 @@ def run_self_test() -> int:
         assert laguna["called"] == 1 and laguna["invalid"] == 1 and laguna["provider_failed"] == 1
         assert gemini["called"] == 1 and gemini["valid"] == 1 and gemini["invalid"] == 0
         assert gemini["last_issue_status"] == "failed"
+        assert state["collection_start_utc"] == "2026-06-28T00:00:00Z"
+        assert "Statistics collection started on: `2026-06-28T00:00:00Z`" in page.read_text(encoding="utf-8")
+        assert "Counts shown on this page only include executions recorded since that start time." in page.read_text(
+            encoding="utf-8"
+        )
         assert "openrouter:nvidia/nemotron-3-ultra-550b-a55b:free" in state["models"]
         assert len(state["active_rotation"]) == 8
     print(
-        "Self-test passed: counters increment, duplicate events are ignored, issue-manager failures do not invalidate model output, and OpenRouter colon model IDs are preserved."
+        "Self-test passed: counters increment, duplicate events are ignored, issue-manager failures do not invalidate model output, collection start is persisted, and OpenRouter colon model IDs are preserved."
     )
     return 0
 

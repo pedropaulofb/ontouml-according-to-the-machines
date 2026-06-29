@@ -6,14 +6,18 @@ This page stores cumulative execution statistics for the scheduled Phase 2 check
 
 The table is updated by GitHub Actions from deterministic Python-side batch statuses. It does not use LLM self-reporting, raw completions, prompts, provider responses, or token-usage estimates.
 
-Last generated: `2026-06-29T19:20:30Z`
+Statistics collection started on: `2026-06-29T12:18:18Z`
+
+Counts shown on this page only include executions recorded since that start time.
+
+Last generated: `2026-06-29T20:52:22Z`
 
 ## Cumulative table
 
 | Provider | Model | # called | # valid | # invalid | # rejected | # provider failed | # runner failed | Last check status | Last issue status | Last run UTC |
 |---|---|---:|---:|---:|---:|---:|---:|---|---|---|
 | `cerebras` | `gpt-oss-120b` | 1 | 1 | 0 | 0 | 0 | 0 | `ok` | `ok` | `2026-06-29T19:20:30Z` |
-| `cerebras` | `zai-glm-4.7` | 0 | 0 | 0 | 0 | 0 | 0 |  |  |  |
+| `cerebras` | `zai-glm-4.7` | 1 | 0 | 1 | 0 | 0 | 1 | `failed` | `failed` | `2026-06-29T20:52:22Z` |
 | `gemini` | `gemini-3.1-flash-lite` | 1 | 0 | 1 | 1 | 0 | 0 | `rejected` | `skipped` | `2026-06-29T12:18:18Z` |
 | `groq` | `llama-3.3-70b-versatile` | 0 | 0 | 0 | 0 | 0 | 0 |  |  |  |
 | `openrouter` | `nvidia/nemotron-3-ultra-550b-a55b:free` | 1 | 0 | 1 | 1 | 0 | 0 | `rejected` | `skipped` | `2026-06-29T17:17:56Z` |
@@ -87,7 +91,8 @@ This page intentionally does not store secrets, raw prompts, raw completions, pr
       "spec": "openrouter:poolside/laguna-m.1:free"
     }
   ],
-  "generated_at": "2026-06-29T19:20:30Z",
+  "collection_start_utc": "2026-06-29T12:18:18Z",
+  "generated_at": "2026-06-29T20:52:22Z",
   "models": {
     "cerebras:gpt-oss-120b": {
       "called": 1,
@@ -108,20 +113,20 @@ This page intentionally does not store secrets, raw prompts, raw completions, pr
       "valid": 1
     },
     "cerebras:zai-glm-4.7": {
-      "called": 0,
-      "invalid": 0,
-      "last_check_status": "",
-      "last_event_name": "",
-      "last_issue_status": "",
-      "last_overall_status": "",
-      "last_run_attempt": "",
-      "last_run_id": "",
-      "last_run_utc": "",
+      "called": 1,
+      "invalid": 1,
+      "last_check_status": "failed",
+      "last_event_name": "local",
+      "last_issue_status": "failed",
+      "last_overall_status": "failed",
+      "last_run_attempt": "0",
+      "last_run_id": "local",
+      "last_run_utc": "2026-06-29T20:52:22Z",
       "model": "zai-glm-4.7",
       "provider": "cerebras",
       "provider_failed": 0,
       "rejected": 0,
-      "runner_failed": 0,
+      "runner_failed": 1,
       "spec": "cerebras:zai-glm-4.7",
       "valid": 0
     },
@@ -275,6 +280,16 @@ This page intentionally does not store secrets, raw prompts, raw completions, pr
       "overall_status": "ok",
       "provider": "cerebras",
       "timestamp_utc": "2026-06-29T19:20:30Z"
+    },
+    "local|0|local|1|cerebras|zai-glm-4.7|failed|failed|failed": {
+      "check_status": "failed",
+      "commit_sha": "",
+      "event_name": "local",
+      "issue_status": "failed",
+      "model": "zai-glm-4.7",
+      "overall_status": "failed",
+      "provider": "cerebras",
+      "timestamp_utc": "2026-06-29T20:52:22Z"
     }
   }
 }
