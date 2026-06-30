@@ -10,17 +10,17 @@ Statistics collection started on: `2026-06-29T12:18:18Z`
 
 Counts shown on this page only include executions recorded since that start time.
 
-Last generated: `2026-06-30T15:08:15Z`
+Last generated: `2026-06-30T19:16:02Z`
 
 ## Cumulative table
 
 | Provider | Model | # called | # valid | # invalid | # rejected | # provider failed | # runner failed | Last check status | Last issue status | Last run UTC |
 |---|---|---:|---:|---:|---:|---:|---:|---|---|---|
-| `cerebras` | `gpt-oss-120b` | 1 | 1 | 0 | 0 | 0 | 0 | `ok` | `ok` | `2026-06-29T19:20:30Z` |
+| `cerebras` | `gpt-oss-120b` | 2 | 2 | 0 | 0 | 0 | 0 | `ok` | `ok` | `2026-06-30T19:16:02Z` |
 | `cerebras` | `zai-glm-4.7` | 4 | 3 | 1 | 0 | 0 | 1 | `ok` | `ok` | `2026-06-30T15:08:15Z` |
 | `gemini` | `gemini-3.1-flash-lite` | 2 | 0 | 2 | 2 | 0 | 0 | `rejected` | `skipped` | `2026-06-30T12:23:15Z` |
 | `groq` | `llama-3.3-70b-versatile` | 0 | 0 | 0 | 0 | 0 | 0 |  |  |  |
-| `openrouter` | `nvidia/nemotron-3-ultra-550b-a55b:free` | 1 | 0 | 1 | 1 | 0 | 0 | `rejected` | `skipped` | `2026-06-29T17:17:56Z` |
+| `openrouter` | `nvidia/nemotron-3-ultra-550b-a55b:free` | 2 | 0 | 2 | 2 | 0 | 0 | `rejected` | `skipped` | `2026-06-30T17:22:27Z` |
 | `openrouter` | `poolside/laguna-m.1:free` | 0 | 0 | 0 | 0 | 0 | 0 |  |  |  |
 | `sambanova` | `DeepSeek-V3.1` | 3 | 3 | 0 | 0 | 0 | 0 | `ok` | `ok` | `2026-06-30T06:22:46Z` |
 | `sambanova` | `Meta-Llama-3.3-70B-Instruct` | 2 | 2 | 0 | 0 | 0 | 0 | `ok` | `ok` | `2026-06-29T23:32:49Z` |
@@ -92,25 +92,25 @@ This page intentionally does not store secrets, raw prompts, raw completions, pr
     }
   ],
   "collection_start_utc": "2026-06-29T12:18:18Z",
-  "generated_at": "2026-06-30T15:08:15Z",
+  "generated_at": "2026-06-30T19:16:02Z",
   "models": {
     "cerebras:gpt-oss-120b": {
-      "called": 1,
+      "called": 2,
       "invalid": 0,
       "last_check_status": "ok",
       "last_event_name": "schedule",
       "last_issue_status": "ok",
       "last_overall_status": "ok",
       "last_run_attempt": "1",
-      "last_run_id": "28396798231",
-      "last_run_utc": "2026-06-29T19:20:30Z",
+      "last_run_id": "28469717528",
+      "last_run_utc": "2026-06-30T19:16:02Z",
       "model": "gpt-oss-120b",
       "provider": "cerebras",
       "provider_failed": 0,
       "rejected": 0,
       "runner_failed": 0,
       "spec": "cerebras:gpt-oss-120b",
-      "valid": 1
+      "valid": 2
     },
     "cerebras:zai-glm-4.7": {
       "called": 4,
@@ -167,19 +167,19 @@ This page intentionally does not store secrets, raw prompts, raw completions, pr
       "valid": 0
     },
     "openrouter:nvidia/nemotron-3-ultra-550b-a55b:free": {
-      "called": 1,
-      "invalid": 1,
+      "called": 2,
+      "invalid": 2,
       "last_check_status": "rejected",
       "last_event_name": "schedule",
       "last_issue_status": "skipped",
       "last_overall_status": "rejected",
       "last_run_attempt": "1",
-      "last_run_id": "28389929977",
-      "last_run_utc": "2026-06-29T17:17:56Z",
+      "last_run_id": "28463057281",
+      "last_run_utc": "2026-06-30T17:22:27Z",
       "model": "nvidia/nemotron-3-ultra-550b-a55b:free",
       "provider": "openrouter",
       "provider_failed": 0,
-      "rejected": 1,
+      "rejected": 2,
       "runner_failed": 0,
       "spec": "openrouter:nvidia/nemotron-3-ultra-550b-a55b:free",
       "valid": 0
@@ -360,6 +360,26 @@ This page intentionally does not store secrets, raw prompts, raw completions, pr
       "overall_status": "ok",
       "provider": "cerebras",
       "timestamp_utc": "2026-06-30T15:08:15Z"
+    },
+    "28463057281|1|Scheduled check-agent signal collector|73|openrouter|nvidia/nemotron-3-ultra-550b-a55b:free|rejected|rejected|skipped": {
+      "check_status": "rejected",
+      "commit_sha": "b11ed1a299eaa868f2ea34f84e2772b80105e5f2",
+      "event_name": "schedule",
+      "issue_status": "skipped",
+      "model": "nvidia/nemotron-3-ultra-550b-a55b:free",
+      "overall_status": "rejected",
+      "provider": "openrouter",
+      "timestamp_utc": "2026-06-30T17:22:27Z"
+    },
+    "28469717528|1|Scheduled check-agent signal collector|74|cerebras|gpt-oss-120b|ok|ok|ok": {
+      "check_status": "ok",
+      "commit_sha": "be23a3ca7142e8bfc326fa31a9a75e09e79d2927",
+      "event_name": "schedule",
+      "issue_status": "ok",
+      "model": "gpt-oss-120b",
+      "overall_status": "ok",
+      "provider": "cerebras",
+      "timestamp_utc": "2026-06-30T19:16:02Z"
     },
     "local|0|local|1|cerebras|zai-glm-4.7|failed|failed|failed": {
       "check_status": "failed",
