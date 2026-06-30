@@ -24,8 +24,6 @@ from pathlib import Path
 from typing import Iterable, Sequence
 
 DEFAULT_AGENTS = ["page-hygiene-checker", "language-style-checker"]
-DEFAULT_PROVIDER = "groq"
-DEFAULT_MODELS = ["llama-3.3-70b-versatile"]
 DEFAULT_OUTPUT_ROOT = Path(".tmp/phase-2")
 DEFAULT_SLEEP_SECONDS = 0.0
 SUMMARY_FILENAME = "batch-summary.md"
@@ -93,10 +91,10 @@ def parse_args() -> argparse.Namespace:
         "--exclude-pages-glob", action="append", default=[], help="Repository-relative glob for pages to exclude."
     )
     parser.add_argument("--agent", action="append", default=[], choices=DEFAULT_AGENTS, help="Check agent to run.")
+    parser.add_argument("--provider", required=True, help="LLM provider to use.")
     parser.add_argument(
-        "--provider", default=DEFAULT_PROVIDER, help=f"LLM provider to use. Defaults to {DEFAULT_PROVIDER!r}."
+        "--model", action="append", required=True, help="Model to use. Must be passed at least once; may be repeated."
     )
-    parser.add_argument("--model", action="append", default=[], help="Model to use. May be passed multiple times.")
     parser.add_argument(
         "--mode",
         choices=["generate", "dry-run", "post"],
@@ -721,7 +719,9 @@ def main() -> int:
         validate_environment(repo_root, args.mode, args.repo)
         pages = discover_pages(repo_root, args.page, args.pages_glob, args.exclude_page, args.exclude_pages_glob)
         agents = args.agent or DEFAULT_AGENTS
-        models = args.model or DEFAULT_MODELS
+        models = args.model
+        if not models:
+            raise ValueError("At least one --model must be provided.")
         available_runs = plan_runs(
             pages=pages, agents=agents, provider=args.provider, models=models, output_root=output_root
         )

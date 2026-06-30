@@ -25,14 +25,12 @@ page-hygiene-checker
 language-style-checker
 ```
 
-The direct batch-runner internal defaults remain legacy Groq-oriented:
+The direct batch runner no longer provides a default provider or model. Current signal-generation runs must pass an explicit supported provider and at least one model, or use the canonical scheduled workflow `provider_model_specs` rotation:
 
 ```text
-provider: groq
-models: llama-3.3-70b-versatile
+--provider <provider>
+--model <model>
 ```
-
-These are not the current scheduled provider/model rotation. For current signal-generation runs, pass an explicit supported provider and model, or use the canonical scheduled workflow `provider_model_specs` rotation.
 
 Default output root:
 

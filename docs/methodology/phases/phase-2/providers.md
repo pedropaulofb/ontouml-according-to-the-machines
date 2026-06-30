@@ -53,14 +53,14 @@ The Groq adapter calls the Groq chat-completions API and uses:
 GROQ_API_KEY
 ```
 
-The direct batch-runner defaults remain Groq-oriented in `run_check_batch.py`:
+Direct `run_check_batch.py` execution now requires explicit provider/model selection:
 
 ```text
-provider: groq
-models: llama-3.3-70b-versatile
+--provider <provider>
+--model <model>
 ```
 
-Those direct runner defaults are legacy execution defaults, not the current scheduled signal-generation rotation. The canonical scheduled workflow no longer includes `groq:llama-3.3-70b-versatile` and does not add a replacement Groq model.
+The canonical scheduled workflow no longer includes `groq:llama-3.3-70b-versatile` and does not add a replacement Groq model. Groq can be used again only if a future explicit model selection is added and validated.
 
 ### Gemini provider
 
