@@ -131,7 +131,7 @@ jobs:
 
           provider_unavailable_issue_number() {
             local output_dir=".tmp/phase-2/resolver"
-            local marker_pattern="503|ServiceUnavailable|service_unavailable|provider_unavailable|status.*unavailable|temporarily unavailable"
+            local marker_pattern="503|ServiceUnavailable|service_unavailable|provider_unavailable|status.*unavailable|temporarily unavailable|server disconnected|disconnected without sending a response"
 
             [[ -d "$output_dir" ]] || return 1
 
