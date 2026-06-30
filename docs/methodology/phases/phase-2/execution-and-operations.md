@@ -25,17 +25,14 @@ page-hygiene-checker
 language-style-checker
 ```
 
-Default provider:
+The direct batch-runner internal defaults remain legacy Groq-oriented:
 
 ```text
-groq
+provider: groq
+models: llama-3.3-70b-versatile
 ```
 
-Default models:
-
-```text
-llama-3.3-70b-versatile
-```
+These are not the current scheduled provider/model rotation. For current signal-generation runs, pass an explicit supported provider and model, or use the canonical scheduled workflow `provider_model_specs` rotation.
 
 Default output root:
 
@@ -53,15 +50,20 @@ Main modes:
 
 Important: `dry-run` still calls the LLM provider and still validates the generated report. It only dry-runs the issue-manager operation.
 
-Common Groq example:
+Common Cerebras signal-generation example:
 
 ```bash
+export CEREBRAS_API_KEY="..."
+
 python scripts/phase-2/run_check_batch.py \
   --page docs/stereotypes/classes/event.md \
   --agent page-hygiene-checker \
-  --provider groq \
-  --model llama-3.3-70b-versatile \
-  --mode generate
+  --provider cerebras \
+  --model gpt-oss-120b \
+  --mode generate \
+  --max-runs 1 \
+  --max-completion-tokens 3000 \
+  --allow-rejected-check-outputs
 ```
 
 Common Gemini signal-generation example:
@@ -93,7 +95,8 @@ python scripts/phase-2/run_check_batch.py \
   --pages-glob "docs/stereotypes/classes/*.md" \
   --pages-glob "docs/stereotypes/relations/*.md" \
   --exclude-pages-glob "docs/stereotypes/**/index.md" \
-  --provider groq \
+  --provider cerebras \
+  --model gpt-oss-120b \
   --selection rotate \
   --rotation-seed hourly \
   --max-runs 1 \
@@ -272,7 +275,7 @@ The workflow is also manually triggerable through `workflow_dispatch`.
 Manual dispatch supports:
 
 - `generate`, `dry-run`, or `post` mode;
-- `groq`, `gemini`, `cerebras`, `sambanova`, or `openrouter` provider selection;
+- supported provider-adapter selection; Groq remains selectable manually only when an explicit model is supplied;
 - comma-separated `models`;
 - comma- or newline-separated `provider_model_specs`;
 - comma- or newline-separated page lists;
@@ -284,15 +287,16 @@ When `provider_model_specs` is supplied, it overrides the `provider` and `models
 Scheduled provider/model rotation:
 
 ```text
-0 groq:llama-3.3-70b-versatile
-1 cerebras:gpt-oss-120b
-2 sambanova:DeepSeek-V3.1
-3 openrouter:nvidia/nemotron-3-ultra-550b-a55b:free
-4 gemini:gemini-3.1-flash-lite
-5 cerebras:zai-glm-4.7
-6 sambanova:Meta-Llama-3.3-70B-Instruct
-7 openrouter:poolside/laguna-m.1:free
+0 cerebras:gpt-oss-120b
+1 sambanova:DeepSeek-V3.1
+2 openrouter:nvidia/nemotron-3-ultra-550b-a55b:free
+3 gemini:gemini-3.1-flash-lite
+4 cerebras:zai-glm-4.7
+5 sambanova:Meta-Llama-3.3-70B-Instruct
+6 openrouter:poolside/laguna-m.1:free
 ```
+
+No Groq model is currently part of the active scheduled provider/model rotation. The removed `groq:llama-3.3-70b-versatile` slot is historical/inactive and was not replaced by another Groq model.
 
 The scheduled workflow aligns provider/model rotation buckets with the cron offset.
 
@@ -334,7 +338,7 @@ max_runs: 1
 sleep_seconds: 0
 max_completion_tokens: 3000
 agents: page-hygiene-checker,language-style-checker
-provider/model rotation: groq:llama-3.3-70b-versatile, cerebras:gpt-oss-120b, sambanova:DeepSeek-V3.1, openrouter:nvidia/nemotron-3-ultra-550b-a55b:free, gemini:gemini-3.1-flash-lite, cerebras:zai-glm-4.7, sambanova:Meta-Llama-3.3-70B-Instruct, openrouter:poolside/laguna-m.1:free
+provider/model rotation: cerebras:gpt-oss-120b, sambanova:DeepSeek-V3.1, openrouter:nvidia/nemotron-3-ultra-550b-a55b:free, gemini:gemini-3.1-flash-lite, cerebras:zai-glm-4.7, sambanova:Meta-Llama-3.3-70B-Instruct, openrouter:poolside/laguna-m.1:free
 pages: all canonical class and relation stereotype pages, excluding index.md
 ```
 
@@ -465,7 +469,7 @@ Branch name pattern: main
 
 The scheduled check-agent workflow creates or updates GitHub issues/comments in `post` mode.
 
-Required repository secrets:
+Provider repository secrets used when the corresponding provider is selected:
 
 ```text
 GROQ_API_KEY
@@ -474,6 +478,8 @@ CEREBRAS_API_KEY
 SAMBANOVA_API_KEY
 OPENROUTER_API_KEY
 ```
+
+The active scheduled rotation currently uses `GEMINI_API_KEY`, `CEREBRAS_API_KEY`, `SAMBANOVA_API_KEY`, and `OPENROUTER_API_KEY`. `GROQ_API_KEY` is still relevant only if Groq is selected manually or reintroduced in a future rotation.
 
 Required workflow permissions:
 
@@ -553,7 +559,7 @@ Later operational updates added:
 - squash auto-merge after required checks pass;
 - structured resolver log entries in the `Generation and Review Log` table;
 - deterministic page-structure validation of the `Generation and Review Log` table;
-- scheduled signal-generation rotation across Groq, Cerebras, SambaNova, Gemini, and OpenRouter;
+- scheduled signal-generation rotation across Cerebras, SambaNova, Gemini, and OpenRouter, with the former Groq slot retained only as historical/inactive context in statistics;
 - workflow-level signal-collector failure classification that keeps nonactionable provider availability noise nonfatal while keeping quota, rate-limit, authentication, configuration, request-shape, and unknown provider failures actionable.
 
 These observations are not guarantees of future provider behavior. The committed workflows and scripts should be treated as authoritative for current automation behavior.

@@ -193,7 +193,8 @@ Required status check: Check stereotype page structure
 | Runner | `scripts/phase-2/run_check_agent.py` |
 | Batch runner | `scripts/phase-2/run_check_batch.py` |
 | Prompt | `prompts/phase-2/page-hygiene-checker-v1.0.3.md` |
-| Supported active providers | `groq`, `gemini`, `cerebras`, `sambanova`, `openrouter` |
+| Supported provider adapters | `groq`, `gemini`, `cerebras`, `sambanova`, `openrouter` |
+| Active scheduled providers | `cerebras`, `sambanova`, `openrouter`, `gemini` |
 | Output | Structured Markdown signal comment |
 | Applies changes | No |
 | Target execution | Periodic conservative rotating batches |
@@ -246,7 +247,8 @@ The active `page-hygiene-checker-v1.0.3` prompt is Markdown-only. It emits one G
 | Runner | `scripts/phase-2/run_check_agent.py` |
 | Batch runner | `scripts/phase-2/run_check_batch.py` |
 | Prompt | `prompts/phase-2/language-style-checker-v1.0.3.md` |
-| Supported active providers | `groq`, `gemini`, `cerebras`, `sambanova`, `openrouter` |
+| Supported provider adapters | `groq`, `gemini`, `cerebras`, `sambanova`, `openrouter` |
+| Active scheduled providers | `cerebras`, `sambanova`, `openrouter`, `gemini` |
 | Output | Structured Markdown signal comment |
 | Applies changes | No |
 | Target execution | Periodic conservative rotating batches |

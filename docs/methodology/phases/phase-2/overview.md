@@ -243,7 +243,7 @@ The current implementation can:
 - run page × check agent × provider × model collection through the scheduled workflow;
 - run page × check agent × model batches for one selected provider through `run_check_batch.py`;
 - select rotating scheduled combinations over time;
-- rotate scheduled signal generation across the configured eight provider/model specs;
+- rotate scheduled signal generation across the configured seven active provider/model specs;
 - run in `generate`, `dry-run`, or `post` mode;
 - write per-run logs and a batch summary under `.tmp/phase-2/`;
 - derive deterministic page-plus-agent issue titles;
@@ -327,7 +327,7 @@ google-genai>=2.8.0,<3.0.0
 openai>=1.0.0,<3.0.0
 ```
 
-The operational provider secrets for scheduled signal generation are:
+The provider secrets used when the corresponding provider is selected are:
 
 ```text
 GROQ_API_KEY

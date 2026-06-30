@@ -12,7 +12,7 @@ This document reflects the repository state verified from committed repository f
 fed1de9630ee6f09c93262971a3fd14b53aa34fb
 ```
 
-That commit aligns the scheduled check-agent signal-collector documentation with the current eight-slot provider/model rotation, the cron-offset rotation index calculation, the active LLM check-agent prompt versions, OpenRouter signal-generation support, and the separation between scheduled provider-failure classification and automated resolver fallback behavior.
+That commit aligned the scheduled check-agent signal-collector documentation with the then-current provider/model rotation, the cron-offset rotation index calculation, the active LLM check-agent prompt versions, OpenRouter signal-generation support, and the separation between scheduled provider-failure classification and automated resolver fallback behavior. The current active scheduled signal-generation rotation is now a seven-slot rotation without Groq; Groq provider support remains available for explicit future or manual use.
 
 This index page is the entry point for the split Phase 2 methodology documentation. The original single-page Phase 2 document was split into topical pages to improve readability, navigation, and maintenance while preserving the original content in the linked subpages.
 

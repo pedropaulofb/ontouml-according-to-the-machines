@@ -221,7 +221,7 @@ docs/stereotypes/relations/material.md -> relations/material
 
 All provider/model outputs for the same page and same check agent are posted to the same open issue.
 
-For example, if `page-hygiene-checker` runs with Groq and Gemini on `docs/stereotypes/classes/event.md`, both model reports are comments under:
+For example, if `page-hygiene-checker` runs with Cerebras and Gemini on `docs/stereotypes/classes/event.md`, both model reports are comments under:
 
 ```text
 Check signal: page-hygiene-checker: classes/event

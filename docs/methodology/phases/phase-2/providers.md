@@ -4,7 +4,7 @@
 
 ## LLM provider support
 
-The active provider set in `run_check_agent.py` for signal generation is:
+The supported provider-adapter set in `run_check_agent.py` for signal generation is:
 
 ```text
 groq
@@ -13,6 +13,20 @@ cerebras
 sambanova
 openrouter
 ```
+
+The current scheduled signal-generation rotation does **not** include Groq. It contains these seven active provider/model slots:
+
+```text
+0 cerebras:gpt-oss-120b
+1 sambanova:DeepSeek-V3.1
+2 openrouter:nvidia/nemotron-3-ultra-550b-a55b:free
+3 gemini:gemini-3.1-flash-lite
+4 cerebras:zai-glm-4.7
+5 sambanova:Meta-Llama-3.3-70B-Instruct
+6 openrouter:poolside/laguna-m.1:free
+```
+
+Groq support code remains available for explicit future or manual use, but no Groq model is currently part of the active scheduled signal-generation rotation.
 
 The automated resolver currently supports only:
 
@@ -39,14 +53,14 @@ The Groq adapter calls the Groq chat-completions API and uses:
 GROQ_API_KEY
 ```
 
-The direct batch-runner defaults remain Groq-oriented:
+The direct batch-runner defaults remain Groq-oriented in `run_check_batch.py`:
 
 ```text
 provider: groq
 models: llama-3.3-70b-versatile
 ```
 
-The default Groq model is also represented in the current scheduled provider/model rotation.
+Those direct runner defaults are legacy execution defaults, not the current scheduled signal-generation rotation. The canonical scheduled workflow no longer includes `groq:llama-3.3-70b-versatile` and does not add a replacement Groq model.
 
 ### Gemini provider
 
