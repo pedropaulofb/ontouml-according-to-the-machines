@@ -35,7 +35,7 @@ run-name: Scheduled check-agent signal collector (${{ github.event_name }})
         description: "Primary rotation list. Comma-separated provider:model values. Leave default to use the full rotation."
         type: string
         required: false
-        default: "groq:llama-3.3-70b-versatile,cerebras:gpt-oss-120b,sambanova:DeepSeek-V3.1,openrouter:nvidia/nemotron-3-ultra-550b-a55b:free,gemini:gemini-3.1-flash-lite,cerebras:zai-glm-4.7,sambanova:Meta-Llama-3.3-70B-Instruct,openrouter:poolside/laguna-m.1:free"
+        default: "cerebras:gpt-oss-120b,sambanova:DeepSeek-V3.1,openrouter:nvidia/nemotron-3-ultra-550b-a55b:free,gemini:gemini-3.1-flash-lite,cerebras:zai-glm-4.7,sambanova:Meta-Llama-3.3-70B-Instruct,openrouter:poolside/laguna-m.1:free"
 
       selection:
         description: "How to select triples. Keep rotate for normal manual and scheduled signal collection."
@@ -56,7 +56,7 @@ run-name: Scheduled check-agent signal collector (${{ github.event_name }})
           - daily
 
       rotation_index:
-        description: "Optional provider/model slot override: 0=Groq Llama, 1=Cerebras GPT-OSS, 2=SambaNova DeepSeek, 3=OpenRouter Nemotron, 4=Gemini, 5=Cerebras GLM, 6=SambaNova Llama, 7=OpenRouter Laguna."
+        description: "Optional provider/model slot override: 0=Cerebras GPT-OSS, 1=SambaNova DeepSeek, 2=OpenRouter Nemotron, 3=Gemini, 4=Cerebras GLM, 5=SambaNova Llama, 6=OpenRouter Laguna."
         type: string
         required: false
         default: ""
@@ -76,8 +76,8 @@ run-name: Scheduled check-agent signal collector (${{ github.event_name }})
       models:
         description: "Fallback comma-separated models, used only when provider_model_specs is empty."
         type: string
-        required: true
-        default: "llama-3.3-70b-versatile"
+        required: false
+        default: ""
 
       max_runs:
         description: "Maximum number of selected triples to run. Use 1 for rotating scheduled collection."
@@ -199,7 +199,7 @@ jobs:
             esac
           }
 
-          default_periodic_provider_model_specs="groq:llama-3.3-70b-versatile,cerebras:gpt-oss-120b,sambanova:DeepSeek-V3.1,openrouter:nvidia/nemotron-3-ultra-550b-a55b:free,gemini:gemini-3.1-flash-lite,cerebras:zai-glm-4.7,sambanova:Meta-Llama-3.3-70B-Instruct,openrouter:poolside/laguna-m.1:free"
+          default_periodic_provider_model_specs="cerebras:gpt-oss-120b,sambanova:DeepSeek-V3.1,openrouter:nvidia/nemotron-3-ultra-550b-a55b:free,gemini:gemini-3.1-flash-lite,cerebras:zai-glm-4.7,sambanova:Meta-Llama-3.3-70B-Instruct,openrouter:poolside/laguna-m.1:free"
 
           provider="${WORKFLOW_PROVIDER:-groq}"
           provider_model_specs="${WORKFLOW_PROVIDER_MODEL_SPECS:-}"
@@ -324,8 +324,8 @@ jobs:
             esac
           }
 
-          default_groq_models="llama-3.3-70b-versatile"
-          default_periodic_provider_model_specs="groq:llama-3.3-70b-versatile,cerebras:gpt-oss-120b,sambanova:DeepSeek-V3.1,openrouter:nvidia/nemotron-3-ultra-550b-a55b:free,gemini:gemini-3.1-flash-lite,cerebras:zai-glm-4.7,sambanova:Meta-Llama-3.3-70B-Instruct,openrouter:poolside/laguna-m.1:free"
+          default_groq_models=""
+          default_periodic_provider_model_specs="cerebras:gpt-oss-120b,sambanova:DeepSeek-V3.1,openrouter:nvidia/nemotron-3-ultra-550b-a55b:free,gemini:gemini-3.1-flash-lite,cerebras:zai-glm-4.7,sambanova:Meta-Llama-3.3-70B-Instruct,openrouter:poolside/laguna-m.1:free"
 
           mode="${WORKFLOW_MODE:-post}"
           provider="${WORKFLOW_PROVIDER:-groq}"
@@ -342,6 +342,11 @@ jobs:
 
           if [[ -z "$provider_model_specs" && "${GITHUB_EVENT_NAME:-}" == "schedule" ]]; then
             provider_model_specs="$default_periodic_provider_model_specs"
+          fi
+
+          if [[ -z "$provider_model_specs" && -z "$models_input" ]]; then
+            echo "::error::No provider/model rotation spec or fallback model was configured. Set provider_model_specs, or explicitly set provider and models."
+            exit 1
           fi
 
           if [[ -z "$rotation_index" && "$selection" == "rotate" && -n "$provider_model_specs" ]]; then
@@ -406,10 +411,10 @@ jobs:
             echo "Runner rotation index: ${runner_rotation_index}"
             echo "Selected provider/model spec: ${selected_provider_model_spec}"
           elif [[ "$provider" == "gemini" && "$models_input" == "$default_groq_models" ]]; then
-            echo "Provider is gemini and Groq default models were supplied; using gemini-3.1-flash-lite."
+            echo "Provider is gemini and no fallback model was supplied; using gemini-3.1-flash-lite."
             models_input="gemini-3.1-flash-lite"
           elif [[ "$provider" == "openrouter" && "$models_input" == "$default_groq_models" ]]; then
-            echo "Provider is openrouter and Groq default models were supplied; using nvidia/nemotron-3-ultra-550b-a55b:free."
+            echo "Provider is openrouter and no fallback model was supplied; using nvidia/nemotron-3-ultra-550b-a55b:free."
             models_input="nvidia/nemotron-3-ultra-550b-a55b:free"
           fi
 
@@ -458,6 +463,10 @@ jobs:
             fi
           done
 
+          if [[ "${#model_args[@]}" -eq 0 ]]; then
+            echo "::error::No model was selected for provider=${provider}. Set provider_model_specs, or explicitly set models."
+            exit 1
+          fi
           rotation_args=()
           if [[ -n "$rotation_index" ]]; then
             rotation_args+=(--rotation-index "$rotation_index")
@@ -515,14 +524,18 @@ jobs:
           fi
 
           statistics_page="docs/methodology/phases/phase-2/model-run-statistics.md"
-          default_periodic_provider_model_specs="groq:llama-3.3-70b-versatile,cerebras:gpt-oss-120b,sambanova:DeepSeek-V3.1,openrouter:nvidia/nemotron-3-ultra-550b-a55b:free,gemini:gemini-3.1-flash-lite,cerebras:zai-glm-4.7,sambanova:Meta-Llama-3.3-70B-Instruct,openrouter:poolside/laguna-m.1:free"
+          default_periodic_provider_model_specs="cerebras:gpt-oss-120b,sambanova:DeepSeek-V3.1,openrouter:nvidia/nemotron-3-ultra-550b-a55b:free,gemini:gemini-3.1-flash-lite,cerebras:zai-glm-4.7,sambanova:Meta-Llama-3.3-70B-Instruct,openrouter:poolside/laguna-m.1:free"
           provider_model_specs="${WORKFLOW_PROVIDER_MODEL_SPECS:-}"
 
           if [[ -z "$provider_model_specs" && "${GITHUB_EVENT_NAME:-}" == "schedule" ]]; then
             provider_model_specs="$default_periodic_provider_model_specs"
           fi
           if [[ -z "$provider_model_specs" ]]; then
-            provider_model_specs="${WORKFLOW_PROVIDER:-groq}:${WORKFLOW_MODELS:-llama-3.3-70b-versatile}"
+            if [[ -z "${WORKFLOW_MODELS:-}" ]]; then
+              echo "::warning::No provider/model specs available; skipping model run statistics update."
+              exit 0
+            fi
+            provider_model_specs="${WORKFLOW_PROVIDER:-groq}:${WORKFLOW_MODELS}"
           fi
 
           python scripts/phase-2/update_model_run_statistics.py \
