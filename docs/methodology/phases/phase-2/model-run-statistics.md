@@ -10,20 +10,20 @@ Statistics collection started on: `2026-06-29T12:18:18Z`
 
 Counts shown on this page only include executions recorded since that start time.
 
-Last generated: `2026-06-29T20:52:22Z`
+Last generated: `2026-06-30T12:23:15Z`
 
 ## Cumulative table
 
 | Provider | Model | # called | # valid | # invalid | # rejected | # provider failed | # runner failed | Last check status | Last issue status | Last run UTC |
 |---|---|---:|---:|---:|---:|---:|---:|---|---|---|
 | `cerebras` | `gpt-oss-120b` | 1 | 1 | 0 | 0 | 0 | 0 | `ok` | `ok` | `2026-06-29T19:20:30Z` |
-| `cerebras` | `zai-glm-4.7` | 1 | 0 | 1 | 0 | 0 | 1 | `failed` | `failed` | `2026-06-29T20:52:22Z` |
-| `gemini` | `gemini-3.1-flash-lite` | 1 | 0 | 1 | 1 | 0 | 0 | `rejected` | `skipped` | `2026-06-29T12:18:18Z` |
+| `cerebras` | `zai-glm-4.7` | 3 | 2 | 1 | 0 | 0 | 1 | `ok` | `ok` | `2026-06-30T10:06:19Z` |
+| `gemini` | `gemini-3.1-flash-lite` | 2 | 0 | 2 | 2 | 0 | 0 | `rejected` | `skipped` | `2026-06-30T12:23:15Z` |
 | `groq` | `llama-3.3-70b-versatile` | 0 | 0 | 0 | 0 | 0 | 0 |  |  |  |
 | `openrouter` | `nvidia/nemotron-3-ultra-550b-a55b:free` | 1 | 0 | 1 | 1 | 0 | 0 | `rejected` | `skipped` | `2026-06-29T17:17:56Z` |
 | `openrouter` | `poolside/laguna-m.1:free` | 0 | 0 | 0 | 0 | 0 | 0 |  |  |  |
-| `sambanova` | `DeepSeek-V3.1` | 1 | 1 | 0 | 0 | 0 | 0 | `ok` | `ok` | `2026-06-29T14:17:14Z` |
-| `sambanova` | `Meta-Llama-3.3-70B-Instruct` | 0 | 0 | 0 | 0 | 0 | 0 |  |  |  |
+| `sambanova` | `DeepSeek-V3.1` | 3 | 3 | 0 | 0 | 0 | 0 | `ok` | `ok` | `2026-06-30T06:22:46Z` |
+| `sambanova` | `Meta-Llama-3.3-70B-Instruct` | 2 | 2 | 0 | 0 | 0 | 0 | `ok` | `ok` | `2026-06-29T23:32:49Z` |
 
 ## Status derivation
 
@@ -92,7 +92,7 @@ This page intentionally does not store secrets, raw prompts, raw completions, pr
     }
   ],
   "collection_start_utc": "2026-06-29T12:18:18Z",
-  "generated_at": "2026-06-29T20:52:22Z",
+  "generated_at": "2026-06-30T12:23:15Z",
   "models": {
     "cerebras:gpt-oss-120b": {
       "called": 1,
@@ -113,37 +113,37 @@ This page intentionally does not store secrets, raw prompts, raw completions, pr
       "valid": 1
     },
     "cerebras:zai-glm-4.7": {
-      "called": 1,
+      "called": 3,
       "invalid": 1,
-      "last_check_status": "failed",
-      "last_event_name": "local",
-      "last_issue_status": "failed",
-      "last_overall_status": "failed",
-      "last_run_attempt": "0",
-      "last_run_id": "local",
-      "last_run_utc": "2026-06-29T20:52:22Z",
+      "last_check_status": "ok",
+      "last_event_name": "schedule",
+      "last_issue_status": "ok",
+      "last_overall_status": "ok",
+      "last_run_attempt": "1",
+      "last_run_id": "28436466020",
+      "last_run_utc": "2026-06-30T10:06:19Z",
       "model": "zai-glm-4.7",
       "provider": "cerebras",
       "provider_failed": 0,
       "rejected": 0,
       "runner_failed": 1,
       "spec": "cerebras:zai-glm-4.7",
-      "valid": 0
+      "valid": 2
     },
     "gemini:gemini-3.1-flash-lite": {
-      "called": 1,
-      "invalid": 1,
+      "called": 2,
+      "invalid": 2,
       "last_check_status": "rejected",
-      "last_event_name": "workflow_dispatch",
+      "last_event_name": "schedule",
       "last_issue_status": "skipped",
       "last_overall_status": "rejected",
       "last_run_attempt": "1",
-      "last_run_id": "28371412429",
-      "last_run_utc": "2026-06-29T12:18:18Z",
+      "last_run_id": "28443934133",
+      "last_run_utc": "2026-06-30T12:23:15Z",
       "model": "gemini-3.1-flash-lite",
       "provider": "gemini",
       "provider_failed": 0,
-      "rejected": 1,
+      "rejected": 2,
       "runner_failed": 0,
       "spec": "gemini:gemini-3.1-flash-lite",
       "valid": 0
@@ -203,40 +203,40 @@ This page intentionally does not store secrets, raw prompts, raw completions, pr
       "valid": 0
     },
     "sambanova:DeepSeek-V3.1": {
-      "called": 1,
+      "called": 3,
       "invalid": 0,
       "last_check_status": "ok",
       "last_event_name": "schedule",
       "last_issue_status": "ok",
       "last_overall_status": "ok",
       "last_run_attempt": "1",
-      "last_run_id": "28378693666",
-      "last_run_utc": "2026-06-29T14:17:14Z",
+      "last_run_id": "28424667904",
+      "last_run_utc": "2026-06-30T06:22:46Z",
       "model": "DeepSeek-V3.1",
       "provider": "sambanova",
       "provider_failed": 0,
       "rejected": 0,
       "runner_failed": 0,
       "spec": "sambanova:DeepSeek-V3.1",
-      "valid": 1
+      "valid": 3
     },
     "sambanova:Meta-Llama-3.3-70B-Instruct": {
-      "called": 0,
+      "called": 2,
       "invalid": 0,
-      "last_check_status": "",
-      "last_event_name": "",
-      "last_issue_status": "",
-      "last_overall_status": "",
-      "last_run_attempt": "",
-      "last_run_id": "",
-      "last_run_utc": "",
+      "last_check_status": "ok",
+      "last_event_name": "schedule",
+      "last_issue_status": "ok",
+      "last_overall_status": "ok",
+      "last_run_attempt": "1",
+      "last_run_id": "28409638610",
+      "last_run_utc": "2026-06-29T23:32:49Z",
       "model": "Meta-Llama-3.3-70B-Instruct",
       "provider": "sambanova",
       "provider_failed": 0,
       "rejected": 0,
       "runner_failed": 0,
       "spec": "sambanova:Meta-Llama-3.3-70B-Instruct",
-      "valid": 0
+      "valid": 2
     }
   },
   "schema_version": 1,
@@ -280,6 +280,76 @@ This page intentionally does not store secrets, raw prompts, raw completions, pr
       "overall_status": "ok",
       "provider": "cerebras",
       "timestamp_utc": "2026-06-29T19:20:30Z"
+    },
+    "28402650374|1|Scheduled check-agent signal collector|65|sambanova|Meta-Llama-3.3-70B-Instruct|ok|ok|ok": {
+      "check_status": "ok",
+      "commit_sha": "38a99ae5a2ae8a1c1d2e488e8f3f082569a25664",
+      "event_name": "schedule",
+      "issue_status": "ok",
+      "model": "Meta-Llama-3.3-70B-Instruct",
+      "overall_status": "ok",
+      "provider": "sambanova",
+      "timestamp_utc": "2026-06-29T21:06:21Z"
+    },
+    "28406411549|1|Scheduled check-agent signal collector|66|sambanova|DeepSeek-V3.1|ok|ok|ok": {
+      "check_status": "ok",
+      "commit_sha": "dcaa7d76f4816d8d16daab99cd5e3e5460bb76a7",
+      "event_name": "schedule",
+      "issue_status": "ok",
+      "model": "DeepSeek-V3.1",
+      "overall_status": "ok",
+      "provider": "sambanova",
+      "timestamp_utc": "2026-06-29T22:19:25Z"
+    },
+    "28409638610|1|Scheduled check-agent signal collector|66|sambanova|Meta-Llama-3.3-70B-Instruct|ok|ok|ok": {
+      "check_status": "ok",
+      "commit_sha": "3acdb521bdea83effe1959a6bbac738acda29cee",
+      "event_name": "schedule",
+      "issue_status": "ok",
+      "model": "Meta-Llama-3.3-70B-Instruct",
+      "overall_status": "ok",
+      "provider": "sambanova",
+      "timestamp_utc": "2026-06-29T23:32:49Z"
+    },
+    "28414833292|1|Scheduled check-agent signal collector|67|cerebras|zai-glm-4.7|ok|ok|ok": {
+      "check_status": "ok",
+      "commit_sha": "f7dc7035fea398b3b5612eee0d43ef442121d3e2",
+      "event_name": "schedule",
+      "issue_status": "ok",
+      "model": "zai-glm-4.7",
+      "overall_status": "ok",
+      "provider": "cerebras",
+      "timestamp_utc": "2026-06-30T01:51:31Z"
+    },
+    "28424667904|1|Scheduled check-agent signal collector|69|sambanova|DeepSeek-V3.1|ok|ok|ok": {
+      "check_status": "ok",
+      "commit_sha": "bd02cedb4febcd6f3ed8e54f004c0b0547dac0b1",
+      "event_name": "schedule",
+      "issue_status": "ok",
+      "model": "DeepSeek-V3.1",
+      "overall_status": "ok",
+      "provider": "sambanova",
+      "timestamp_utc": "2026-06-30T06:22:46Z"
+    },
+    "28436466020|1|Scheduled check-agent signal collector|70|cerebras|zai-glm-4.7|ok|ok|ok": {
+      "check_status": "ok",
+      "commit_sha": "bc21b3dd076b3a8814e57f1c22ab99dfb5314aff",
+      "event_name": "schedule",
+      "issue_status": "ok",
+      "model": "zai-glm-4.7",
+      "overall_status": "ok",
+      "provider": "cerebras",
+      "timestamp_utc": "2026-06-30T10:06:19Z"
+    },
+    "28443934133|1|Scheduled check-agent signal collector|71|gemini|gemini-3.1-flash-lite|rejected|rejected|skipped": {
+      "check_status": "rejected",
+      "commit_sha": "09f70088997e40d383db43a6f835e5562a05fbc4",
+      "event_name": "schedule",
+      "issue_status": "skipped",
+      "model": "gemini-3.1-flash-lite",
+      "overall_status": "rejected",
+      "provider": "gemini",
+      "timestamp_utc": "2026-06-30T12:23:15Z"
     },
     "local|0|local|1|cerebras|zai-glm-4.7|failed|failed|failed": {
       "check_status": "failed",
