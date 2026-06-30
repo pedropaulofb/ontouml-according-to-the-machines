@@ -10,23 +10,26 @@ Statistics collection started on: `2026-06-29T12:18:18Z`
 
 Counts shown on this page only include executions recorded since that start time.
 
-Last generated: `2026-06-30T19:16:02Z`
+Models not present in the current active rotation remain listed as `inactive` for historical continuity.
+
+Last generated: `2026-06-30T20:18:19Z`
 
 ## Cumulative table
 
-| Provider | Model | # called | # valid | # invalid | # rejected | # provider failed | # runner failed | Last check status | Last issue status | Last run UTC |
-|---|---|---:|---:|---:|---:|---:|---:|---|---|---|
-| `cerebras` | `gpt-oss-120b` | 2 | 2 | 0 | 0 | 0 | 0 | `ok` | `ok` | `2026-06-30T19:16:02Z` |
-| `cerebras` | `zai-glm-4.7` | 4 | 3 | 1 | 0 | 0 | 1 | `ok` | `ok` | `2026-06-30T15:08:15Z` |
-| `gemini` | `gemini-3.1-flash-lite` | 2 | 0 | 2 | 2 | 0 | 0 | `rejected` | `skipped` | `2026-06-30T12:23:15Z` |
-| `groq` | `llama-3.3-70b-versatile` | 0 | 0 | 0 | 0 | 0 | 0 |  |  |  |
-| `openrouter` | `nvidia/nemotron-3-ultra-550b-a55b:free` | 2 | 0 | 2 | 2 | 0 | 0 | `rejected` | `skipped` | `2026-06-30T17:22:27Z` |
-| `openrouter` | `poolside/laguna-m.1:free` | 0 | 0 | 0 | 0 | 0 | 0 |  |  |  |
-| `sambanova` | `DeepSeek-V3.1` | 3 | 3 | 0 | 0 | 0 | 0 | `ok` | `ok` | `2026-06-30T06:22:46Z` |
-| `sambanova` | `Meta-Llama-3.3-70B-Instruct` | 2 | 2 | 0 | 0 | 0 | 0 | `ok` | `ok` | `2026-06-29T23:32:49Z` |
+| Provider | Model | Status | # called | # valid | # invalid | # rejected | # provider failed | # runner failed | Last check status | Last issue status | Last run UTC |
+|---|---|---|---:|---:|---:|---:|---:|---:|---|---|---|
+| `cerebras` | `gpt-oss-120b` | `active` | 2 | 2 | 0 | 0 | 0 | 0 | `ok` | `ok` | `2026-06-30T19:16:02Z` |
+| `cerebras` | `zai-glm-4.7` | `active` | 4 | 3 | 1 | 0 | 0 | 1 | `ok` | `ok` | `2026-06-30T15:08:15Z` |
+| `gemini` | `gemini-3.1-flash-lite` | `active` | 2 | 0 | 2 | 2 | 0 | 0 | `rejected` | `skipped` | `2026-06-30T12:23:15Z` |
+| `groq` | `llama-3.3-70b-versatile` | `inactive` | 0 | 0 | 0 | 0 | 0 | 0 |  |  |  |
+| `openrouter` | `nvidia/nemotron-3-ultra-550b-a55b:free` | `active` | 2 | 0 | 2 | 2 | 0 | 0 | `rejected` | `skipped` | `2026-06-30T17:22:27Z` |
+| `openrouter` | `poolside/laguna-m.1:free` | `active` | 0 | 0 | 0 | 0 | 0 | 0 |  |  |  |
+| `sambanova` | `DeepSeek-V3.1` | `active` | 3 | 3 | 0 | 0 | 0 | 0 | `ok` | `ok` | `2026-06-30T06:22:46Z` |
+| `sambanova` | `Meta-Llama-3.3-70B-Instruct` | `active` | 2 | 2 | 0 | 0 | 0 | 0 | `ok` | `ok` | `2026-06-29T23:32:49Z` |
 
 ## Status derivation
 
+- `Status` is derived from the hidden `active_rotation` state: models in that list are `active`; previously recorded models outside it are `inactive`.
 - `# called` increments once for each selected provider/model run recorded in `.tmp/phase-2/batch-summary.md` with check status `ok`, `rejected`, `provider_failed`, or `failed`.
 - `# valid` increments only for Python-side check status `ok`.
 - `# invalid` increments for Python-side check status `rejected`, `provider_failed`, or `failed`.
@@ -50,11 +53,6 @@ This page intentionally does not store secrets, raw prompts, raw completions, pr
 <!-- model-run-statistics-state
 {
   "active_rotation": [
-    {
-      "model": "llama-3.3-70b-versatile",
-      "provider": "groq",
-      "spec": "groq:llama-3.3-70b-versatile"
-    },
     {
       "model": "gpt-oss-120b",
       "provider": "cerebras",
@@ -92,7 +90,7 @@ This page intentionally does not store secrets, raw prompts, raw completions, pr
     }
   ],
   "collection_start_utc": "2026-06-29T12:18:18Z",
-  "generated_at": "2026-06-30T19:16:02Z",
+  "generated_at": "2026-06-30T20:18:19Z",
   "models": {
     "cerebras:gpt-oss-120b": {
       "called": 2,

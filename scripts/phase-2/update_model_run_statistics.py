@@ -25,7 +25,6 @@ STATE_START = "<!-- model-run-statistics-state"
 STATE_END = "-->"
 STATE_SCHEMA_VERSION = 1
 DEFAULT_PROVIDER_MODEL_SPECS = (
-    "groq:llama-3.3-70b-versatile,"
     "cerebras:gpt-oss-120b,"
     "sambanova:DeepSeek-V3.1,"
     "openrouter:nvidia/nemotron-3-ultra-550b-a55b:free,"
@@ -340,6 +339,24 @@ def normalize_existing_models(state: dict[str, Any]) -> None:
         ensure_model_record(state, ProviderModelSpec(provider=provider, model=model))
 
 
+def active_model_keys(state: dict[str, Any]) -> set[str]:
+    keys: set[str] = set()
+    for raw_spec in state.get("active_rotation", []):
+        if not isinstance(raw_spec, dict):
+            continue
+        provider = str(raw_spec.get("provider", "") or "").strip()
+        model = str(raw_spec.get("model", "") or "").strip()
+        if provider and model:
+            keys.add(model_key(provider, model))
+    return keys
+
+
+def model_record_status(record: dict[str, Any], active_keys: set[str]) -> str:
+    provider = str(record.get("provider", "") or "").strip()
+    model = str(record.get("model", "") or "").strip()
+    return "active" if provider and model and model_key(provider, model) in active_keys else "inactive"
+
+
 def event_key(*, run_id: str, run_attempt: str, workflow: str, summary_run: SummaryRun) -> str:
     return "|".join(
         [
@@ -440,6 +457,7 @@ def sorted_model_records(state: dict[str, Any]) -> list[dict[str, Any]]:
 def render_markdown(state: dict[str, Any]) -> str:
     generated_at = state.get("generated_at") or "not generated yet"
     collection_start_utc = ensure_collection_start_utc(state) or "not recorded yet"
+    active_keys = active_model_keys(state)
     lines: list[str] = [
         "# Phase 2 — Model Run Statistics",
         "",
@@ -453,20 +471,24 @@ def render_markdown(state: dict[str, Any]) -> str:
         "",
         "Counts shown on this page only include executions recorded since that start time.",
         "",
+        "Models not present in the current active rotation remain listed as `inactive` for historical continuity.",
+        "",
         f"Last generated: `{generated_at}`",
         "",
         "## Cumulative table",
         "",
-        "| Provider | Model | # called | # valid | # invalid | # rejected | # provider failed | # runner failed | Last check status | Last issue status | Last run UTC |",
-        "|---|---|---:|---:|---:|---:|---:|---:|---|---|---|",
+        "| Provider | Model | Status | # called | # valid | # invalid | # rejected | # provider failed | # runner failed | Last check status | Last issue status | Last run UTC |",
+        "|---|---|---|---:|---:|---:|---:|---:|---:|---|---|---|",
     ]
     for record in sorted_model_records(state):
+        status = model_record_status(record, active_keys)
         lines.append(
             "| "
             + " | ".join(
                 [
                     f"`{markdown_escape(record.get('provider', ''))}`",
                     f"`{markdown_escape(record.get('model', ''))}`",
+                    f"`{status}`",
                     str(int(record.get("called", 0) or 0)),
                     str(int(record.get("valid", 0) or 0)),
                     str(int(record.get("invalid", 0) or 0)),
@@ -490,6 +512,7 @@ def render_markdown(state: dict[str, Any]) -> str:
             "",
             "## Status derivation",
             "",
+            "- `Status` is derived from the hidden `active_rotation` state: models in that list are `active`; previously recorded models outside it are `inactive`.",
             "- `# called` increments once for each selected provider/model run recorded in `.tmp/phase-2/batch-summary.md` with check status `ok`, `rejected`, `provider_failed`, or `failed`.",
             "- `# valid` increments only for Python-side check status `ok`.",
             "- `# invalid` increments for Python-side check status `rejected`, `provider_failed`, or `failed`.",
@@ -612,31 +635,34 @@ def run_self_test() -> int:
             )
             update_statistics_page(ns)
 
-        run_case("ok", "ok", "ok", "groq", "llama-3.3-70b-versatile", "1")
+        run_case("ok", "ok", "ok", "legacy-provider", "legacy-model", "1")
         run_case("rejected", "rejected", "skipped", "openrouter", "nvidia/nemotron-3-ultra-550b-a55b:free", "2")
         run_case("rejected", "rejected", "skipped", "openrouter", "nvidia/nemotron-3-ultra-550b-a55b:free", "2")
         run_case("provider_failed", "provider_failed", "skipped", "openrouter", "poolside/laguna-m.1:free", "3")
         run_case("failed", "ok", "failed", "gemini", "gemini-3.1-flash-lite", "4")
 
         state = load_state(page)
-        groq = state["models"]["groq:llama-3.3-70b-versatile"]
+        legacy = state["models"]["legacy-provider:legacy-model"]
         nemotron = state["models"]["openrouter:nvidia/nemotron-3-ultra-550b-a55b:free"]
         laguna = state["models"]["openrouter:poolside/laguna-m.1:free"]
         gemini = state["models"]["gemini:gemini-3.1-flash-lite"]
-        assert groq["called"] == 1 and groq["valid"] == 1 and groq["invalid"] == 0
+        active_keys = active_model_keys(state)
+        rendered = page.read_text(encoding="utf-8")
+        assert legacy["called"] == 1 and legacy["valid"] == 1 and legacy["invalid"] == 0
+        assert model_record_status(legacy, active_keys) == "inactive"
         assert nemotron["called"] == 1 and nemotron["invalid"] == 1 and nemotron["rejected"] == 1
         assert laguna["called"] == 1 and laguna["invalid"] == 1 and laguna["provider_failed"] == 1
         assert gemini["called"] == 1 and gemini["valid"] == 1 and gemini["invalid"] == 0
         assert gemini["last_issue_status"] == "failed"
         assert state["collection_start_utc"] == "2026-06-28T00:00:00Z"
-        assert "Statistics collection started on: `2026-06-28T00:00:00Z`" in page.read_text(encoding="utf-8")
-        assert "Counts shown on this page only include executions recorded since that start time." in page.read_text(
-            encoding="utf-8"
-        )
+        assert "Statistics collection started on: `2026-06-28T00:00:00Z`" in rendered
+        assert "Models not present in the current active rotation remain listed as `inactive`" in rendered
+        assert "| `legacy-provider` | `legacy-model` | `inactive` |" in rendered
         assert "openrouter:nvidia/nemotron-3-ultra-550b-a55b:free" in state["models"]
-        assert len(state["active_rotation"]) == 8
+        assert all(not spec["provider"].lower().startswith("groq") for spec in state["active_rotation"])
+        assert len(state["active_rotation"]) == 7
     print(
-        "Self-test passed: counters increment, duplicate events are ignored, issue-manager failures do not invalidate model output, collection start is persisted, and OpenRouter colon model IDs are preserved."
+        "Self-test passed: counters increment, duplicate events are ignored, issue-manager failures do not invalidate model output, inactive historical models are retained, collection start is persisted, and OpenRouter colon model IDs are preserved."
     )
     return 0
 
