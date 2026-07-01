@@ -19,8 +19,8 @@ Its scheduled workflow is:
 Its resolver prompts are:
 
 ```text
-prompts/phase-2/resolve-page-hygiene-signal-issue-v1.2.1.md
-prompts/phase-2/resolve-language-style-signal-issue-v1.2.1.md
+prompts/phase-2/resolve-page-hygiene-signal-issue-v1.2.2.md
+prompts/phase-2/resolve-language-style-signal-issue-v1.2.2.md
 ```
 
 The resolver operates only on signal issues produced by these check agents:
@@ -164,6 +164,8 @@ service_unavailable
 provider_unavailable
 status.*unavailable
 temporarily unavailable
+server disconnected
+disconnected without sending a response
 ```
 
 When the fallback path is taken, the workflow preserves the primary provider-error artifact by renaming the relevant file from:
@@ -267,10 +269,10 @@ Current resolver prompt metadata as emitted by `resolve_signal_issue.py`:
 
 | Check agent | Prompt ID | Prompt title |
 |---|---|---|
-| `page-hygiene-checker` | `resolve-page-hygiene-signal-issue-v1.2.1` | `Phase 2 automated resolver: page-hygiene signals v1.2.1` |
-| `language-style-checker` | `resolve-language-style-signal-issue-v1.2.1` | `Phase 2 automated resolver: language-style signals v1.2.1` |
+| `page-hygiene-checker` | `resolve-page-hygiene-signal-issue-v1.2.2` | `Phase 2 automated resolver: page-hygiene signals v1.2.2` |
+| `language-style-checker` | `resolve-language-style-signal-issue-v1.2.2` | `Phase 2 automated resolver: language-style signals v1.2.2` |
 
-The `resolve-language-style-signal-issue-v1.2.1.md` prompt file heading uses `v1.2.1`. The current `resolve-page-hygiene-signal-issue-v1.2.1.md` path is the active wrapper route for page-hygiene resolution, while the wrapper metadata above is authoritative for review-log rows.
+Both current resolver prompt files use `v1.2.2` headings. The current prompt paths above are the active wrapper routes, while the wrapper metadata above is authoritative for review-log rows.
 
 Legacy bullet-style resolver log entries are removed for the same issue when the resolver applies accepted edits.
 
@@ -350,6 +352,8 @@ permissions:
   issues: write
   pull-requests: write
 ```
+
+The workflow checks out the repository with `secrets.PHASE2_AUTOMATION_TOKEN` and exposes the same secret as `GH_TOKEN` and `GITHUB_TOKEN` for resolver GitHub operations, including branch-write operations.
 
 Concurrency group:
 
