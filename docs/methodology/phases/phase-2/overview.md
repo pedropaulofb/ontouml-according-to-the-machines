@@ -191,8 +191,8 @@ prompts/phase-2/page-hygiene-checker-v1.0.3.md
 prompts/phase-2/language-style-checker-v1.0.3.md
 archive/phase-2/manual-closure-prompts/close-page-hygiene-signal-issue-v1.0.0.md
 archive/phase-2/manual-closure-prompts/close-language-style-signal-issue-v1.0.0.md
-prompts/phase-2/resolve-page-hygiene-signal-issue-v1.2.1.md
-prompts/phase-2/resolve-language-style-signal-issue-v1.2.1.md
+prompts/phase-2/resolve-page-hygiene-signal-issue-v1.2.2.md
+prompts/phase-2/resolve-language-style-signal-issue-v1.2.2.md
 scripts/phase-2/run_check_agent.py
 scripts/phase-2/run_check_batch.py
 scripts/phase-2/issue_manager.py
@@ -306,7 +306,7 @@ The current implementation still has these limitations and risks:
 - PR merge still depends on repository settings, branch protection, required checks, and auto-merge availability;
 - `gh pr update-branch --rebase` can fail if the branch cannot be cleanly rebased;
 - auto-merge can remain pending if required checks are pending, blocked, or not configured correctly;
-- the GitHub Actions token must have sufficient repository permissions to create pull requests, update branches, enable auto-merge, comment on issues, and close issues.
+- `PHASE2_AUTOMATION_TOKEN` must have sufficient repository permissions to create pull requests, update branches, enable auto-merge, comment on issues, close issues, and push model-run statistics updates.
 
 ## Operational prerequisites
 
@@ -316,15 +316,17 @@ The current local implementation depends on:
 - dependencies from `requirements.txt`;
 - a provider API key for real LLM runs;
 - GitHub CLI authentication through `gh auth login` for local issue posting or local resolver use;
-- `GH_TOKEN` or the default `github.token` for issue posting and resolver operations in GitHub Actions.
+- `GH_TOKEN` or the default `github.token` for scheduled issue posting in GitHub Actions;
+- `PHASE2_AUTOMATION_TOKEN` for GitHub Actions branch-write operations, including automated resolver operations and model-run statistics updates.
 
-Current Python runtime dependencies include:
+Current Python runtime dependencies from `requirements.txt` include:
 
 ```text
+mkdocs>=1.6.1,<2.0.0
 mkdocs-material==9.7.6
-groq==1.4.0
-google-genai>=2.8.0,<3.0.0
-openai>=1.0.0,<3.0.0
+groq==1.5.0
+google-genai>=2.10.0,<3.0.0
+openai>=2.44.0,<3.0.0
 ```
 
 The provider secrets used when the corresponding provider is selected are:
@@ -372,9 +374,12 @@ The scheduled LLM GitHub Actions workflow depends on:
 - `CEREBRAS_API_KEY` when Cerebras is selected;
 - `SAMBANOVA_API_KEY` when SambaNova is selected;
 - `OPENROUTER_API_KEY` when OpenRouter is selected;
-- `GH_TOKEN`;
+- `GH_TOKEN` backed by the default `github.token` for issue posting;
+- `PHASE2_AUTOMATION_TOKEN` when scheduled runs or `update_model_statistics=true` update the model-run statistics page;
 - `contents: read`;
 - `issues: write`.
+
+The scheduled signal-collector workflow keeps workflow-level repository contents permission read-only. Model-run statistics branch writes use `PHASE2_AUTOMATION_TOKEN` for the push step.
 
 ### Automated resolver workflow prerequisites
 
