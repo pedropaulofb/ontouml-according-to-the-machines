@@ -274,11 +274,17 @@ Manual dispatch supports:
 
 - `generate`, `dry-run`, or `post` mode;
 - supported provider-adapter selection; Groq remains selectable manually only when an explicit model is supplied;
+- `first` or `rotate` selection;
+- `hourly` or `daily` rotation seed;
+- comma-separated check-agent slugs;
 - comma-separated `models`;
 - comma- or newline-separated `provider_model_specs`;
 - comma- or newline-separated page lists;
 - explicit `rotation_index`;
-- explicit `max_completion_tokens`.
+- explicit `max_runs`;
+- explicit `sleep_seconds`;
+- explicit `max_completion_tokens`;
+- explicit `update_model_statistics` toggle.
 
 When `provider_model_specs` is supplied, it overrides the `provider` and `models` inputs.
 
@@ -335,6 +341,7 @@ rotation_seed: hourly
 max_runs: 1
 sleep_seconds: 0
 max_completion_tokens: 3000
+update_model_statistics: true
 agents: page-hygiene-checker,language-style-checker
 provider/model rotation: cerebras:gpt-oss-120b, sambanova:DeepSeek-V3.1, openrouter:nvidia/nemotron-3-ultra-550b-a55b:free, gemini:gemini-3.1-flash-lite, cerebras:zai-glm-4.7, sambanova:Meta-Llama-3.3-70B-Instruct, openrouter:poolside/laguna-m.1:free
 pages: all canonical class and relation stereotype pages, excluding index.md
@@ -479,17 +486,23 @@ OPENROUTER_API_KEY
 
 The active scheduled rotation currently uses `GEMINI_API_KEY`, `CEREBRAS_API_KEY`, `SAMBANOVA_API_KEY`, and `OPENROUTER_API_KEY`. `GROQ_API_KEY` is still relevant only if Groq is selected manually or reintroduced in a future rotation.
 
+Branch-write repository secret required for scheduled runs and manual runs with `update_model_statistics: true`:
+
+```text
+PHASE2_AUTOMATION_TOKEN
+```
+
 Required workflow permissions:
 
 ```yaml
 permissions:
-  contents: write
+  contents: read
   issues: write
 ```
 
 The workflow uploads `.tmp/phase-2` as an artifact even if the check-agent run fails or produces rejected outputs.
 
-The scheduled check-agent workflow also updates `docs/methodology/phases/phase-2/model-run-statistics.md` with cumulative provider/model execution counters. The counters are derived from `run_check_batch.py` check-status fields, not from LLM self-reporting. This repository-file persistence requires direct write access to the target branch and uses workflow-level concurrency to reduce overlapping counter updates.
+The scheduled check-agent workflow also updates `docs/methodology/phases/phase-2/model-run-statistics.md` with cumulative provider/model execution counters. The counters are derived from `run_check_batch.py` check-status fields, not from LLM self-reporting. The update step requires `PHASE2_AUTOMATION_TOKEN`; the workflow validates that secret for scheduled runs and for manual dispatches with `update_model_statistics: true`, then pushes the statistics commit with an authenticated `x-access-token` remote. The workflow-level `contents` permission remains `read`; repository-file persistence depends on the automation token's branch-write access and workflow-level concurrency to reduce overlapping counter updates.
 
 ### Automated resolver workflow
 
