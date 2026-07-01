@@ -109,8 +109,8 @@ It protects:
 Phase 2 includes two automated resolver prompts:
 
 ```text
-prompts/phase-2/resolve-page-hygiene-signal-issue-v1.2.1.md
-prompts/phase-2/resolve-language-style-signal-issue-v1.2.1.md
+prompts/phase-2/resolve-page-hygiene-signal-issue-v1.2.2.md
+prompts/phase-2/resolve-language-style-signal-issue-v1.2.2.md
 ```
 
 These prompts are implemented for:
@@ -133,7 +133,7 @@ They return strict JSON resolution plans and do not directly perform GitHub writ
 The page-hygiene automated resolver prompt is:
 
 ```text
-prompts/phase-2/resolve-page-hygiene-signal-issue-v1.2.1.md
+prompts/phase-2/resolve-page-hygiene-signal-issue-v1.2.2.md
 ```
 
 It may accept only deterministic, local, meaning-preserving editorial edits within the page-hygiene checker scope:
@@ -150,13 +150,13 @@ It must reject conceptual validation, source-faithfulness validation, quote veri
 The language-style automated resolver prompt is:
 
 ```text
-prompts/phase-2/resolve-language-style-signal-issue-v1.2.1.md
+prompts/phase-2/resolve-language-style-signal-issue-v1.2.2.md
 ```
 
 The current prompt file heading is:
 
 ```text
-Phase 2 automated resolver: language-style signals v1.2.1
+Phase 2 automated resolver: language-style signals v1.2.2
 ```
 
 It may accept only deterministic, local, meaning-preserving editorial edits within the language-style checker scope:
@@ -225,7 +225,9 @@ Completed:
 - `issue_manager.py` implements stable comment identity;
 - `issue_manager.py` updates matching existing comments instead of posting duplicates;
 - `.github/workflows/check-agent-signal-collector.yml` runs scheduled rotating LLM check-agent collection;
+- the scheduled signal-collector workflow grants `contents: read` and `issues: write`;
 - scheduled runs can create or update GitHub issues/comments in `post` mode;
+- scheduled model-run statistics updates require `PHASE2_AUTOMATION_TOKEN` and push `docs/methodology/phases/phase-2/model-run-statistics.md` with that token;
 - scheduled provider/model rotation includes seven active Cerebras, SambaNova, OpenRouter, and Gemini provider/model specs, with no active Groq slot;
 - Gemini uses `gemini-3.1-flash-lite` as the current scheduled signal-generation default;
 - scheduled signal-generation runs use `max_completion_tokens=3000` in the canonical workflow when no manual override is supplied;
@@ -233,8 +235,8 @@ Completed:
 - `close-page-hygiene-signal-issue-v1.0.0.md` exists as the manual issue-review and resolution prompt for `page-hygiene-checker` issues;
 - `close-language-style-signal-issue-v1.0.0.md` exists as the manual issue-review and resolution prompt for `language-style-checker` issues;
 - the earlier plan for a third `page-structure-checker` closure prompt has been discarded;
-- `resolve-page-hygiene-signal-issue-v1.2.1.md` exists as the automated resolver prompt for `page-hygiene-checker` issues;
-- `resolve-language-style-signal-issue-v1.2.1.md` exists as the automated resolver prompt for `language-style-checker` issues;
+- `resolve-page-hygiene-signal-issue-v1.2.2.md` exists as the automated resolver prompt for `page-hygiene-checker` issues;
+- `resolve-language-style-signal-issue-v1.2.2.md` exists as the automated resolver prompt for `language-style-checker` issues;
 - `resolve_signal_issue.py` implements automated resolver orchestration;
 - `.github/workflows/phase-2-signal-resolver.yml` runs scheduled and manual automated signal resolution;
 - the automated resolver schedule is one scheduled attempt every four hours;
@@ -251,14 +253,14 @@ Completed:
 - the automated resolver updates PR branches by rebase;
 - the automated resolver enables squash auto-merge;
 - the automated resolver comments on and closes source signal issues;
-- accepted automated resolver PRs for `language-style-checker` issues have been merged through the repository workflow.
+- accepted automated resolver PRs for both `page-hygiene-checker` and `language-style-checker` issues have been merged through the repository workflow.
 
 Pending:
 
 1. decide whether to keep or remove non-canonical support artifacts such as `providers/mock.py` and `.github/workflows/phase-2-check-agents.yml.bak`;
 2. document any observed clean baseline with a dated run artifact rather than an undocumented local claim;
 3. extend provider transient-error markers if future observed SDK diagnostics are not caught by the current marker list;
-4. confirm whether the two manual issue-resolution prompts and two automated resolver prompts should remain directly under `prompts/phase-2/` or be moved into a dedicated subdirectory in a later cleanup;
+4. confirm whether the archived manual issue-resolution prompts and two automated resolver prompts should remain in their current locations or be moved into dedicated subdirectories in a later cleanup;
 5. decide whether source signal issues should remain closed after resolver completion or be closed only after PR merge through a separate `pull_request.closed` workflow;
 6. update adjacent methodology pages if they still describe Phase 2 as excluding all automatic PR creation, issue closure, or auto-merge.
 
@@ -362,7 +364,7 @@ Phase 2 can be considered complete when:
 - the two automated resolver prompts for LLM-based signal issues exist and are documented;
 - the automated resolver can select eligible issues, validate strict JSON plans, apply accepted exact edits, reject unsafe or out-of-scope signals for automation, create PRs, enable squash auto-merge, and close source signal issues;
 - the automated resolver schedule, primary Gemini model, and fallback-model behavior are documented;
-- the repository permissions and branch-protection settings allow the automated resolver workflow to complete its intended path.
+- the repository permissions, branch-protection settings, and `PHASE2_AUTOMATION_TOKEN` access allow the automated resolver workflow to complete its intended path.
 
 ## Generation and review log
 
@@ -383,9 +385,11 @@ Phase 2 can be considered complete when:
 - Different providers and models executed by the same agent for the same page create comments in the same issue.
 - Stable comment identity is implemented with page, agent, provider, model, prompt, and commit.
 - Matching existing comments are updated instead of duplicated.
+- The scheduled signal-collector workflow keeps `contents: read`/`issues: write` and uses `PHASE2_AUTOMATION_TOKEN` for model-run statistics branch writes.
 - Manual signal-review and issue-resolution support is documented for `page-hygiene-checker` and `language-style-checker` through two ChatGPT prompts.
 - The planned `page-structure-checker` closure prompt was discarded; deterministic page-structure signals remain subject to direct maintainer review.
 - Automated signal resolution is implemented for `page-hygiene-checker` and `language-style-checker` issues.
+- The active automated resolver prompt IDs are `resolve-page-hygiene-signal-issue-v1.2.2` and `resolve-language-style-signal-issue-v1.2.2`.
 - Automated resolver prompts return strict JSON plans and classify non-accepted cases as `reject_for_phase_2_automation`.
 - The automated resolver keeps `gemini-3.5-flash` as the primary Gemini resolver model.
 - The automated resolver workflow uses `gemini-2.5-flash` once as an immediate fallback model only for provider-unavailability or 503-like primary Gemini failures.
