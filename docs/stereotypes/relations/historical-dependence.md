@@ -29,10 +29,11 @@ TBD in a later phase.
 ### Consulted Sources
 
 - Almeida, J. P. A., Falbo, R. A., & Guizzardi, G. (2019, October). Events as entities in ontology-driven conceptual modeling. In International Conference on Conceptual Modeling (pp. 469-483). Cham: Springer International Publishing. Scope: full document.
-- Guarino, N., & Guizzardi, G. (2016, November). Relationships and events: towards a general theory of reification and truthmaking. In Conference of the Italian Association for Artificial Intelligence (pp. 237-249). Cham: Springer International Publishing.. Scope: full document.
+- Guarino, N., & Guizzardi, G. (2016, November). Relationships and events: towards a general theory of reification and truthmaking. In Conference of the Italian Association for Artificial Intelligence (pp. 237-249). Cham: Springer International Publishing. Scope: full document.
 
 ## Generation and Review Log
 
 | Date | Phase | Agent | Action | Prompt ID | Prompt Title | Inputs | Notes |
 |---|---|---|---|---|---|---|---|
 | 2026-06-06 | Phase 1 | GPT-5.5 Thinking | Consolidation | prompt-phase-1-consolidation-v1.0.0 | Phase 1 Consolidation — Direct Main Commit for One Stereotype | 2026-06-05t1031-almeida-falbo-guizzardi-2019-events-as-entities-full-document.md, 2026-06-05t1033-guarino-guizzardi-2016-relationships-events-full-document.md | First consolidated stereotype page generated from Phase 1 source-specific intermediate files at 2026-06-06t0052; not final expert-validated documentation. |
+| 2026-07-02 | Phase 2 | Phase 2 automated resolver | Signal resolution | resolve-page-hygiene-signal-issue-v1.2.2 | Phase 2 automated resolver: page-hygiene signals v1.2.2 | GitHub issue #179 | Applied accepted page-hygiene-checker signal edits through automated Phase 2 resolution; not a conceptual or source-faithfulness validation. |
