@@ -4,7 +4,7 @@
 
 SubQuantityOf is a meronymic parthood relation between quantities. The supplied evidence constrains the relation to Quantity classifiers at both ends: it is presented as holding between quantities, with one contribution characterizing quantities as maximal self-connected objectified portions of matter and another requiring both connected classifiers to represent Quantity universals.
 
-SubQuantityOf is treated as governed by extensional mereology. In that setting, the supplied evidence associates the relation with non-reflexivity, anti-symmetry, transitivity, and strong supplementation. Transitivity is independently emphasized in the quantity/mass account, which states that parthood among quantities is always transitive.
+SubQuantityOf is governed by extensional mereology. In that setting, the supplied evidence associates the relation with non-reflexivity, anti-symmetry, transitivity, and strong supplementation. Transitivity is independently emphasized in the quantity/mass account, which states that parthood among quantities is always transitive.
 
 Both source contributions characterize SubQuantityOf as non-shareable: a quantity part belongs to one maximal quantity whole in the relevant sense, and the relation is recorded with `isShareable = false`. The supplied evidence also treats parthood involving quantities as essential parthood; one contribution states that the part is essential to the whole, while another grounds essentiality in the extensional character of Quantity individuals.
 
@@ -38,3 +38,4 @@ To be completed.
 | Date | Phase | Agent | Action | Prompt ID | Prompt Title | Inputs | Notes |
 |---|---|---|---|---|---|---|---|
 | 2026-06-06 | Phase 1 | GPT-5.5 Thinking | Consolidation | prompt-phase-1-consolidation-v1.0.0 | Phase 1 Consolidation — Direct Main Commit for One Stereotype | 2026-06-05t0926-guizzardi-2005-thesis-chapter-05.md, 2026-06-05t0930-guizzardi-2005-thesis-chapter-08.md | First consolidated stereotype page generated from Phase 1 source-specific intermediate files at 2026-06-06t0151; not final expert-validated documentation. |
+| 2026-07-04 | Phase 2 | Phase 2 automated resolver | Signal resolution | resolve-language-style-signal-issue-v1.2.2 | Phase 2 automated resolver: language-style signals v1.2.2 | GitHub issue #191 | Applied accepted language-style-checker signal edits through automated Phase 2 resolution; not a conceptual or source-faithfulness validation. |
