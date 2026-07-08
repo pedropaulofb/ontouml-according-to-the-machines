@@ -2,7 +2,7 @@
 
 ## Description
 
-Characterization connects a characterized universal or type with a characterizing moment universal or type. Across sources, the common commitment is that instances of the characterized endurant or substantial universal bear instances of the characterizing moment, Mode, or Quality universal. At the instance level, this is grounded in inherence: instances of the characterizing moment, Mode, or Quality inhere in instances of the characterized universal or type, as emphasized by some sources that the bearer is unique.
+Characterization connects a characterized universal or type with a characterizing moment universal or type. Across sources, the common commitment is that instances of the characterized endurant or substantial universal bear instances of the characterizing moment, Mode, or Quality universal. At the instance level, this is grounded in inherence: instances of the characterizing moment, Mode, or Quality inhere in instances of the characterized universal or type, as emphasized by some sources, the bearer is unique.
 
 Sources present the direction of Characterization differently across contexts. Some formulate the relation from the characterized universal or type to a moment type, while others describe it from an intrinsic moment universal to the substantial universal it characterizes or as a profile relation whose source end is a Mode. The safe common reading is therefore the association between a characterized type and a characterizing intrinsic moment type, without fixing a final relation-end profile.
 
@@ -12,11 +12,11 @@ One source-specific contribution further relates Characterization to Role and at
 
 ## Stereotype Profile
 
-TBD in a later phase.
+To be defined.
 
 ## Examples
 
-TBD in a later phase.
+To be defined.
 
 ## References
 
@@ -47,3 +47,4 @@ TBD in a later phase.
 | 2026-06-21 | Phase 2 | Phase 2 automated resolver | Signal resolution | resolve-language-style-signal-issue-v1.2.1 | Phase 2 automated resolver: language-style signals v1.2.1 | GitHub issue #72 | Applied accepted language-style-checker signal edits through automated Phase 2 resolution; not a conceptual or source-faithfulness validation. |
 | 2026-06-24 | Phase 2 | Phase 2 automated resolver | Signal resolution | resolve-page-hygiene-signal-issue-v1.2.1 | Phase 2 automated resolver: page-hygiene signals v1.2.1 | GitHub issue #145 | Applied accepted page-hygiene-checker signal edits through automated Phase 2 resolution; not a conceptual or source-faithfulness validation. |
 | 2026-07-01 | Phase 2 | Phase 2 automated resolver | Signal resolution | resolve-language-style-signal-issue-v1.2.2 | Phase 2 automated resolver: language-style signals v1.2.2 | GitHub issue #172 | Applied accepted language-style-checker signal edits through automated Phase 2 resolution; not a conceptual or source-faithfulness validation. |
+| 2026-07-08 | Phase 2 | Phase 2 automated resolver | Signal resolution | resolve-language-style-signal-issue-v1.2.2 | Phase 2 automated resolver: language-style signals v1.2.2 | GitHub issue #216 | Applied accepted language-style-checker signal edits through automated Phase 2 resolution; not a conceptual or source-faithfulness validation. |
