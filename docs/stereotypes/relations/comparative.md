@@ -12,11 +12,11 @@ A later source further treats Comparative as an intrinsic descriptive relation w
 
 ## Stereotype Profile
 
-TBD in a later phase.
+To be defined.
 
 ## Examples
 
-TBD in a later phase.
+To be defined.
 
 ## References
 
@@ -35,3 +35,4 @@ None.
 | Date | Phase | Agent | Action | Prompt ID | Prompt Title | Inputs | Notes |
 |---|---|---|---|---|---|---|---|
 | 2026-06-06 | Phase 1 | GPT-5.5 Thinking | Consolidation | prompt-phase-1-consolidation-v1.0.0 | Phase 1 Consolidation — Direct Main Commit for One Stereotype | 2026-06-05t0928-guizzardi-2005-thesis-chapter-06.md, 2026-06-05t0930-guizzardi-2005-thesis-chapter-08.md, 2026-06-05t1033-guarino-guizzardi-2016-relationships-events-full-document.md | First consolidated stereotype page generated from Phase 1 source-specific intermediate files at 2026-06-06t0008; not final expert-validated documentation. |
+| 2026-07-09 | Phase 2 | Phase 2 automated resolver | Signal resolution | resolve-language-style-signal-issue-v1.2.2 | Phase 2 automated resolver: language-style signals v1.2.2 | GitHub issue #219 | Applied accepted language-style-checker signal edits through automated Phase 2 resolution; not a conceptual or source-faithfulness validation. |
