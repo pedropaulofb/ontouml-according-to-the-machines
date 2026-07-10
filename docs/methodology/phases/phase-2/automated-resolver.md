@@ -95,6 +95,32 @@ Rejected groups must have an empty `edits` array.
 
 The wrapper validates that accepted `current_text` values occur exactly once in the current reviewed page before applying the edit.
 
+The top-level `overall_decision` is a deterministic summary of the signal-group decisions. After parsing the model response, the wrapper derives it as follows:
+
+```text
+at least one signal group has decision: accept
+→ overall_decision: accepted_changes
+
+no signal group has decision: accept
+→ overall_decision: no_accepted_changes
+```
+
+If the model-provided value is missing or differs from the derived value, the wrapper normalizes `overall_decision` before full plan validation. The normalization does not change any signal-group decision, reason code, rationale, edit, or issue comment. All ordinary plan validation remains in effect, including exact-match validation for accepted edits and `{{PR_URL}}` consistency.
+
+The wrapper derives this value only when `signal_groups` is a list of objects with recognized group-decision values. Invalid group structures or decisions are not concealed by normalization and continue to fail ordinary plan validation.
+
+When `overall_decision` is normalized, the wrapper records the original and derived values in the workflow log and in:
+
+```text
+.tmp/phase-2/resolver/issue-<issue-number>-normalization.txt
+```
+
+The normalized plan is also preserved as:
+
+```text
+.tmp/phase-2/resolver/issue-<issue-number>-normalized-plan.json
+```
+
 ### Resolver provider and fallback behavior
 
 The resolver script supports these providers:
@@ -199,6 +225,7 @@ read issue
 → read current reviewed page
 → call resolver prompt/provider
 → parse strict JSON
+→ normalize harmless schema drift and derive overall_decision
 → validate plan
 → apply exact local replacements
 → add Generation and Review Log table row
@@ -249,6 +276,7 @@ read issue
 → read current reviewed page
 → call resolver prompt/provider
 → parse strict JSON
+→ normalize harmless schema drift and derive overall_decision
 → validate plan
 → write resolver plan artifact
 → comment on source issue
@@ -302,7 +330,9 @@ Dry-run mode:
 
 - selects or reads the issue;
 - calls the resolver LLM;
-- parses and validates the JSON plan;
+- parses the JSON plan;
+- normalizes harmless schema drift and derives `overall_decision` from signal-group decisions;
+- validates the JSON plan;
 - writes the resolver plan artifact;
 - prints the plan;
 - does not modify files;
@@ -378,6 +408,8 @@ as:
 ```text
 phase-2-resolver-plan
 ```
+
+When normalization occurs, the uploaded artifact includes `issue-<issue-number>-normalization.txt` and `issue-<issue-number>-normalized-plan.json` in addition to the usual raw, parsed, final, or error artifacts produced by the resolver path.
 
 ---
 

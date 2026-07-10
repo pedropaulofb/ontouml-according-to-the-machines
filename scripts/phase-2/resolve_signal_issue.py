@@ -486,6 +486,36 @@ def normalize_rejected_group_edits(plan: dict[str, Any]) -> int:
     return normalized
 
 
+def normalize_overall_decision(plan: dict[str, Any]) -> tuple[Any, str] | None:
+    """Derive ``overall_decision`` from structurally valid group decisions.
+
+    The top-level decision is a redundant summary of the signal-group decisions.
+    Normalize it only when ``signal_groups`` is a list of objects whose decision
+    values are recognized. Invalid group structures or decisions remain untouched
+    so that the ordinary plan validator reports the underlying error.
+    """
+    groups = plan.get("signal_groups")
+    if not isinstance(groups, list):
+        return None
+
+    accepted = False
+    for group in groups:
+        if not isinstance(group, dict):
+            return None
+        decision = group.get("decision")
+        if decision not in {"accept", "reject_for_phase_2_automation"}:
+            return None
+        accepted = accepted or decision == "accept"
+
+    derived = "accepted_changes" if accepted else "no_accepted_changes"
+    original = plan.get("overall_decision")
+    if original == derived:
+        return None
+
+    plan["overall_decision"] = derived
+    return original, derived
+
+
 def line_numbers_for_exact_text(text: str, needle: str) -> list[int]:
     """Return 1-based line numbers where ``needle`` occurs exactly in ``text``."""
     if not needle:
@@ -954,12 +984,29 @@ def main() -> int:
             plan = parse_json(raw)
             write_json_artifact(output_dir, f"issue-{issue.number}-parsed-plan.json", plan)
 
+            normalization_messages: list[str] = []
+
             normalized_count = normalize_rejected_group_edits(plan)
             if normalized_count:
+                normalization_messages.append(
+                    f"Normalized {normalized_count} rejected signal group edits value(s) to []."
+                )
+
+            overall_decision_change = normalize_overall_decision(plan)
+            if overall_decision_change is not None:
+                original_decision, derived_decision = overall_decision_change
+                normalization_messages.append(
+                    "Normalized overall_decision from "
+                    f"{original_decision!r} to {derived_decision!r} based on signal group decisions."
+                )
+
+            if normalization_messages:
+                normalization_summary = "\n".join(normalization_messages)
+                print(normalization_summary)
                 write_text_artifact(
                     output_dir,
                     f"issue-{issue.number}-normalization.txt",
-                    f"Normalized {normalized_count} rejected signal group edits value(s) to [].",
+                    normalization_summary,
                 )
                 write_json_artifact(output_dir, f"issue-{issue.number}-normalized-plan.json", plan)
 
