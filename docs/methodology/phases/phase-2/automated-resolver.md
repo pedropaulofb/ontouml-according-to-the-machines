@@ -128,9 +128,12 @@ The resolver script supports these providers:
 ```text
 groq
 gemini
+cerebras
 ```
 
-The resolver script default provider and model are:
+For Cerebras, this resolver path supports only `gpt-oss-120b`; its request controls are model-specific.
+
+The resolver script default provider and model remain:
 
 ```text
 provider: gemini
@@ -157,11 +160,18 @@ The scheduled resolver workflow explicitly runs each resolver model invocation w
 
 This means the scheduled resolver workflow does not perform a delayed retry or backoff loop for a failed resolver provider call.
 
-The scheduled resolver workflow uses these Gemini model defaults:
+The scheduled resolver workflow uses these defaults:
 
 ```text
+primary provider: gemini
 primary model: gemini-3.5-flash
-fallback model: gemini-2.5-flash
+primary max_completion_tokens: 8000
+
+fallback provider: cerebras
+fallback model: gpt-oss-120b
+fallback max_completion_tokens: 6000
+fallback reasoning_effort: low
+Cerebras SDK transport retries: disabled (max_retries=0)
 ```
 
 The fallback behavior is implemented in `.github/workflows/phase-2-signal-resolver.yml`, not as a general `resolve_signal_issue.py` command-line option.
@@ -171,9 +181,11 @@ The workflow-level fallback sequence is:
 ```text
 run resolver once with the selected primary provider/model
 → if the run succeeds, exit successfully
-→ if the provider is gemini, the primary model differs from the fallback model, and the provider-error artifact contains provider-unavailability or 503-like diagnostics, run the fallback Gemini model once for the same issue
+→ if the primary provider is Gemini and its provider-error artifact contains provider-unavailability or 503-like diagnostics, run Cerebras gpt-oss-120b once for the same issue
 → otherwise fail the workflow normally
 ```
+
+The fallback is cross-provider: a temporary Gemini service failure does not leave the resolver dependent on a second Gemini model.
 
 Provider-unavailability detection scans resolver error artifacts under:
 
@@ -206,15 +218,29 @@ to:
 issue-<issue-number>-primary-provider-error.txt
 ```
 
-Then it runs the fallback model once.
+Then it runs the Cerebras fallback once.
 
 The fallback does **not** hide non-provider failures:
 
 - if the primary call fails for quota, rate-limit, authentication, configuration, invalid request, output-validation, plan-validation, GitHub, or other non-provider-unavailability reasons, the workflow fails normally;
 - if the primary call fails for an unrecognized provider error that does not match the workflow marker pattern, the workflow fails normally;
-- if the fallback model also fails, the workflow fails normally.
+- if the Cerebras fallback model also fails, the workflow fails normally.
 
-Manual dispatch can override `model` and `fallback_model`. If the selected primary model is already the same as `fallback_model`, the workflow does not run a fallback attempt.
+Manual dispatch can override the primary `provider` and `model`. The cross-provider fallback remains fixed to Cerebras `gpt-oss-120b` and is used only when the selected primary provider is `gemini` and the primary failure matches provider-unavailability diagnostics.
+
+Cerebras resolver calls use the existing OpenAI-compatible dependency and require:
+
+```text
+CEREBRAS_API_KEY
+```
+
+`CEREBRAS_BASE_URL` may optionally override the default endpoint:
+
+```text
+https://api.cerebras.ai/v1
+```
+
+The Cerebras request uses low reasoning effort and JSON mode. The existing deterministic parser, normalizers, and plan validator remain authoritative for the resolver contract and page-dependent safety checks.
 
 ### Resolver accepted-change flow
 
@@ -300,7 +326,6 @@ Current resolver prompt metadata as emitted by `resolve_signal_issue.py`:
 | `page-hygiene-checker` | `resolve-page-hygiene-signal-issue-v1.2.2` | `Phase 2 automated resolver: page-hygiene signals v1.2.2` |
 | `language-style-checker` | `resolve-language-style-signal-issue-v1.2.2` | `Phase 2 automated resolver: language-style signals v1.2.2` |
 
-Both current resolver prompt files use `v1.2.2` headings. The current prompt paths above are the active wrapper routes, while the wrapper metadata above is authoritative for review-log rows.
 
 Legacy bullet-style resolver log entries are removed for the same issue when the resolver applies accepted edits.
 
@@ -340,7 +365,7 @@ Dry-run mode:
 - does not create a pull request;
 - does not comment on or close the issue.
 
-The scheduled resolver workflow applies the same primary-model and fallback-model sequence in dry-run mode when manually dispatched with `dry_run: true`; GitHub write actions remain disabled by the resolver script after successful plan validation.
+The scheduled resolver workflow applies the same primary-provider and fallback-provider sequence in dry-run mode when manually dispatched with `dry_run: true`; GitHub write actions remain disabled by the resolver script after successful plan validation.
 
 ### Resolver workflow
 
@@ -369,9 +394,8 @@ Manual dispatch inputs:
 | Input | Purpose |
 |---|---|
 | `issue` | Issue number or URL. Empty means oldest eligible open issue. |
-| `provider` | `gemini` or `groq`; default `gemini`. |
-| `model` | Provider model; default `gemini-3.5-flash`. |
-| `fallback_model` | Fallback Gemini model used once when the primary Gemini model fails with provider unavailability; default `gemini-2.5-flash`. |
+| `provider` | Primary workflow provider: `gemini` or `groq`; default `gemini`. Cerebras is used by the fixed fallback path. |
+| `model` | Primary provider model; default `gemini-3.5-flash`. |
 | `dry_run` | Generate and validate a resolution plan without GitHub writes. |
 
 Workflow permissions:
@@ -384,6 +408,12 @@ permissions:
 ```
 
 The workflow checks out the repository with `secrets.PHASE2_AUTOMATION_TOKEN` and exposes the same secret as `GH_TOKEN` and `GITHUB_TOKEN` for resolver GitHub operations, including branch-write operations.
+
+The cross-provider fallback additionally requires:
+
+```text
+CEREBRAS_API_KEY
+```
 
 Concurrency group:
 

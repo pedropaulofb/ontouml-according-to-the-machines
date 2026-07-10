@@ -76,6 +76,8 @@ JSON_SYSTEM_INSTRUCTION = (
     "Return only valid JSON matching the requested schema. "
     "Do not include Markdown fences, analysis, prefaces, or explanations outside JSON."
 )
+CEREBRAS_BASE_URL = "https://api.cerebras.ai/v1"
+CEREBRAS_RESOLVER_MODEL = "gpt-oss-120b"
 
 
 class ResolverError(RuntimeError):
@@ -117,7 +119,7 @@ def parse_args() -> argparse.Namespace:
             "oldest open page-hygiene-checker or language-style-checker signal issue."
         ),
     )
-    parser.add_argument("--provider", choices=["groq", "gemini"], default="gemini")
+    parser.add_argument("--provider", choices=["groq", "gemini", "cerebras"], default="gemini")
     parser.add_argument("--model", default="gemini-3.5-flash")
     parser.add_argument("--max-completion-tokens", type=int, default=8000)
     parser.add_argument(
@@ -316,6 +318,7 @@ def _error_diagnostic(exc: Exception) -> str:
             str(getattr(exc, "code", "")),
             str(getattr(exc, "status", "")),
             str(getattr(exc, "reason", "")),
+            str(getattr(exc, "body", "")),
         ]
     ).lower()
 
@@ -424,6 +427,37 @@ def call_gemini_json(model: str, review_input: str, max_completion_tokens: int, 
     return call_with_retries("Gemini resolver call", invoke, max_attempts=max_attempts)
 
 
+def call_cerebras_json(model: str, review_input: str, max_completion_tokens: int, max_attempts: int) -> str:
+    if model != CEREBRAS_RESOLVER_MODEL:
+        raise ResolverError(f"Unsupported Cerebras resolver model: {model!r}. Expected {CEREBRAS_RESOLVER_MODEL!r}.")
+
+    api_key = os.getenv("CEREBRAS_API_KEY")
+    if not api_key:
+        raise ResolverError("CEREBRAS_API_KEY environment variable is not set.")
+
+    base_url = os.getenv("CEREBRAS_BASE_URL", CEREBRAS_BASE_URL)
+
+    def invoke() -> str:
+        from openai import OpenAI
+
+        client = OpenAI(api_key=api_key, base_url=base_url, max_retries=0)
+        response = client.chat.completions.create(
+            model=model,
+            messages=[
+                {"role": "system", "content": JSON_SYSTEM_INSTRUCTION},
+                {"role": "user", "content": review_input},
+            ],
+            temperature=0,
+            max_completion_tokens=max_completion_tokens,
+            reasoning_effort="low",
+            response_format={"type": "json_object"},
+        )
+        content = response.choices[0].message.content
+        return content if isinstance(content, str) else ""
+
+    return call_with_retries("Cerebras resolver call", invoke, max_attempts=max_attempts)
+
+
 def call_provider(
     provider: str,
     model: str,
@@ -437,6 +471,8 @@ def call_provider(
         return call_groq_json(model, review_input, max_tokens, max_attempts)
     if provider == "gemini":
         return call_gemini_json(model, review_input, max_tokens, max_attempts)
+    if provider == "cerebras":
+        return call_cerebras_json(model, review_input, max_tokens, max_attempts)
     raise ResolverError(f"Unsupported provider: {provider}")
 
 
@@ -831,7 +867,14 @@ def create_pr(repo: str, issue: IssueSnapshot, branch_prefix: str) -> str:
     if issue.reviewed_page not in diff_cached.splitlines():
         raise ResolverError("No staged page change after applying accepted edits.")
 
-    run(["git", "commit", "-m", f"fix(phase-2): resolve {issue.agent} signals for issue #{issue.number}"])
+    run(
+        [
+            "git",
+            "commit",
+            "-m",
+            f"fix(phase-2): resolve {issue.agent} signals for issue #{issue.number}",
+        ]
+    )
     run(["git", "push", "--force-with-lease", "origin", branch])
 
     title = f"Resolve Phase 2 {issue.agent} signals for issue #{issue.number}"
@@ -898,7 +941,18 @@ def comment_issue(repo: str, issue_number_value: int, body: str) -> None:
         comment_path = Path(tmp.name)
 
     try:
-        run(["gh", "issue", "comment", str(issue_number_value), "--repo", repo, "--body-file", str(comment_path)])
+        run(
+            [
+                "gh",
+                "issue",
+                "comment",
+                str(issue_number_value),
+                "--repo",
+                repo,
+                "--body-file",
+                str(comment_path),
+            ]
+        )
     finally:
         comment_path.unlink(missing_ok=True)
 

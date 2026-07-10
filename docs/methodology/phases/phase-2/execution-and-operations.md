@@ -25,7 +25,7 @@ page-hygiene-checker
 language-style-checker
 ```
 
-The direct batch runner no longer provides a default provider or model. Current signal-generation runs must pass an explicit supported provider and at least one model, or use the canonical scheduled workflow `provider_model_specs` rotation:
+The direct batch runner does not provide a default provider or model. Current signal-generation runs must pass an explicit supported provider and at least one model, or use the canonical scheduled workflow `provider_model_specs` rotation:
 
 ```text
 --provider <provider>
@@ -105,7 +105,37 @@ python scripts/phase-2/run_check_batch.py \
 
 ## Automated resolver commands
 
-Manual dry-run for one issue:
+The resolver supports Gemini, Groq, and Cerebras directly. The scheduled workflow uses Gemini as primary and Cerebras as a cross-provider fallback.
+
+Manual Gemini dry-run for one issue:
+
+```bash
+export GEMINI_API_KEY="..."
+
+python scripts/phase-2/resolve_signal_issue.py \
+  --repo pedropaulofb/ontouml-according-to-the-machines \
+  --issue 6 \
+  --provider gemini \
+  --model gemini-3.5-flash \
+  --max-completion-tokens 8000 \
+  --dry-run
+```
+
+Manual Cerebras dry-run using the scheduled fallback configuration:
+
+```bash
+export CEREBRAS_API_KEY="..."
+
+python scripts/phase-2/resolve_signal_issue.py \
+  --repo pedropaulofb/ontouml-according-to-the-machines \
+  --issue 6 \
+  --provider cerebras \
+  --model gpt-oss-120b \
+  --max-completion-tokens 6000 \
+  --dry-run
+```
+
+Manual real Gemini run for one issue:
 
 ```bash
 python scripts/phase-2/resolve_signal_issue.py \
@@ -113,17 +143,7 @@ python scripts/phase-2/resolve_signal_issue.py \
   --issue 6 \
   --provider gemini \
   --model gemini-3.5-flash \
-  --dry-run
-```
-
-Manual real run for one issue:
-
-```bash
-python scripts/phase-2/resolve_signal_issue.py \
-  --repo pedropaulofb/ontouml-according-to-the-machines \
-  --issue 6 \
-  --provider gemini \
-  --model gemini-3.5-flash
+  --max-completion-tokens 8000
 ```
 
 Manual real run for the oldest eligible issue:
@@ -137,7 +157,9 @@ python scripts/phase-2/resolve_signal_issue.py \
 
 The resolver must be run from a clean repository checkout with GitHub CLI authentication and the relevant provider API key.
 
-The immediate fallback from `gemini-3.5-flash` to `gemini-2.5-flash` is implemented by the GitHub Actions workflow. A local command-line run of `resolve_signal_issue.py` does not automatically select a fallback model unless the operator reproduces the workflow logic manually.
+The cross-provider fallback from `gemini-3.5-flash` to Cerebras `gpt-oss-120b` is implemented by the GitHub Actions workflow. A local command-line run of `resolve_signal_issue.py` does not automatically select a fallback provider unless the operator reproduces the workflow logic manually.
+
+The script itself continues to implement the existing deterministic normalization and plan validation for whichever provider/model is selected directly.
 
 ## Operator option reference
 
@@ -215,14 +237,14 @@ This section documents implemented runner options that are useful for maintainer
 |---|---|
 | `--repo` | Required repository in `owner/name` form. |
 | `--issue` | Issue number or issue URL. When omitted, the oldest eligible open issue is selected. |
-| `--provider` | Select `groq` or `gemini`; default `gemini`. |
-| `--model` | Select the provider model; default `gemini-3.5-flash`. |
-| `--max-completion-tokens` | Completion-token cap; default `8000`. |
+| `--provider` | Select `groq`, `gemini`, or `cerebras`; default `gemini`. |
+| `--model` | Select the provider model; default `gemini-3.5-flash`. The Cerebras resolver path supports only `gpt-oss-120b`. |
+| `--max-completion-tokens` | Completion-token cap; default `8000`. The scheduled Cerebras fallback passes `6000`. |
 | `--provider-max-attempts` | Maximum provider-call attempts per resolver run; default `1`. |
 | `--dry-run` | Generate and validate a plan without modifying files or writing to GitHub. |
 | `--branch-prefix` | Branch prefix for accepted-change PRs; default `phase-2/auto-resolve`. |
 
-The workflow input `fallback_model` belongs to `.github/workflows/phase-2-signal-resolver.yml`; it is not a `resolve_signal_issue.py` argument.
+The workflow fallback provider/model is fixed to `cerebras:gpt-oss-120b`; there is no separate `fallback_model` dispatch input.
 
 ## Execution policy
 
@@ -392,10 +414,14 @@ The workflow is also manually triggerable through `workflow_dispatch`.
 Effective scheduled defaults:
 
 ```text
-provider: gemini
-model: gemini-3.5-flash
-fallback_model: gemini-2.5-flash
-provider_max_attempts: 1
+primary provider: gemini
+primary model: gemini-3.5-flash
+primary max_completion_tokens: 8000
+fallback provider: cerebras
+fallback model: gpt-oss-120b
+fallback max_completion_tokens: 6000
+fallback reasoning_effort: low
+provider_max_attempts per resolver call: 1
 issue: oldest eligible open page-hygiene-checker or language-style-checker signal issue
 dry_run: false
 ```
@@ -403,14 +429,19 @@ dry_run: false
 Manual dispatch can:
 
 - resolve one explicit issue;
-- select `gemini` or `groq`;
-- select a provider model;
-- select a fallback Gemini model;
+- select `gemini` or `groq` as the primary provider;
+- select a primary provider model;
 - run in dry-run mode.
 
-The scheduled resolver workflow first tries the selected provider/model once. With the default scheduled configuration, this means one `gemini-3.5-flash` attempt. If that attempt fails with provider-unavailability or 503-like diagnostics, the workflow immediately tries `gemini-2.5-flash` once for the same issue. It does not wait and retry the same model. It does not suppress non-provider-unavailability failures. It does not suppress fallback failures.
+The production workflow intentionally has no force-fallback dispatch input. Therefore, a manual workflow dry run reaches Cerebras only if the primary Gemini invocation genuinely fails with one of the recognized provider-unavailability diagnostics. Use the direct Cerebras CLI dry-run command above to validate the provider request deterministically. Validate the end-to-end workflow fallback when a genuine qualifying primary failure occurs, or in a temporary test workflow rather than weakening the production fallback trigger.
 
-The resolver writes plan artifacts under:
+The scheduled resolver workflow first tries the selected primary provider/model once. With the default scheduled configuration, this means one Gemini `gemini-3.5-flash` call. The fallback is fixed to Cerebras `gpt-oss-120b`; it is not a manual model override.
+
+If that call fails with provider-unavailability or 503-like diagnostics, the workflow invokes Cerebras `gpt-oss-120b` once for the same issue. The Cerebras call uses JSON-object response mode, low reasoning effort, and a 6,000-token completion cap. The resolver also sets the OpenAI-compatible client to `max_retries=0`, so the configured single provider attempt does not hide additional SDK transport retries.
+
+The workflow does not suppress non-provider-unavailability primary failures. It does not suppress fallback failures. Invalid plans remain genuine resolver failures and do not trigger another provider.
+
+The resolver writes artifacts under:
 
 ```text
 .tmp/phase-2/resolver
@@ -422,6 +453,8 @@ and uploads them as:
 phase-2-resolver-plan
 ```
 
+The primary provider-error artifact is preserved before the Cerebras fallback starts. The existing raw-response, parsed-plan, normalization, final-plan, and error artifacts remain available according to the resolver path taken.
+
 ## Free-model and slow-automation strategy
 
 Phase 2 is designed to work within free or low-cost model quotas.
@@ -429,17 +462,20 @@ Phase 2 is designed to work within free or low-cost model quotas.
 The intended strategy is:
 
 - keep prompts compact;
-- cap outputs to a small number of signals;
-- run one selected combination per scheduled interval;
-- use lightweight models;
+- cap check-agent outputs to a small number of signals;
+- run one selected signal-generation combination per scheduled interval;
 - distribute scheduled signal generation across multiple free or low-cost providers;
 - use deterministic Python whenever possible;
 - spread execution over time;
-- avoid heavyweight models in Phase 2;
 - rely on gradual accumulation rather than large one-shot reviews;
-- resolve only one eligible signal issue per automated resolver run.
+- resolve only one eligible signal issue per automated resolver run;
+- use a cross-provider fallback so temporary Gemini unavailability does not require a second Google model;
+- use a 6,000-token completion cap for the Cerebras fallback;
+- use low reasoning effort for `gpt-oss-120b`;
+- preserve deterministic normalization and validation for every provider response;
+- fail normally when the fallback provider or fallback plan is unsuccessful.
 
-This supports a slow continuous process: small page/agent/provider/model batches can run over time, allowing the project to accumulate and resolve signals incrementally.
+This supports a slow continuous process: small page/agent/provider/model batches can run over time, allowing the project to accumulate and resolve signals incrementally without weakening validation.
 
 ## GitHub Actions and branch protection policy
 
@@ -508,12 +544,15 @@ The scheduled check-agent workflow also updates `docs/methodology/phases/phase-2
 
 The automated resolver workflow may create commits, push branches, open pull requests, enable auto-merge, comment on issues, and close issues.
 
-Required repository secrets:
+Required repository secrets for the default scheduled path:
 
 ```text
-GROQ_API_KEY
 GEMINI_API_KEY
+CEREBRAS_API_KEY
+PHASE2_AUTOMATION_TOKEN
 ```
+
+`GROQ_API_KEY` is required only when Groq is selected manually as the primary resolver provider.
 
 Required workflow permissions:
 
@@ -551,29 +590,29 @@ If branch protection requires up-to-date branches, the resolver's `gh pr update-
 
 ## Operational observations
 
-Earlier operational notes reported that recent Phase 2 Gemini testing showed:
+Observed Phase 2 provider behavior has included:
 
-- earlier successful GitHub Actions execution for `gemini-2.5-flash`; the current scheduled signal-generation workflow selects `gemini-3.1-flash-lite`;
+- successful GitHub Actions execution for multiple Gemini, Cerebras, SambaNova, and OpenRouter signal-generation models;
 - valid generated issue-comment structure after adding reduced-thinking configuration;
 - transient Gemini provider failures with `503 UNAVAILABLE`;
-- validation rejections caused by overly long `Location` fragments before the prompt target was tightened from 160 characters to 140 characters.
+- validation rejections caused by overly long `Location` fragments before the prompt target was tightened from 160 characters to 140 characters;
+- repeated primary `gemini-3.5-flash` resolver unavailability followed by structurally or semantically invalid `gemini-2.5-flash` fallback plans;
+- fallback plans that used the group-level `reject_for_phase_2_automation` value as the top-level `overall_decision`;
+- fallback plans that accepted `current_text` values occurring in more than one page location;
+- safe deterministic rejection of those ambiguous edit targets before any page or GitHub mutation.
 
-Later operational updates added:
+The current resolver design addresses those observed classes by:
 
-- automated signal issue resolution on a reduced schedule of one attempt every four hours;
-- `gemini-3.5-flash` as the primary automated Gemini resolver model;
-- immediate one-shot fallback to `gemini-2.5-flash` only for provider-unavailability or 503-like primary Gemini resolver failures;
-- explicit resolver execution notices identifying primary/fallback attempts, selected provider, model, issue target, and dry-run mode;
-- accepted resolver edits converted into pull requests;
-- issue comments and issue closure for accepted and rejected automated resolver outcomes;
-- PR branch update by rebase before auto-merge enablement;
-- squash auto-merge after required checks pass;
-- structured resolver log entries in the `Generation and Review Log` table;
-- deterministic page-structure validation of the `Generation and Review Log` table;
-- scheduled signal-generation rotation across Cerebras, SambaNova, Gemini, and OpenRouter, with the former Groq slot retained only as historical/inactive context in statistics;
-- workflow-level signal-collector failure classification that keeps nonactionable provider availability noise nonfatal while keeping quota, rate-limit, authentication, configuration, request-shape, and unknown provider failures actionable.
+- deriving the redundant top-level decision from group decisions;
+- retaining the exact-one-match validator unchanged;
+- replacing the same-provider Gemini fallback with a cross-provider Cerebras `gpt-oss-120b` fallback;
+- using JSON-object response mode, low reasoning effort, and a 6,000-token completion cap for the Cerebras call;
+- preserving provider and plan failures as artifacts;
+- continuing to fail normally when the fallback provider or fallback plan is unsuccessful.
 
-These observations are not guarantees of future provider behavior. The committed workflows and scripts should be treated as authoritative for current automation behavior.
+The cross-provider fallback directly addresses primary Gemini unavailability. The already-committed deterministic `overall_decision` normalization independently addresses top-level-decision drift. The fallback does not guarantee that a Cerebras plan will satisfy page-dependent constraints such as unique exact `current_text`; the deterministic validator remains authoritative for those cases.
+
+These observations are not guarantees of future provider behavior. The committed workflows, scripts, prompts, tests, and generated artifacts should be treated as authoritative for current automation behavior.
 
 ---
 

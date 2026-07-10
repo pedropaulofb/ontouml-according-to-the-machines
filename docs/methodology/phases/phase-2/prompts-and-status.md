@@ -106,7 +106,7 @@ It protects:
 
 ## Automated resolver prompt support
 
-Phase 2 includes two automated resolver prompts:
+Phase 2 includes two agent-specific automated resolver prompts:
 
 ```text
 prompts/phase-2/resolve-page-hygiene-signal-issue-v1.2.2.md
@@ -169,6 +169,38 @@ It may accept only deterministic, local, meaning-preserving editorial edits with
 
 It must reject conceptual validation, source-faithfulness validation, quote verification, citation-support assessment, cross-page consistency, citation/reference hygiene, Markdown hygiene, encoding hygiene, review-log hygiene, broad rewrites, and technical meaning changes for Phase 2 automation.
 
+## Automated resolver provider fallback
+
+The two agent-specific resolver prompts remain unchanged and are used by every supported resolver provider.
+
+The default scheduled resolver sequence is:
+
+```text
+primary: gemini:gemini-3.5-flash
+primary max_completion_tokens: 8000
+fallback after recognized primary provider unavailability: cerebras:gpt-oss-120b
+fallback max_completion_tokens: 6000
+fallback reasoning_effort: low
+provider_max_attempts per resolver call: 1
+Cerebras SDK transport retries: disabled (max_retries=0)
+```
+
+The cross-provider fallback is workflow orchestration, not a third resolver prompt. It targets the same issue and uses the same agent-specific resolver prompt. The fallback invocation re-reads the issue snapshot and the page from the unchanged workflow checkout before building its input.
+
+Cerebras calls request a JSON object. The existing parser, deterministic normalization, plan validator, exact-one-match rule, page-structure check, and GitHub mutation sequence remain unchanged and provider-independent.
+
+The resolver still fails closed when:
+
+- provider authentication or configuration is invalid;
+- quota or rate limits prevent completion;
+- an unrecognized provider failure occurs;
+- a generated plan is invalid;
+- exact edit targets are absent or ambiguous;
+- deterministic page-structure validation fails after applying accepted edits;
+- branch, pull-request, auto-merge, issue-comment, or issue-closure operations fail.
+
+No failed or invalid output is treated as a successful resolution.
+
 ## Future work outside Phase 2
 
 The following may be considered in later phases, but should not be required for Phase 2 completion:
@@ -182,7 +214,8 @@ The following may be considered in later phases, but should not be required for 
 - cross-page consistency validation;
 - OntoUML/UFO semantic validation;
 - local/offline model integration;
-- a stricter second workflow that closes source issues only after PR merge if issue-closure semantics are changed later.
+- a stricter second workflow that closes source issues only after PR merge if issue-closure semantics are changed later;
+- a cooldown or quarantine policy if repeatedly invalid oldest issues continue to cause head-of-line blocking.
 
 A later pipeline may eventually be:
 
@@ -232,19 +265,21 @@ Completed:
 - Gemini uses `gemini-3.1-flash-lite` as the current scheduled signal-generation default;
 - scheduled signal-generation runs use `max_completion_tokens=3000` in the canonical workflow when no manual override is supplied;
 - generated output paths are ignored by `.gitignore`;
-- `close-page-hygiene-signal-issue-v1.0.0.md` exists as the manual issue-review and resolution prompt for `page-hygiene-checker` issues;
-- `close-language-style-signal-issue-v1.0.0.md` exists as the manual issue-review and resolution prompt for `language-style-checker` issues;
-- the earlier plan for a third `page-structure-checker` closure prompt has been discarded;
+- the two archived manual issue-review and resolution prompts remain available for `page-hygiene-checker` and `language-style-checker` issues;
+- the absence of a dedicated `page-structure-checker` closure prompt is documented as intentional;
 - `resolve-page-hygiene-signal-issue-v1.2.2.md` exists as the automated resolver prompt for `page-hygiene-checker` issues;
 - `resolve-language-style-signal-issue-v1.2.2.md` exists as the automated resolver prompt for `language-style-checker` issues;
 - `resolve_signal_issue.py` implements automated resolver orchestration;
 - `.github/workflows/phase-2-signal-resolver.yml` runs scheduled and manual automated signal resolution;
 - the automated resolver schedule is one scheduled attempt every four hours;
-- the automated resolver keeps `gemini-3.5-flash` as the primary Gemini resolver model;
-- the automated resolver workflow uses `gemini-2.5-flash` as a one-shot immediate fallback model only for provider-unavailability or 503-like primary Gemini failures;
+- the automated resolver keeps `gemini-3.5-flash` as the primary resolver model;
+- the automated resolver uses Cerebras `gpt-oss-120b` as a cross-provider fallback only for recognized primary Gemini provider unavailability;
+- the Cerebras fallback uses JSON-object response mode, low reasoning effort, and a 6,000-token completion cap;
 - the automated resolver selects the oldest eligible open signal issue when no issue is provided;
 - the automated resolver can run in dry-run mode;
 - the automated resolver validates strict JSON plans;
+- the automated resolver derives the redundant `overall_decision` from group decisions;
+- the automated resolver preserves the exact-one-match validator for accepted `current_text`;
 - the automated resolver applies accepted exact local edits;
 - the automated resolver writes accepted-edit provenance as a `Generation and Review Log` table row;
 - the automated resolver removes legacy bullet-style automated resolver log lines for the same issue;
@@ -257,12 +292,15 @@ Completed:
 
 Pending:
 
-1. decide whether to keep or remove non-canonical support artifacts such as `providers/mock.py` and `.github/workflows/phase-2-check-agents.yml.bak`;
-2. document any observed clean baseline with a dated run artifact rather than an undocumented local claim;
-3. extend provider transient-error markers if future observed SDK diagnostics are not caught by the current marker list;
-4. confirm whether the archived manual issue-resolution prompts and two automated resolver prompts should remain in their current locations or be moved into dedicated subdirectories in a later cleanup;
-5. decide whether source signal issues should remain closed after resolver completion or be closed only after PR merge through a separate `pull_request.closed` workflow;
-6. update adjacent methodology pages if they still describe Phase 2 as excluding all automatic PR creation, issue closure, or auto-merge.
+1. validate the new Cerebras fallback against the live GitHub Actions environment and current Cerebras API;
+2. confirm that `CEREBRAS_API_KEY` is configured for the resolver workflow;
+3. confirm that the 6,000-token completion cap provides sufficient headroom for representative resolver inputs;
+4. monitor whether `gpt-oss-120b` reduces invalid duplicate-target plans while preserving fail-closed validation;
+5. decide whether to keep or remove non-canonical support artifacts such as `providers/mock.py` and `.github/workflows/phase-2-check-agents.yml.bak` if they are still present;
+6. document any observed clean baseline with a dated run artifact rather than an undocumented local claim;
+7. extend provider transient-error markers if future observed SDK diagnostics are not caught by the current marker list;
+8. decide whether source signal issues should remain closed after resolver completion or be closed only after PR merge through a separate `pull_request.closed` workflow;
+9. update adjacent methodology pages if they still describe Phase 2 as excluding all automatic PR creation, issue closure, or auto-merge.
 
 Deferred outside Phase 2:
 
@@ -277,69 +315,33 @@ Deferred outside Phase 2:
 
 ## Recommended next implementation steps
 
-### Step 1 — Commit this methodology alignment
+### Step 1 — Validate the Cerebras provider and fallback path
 
-Update the canonical Phase 2 methodology page to reflect the current resolver schedule, primary Gemini resolver model, immediate fallback-model behavior, provider rotation, workflow naming, retry policy, and actionable-failure behavior.
+The production workflow intentionally has no force-fallback dispatch input. A normal manual workflow dry run reaches Cerebras only if the primary Gemini invocation genuinely fails with one of the recognized provider-unavailability diagnostics.
 
-Suggested commit message:
+First, use the direct Cerebras dry-run command documented in [Execution and operations](execution-and-operations.md) against representative resolver issues, including a previously problematic duplicate-target case. This deterministically validates:
 
-```bash
-docs(phase-2): align resolver fallback methodology
-```
+- `CEREBRAS_API_KEY` authentication in the environment where the command runs;
+- JSON-object response mode with `gpt-oss-120b`;
+- low reasoning effort support;
+- the 6,000-token completion cap;
+- no GitHub mutations in dry-run mode.
 
-### Step 2 — Align adjacent methodology pages
+Then validate the end-to-end GitHub Actions fallback when a genuine qualifying Gemini failure occurs, or in a temporary test workflow. Confirm that the primary Gemini provider-error artifact is preserved and that Cerebras is invoked only after the recognized availability failure. Do not weaken the production fallback trigger solely to force a test run.
 
-Review adjacent methodology pages for now-stale claims that Phase 2 excludes all automatic PR creation, automatic issue closure, or auto-merge.
+### Step 2 — Check free-tier headroom
 
-Likely candidates:
+Inspect the live provider response and rate-limit diagnostics for representative small and large issues. Adjust the fallback completion cap only if observed usage or provider errors justify it.
 
-```text
-docs/methodology/generation-policy.md
-docs/methodology/phases/index.md
-```
+### Step 3 — Monitor queue progress
 
-Suggested commit message:
+Track whether the oldest eligible issue is resolved or safely rejected by the Cerebras fallback after primary Gemini unavailability.
 
-```bash
-docs(methodology): align Phase 2 automation boundaries
-```
+The cross-provider fallback does not alter the exact-one-match rule. If the same issue continues to block repeated runs because valid provider responses contain ambiguous edit targets, evaluate that behavior separately rather than weakening validation.
 
-### Step 3 — Clean up non-canonical Phase 2 support artifacts
-
-Clarify, move to the archive, or remove non-canonical support artifacts if they are no longer needed.
-
-Current candidates:
-
-```text
-.github/workflows/phase-2-check-agents.yml.bak
-scripts/phase-2/providers/mock.py
-```
-
-Suggested commit message:
-
-```bash
-chore(phase-2): remove stale check-agent support artifacts
-```
-
-### Step 4 — Record a dated Phase 2 baseline
-
-If a clean or representative run is observed or already available in GitHub Actions artifacts/issues, document it with a dated artifact or issue reference rather than relying on an undocumented local claim.
-
-Suggested commit message:
-
-```bash
-docs(phase-2): record current check-agent baseline
-```
-
-### Step 5 — Decide issue-closure semantics
+### Step 4 — Decide issue-closure semantics
 
 The current resolver closes the source signal issue after resolver completion. If the project later requires issue closure only after successful PR merge, add a separate workflow triggered by merged resolver PRs.
-
-Suggested commit message if implemented later:
-
-```bash
-feat(phase-2): close resolved signal issues after merge
-```
 
 ## Completion criteria
 
@@ -361,10 +363,10 @@ Phase 2 can be considered complete when:
 - conservative scheduled LLM execution works with the current seven-slot rotation across Cerebras, SambaNova, OpenRouter, and Gemini;
 - the two manual issue-review and resolution prompts for the LLM-based agents exist and are documented;
 - the absence of a dedicated `page-structure-checker` closure prompt is documented as intentional;
-- the two automated resolver prompts for LLM-based signal issues exist and are documented;
-- the automated resolver can select eligible issues, validate strict JSON plans, apply accepted exact edits, reject unsafe or out-of-scope signals for automation, create PRs, enable squash auto-merge, and close source signal issues;
-- the automated resolver schedule, primary Gemini model, and fallback-model behavior are documented;
-- the repository permissions, branch-protection settings, and `PHASE2_AUTOMATION_TOKEN` access allow the automated resolver workflow to complete its intended path.
+- the two agent-specific automated resolver prompts exist and are documented;
+- the automated resolver can select eligible issues, validate complete plans, safely normalize redundant schema drift, preserve exact edit constraints, apply accepted exact edits, reject unsafe or out-of-scope signals, create PRs, enable squash auto-merge, and close source signal issues;
+- the automated resolver schedule, primary Gemini model, cross-provider Cerebras fallback, completion-token settings, and failure behavior are documented;
+- the repository permissions, branch-protection settings, `PHASE2_AUTOMATION_TOKEN`, `GEMINI_API_KEY`, and `CEREBRAS_API_KEY` allow the automated resolver workflow to complete its intended path.
 
 ## Generation and review log
 
@@ -373,26 +375,26 @@ Phase 2 can be considered complete when:
 - The deterministic Python agent is `page-structure-checker`.
 - The two LLM-based agents are `page-hygiene-checker` and `language-style-checker`.
 - The `page-structure-checker` runs after canonical stereotype page modifications and blocks structural regressions in CI.
-- The `page-structure-checker` now validates the `Generation and Review Log` table schema.
+- The `page-structure-checker` validates the `Generation and Review Log` table schema.
 - The two LLM-based check agents run periodically through the scheduled rotating workflow.
 - The supported LLM signal-generation provider adapters are `groq`, `gemini`, `cerebras`, `sambanova`, and `openrouter`.
-- Gemini support is documented inline in this Phase 2 page rather than split into a separate provider-only methodology page.
 - The current scheduled Gemini model for Phase 2 check-agent signal generation is `gemini-3.1-flash-lite`.
 - The scheduled provider/model rotation includes seven active provider/model specs across Cerebras, SambaNova, OpenRouter, and Gemini; Groq is retained as provider support but has no active scheduled slot.
 - Gemini runs use reduced-thinking configuration to improve strict-format output reliability.
-- The prompts target 140-character `Location` fragments while the validator hard limit remains 160 characters.
 - Issue routing is one GitHub issue per page and check agent.
 - Different providers and models executed by the same agent for the same page create comments in the same issue.
 - Stable comment identity is implemented with page, agent, provider, model, prompt, and commit.
 - Matching existing comments are updated instead of duplicated.
-- The scheduled signal-collector workflow keeps `contents: read`/`issues: write` and uses `PHASE2_AUTOMATION_TOKEN` for model-run statistics branch writes.
-- Manual signal-review and issue-resolution support is documented for `page-hygiene-checker` and `language-style-checker` through two ChatGPT prompts.
+- Manual signal-review and issue-resolution support is documented for `page-hygiene-checker` and `language-style-checker` through two archived ChatGPT prompts.
 - The planned `page-structure-checker` closure prompt was discarded; deterministic page-structure signals remain subject to direct maintainer review.
 - Automated signal resolution is implemented for `page-hygiene-checker` and `language-style-checker` issues.
-- The active automated resolver prompt IDs are `resolve-page-hygiene-signal-issue-v1.2.2` and `resolve-language-style-signal-issue-v1.2.2`.
+- The active agent-specific automated resolver prompt IDs are `resolve-page-hygiene-signal-issue-v1.2.2` and `resolve-language-style-signal-issue-v1.2.2`.
 - Automated resolver prompts return strict JSON plans and classify non-accepted cases as `reject_for_phase_2_automation`.
-- The automated resolver keeps `gemini-3.5-flash` as the primary Gemini resolver model.
-- The automated resolver workflow uses `gemini-2.5-flash` once as an immediate fallback model only for provider-unavailability or 503-like primary Gemini failures.
+- The automated resolver keeps `gemini-3.5-flash` as the primary resolver model.
+- The automated resolver workflow uses Cerebras `gpt-oss-120b` as a one-shot cross-provider fallback only for recognized primary Gemini provider unavailability.
+- The Cerebras fallback uses JSON-object response mode, low reasoning effort, and a 6,000-token completion cap.
+- The resolver deterministically derives `overall_decision` from signal-group decisions.
+- The exact-one-match rule remains unchanged; ambiguous targets are never selected automatically.
 - The automated resolver schedule is one scheduled attempt every four hours.
 - Accepted automated resolver edits must be exact local replacements and pass deterministic validation.
 - Accepted automated resolver edits are logged as rows in the `Generation and Review Log` table.

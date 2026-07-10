@@ -28,20 +28,28 @@ The current scheduled signal-generation rotation does **not** include Groq. It c
 
 Groq support code remains available for explicit future or manual use, but no Groq model is currently part of the active scheduled signal-generation rotation.
 
-The automated resolver currently supports only:
+The automated resolver supports:
 
 ```text
 groq
 gemini
+cerebras
 ```
 
-| Provider | Adapter | API key |
-|---|---|---|
-| `groq` | `scripts/phase-2/providers/groq.py` | `GROQ_API_KEY` |
-| `gemini` | `scripts/phase-2/providers/gemini.py` | `GEMINI_API_KEY` in GitHub Actions; `GEMINI_API_KEY` or `GOOGLE_API_KEY` locally |
-| `cerebras` | `scripts/phase-2/providers/cerebras.py` | `CEREBRAS_API_KEY` |
-| `sambanova` | `scripts/phase-2/providers/sambanova.py` | `SAMBANOVA_API_KEY` |
-| `openrouter` | `scripts/phase-2/providers/openrouter.py` | `OPENROUTER_API_KEY` |
+The default scheduled resolver path is:
+
+```text
+primary: gemini:gemini-3.5-flash
+fallback for recognized primary unavailability: cerebras:gpt-oss-120b
+```
+
+| Provider | Signal-generation adapter | Resolver implementation | API key |
+|---|---|---|---|
+| `groq` | `scripts/phase-2/providers/groq.py` | `scripts/phase-2/resolve_signal_issue.py` | `GROQ_API_KEY` |
+| `gemini` | `scripts/phase-2/providers/gemini.py` | `scripts/phase-2/resolve_signal_issue.py` | `GEMINI_API_KEY` in GitHub Actions; `GEMINI_API_KEY` or `GOOGLE_API_KEY` locally |
+| `cerebras` | `scripts/phase-2/providers/cerebras.py` | `scripts/phase-2/resolve_signal_issue.py` | `CEREBRAS_API_KEY` |
+| `sambanova` | `scripts/phase-2/providers/sambanova.py` | not supported by the automated resolver | `SAMBANOVA_API_KEY` |
+| `openrouter` | `scripts/phase-2/providers/openrouter.py` | not supported by the automated resolver | `OPENROUTER_API_KEY` |
 
 ### Groq provider
 
@@ -53,18 +61,20 @@ The Groq adapter calls the Groq chat-completions API and uses:
 GROQ_API_KEY
 ```
 
-Direct `run_check_batch.py` execution now requires explicit provider/model selection:
+Direct `run_check_batch.py` execution requires explicit provider/model selection:
 
 ```text
 --provider <provider>
 --model <model>
 ```
 
-The canonical scheduled workflow no longer includes `groq:llama-3.3-70b-versatile` and does not add a replacement Groq model. Groq can be used again only if a future explicit model selection is added and validated.
+The canonical scheduled signal-generation workflow no longer includes `groq:llama-3.3-70b-versatile` and does not add a replacement Groq model. Groq can be used again only if a future explicit model selection is added and validated.
+
+The automated resolver retains direct Groq support for manual execution. Groq is not the configured scheduled fallback.
 
 ### Gemini provider
 
-The Gemini adapter is:
+The Gemini signal-generation adapter is:
 
 ```text
 scripts/phase-2/providers/gemini.py
@@ -89,7 +99,7 @@ Current scheduled Gemini signal-generation model:
 gemini-3.1-flash-lite
 ```
 
-`gemini-2.5-flash` remains supported by provider-level reduced-thinking configuration and may be selected manually, but it is not the current scheduled Gemini default.
+`gemini-2.5-flash` remains supported by provider-level reduced-thinking configuration and may be selected manually, but it is not the current scheduled Gemini signal-generation default or automated resolver fallback.
 
 Signal-generation runs use a workflow default of:
 
@@ -97,22 +107,29 @@ Signal-generation runs use a workflow default of:
 --max-completion-tokens 3000
 ```
 
-The automated resolver remains separate. It defaults to primary `gemini-3.5-flash` with `--max-completion-tokens 8000`, and the resolver workflow can run one immediate fallback attempt with `gemini-2.5-flash` only for provider-unavailability or 503-like primary Gemini failures.
+The automated resolver remains separate. Its scheduled primary invocation uses:
 
-The Gemini adapter includes reduced-thinking configuration for strict-format output reliability:
+```text
+provider: gemini
+model: gemini-3.5-flash
+max_completion_tokens: 8000
+provider_max_attempts: 1
+```
+
+The Gemini resolver call uses reduced-thinking configuration:
 
 | Model family | Thinking configuration |
 |---|---|
 | `gemini-2.5-flash*` | `types.ThinkingConfig(thinking_budget=0)` |
 | `gemini-3.*` | `types.ThinkingConfig(thinking_level="low")` |
 
-This setting improves strict-format output reliability but does not replace validation.
+This setting improves strict-format output reliability but does not replace deterministic validation.
 
-For current Phase 2 signal generation, `gemini-3.1-flash-lite` is the scheduled Gemini default. Other Gemini model names should not be added to the scheduled signal-generation rotation unless they are first verified operationally and documented.
+If the primary Gemini resolver call fails with recognized provider-unavailability or 503-like diagnostics, the GitHub Actions workflow invokes the configured Cerebras fallback for the same issue. Invalid Gemini plans remain ordinary plan-validation failures and do not trigger the provider fallback.
 
 ### Cerebras provider
 
-The Cerebras adapter is:
+The Cerebras signal-generation adapter is:
 
 ```text
 scripts/phase-2/providers/cerebras.py
@@ -124,24 +141,57 @@ It uses the shared OpenAI-compatible provider utility:
 scripts/phase-2/providers/openai_compatible.py
 ```
 
-Current scheduled Cerebras models:
+Current scheduled Cerebras signal-generation models:
 
 ```text
 gpt-oss-120b
 zai-glm-4.7
 ```
 
-The adapter requires `CEREBRAS_API_KEY` and defaults to:
+The signal-generation adapter requires `CEREBRAS_API_KEY` and defaults to:
 
 ```text
 https://api.cerebras.ai/v1
 ```
 
-`CEREBRAS_BASE_URL` may override the base URL in local or alternate environments. For `zai-glm-4.7`, the adapter sends the documented GLM extra body configuration used by the repository.
+`CEREBRAS_BASE_URL` may override the base URL in local or alternate environments. For `zai-glm-4.7`, the signal-generation adapter sends the documented GLM extra body configuration used by the repository.
+
+#### Cerebras automated resolver support
+
+The automated resolver uses the already installed `openai` SDK directly against the Cerebras OpenAI-compatible endpoint. No additional runtime dependency is required. The Cerebras resolver path currently supports only `gpt-oss-120b`, because its low-reasoning request controls are model-specific.
+
+The scheduled fallback configuration is:
+
+```text
+provider: cerebras
+model: gpt-oss-120b
+reasoning_effort: low
+max_completion_tokens: 6000
+temperature: 0
+provider_max_attempts: 1
+response format: JSON object
+```
+
+The fallback requires:
+
+```text
+CEREBRAS_API_KEY
+```
+
+The fallback is activated only when:
+
+1. the selected primary provider is Gemini;
+2. the primary resolver call fails;
+3. a resolver provider-error artifact exists;
+4. that artifact matches configured provider-unavailability or 503-like diagnostics.
+
+The workflow preserves the primary provider error before starting the Cerebras call. Plan parsing, deterministic normalization, exact-edit validation, and all repository mutations continue to use the existing resolver logic.
+
+The workflow fallback model is fixed to `gpt-oss-120b`; it is not exposed as a generic Cerebras-model override. The resolver constructs the OpenAI-compatible client with `max_retries=0`, so `provider_max_attempts: 1` performs one initial Cerebras API request without additional OpenAI SDK retry attempts.
 
 ### SambaNova provider
 
-The SambaNova adapter is:
+The SambaNova signal-generation adapter is:
 
 ```text
 scripts/phase-2/providers/sambanova.py
@@ -149,7 +199,7 @@ scripts/phase-2/providers/sambanova.py
 
 It also uses the shared OpenAI-compatible provider utility.
 
-Current scheduled SambaNova models:
+Current scheduled SambaNova signal-generation models:
 
 ```text
 DeepSeek-V3.1
@@ -164,25 +214,28 @@ https://api.sambanova.ai/v1
 
 `SAMBANOVA_BASE_URL` may override the base URL in local or alternate environments.
 
+SambaNova is not currently supported by the automated resolver.
 
 ### OpenRouter provider
 
-The OpenRouter adapter is:
+The OpenRouter signal-generation adapter is:
 
-``` text
+```text
 scripts/phase-2/providers/openrouter.py
 ```
 
 It also uses the shared OpenAI-compatible provider utility.
 
-Current scheduled OpenRouter models:
+Current scheduled OpenRouter signal-generation models:
 
-``` text
+```text
 nvidia/nemotron-3-ultra-550b-a55b:free
 poolside/laguna-m.1:free
 ```
 
 The adapter requires `OPENROUTER_API_KEY` and currently allowlists only these two free OpenRouter model IDs. The scheduled workflow also validates selected OpenRouter models against this allowlist.
+
+OpenRouter is not currently supported by the automated resolver.
 
 ### Signal-generation provider retry and failure-classification behavior
 
@@ -215,7 +268,7 @@ try again later
 unavailable
 ```
 
-Validation failures are not retried. A structurally invalid model output is treated as a rejected check-agent output or resolver failure, not as a transient provider failure.
+Validation failures are not provider retries. A structurally invalid model output is treated as a rejected check-agent output or resolver plan-validation failure, not as a transient provider failure.
 
 ### Automated resolver provider behavior
 
@@ -226,12 +279,13 @@ For resolver runs:
 - `resolve_signal_issue.py` defaults to `--provider-max-attempts 1`;
 - the scheduled resolver workflow also passes `--provider-max-attempts 1`;
 - no resolver provider retry or backoff loop occurs in the scheduled workflow;
-- the workflow-level Gemini fallback is not a retry of the same model;
-- the fallback is one immediate attempt with a second model, `gemini-2.5-flash`;
-- fallback is restricted to primary Gemini provider-unavailability or 503-like failures;
-- non-provider failures remain fatal.
+- the default scheduled fallback is one cross-provider Cerebras `gpt-oss-120b` call after recognized primary Gemini provider unavailability;
+- the Cerebras call uses JSON-object response mode, low reasoning effort, and a 6,000-token completion cap;
+- invalid model plans remain validation failures and do not trigger another provider;
+- non-provider failures remain fatal;
+- fallback failures remain fatal and observable.
 
-This distinction is important: scheduled signal generation may use provider-level transient retry and nonfatal provider-failure classification, while automated signal resolution uses a narrower primary-model/fallback-model sequence and fails normally outside that sequence.
+This distinction is important: scheduled signal generation may use provider-level transient retry and nonfatal provider-failure classification, while automated signal resolution uses a narrower primary-model/cross-provider-fallback sequence and fails normally outside that sequence.
 
 ---
 
