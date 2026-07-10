@@ -12,20 +12,20 @@ Counts shown on this page only include executions recorded since that start time
 
 Models not present in the current active rotation remain listed as `inactive` for historical continuity.
 
-Last generated: `2026-07-01T12:16:37Z`
+Last generated: `2026-07-09T23:52:42Z`
 
 ## Cumulative table
 
 | Provider | Model | Status | # called | # valid | # invalid | # rejected | # provider failed | # runner failed | Last check status | Last issue status | Last run UTC |
 |---|---|---|---:|---:|---:|---:|---:|---:|---|---|---|
-| `cerebras` | `gpt-oss-120b` | `active` | 2 | 2 | 0 | 0 | 0 | 0 | `ok` | `ok` | `2026-06-30T19:16:02Z` |
-| `cerebras` | `zai-glm-4.7` | `active` | 4 | 3 | 1 | 0 | 0 | 1 | `ok` | `ok` | `2026-06-30T15:08:15Z` |
-| `gemini` | `gemini-3.1-flash-lite` | `active` | 4 | 0 | 4 | 4 | 0 | 0 | `rejected` | `skipped` | `2026-07-01T08:54:33Z` |
+| `cerebras` | `gpt-oss-120b` | `active` | 16 | 13 | 3 | 2 | 1 | 0 | `ok` | `ok` | `2026-07-08T21:49:38Z` |
+| `cerebras` | `zai-glm-4.7` | `active` | 19 | 16 | 3 | 1 | 1 | 1 | `ok` | `ok` | `2026-07-09T22:41:37Z` |
+| `gemini` | `gemini-3.1-flash-lite` | `active` | 18 | 6 | 12 | 12 | 0 | 0 | `rejected` | `skipped` | `2026-07-09T17:34:24Z` |
 | `groq` | `llama-3.3-70b-versatile` | `inactive` | 0 | 0 | 0 | 0 | 0 | 0 |  |  |  |
-| `openrouter` | `nvidia/nemotron-3-ultra-550b-a55b:free` | `active` | 2 | 0 | 2 | 2 | 0 | 0 | `rejected` | `skipped` | `2026-06-30T17:22:27Z` |
-| `openrouter` | `poolside/laguna-m.1:free` | `active` | 1 | 1 | 0 | 0 | 0 | 0 | `ok` | `ok` | `2026-07-01T12:16:37Z` |
-| `sambanova` | `DeepSeek-V3.1` | `active` | 4 | 4 | 0 | 0 | 0 | 0 | `ok` | `ok` | `2026-06-30T22:49:08Z` |
-| `sambanova` | `Meta-Llama-3.3-70B-Instruct` | `active` | 4 | 4 | 0 | 0 | 0 | 0 | `ok` | `ok` | `2026-07-01T05:01:19Z` |
+| `openrouter` | `nvidia/nemotron-3-ultra-550b-a55b:free` | `active` | 16 | 2 | 14 | 11 | 3 | 0 | `rejected` | `skipped` | `2026-07-09T05:36:54Z` |
+| `openrouter` | `poolside/laguna-m.1:free` | `active` | 14 | 10 | 4 | 0 | 4 | 0 | `ok` | `ok` | `2026-07-09T21:03:17Z` |
+| `sambanova` | `DeepSeek-V3.1` | `active` | 18 | 18 | 0 | 0 | 0 | 0 | `ok` | `ok` | `2026-07-09T23:52:42Z` |
+| `sambanova` | `Meta-Llama-3.3-70B-Instruct` | `active` | 16 | 15 | 1 | 1 | 0 | 0 | `ok` | `ok` | `2026-07-09T08:55:09Z` |
 
 ## Status derivation
 
@@ -90,61 +90,61 @@ This page intentionally does not store secrets, raw prompts, raw completions, pr
     }
   ],
   "collection_start_utc": "2026-06-29T12:18:18Z",
-  "generated_at": "2026-07-01T12:16:37Z",
+  "generated_at": "2026-07-09T23:52:42Z",
   "models": {
     "cerebras:gpt-oss-120b": {
-      "called": 2,
-      "invalid": 0,
+      "called": 16,
+      "invalid": 3,
       "last_check_status": "ok",
       "last_event_name": "schedule",
       "last_issue_status": "ok",
       "last_overall_status": "ok",
       "last_run_attempt": "1",
-      "last_run_id": "28469717528",
-      "last_run_utc": "2026-06-30T19:16:02Z",
+      "last_run_id": "28978138816",
+      "last_run_utc": "2026-07-08T21:49:38Z",
       "model": "gpt-oss-120b",
       "provider": "cerebras",
-      "provider_failed": 0,
-      "rejected": 0,
+      "provider_failed": 1,
+      "rejected": 2,
       "runner_failed": 0,
       "spec": "cerebras:gpt-oss-120b",
-      "valid": 2
+      "valid": 13
     },
     "cerebras:zai-glm-4.7": {
-      "called": 4,
-      "invalid": 1,
+      "called": 19,
+      "invalid": 3,
       "last_check_status": "ok",
       "last_event_name": "schedule",
       "last_issue_status": "ok",
       "last_overall_status": "ok",
       "last_run_attempt": "1",
-      "last_run_id": "28454634741",
-      "last_run_utc": "2026-06-30T15:08:15Z",
+      "last_run_id": "29055226768",
+      "last_run_utc": "2026-07-09T22:41:37Z",
       "model": "zai-glm-4.7",
       "provider": "cerebras",
-      "provider_failed": 0,
-      "rejected": 0,
+      "provider_failed": 1,
+      "rejected": 1,
       "runner_failed": 1,
       "spec": "cerebras:zai-glm-4.7",
-      "valid": 3
+      "valid": 16
     },
     "gemini:gemini-3.1-flash-lite": {
-      "called": 4,
-      "invalid": 4,
+      "called": 18,
+      "invalid": 12,
       "last_check_status": "rejected",
       "last_event_name": "schedule",
       "last_issue_status": "skipped",
       "last_overall_status": "rejected",
       "last_run_attempt": "1",
-      "last_run_id": "28505624084",
-      "last_run_utc": "2026-07-01T08:54:33Z",
+      "last_run_id": "29037481705",
+      "last_run_utc": "2026-07-09T17:34:24Z",
       "model": "gemini-3.1-flash-lite",
       "provider": "gemini",
       "provider_failed": 0,
-      "rejected": 4,
+      "rejected": 12,
       "runner_failed": 0,
       "spec": "gemini:gemini-3.1-flash-lite",
-      "valid": 0
+      "valid": 6
     },
     "groq:llama-3.3-70b-versatile": {
       "called": 0,
@@ -165,76 +165,76 @@ This page intentionally does not store secrets, raw prompts, raw completions, pr
       "valid": 0
     },
     "openrouter:nvidia/nemotron-3-ultra-550b-a55b:free": {
-      "called": 2,
-      "invalid": 2,
+      "called": 16,
+      "invalid": 14,
       "last_check_status": "rejected",
       "last_event_name": "schedule",
       "last_issue_status": "skipped",
       "last_overall_status": "rejected",
       "last_run_attempt": "1",
-      "last_run_id": "28463057281",
-      "last_run_utc": "2026-06-30T17:22:27Z",
+      "last_run_id": "28996420874",
+      "last_run_utc": "2026-07-09T05:36:54Z",
       "model": "nvidia/nemotron-3-ultra-550b-a55b:free",
       "provider": "openrouter",
-      "provider_failed": 0,
-      "rejected": 2,
+      "provider_failed": 3,
+      "rejected": 11,
       "runner_failed": 0,
       "spec": "openrouter:nvidia/nemotron-3-ultra-550b-a55b:free",
-      "valid": 0
+      "valid": 2
     },
     "openrouter:poolside/laguna-m.1:free": {
-      "called": 1,
-      "invalid": 0,
+      "called": 14,
+      "invalid": 4,
       "last_check_status": "ok",
       "last_event_name": "schedule",
       "last_issue_status": "ok",
       "last_overall_status": "ok",
       "last_run_attempt": "1",
-      "last_run_id": "28516795255",
-      "last_run_utc": "2026-07-01T12:16:37Z",
+      "last_run_id": "29049903333",
+      "last_run_utc": "2026-07-09T21:03:17Z",
       "model": "poolside/laguna-m.1:free",
       "provider": "openrouter",
-      "provider_failed": 0,
+      "provider_failed": 4,
       "rejected": 0,
       "runner_failed": 0,
       "spec": "openrouter:poolside/laguna-m.1:free",
-      "valid": 1
+      "valid": 10
     },
     "sambanova:DeepSeek-V3.1": {
-      "called": 4,
+      "called": 18,
       "invalid": 0,
       "last_check_status": "ok",
       "last_event_name": "schedule",
       "last_issue_status": "ok",
       "last_overall_status": "ok",
       "last_run_attempt": "1",
-      "last_run_id": "28480869577",
-      "last_run_utc": "2026-06-30T22:49:08Z",
+      "last_run_id": "29058494281",
+      "last_run_utc": "2026-07-09T23:52:42Z",
       "model": "DeepSeek-V3.1",
       "provider": "sambanova",
       "provider_failed": 0,
       "rejected": 0,
       "runner_failed": 0,
       "spec": "sambanova:DeepSeek-V3.1",
-      "valid": 4
+      "valid": 18
     },
     "sambanova:Meta-Llama-3.3-70B-Instruct": {
-      "called": 4,
-      "invalid": 0,
+      "called": 16,
+      "invalid": 1,
       "last_check_status": "ok",
       "last_event_name": "schedule",
       "last_issue_status": "ok",
       "last_overall_status": "ok",
       "last_run_attempt": "1",
-      "last_run_id": "28494693116",
-      "last_run_utc": "2026-07-01T05:01:19Z",
+      "last_run_id": "29006343389",
+      "last_run_utc": "2026-07-09T08:55:09Z",
       "model": "Meta-Llama-3.3-70B-Instruct",
       "provider": "sambanova",
       "provider_failed": 0,
-      "rejected": 0,
+      "rejected": 1,
       "runner_failed": 0,
       "spec": "sambanova:Meta-Llama-3.3-70B-Instruct",
-      "valid": 4
+      "valid": 15
     }
   },
   "schema_version": 1,
@@ -438,6 +438,966 @@ This page intentionally does not store secrets, raw prompts, raw completions, pr
       "overall_status": "ok",
       "provider": "openrouter",
       "timestamp_utc": "2026-07-01T12:16:37Z"
+    },
+    "28528133883|1|Scheduled check-agent signal collector|15|sambanova|DeepSeek-V3.1|ok|ok|ok": {
+      "check_status": "ok",
+      "commit_sha": "8e96af8f0e03c8e4d674072bf8f69de10ea4ba56",
+      "event_name": "schedule",
+      "issue_status": "ok",
+      "model": "DeepSeek-V3.1",
+      "overall_status": "ok",
+      "provider": "sambanova",
+      "timestamp_utc": "2026-07-01T15:18:28Z"
+    },
+    "28535667202|1|Scheduled check-agent signal collector|16|sambanova|DeepSeek-V3.1|ok|ok|ok": {
+      "check_status": "ok",
+      "commit_sha": "1c3ece77fca5cc5c3db38df3f0bf5bf266ef714a",
+      "event_name": "schedule",
+      "issue_status": "ok",
+      "model": "DeepSeek-V3.1",
+      "overall_status": "ok",
+      "provider": "sambanova",
+      "timestamp_utc": "2026-07-01T17:27:09Z"
+    },
+    "28541905473|1|Scheduled check-agent signal collector|16|openrouter|poolside/laguna-m.1:free|ok|ok|ok": {
+      "check_status": "ok",
+      "commit_sha": "52d94b5e1a750b56983d6741c6b6126866613dc7",
+      "event_name": "schedule",
+      "issue_status": "ok",
+      "model": "poolside/laguna-m.1:free",
+      "overall_status": "ok",
+      "provider": "openrouter",
+      "timestamp_utc": "2026-07-01T19:26:23Z"
+    },
+    "28547495089|1|Scheduled check-agent signal collector|17|cerebras|zai-glm-4.7|failed|provider_failed|skipped": {
+      "check_status": "provider_failed",
+      "commit_sha": "e967513ae03fb03f21cb7deda70cb38a605cdff7",
+      "event_name": "schedule",
+      "issue_status": "skipped",
+      "model": "zai-glm-4.7",
+      "overall_status": "failed",
+      "provider": "cerebras",
+      "timestamp_utc": "2026-07-01T21:01:25Z"
+    },
+    "28551743118|1|Scheduled check-agent signal collector|18|sambanova|DeepSeek-V3.1|ok|ok|ok": {
+      "check_status": "ok",
+      "commit_sha": "769e33f865d55bec88c3133687981f7deede8ffd",
+      "event_name": "schedule",
+      "issue_status": "ok",
+      "model": "DeepSeek-V3.1",
+      "overall_status": "ok",
+      "provider": "sambanova",
+      "timestamp_utc": "2026-07-01T22:25:09Z"
+    },
+    "28555492713|1|Scheduled check-agent signal collector|18|openrouter|poolside/laguna-m.1:free|ok|ok|ok": {
+      "check_status": "ok",
+      "commit_sha": "edb8bc80a8de9303a62ce38753a13e7dcec269a4",
+      "event_name": "schedule",
+      "issue_status": "ok",
+      "model": "poolside/laguna-m.1:free",
+      "overall_status": "ok",
+      "provider": "openrouter",
+      "timestamp_utc": "2026-07-01T23:54:15Z"
+    },
+    "28565014269|1|Scheduled check-agent signal collector|20|sambanova|Meta-Llama-3.3-70B-Instruct|ok|ok|ok": {
+      "check_status": "ok",
+      "commit_sha": "406c0cbb849c422022dbf8c661b7d6de57eb7f6d",
+      "event_name": "schedule",
+      "issue_status": "ok",
+      "model": "Meta-Llama-3.3-70B-Instruct",
+      "overall_status": "ok",
+      "provider": "sambanova",
+      "timestamp_utc": "2026-07-02T04:17:37Z"
+    },
+    "28574197867|1|Scheduled check-agent signal collector|22|openrouter|nvidia/nemotron-3-ultra-550b-a55b:free|failed|provider_failed|skipped": {
+      "check_status": "provider_failed",
+      "commit_sha": "dc736757c8f7500318e1c45332badccdac9fc680",
+      "event_name": "schedule",
+      "issue_status": "skipped",
+      "model": "nvidia/nemotron-3-ultra-550b-a55b:free",
+      "overall_status": "failed",
+      "provider": "openrouter",
+      "timestamp_utc": "2026-07-02T07:49:49Z"
+    },
+    "28584420700|1|Scheduled check-agent signal collector|23|cerebras|zai-glm-4.7|ok|ok|ok": {
+      "check_status": "ok",
+      "commit_sha": "8fd6d309c9acc2d58b94fc1f8b631bee69b7ea07",
+      "event_name": "schedule",
+      "issue_status": "ok",
+      "model": "zai-glm-4.7",
+      "overall_status": "ok",
+      "provider": "cerebras",
+      "timestamp_utc": "2026-07-02T10:50:34Z"
+    },
+    "28592183389|1|Scheduled check-agent signal collector|24|gemini|gemini-3.1-flash-lite|ok|ok|ok": {
+      "check_status": "ok",
+      "commit_sha": "15576ee8a6759088750f69ab05b7971dde83379c",
+      "event_name": "schedule",
+      "issue_status": "ok",
+      "model": "gemini-3.1-flash-lite",
+      "overall_status": "ok",
+      "provider": "gemini",
+      "timestamp_utc": "2026-07-02T13:04:25Z"
+    },
+    "28601826780|1|Scheduled check-agent signal collector|25|cerebras|zai-glm-4.7|ok|ok|ok": {
+      "check_status": "ok",
+      "commit_sha": "53323f6b45a71f7c9492d9b38f05979a9e5d19ed",
+      "event_name": "schedule",
+      "issue_status": "ok",
+      "model": "zai-glm-4.7",
+      "overall_status": "ok",
+      "provider": "cerebras",
+      "timestamp_utc": "2026-07-02T15:28:41Z"
+    },
+    "28608768126|1|Scheduled check-agent signal collector|26|openrouter|nvidia/nemotron-3-ultra-550b-a55b:free|rejected|rejected|skipped": {
+      "check_status": "rejected",
+      "commit_sha": "8b3eb26653d91d0360d70292f1629ab67f7a95ea",
+      "event_name": "schedule",
+      "issue_status": "skipped",
+      "model": "nvidia/nemotron-3-ultra-550b-a55b:free",
+      "overall_status": "rejected",
+      "provider": "openrouter",
+      "timestamp_utc": "2026-07-02T17:22:57Z"
+    },
+    "28614316887|1|Scheduled check-agent signal collector|27|cerebras|gpt-oss-120b|ok|ok|ok": {
+      "check_status": "ok",
+      "commit_sha": "a53aa84505b1e40d40b50b5be6767c99fe315128",
+      "event_name": "schedule",
+      "issue_status": "ok",
+      "model": "gpt-oss-120b",
+      "overall_status": "ok",
+      "provider": "cerebras",
+      "timestamp_utc": "2026-07-02T18:55:51Z"
+    },
+    "28619898838|1|Scheduled check-agent signal collector|27|sambanova|Meta-Llama-3.3-70B-Instruct|rejected|rejected|skipped": {
+      "check_status": "rejected",
+      "commit_sha": "e1074020b36f4fa4a81a6bf11a0444dfc7a17edc",
+      "event_name": "schedule",
+      "issue_status": "skipped",
+      "model": "Meta-Llama-3.3-70B-Instruct",
+      "overall_status": "rejected",
+      "provider": "sambanova",
+      "timestamp_utc": "2026-07-02T20:36:19Z"
+    },
+    "28623808664|1|Scheduled check-agent signal collector|28|openrouter|nvidia/nemotron-3-ultra-550b-a55b:free|ok|ok|ok": {
+      "check_status": "ok",
+      "commit_sha": "fb0a065cb50c29eb1befef8a931e7724342cfaa2",
+      "event_name": "schedule",
+      "issue_status": "ok",
+      "model": "nvidia/nemotron-3-ultra-550b-a55b:free",
+      "overall_status": "ok",
+      "provider": "openrouter",
+      "timestamp_utc": "2026-07-02T21:52:45Z"
+    },
+    "28627688743|1|Scheduled check-agent signal collector|28|openrouter|poolside/laguna-m.1:free|ok|ok|ok": {
+      "check_status": "ok",
+      "commit_sha": "69356d3f50f21dc64876d0b3e871cb39c262f523",
+      "event_name": "schedule",
+      "issue_status": "ok",
+      "model": "poolside/laguna-m.1:free",
+      "overall_status": "ok",
+      "provider": "openrouter",
+      "timestamp_utc": "2026-07-02T23:20:37Z"
+    },
+    "28631694202|1|Scheduled check-agent signal collector|29|sambanova|Meta-Llama-3.3-70B-Instruct|ok|ok|ok": {
+      "check_status": "ok",
+      "commit_sha": "3e6fce5ff9d4acdb1e5e68f44d23576a8cc78697",
+      "event_name": "schedule",
+      "issue_status": "ok",
+      "model": "Meta-Llama-3.3-70B-Instruct",
+      "overall_status": "ok",
+      "provider": "sambanova",
+      "timestamp_utc": "2026-07-03T01:08:33Z"
+    },
+    "28639809803|1|Scheduled check-agent signal collector|31|gemini|gemini-3.1-flash-lite|rejected|rejected|skipped": {
+      "check_status": "rejected",
+      "commit_sha": "8c70d9952b780b79875c90672394765b9ab6362f",
+      "event_name": "schedule",
+      "issue_status": "skipped",
+      "model": "gemini-3.1-flash-lite",
+      "overall_status": "rejected",
+      "provider": "gemini",
+      "timestamp_utc": "2026-07-03T05:09:48Z"
+    },
+    "28648603833|1|Scheduled check-agent signal collector|32|openrouter|poolside/laguna-m.1:free|ok|ok|ok": {
+      "check_status": "ok",
+      "commit_sha": "d53a92b50f53ed3974a2aac89bad16772094ff4f",
+      "event_name": "schedule",
+      "issue_status": "ok",
+      "model": "poolside/laguna-m.1:free",
+      "overall_status": "ok",
+      "provider": "openrouter",
+      "timestamp_utc": "2026-07-03T08:33:32Z"
+    },
+    "28657103939|1|Scheduled check-agent signal collector|34|cerebras|gpt-oss-120b|ok|ok|ok": {
+      "check_status": "ok",
+      "commit_sha": "8ba52100a7829ed83e34b42d1bb58769153669dc",
+      "event_name": "schedule",
+      "issue_status": "ok",
+      "model": "gpt-oss-120b",
+      "overall_status": "ok",
+      "provider": "cerebras",
+      "timestamp_utc": "2026-07-03T11:18:30Z"
+    },
+    "28663173067|1|Scheduled check-agent signal collector|34|openrouter|poolside/laguna-m.1:free|ok|ok|ok": {
+      "check_status": "ok",
+      "commit_sha": "97f38aecaeafa8cc0b721f1b0c9d1f2e00402e08",
+      "event_name": "schedule",
+      "issue_status": "ok",
+      "model": "poolside/laguna-m.1:free",
+      "overall_status": "ok",
+      "provider": "openrouter",
+      "timestamp_utc": "2026-07-03T13:21:08Z"
+    },
+    "28670059574|1|Scheduled check-agent signal collector|35|openrouter|poolside/laguna-m.1:free|provider_failed|provider_failed|skipped": {
+      "check_status": "provider_failed",
+      "commit_sha": "a0231255ec98f739df9096ff1601ac68738b981d",
+      "event_name": "schedule",
+      "issue_status": "skipped",
+      "model": "poolside/laguna-m.1:free",
+      "overall_status": "provider_failed",
+      "provider": "openrouter",
+      "timestamp_utc": "2026-07-03T15:35:48Z"
+    },
+    "28674179908|1|Scheduled check-agent signal collector|36|gemini|gemini-3.1-flash-lite|rejected|rejected|skipped": {
+      "check_status": "rejected",
+      "commit_sha": "7b8818cfaad4bff31a747cff6c00b21c02e2c81a",
+      "event_name": "schedule",
+      "issue_status": "skipped",
+      "model": "gemini-3.1-flash-lite",
+      "overall_status": "rejected",
+      "provider": "gemini",
+      "timestamp_utc": "2026-07-03T17:05:25Z"
+    },
+    "28677865995|1|Scheduled check-agent signal collector|37|sambanova|DeepSeek-V3.1|ok|ok|ok": {
+      "check_status": "ok",
+      "commit_sha": "91f3f1544acfbec0a0c627d4fc8996405a36e751",
+      "event_name": "schedule",
+      "issue_status": "ok",
+      "model": "DeepSeek-V3.1",
+      "overall_status": "ok",
+      "provider": "sambanova",
+      "timestamp_utc": "2026-07-03T18:37:41Z"
+    },
+    "28681158792|1|Scheduled check-agent signal collector|37|sambanova|Meta-Llama-3.3-70B-Instruct|ok|ok|ok": {
+      "check_status": "ok",
+      "commit_sha": "17026943f4ac5cb09f6e568b1e1a584cef1d2b83",
+      "event_name": "schedule",
+      "issue_status": "ok",
+      "model": "Meta-Llama-3.3-70B-Instruct",
+      "overall_status": "ok",
+      "provider": "sambanova",
+      "timestamp_utc": "2026-07-03T20:04:33Z"
+    },
+    "28683861055|1|Scheduled check-agent signal collector|38|openrouter|nvidia/nemotron-3-ultra-550b-a55b:free|rejected|rejected|skipped": {
+      "check_status": "rejected",
+      "commit_sha": "1e6efb026d6f36469eb45ad62ef3dbaae3dd06a2",
+      "event_name": "schedule",
+      "issue_status": "skipped",
+      "model": "nvidia/nemotron-3-ultra-550b-a55b:free",
+      "overall_status": "rejected",
+      "provider": "openrouter",
+      "timestamp_utc": "2026-07-03T21:23:17Z"
+    },
+    "28686189094|1|Scheduled check-agent signal collector|38|openrouter|poolside/laguna-m.1:free|ok|ok|ok": {
+      "check_status": "ok",
+      "commit_sha": "a8b04004adad064ed5516d005083ba782ee0e030",
+      "event_name": "schedule",
+      "issue_status": "ok",
+      "model": "poolside/laguna-m.1:free",
+      "overall_status": "ok",
+      "provider": "openrouter",
+      "timestamp_utc": "2026-07-03T22:35:04Z"
+    },
+    "28688186150|1|Scheduled check-agent signal collector|39|openrouter|nvidia/nemotron-3-ultra-550b-a55b:free|rejected|rejected|skipped": {
+      "check_status": "rejected",
+      "commit_sha": "52ada9294f4aa8571ce2e33ed928c0ee922f38f0",
+      "event_name": "schedule",
+      "issue_status": "skipped",
+      "model": "nvidia/nemotron-3-ultra-550b-a55b:free",
+      "overall_status": "rejected",
+      "provider": "openrouter",
+      "timestamp_utc": "2026-07-03T23:47:58Z"
+    },
+    "28690561316|1|Scheduled check-agent signal collector|40|cerebras|gpt-oss-120b|ok|ok|ok": {
+      "check_status": "ok",
+      "commit_sha": "43414925cc2d27495c3aab752779aff899c13c59",
+      "event_name": "schedule",
+      "issue_status": "ok",
+      "model": "gpt-oss-120b",
+      "overall_status": "ok",
+      "provider": "cerebras",
+      "timestamp_utc": "2026-07-04T01:20:29Z"
+    },
+    "28695680968|1|Scheduled check-agent signal collector|41|cerebras|zai-glm-4.7|ok|ok|ok": {
+      "check_status": "ok",
+      "commit_sha": "6b0516f842ce478d77e767d5f31b6f263e38ae29",
+      "event_name": "schedule",
+      "issue_status": "ok",
+      "model": "zai-glm-4.7",
+      "overall_status": "ok",
+      "provider": "cerebras",
+      "timestamp_utc": "2026-07-04T05:03:41Z"
+    },
+    "28699916008|1|Scheduled check-agent signal collector|42|openrouter|poolside/laguna-m.1:free|ok|ok|ok": {
+      "check_status": "ok",
+      "commit_sha": "bd6d10f2b622a66bba87f05d5cd71b80a0ec922b",
+      "event_name": "schedule",
+      "issue_status": "ok",
+      "model": "poolside/laguna-m.1:free",
+      "overall_status": "ok",
+      "provider": "openrouter",
+      "timestamp_utc": "2026-07-04T08:02:54Z"
+    },
+    "28703184763|1|Scheduled check-agent signal collector|43|openrouter|poolside/laguna-m.1:free|failed|provider_failed|skipped": {
+      "check_status": "provider_failed",
+      "commit_sha": "f489e571a3ee304169195356276ad300eed73ea9",
+      "event_name": "schedule",
+      "issue_status": "skipped",
+      "model": "poolside/laguna-m.1:free",
+      "overall_status": "failed",
+      "provider": "openrouter",
+      "timestamp_utc": "2026-07-04T10:22:20Z"
+    },
+    "28705270406|1|Scheduled check-agent signal collector|44|cerebras|zai-glm-4.7|ok|ok|ok": {
+      "check_status": "ok",
+      "commit_sha": "22765cb20c5a53c5b2300432161cbf8efc87f900",
+      "event_name": "schedule",
+      "issue_status": "ok",
+      "model": "zai-glm-4.7",
+      "overall_status": "ok",
+      "provider": "cerebras",
+      "timestamp_utc": "2026-07-04T11:50:16Z"
+    },
+    "28708372462|1|Scheduled check-agent signal collector|45|gemini|gemini-3.1-flash-lite|rejected|rejected|skipped": {
+      "check_status": "rejected",
+      "commit_sha": "6267fabab39d64392b3c73083b8d3df837d8fd89",
+      "event_name": "schedule",
+      "issue_status": "skipped",
+      "model": "gemini-3.1-flash-lite",
+      "overall_status": "rejected",
+      "provider": "gemini",
+      "timestamp_utc": "2026-07-04T13:54:45Z"
+    },
+    "28710564225|1|Scheduled check-agent signal collector|46|cerebras|gpt-oss-120b|ok|ok|ok": {
+      "check_status": "ok",
+      "commit_sha": "dcf381c7a08ae9e1453b766922adf6e7d699018d",
+      "event_name": "schedule",
+      "issue_status": "ok",
+      "model": "gpt-oss-120b",
+      "overall_status": "ok",
+      "provider": "cerebras",
+      "timestamp_utc": "2026-07-04T15:18:38Z"
+    },
+    "28712521994|1|Scheduled check-agent signal collector|46|cerebras|zai-glm-4.7|ok|ok|ok": {
+      "check_status": "ok",
+      "commit_sha": "4cb52d7a8cadf148a664e9866de1822a8bc58dda",
+      "event_name": "schedule",
+      "issue_status": "ok",
+      "model": "zai-glm-4.7",
+      "overall_status": "ok",
+      "provider": "cerebras",
+      "timestamp_utc": "2026-07-04T16:31:09Z"
+    },
+    "28714519301|1|Scheduled check-agent signal collector|47|cerebras|gpt-oss-120b|ok|ok|ok": {
+      "check_status": "ok",
+      "commit_sha": "8324455cbee9d4707e36b64b3012d23e7c44d26a",
+      "event_name": "schedule",
+      "issue_status": "ok",
+      "model": "gpt-oss-120b",
+      "overall_status": "ok",
+      "provider": "cerebras",
+      "timestamp_utc": "2026-07-04T17:46:57Z"
+    },
+    "28716069332|1|Scheduled check-agent signal collector|47|gemini|gemini-3.1-flash-lite|rejected|rejected|skipped": {
+      "check_status": "rejected",
+      "commit_sha": "139827f0ee8a731463854db46992cb516517eb45",
+      "event_name": "schedule",
+      "issue_status": "skipped",
+      "model": "gemini-3.1-flash-lite",
+      "overall_status": "rejected",
+      "provider": "gemini",
+      "timestamp_utc": "2026-07-04T18:45:36Z"
+    },
+    "28717949245|1|Scheduled check-agent signal collector|48|cerebras|gpt-oss-120b|ok|ok|ok": {
+      "check_status": "ok",
+      "commit_sha": "6433cc925001c7569748d3f2f19ce848f5fbc247",
+      "event_name": "schedule",
+      "issue_status": "ok",
+      "model": "gpt-oss-120b",
+      "overall_status": "ok",
+      "provider": "cerebras",
+      "timestamp_utc": "2026-07-04T19:59:23Z"
+    },
+    "28719779551|1|Scheduled check-agent signal collector|48|cerebras|zai-glm-4.7|ok|ok|ok": {
+      "check_status": "ok",
+      "commit_sha": "a10c875c94a8d1484d58aca4de43209092fa2291",
+      "event_name": "schedule",
+      "issue_status": "ok",
+      "model": "zai-glm-4.7",
+      "overall_status": "ok",
+      "provider": "cerebras",
+      "timestamp_utc": "2026-07-04T21:11:52Z"
+    },
+    "28721600943|1|Scheduled check-agent signal collector|49|cerebras|gpt-oss-120b|ok|ok|ok": {
+      "check_status": "ok",
+      "commit_sha": "6b48c13a2aaa855771319682f3c94f922ef5c29b",
+      "event_name": "schedule",
+      "issue_status": "ok",
+      "model": "gpt-oss-120b",
+      "overall_status": "ok",
+      "provider": "cerebras",
+      "timestamp_utc": "2026-07-04T22:26:10Z"
+    },
+    "28723142151|1|Scheduled check-agent signal collector|49|cerebras|zai-glm-4.7|ok|ok|ok": {
+      "check_status": "ok",
+      "commit_sha": "fc0bfb939025493d6816a18a5eeeeef20a66c18a",
+      "event_name": "schedule",
+      "issue_status": "ok",
+      "model": "zai-glm-4.7",
+      "overall_status": "ok",
+      "provider": "cerebras",
+      "timestamp_utc": "2026-07-04T23:32:21Z"
+    },
+    "28725616943|1|Scheduled check-agent signal collector|50|openrouter|nvidia/nemotron-3-ultra-550b-a55b:free|rejected|rejected|skipped": {
+      "check_status": "rejected",
+      "commit_sha": "1bcbf4be3b1934a66b666743224d70d811634967",
+      "event_name": "schedule",
+      "issue_status": "skipped",
+      "model": "nvidia/nemotron-3-ultra-550b-a55b:free",
+      "overall_status": "rejected",
+      "provider": "openrouter",
+      "timestamp_utc": "2026-07-05T01:27:53Z"
+    },
+    "28730922650|1|Scheduled check-agent signal collector|52|sambanova|DeepSeek-V3.1|ok|ok|ok": {
+      "check_status": "ok",
+      "commit_sha": "0d2c0be317ff59ca923d7e58f26ec2c1edec149d",
+      "event_name": "schedule",
+      "issue_status": "ok",
+      "model": "DeepSeek-V3.1",
+      "overall_status": "ok",
+      "provider": "sambanova",
+      "timestamp_utc": "2026-07-05T05:39:28Z"
+    },
+    "28734864073|1|Scheduled check-agent signal collector|53|gemini|gemini-3.1-flash-lite|rejected|rejected|skipped": {
+      "check_status": "rejected",
+      "commit_sha": "c39075ba35df3f756899f5c12bac3cd2bc8f0868",
+      "event_name": "schedule",
+      "issue_status": "skipped",
+      "model": "gemini-3.1-flash-lite",
+      "overall_status": "rejected",
+      "provider": "gemini",
+      "timestamp_utc": "2026-07-05T08:32:16Z"
+    },
+    "28738337446|1|Scheduled check-agent signal collector|54|gemini|gemini-3.1-flash-lite|rejected|rejected|skipped": {
+      "check_status": "rejected",
+      "commit_sha": "d8e81c205afb79e1a5c963a34582f94d752f6e8c",
+      "event_name": "schedule",
+      "issue_status": "skipped",
+      "model": "gemini-3.1-flash-lite",
+      "overall_status": "rejected",
+      "provider": "gemini",
+      "timestamp_utc": "2026-07-05T10:53:30Z"
+    },
+    "28740635629|1|Scheduled check-agent signal collector|55|cerebras|gpt-oss-120b|ok|ok|ok": {
+      "check_status": "ok",
+      "commit_sha": "27f8ded1cd2d40fd5936604706d8ec4a9ae69aa0",
+      "event_name": "schedule",
+      "issue_status": "ok",
+      "model": "gpt-oss-120b",
+      "overall_status": "ok",
+      "provider": "cerebras",
+      "timestamp_utc": "2026-07-05T12:23:25Z"
+    },
+    "28743656332|1|Scheduled check-agent signal collector|55|openrouter|poolside/laguna-m.1:free|ok|ok|ok": {
+      "check_status": "ok",
+      "commit_sha": "d723d1609a0f3d95abe8276b51704caf501b7d9a",
+      "event_name": "schedule",
+      "issue_status": "ok",
+      "model": "poolside/laguna-m.1:free",
+      "overall_status": "ok",
+      "provider": "openrouter",
+      "timestamp_utc": "2026-07-05T14:16:50Z"
+    },
+    "28746123745|1|Scheduled check-agent signal collector|56|gemini|gemini-3.1-flash-lite|ok|ok|ok": {
+      "check_status": "ok",
+      "commit_sha": "07da1d62a4dabd7e34c99601489a276515ef893b",
+      "event_name": "schedule",
+      "issue_status": "ok",
+      "model": "gemini-3.1-flash-lite",
+      "overall_status": "ok",
+      "provider": "gemini",
+      "timestamp_utc": "2026-07-05T15:44:56Z"
+    },
+    "28747845615|1|Scheduled check-agent signal collector|57|cerebras|gpt-oss-120b|ok|ok|ok": {
+      "check_status": "ok",
+      "commit_sha": "0b9e677766023f8347d3886ee4c2d21431b2eb5f",
+      "event_name": "schedule",
+      "issue_status": "ok",
+      "model": "gpt-oss-120b",
+      "overall_status": "ok",
+      "provider": "cerebras",
+      "timestamp_utc": "2026-07-05T16:47:10Z"
+    },
+    "28749576578|1|Scheduled check-agent signal collector|57|gemini|gemini-3.1-flash-lite|ok|ok|ok": {
+      "check_status": "ok",
+      "commit_sha": "f3261ebcaf804ae26da218dbbf5e0f3901997050",
+      "event_name": "schedule",
+      "issue_status": "ok",
+      "model": "gemini-3.1-flash-lite",
+      "overall_status": "ok",
+      "provider": "gemini",
+      "timestamp_utc": "2026-07-05T17:51:18Z"
+    },
+    "28752539340|1|Scheduled check-agent signal collector|58|sambanova|DeepSeek-V3.1|ok|ok|ok": {
+      "check_status": "ok",
+      "commit_sha": "420e4cffc2edc035cf0b86bc5b2f8221fc2aa7b1",
+      "event_name": "schedule",
+      "issue_status": "ok",
+      "model": "DeepSeek-V3.1",
+      "overall_status": "ok",
+      "provider": "sambanova",
+      "timestamp_utc": "2026-07-05T19:39:57Z"
+    },
+    "28754233302|1|Scheduled check-agent signal collector|58|cerebras|zai-glm-4.7|ok|ok|ok": {
+      "check_status": "ok",
+      "commit_sha": "60c09070f95654821282833ae905f80de265fa66",
+      "event_name": "schedule",
+      "issue_status": "ok",
+      "model": "zai-glm-4.7",
+      "overall_status": "ok",
+      "provider": "cerebras",
+      "timestamp_utc": "2026-07-05T20:41:50Z"
+    },
+    "28755858435|1|Scheduled check-agent signal collector|59|cerebras|gpt-oss-120b|rejected|rejected|skipped": {
+      "check_status": "rejected",
+      "commit_sha": "ed1ad8f5a5d60016d548f98827817010c4fc756d",
+      "event_name": "schedule",
+      "issue_status": "skipped",
+      "model": "gpt-oss-120b",
+      "overall_status": "rejected",
+      "provider": "cerebras",
+      "timestamp_utc": "2026-07-05T21:43:17Z"
+    },
+    "28757396872|1|Scheduled check-agent signal collector|59|gemini|gemini-3.1-flash-lite|ok|ok|ok": {
+      "check_status": "ok",
+      "commit_sha": "201f544231ac6529d3e106ce92cf93b565e894c6",
+      "event_name": "schedule",
+      "issue_status": "ok",
+      "model": "gemini-3.1-flash-lite",
+      "overall_status": "ok",
+      "provider": "gemini",
+      "timestamp_utc": "2026-07-05T22:42:31Z"
+    },
+    "28759069028|1|Scheduled check-agent signal collector|59|openrouter|poolside/laguna-m.1:free|provider_failed|provider_failed|skipped": {
+      "check_status": "provider_failed",
+      "commit_sha": "f64bd2a96599b743652e36cf38bfc56f4022a696",
+      "event_name": "schedule",
+      "issue_status": "skipped",
+      "model": "poolside/laguna-m.1:free",
+      "overall_status": "provider_failed",
+      "provider": "openrouter",
+      "timestamp_utc": "2026-07-05T23:49:15Z"
+    },
+    "28762077592|1|Scheduled check-agent signal collector|60|sambanova|Meta-Llama-3.3-70B-Instruct|ok|ok|ok": {
+      "check_status": "ok",
+      "commit_sha": "34afb6d3b63f5ddb1b1e49924bcbba74c0545773",
+      "event_name": "schedule",
+      "issue_status": "ok",
+      "model": "Meta-Llama-3.3-70B-Instruct",
+      "overall_status": "ok",
+      "provider": "sambanova",
+      "timestamp_utc": "2026-07-06T01:28:51Z"
+    },
+    "28771548225|1|Scheduled check-agent signal collector|62|sambanova|Meta-Llama-3.3-70B-Instruct|ok|ok|ok": {
+      "check_status": "ok",
+      "commit_sha": "5539c1600f0f8259a6f230c1f7b48dbdd54b5854",
+      "event_name": "schedule",
+      "issue_status": "ok",
+      "model": "Meta-Llama-3.3-70B-Instruct",
+      "overall_status": "ok",
+      "provider": "sambanova",
+      "timestamp_utc": "2026-07-06T06:10:57Z"
+    },
+    "28787280232|1|Scheduled check-agent signal collector|64|openrouter|poolside/laguna-m.1:free|failed|provider_failed|skipped": {
+      "check_status": "provider_failed",
+      "commit_sha": "d5effcc329584364855fc51ab18bac9e84350923",
+      "event_name": "schedule",
+      "issue_status": "skipped",
+      "model": "poolside/laguna-m.1:free",
+      "overall_status": "failed",
+      "provider": "openrouter",
+      "timestamp_utc": "2026-07-06T11:11:12Z"
+    },
+    "28799940042|1|Scheduled check-agent signal collector|66|openrouter|nvidia/nemotron-3-ultra-550b-a55b:free|provider_failed|provider_failed|skipped": {
+      "check_status": "provider_failed",
+      "commit_sha": "9f403e10671d0dc429b858515cfe5add907f5615",
+      "event_name": "schedule",
+      "issue_status": "skipped",
+      "model": "nvidia/nemotron-3-ultra-550b-a55b:free",
+      "overall_status": "provider_failed",
+      "provider": "openrouter",
+      "timestamp_utc": "2026-07-06T14:42:19Z"
+    },
+    "28810555482|1|Scheduled check-agent signal collector|67|cerebras|zai-glm-4.7|ok|ok|ok": {
+      "check_status": "ok",
+      "commit_sha": "b3985fbf11e04fd611fa4f4c14e0ca2eb670923f",
+      "event_name": "schedule",
+      "issue_status": "ok",
+      "model": "zai-glm-4.7",
+      "overall_status": "ok",
+      "provider": "cerebras",
+      "timestamp_utc": "2026-07-06T17:30:01Z"
+    },
+    "28817367065|1|Scheduled check-agent signal collector|68|openrouter|nvidia/nemotron-3-ultra-550b-a55b:free|provider_failed|provider_failed|skipped": {
+      "check_status": "provider_failed",
+      "commit_sha": "6a0b63b8a46b17bf993554ea9f5e9e65b26663aa",
+      "event_name": "schedule",
+      "issue_status": "skipped",
+      "model": "nvidia/nemotron-3-ultra-550b-a55b:free",
+      "overall_status": "provider_failed",
+      "provider": "openrouter",
+      "timestamp_utc": "2026-07-06T19:24:35Z"
+    },
+    "28823465088|1|Scheduled check-agent signal collector|69|sambanova|DeepSeek-V3.1|ok|ok|ok": {
+      "check_status": "ok",
+      "commit_sha": "73a68f779fbada42b0177e07fa9e0961bdd872cb",
+      "event_name": "schedule",
+      "issue_status": "ok",
+      "model": "DeepSeek-V3.1",
+      "overall_status": "ok",
+      "provider": "sambanova",
+      "timestamp_utc": "2026-07-06T21:10:04Z"
+    },
+    "28828344299|1|Scheduled check-agent signal collector|69|sambanova|Meta-Llama-3.3-70B-Instruct|ok|ok|ok": {
+      "check_status": "ok",
+      "commit_sha": "45cdd0dd65e7897459f2136d99a506adfa3fc31d",
+      "event_name": "schedule",
+      "issue_status": "ok",
+      "model": "Meta-Llama-3.3-70B-Instruct",
+      "overall_status": "ok",
+      "provider": "sambanova",
+      "timestamp_utc": "2026-07-06T22:44:32Z"
+    },
+    "28831172684|1|Scheduled check-agent signal collector|70|openrouter|nvidia/nemotron-3-ultra-550b-a55b:free|rejected|rejected|skipped": {
+      "check_status": "rejected",
+      "commit_sha": "38d85d4bcbe284d44007c37445d83eda2959f693",
+      "event_name": "schedule",
+      "issue_status": "skipped",
+      "model": "nvidia/nemotron-3-ultra-550b-a55b:free",
+      "overall_status": "rejected",
+      "provider": "openrouter",
+      "timestamp_utc": "2026-07-06T23:49:24Z"
+    },
+    "28840984390|1|Scheduled check-agent signal collector|72|sambanova|DeepSeek-V3.1|ok|ok|ok": {
+      "check_status": "ok",
+      "commit_sha": "0d53c10b8d37ebac8f9353a5f5873ce348f9f320",
+      "event_name": "schedule",
+      "issue_status": "ok",
+      "model": "DeepSeek-V3.1",
+      "overall_status": "ok",
+      "provider": "sambanova",
+      "timestamp_utc": "2026-07-07T04:13:18Z"
+    },
+    "28850768013|1|Scheduled check-agent signal collector|73|sambanova|Meta-Llama-3.3-70B-Instruct|ok|ok|ok": {
+      "check_status": "ok",
+      "commit_sha": "100c0e739d038c186a16c44888b75a8cabcd645a",
+      "event_name": "schedule",
+      "issue_status": "ok",
+      "model": "Meta-Llama-3.3-70B-Instruct",
+      "overall_status": "ok",
+      "provider": "sambanova",
+      "timestamp_utc": "2026-07-07T07:57:45Z"
+    },
+    "28862083972|1|Scheduled check-agent signal collector|75|sambanova|DeepSeek-V3.1|ok|ok|ok": {
+      "check_status": "ok",
+      "commit_sha": "ed0c639ec997b7e67dacd4e4228ea9a00184c702",
+      "event_name": "schedule",
+      "issue_status": "ok",
+      "model": "DeepSeek-V3.1",
+      "overall_status": "ok",
+      "provider": "sambanova",
+      "timestamp_utc": "2026-07-07T11:17:53Z"
+    },
+    "28870094474|1|Scheduled check-agent signal collector|76|sambanova|DeepSeek-V3.1|ok|ok|ok": {
+      "check_status": "ok",
+      "commit_sha": "639702650ad256663e5647c4d8c6e6145d9e9cb8",
+      "event_name": "schedule",
+      "issue_status": "ok",
+      "model": "DeepSeek-V3.1",
+      "overall_status": "ok",
+      "provider": "sambanova",
+      "timestamp_utc": "2026-07-07T13:31:34Z"
+    },
+    "28881101285|1|Scheduled check-agent signal collector|77|openrouter|nvidia/nemotron-3-ultra-550b-a55b:free|rejected|rejected|skipped": {
+      "check_status": "rejected",
+      "commit_sha": "12abf9e3b8311ee736b3b34c1d0565bb39298999",
+      "event_name": "schedule",
+      "issue_status": "skipped",
+      "model": "nvidia/nemotron-3-ultra-550b-a55b:free",
+      "overall_status": "rejected",
+      "provider": "openrouter",
+      "timestamp_utc": "2026-07-07T16:15:42Z"
+    },
+    "28889187758|1|Scheduled check-agent signal collector|78|sambanova|DeepSeek-V3.1|ok|ok|ok": {
+      "check_status": "ok",
+      "commit_sha": "5895009c0774f0ace30b84c30ae7bd23ceebd5b3",
+      "event_name": "schedule",
+      "issue_status": "ok",
+      "model": "DeepSeek-V3.1",
+      "overall_status": "ok",
+      "provider": "sambanova",
+      "timestamp_utc": "2026-07-07T18:27:01Z"
+    },
+    "28896328115|1|Scheduled check-agent signal collector|1|cerebras|gpt-oss-120b|rejected|rejected|skipped": {
+      "check_status": "rejected",
+      "commit_sha": "9fa0c9df9e4b866596ef6163794b26ca536e204e",
+      "event_name": "schedule",
+      "issue_status": "skipped",
+      "model": "gpt-oss-120b",
+      "overall_status": "rejected",
+      "provider": "cerebras",
+      "timestamp_utc": "2026-07-07T20:26:38Z"
+    },
+    "28901325603|1|Scheduled check-agent signal collector|1|sambanova|Meta-Llama-3.3-70B-Instruct|ok|ok|ok": {
+      "check_status": "ok",
+      "commit_sha": "1dc70bbfc7afa310ea61eb61282c58a866a58530",
+      "event_name": "schedule",
+      "issue_status": "ok",
+      "model": "Meta-Llama-3.3-70B-Instruct",
+      "overall_status": "ok",
+      "provider": "sambanova",
+      "timestamp_utc": "2026-07-07T21:54:47Z"
+    },
+    "28905124459|1|Scheduled check-agent signal collector|2|openrouter|nvidia/nemotron-3-ultra-550b-a55b:free|rejected|rejected|skipped": {
+      "check_status": "rejected",
+      "commit_sha": "95ed699c739985494cf7977360ef674ab9fa519a",
+      "event_name": "schedule",
+      "issue_status": "skipped",
+      "model": "nvidia/nemotron-3-ultra-550b-a55b:free",
+      "overall_status": "rejected",
+      "provider": "openrouter",
+      "timestamp_utc": "2026-07-07T23:13:48Z"
+    },
+    "28909580621|1|Scheduled check-agent signal collector|3|cerebras|gpt-oss-120b|ok|ok|ok": {
+      "check_status": "ok",
+      "commit_sha": "f0d2d721ebd5ec7b2c67aca8bafd1eed99613054",
+      "event_name": "schedule",
+      "issue_status": "ok",
+      "model": "gpt-oss-120b",
+      "overall_status": "ok",
+      "provider": "cerebras",
+      "timestamp_utc": "2026-07-08T00:58:01Z"
+    },
+    "28917443051|1|Scheduled check-agent signal collector|4|gemini|gemini-3.1-flash-lite|rejected|rejected|skipped": {
+      "check_status": "rejected",
+      "commit_sha": "5fd5490ea97be894526e7b5bd795fdd77167acf0",
+      "event_name": "schedule",
+      "issue_status": "skipped",
+      "model": "gemini-3.1-flash-lite",
+      "overall_status": "rejected",
+      "provider": "gemini",
+      "timestamp_utc": "2026-07-08T04:26:32Z"
+    },
+    "28924162741|1|Scheduled check-agent signal collector|5|cerebras|zai-glm-4.7|ok|ok|ok": {
+      "check_status": "ok",
+      "commit_sha": "1fdcf10f6f0d2ab850e5f8e872723fba8bee544d",
+      "event_name": "schedule",
+      "issue_status": "ok",
+      "model": "zai-glm-4.7",
+      "overall_status": "ok",
+      "provider": "cerebras",
+      "timestamp_utc": "2026-07-08T07:04:56Z"
+    },
+    "28932542412|1|Scheduled check-agent signal collector|6|sambanova|Meta-Llama-3.3-70B-Instruct|ok|ok|ok": {
+      "check_status": "ok",
+      "commit_sha": "6a29f5e859e25d304b2fad90f54db142294201b4",
+      "event_name": "schedule",
+      "issue_status": "ok",
+      "model": "Meta-Llama-3.3-70B-Instruct",
+      "overall_status": "ok",
+      "provider": "sambanova",
+      "timestamp_utc": "2026-07-08T09:33:23Z"
+    },
+    "28939266379|1|Scheduled check-agent signal collector|7|cerebras|zai-glm-4.7|ok|ok|ok": {
+      "check_status": "ok",
+      "commit_sha": "e11f47f02f997e8a2e5c3642eaa52b1388ab5a12",
+      "event_name": "schedule",
+      "issue_status": "ok",
+      "model": "zai-glm-4.7",
+      "overall_status": "ok",
+      "provider": "cerebras",
+      "timestamp_utc": "2026-07-08T11:31:45Z"
+    },
+    "28945593895|1|Scheduled check-agent signal collector|8|openrouter|nvidia/nemotron-3-ultra-550b-a55b:free|rejected|rejected|skipped": {
+      "check_status": "rejected",
+      "commit_sha": "08c3bdae831dd1996ac18a7aa599ed0f82b71364",
+      "event_name": "schedule",
+      "issue_status": "skipped",
+      "model": "nvidia/nemotron-3-ultra-550b-a55b:free",
+      "overall_status": "rejected",
+      "provider": "openrouter",
+      "timestamp_utc": "2026-07-08T13:19:58Z"
+    },
+    "28955464464|1|Scheduled check-agent signal collector|9|openrouter|nvidia/nemotron-3-ultra-550b-a55b:free|ok|ok|ok": {
+      "check_status": "ok",
+      "commit_sha": "03cd9e6f0f0752dd84182a5553592695e5f7f89e",
+      "event_name": "schedule",
+      "issue_status": "ok",
+      "model": "nvidia/nemotron-3-ultra-550b-a55b:free",
+      "overall_status": "ok",
+      "provider": "openrouter",
+      "timestamp_utc": "2026-07-08T15:43:02Z"
+    },
+    "28961467941|1|Scheduled check-agent signal collector|10|cerebras|gpt-oss-120b|failed|provider_failed|skipped": {
+      "check_status": "provider_failed",
+      "commit_sha": "c7024aa51c2074fe6cc92bfca6759c5229618589",
+      "event_name": "schedule",
+      "issue_status": "skipped",
+      "model": "gpt-oss-120b",
+      "overall_status": "failed",
+      "provider": "cerebras",
+      "timestamp_utc": "2026-07-08T17:11:58Z"
+    },
+    "28967743345|1|Scheduled check-agent signal collector|10|sambanova|Meta-Llama-3.3-70B-Instruct|ok|ok|ok": {
+      "check_status": "ok",
+      "commit_sha": "9431638b2f68c9becc1db1adfac00c354d2ef338",
+      "event_name": "schedule",
+      "issue_status": "ok",
+      "model": "Meta-Llama-3.3-70B-Instruct",
+      "overall_status": "ok",
+      "provider": "sambanova",
+      "timestamp_utc": "2026-07-08T18:53:51Z"
+    },
+    "28973868110|1|Scheduled check-agent signal collector|11|gemini|gemini-3.1-flash-lite|ok|ok|ok": {
+      "check_status": "ok",
+      "commit_sha": "9a6250072d5fc81c3428ce254d1147b456387ed5",
+      "event_name": "schedule",
+      "issue_status": "ok",
+      "model": "gemini-3.1-flash-lite",
+      "overall_status": "ok",
+      "provider": "gemini",
+      "timestamp_utc": "2026-07-08T20:36:04Z"
+    },
+    "28978138816|1|Scheduled check-agent signal collector|12|cerebras|gpt-oss-120b|ok|ok|ok": {
+      "check_status": "ok",
+      "commit_sha": "0638d78994eef0ad17962a8ab4abee1b4a4ffa71",
+      "event_name": "schedule",
+      "issue_status": "ok",
+      "model": "gpt-oss-120b",
+      "overall_status": "ok",
+      "provider": "cerebras",
+      "timestamp_utc": "2026-07-08T21:49:38Z"
+    },
+    "28982475718|1|Scheduled check-agent signal collector|12|cerebras|zai-glm-4.7|rejected|rejected|skipped": {
+      "check_status": "rejected",
+      "commit_sha": "8a5ad608fe0589c4c50c51c700a1b04aa4427924",
+      "event_name": "schedule",
+      "issue_status": "skipped",
+      "model": "zai-glm-4.7",
+      "overall_status": "rejected",
+      "provider": "cerebras",
+      "timestamp_utc": "2026-07-08T23:20:37Z"
+    },
+    "28986852735|1|Scheduled check-agent signal collector|13|gemini|gemini-3.1-flash-lite|ok|ok|ok": {
+      "check_status": "ok",
+      "commit_sha": "545e9fd4005d4abcc075822a42896d4e84ce3eca",
+      "event_name": "schedule",
+      "issue_status": "ok",
+      "model": "gemini-3.1-flash-lite",
+      "overall_status": "ok",
+      "provider": "gemini",
+      "timestamp_utc": "2026-07-09T01:08:46Z"
+    },
+    "28996420874|1|Scheduled check-agent signal collector|15|openrouter|nvidia/nemotron-3-ultra-550b-a55b:free|rejected|rejected|skipped": {
+      "check_status": "rejected",
+      "commit_sha": "35cb1a7f046fca065479b36f690c24eee10fcbe6",
+      "event_name": "schedule",
+      "issue_status": "skipped",
+      "model": "nvidia/nemotron-3-ultra-550b-a55b:free",
+      "overall_status": "rejected",
+      "provider": "openrouter",
+      "timestamp_utc": "2026-07-09T05:36:54Z"
+    },
+    "29006343389|1|Scheduled check-agent signal collector|16|sambanova|Meta-Llama-3.3-70B-Instruct|ok|ok|ok": {
+      "check_status": "ok",
+      "commit_sha": "b08096e0dc1d5024c3240d8dfebe35f4730d1637",
+      "event_name": "schedule",
+      "issue_status": "ok",
+      "model": "Meta-Llama-3.3-70B-Instruct",
+      "overall_status": "ok",
+      "provider": "sambanova",
+      "timestamp_utc": "2026-07-09T08:55:09Z"
+    },
+    "29017453966|1|Scheduled check-agent signal collector|18|sambanova|DeepSeek-V3.1|ok|ok|ok": {
+      "check_status": "ok",
+      "commit_sha": "84e70e4193efff6c5ef5404de6358e9d0665ffdc",
+      "event_name": "schedule",
+      "issue_status": "ok",
+      "model": "DeepSeek-V3.1",
+      "overall_status": "ok",
+      "provider": "sambanova",
+      "timestamp_utc": "2026-07-09T12:14:28Z"
+    },
+    "29030445175|1|Scheduled check-agent signal collector|19|cerebras|zai-glm-4.7|ok|ok|ok": {
+      "check_status": "ok",
+      "commit_sha": "1654fb2b6418e0856ac80b337846ae043285731d",
+      "event_name": "schedule",
+      "issue_status": "ok",
+      "model": "zai-glm-4.7",
+      "overall_status": "ok",
+      "provider": "cerebras",
+      "timestamp_utc": "2026-07-09T15:40:53Z"
+    },
+    "29037481705|1|Scheduled check-agent signal collector|20|gemini|gemini-3.1-flash-lite|rejected|rejected|skipped": {
+      "check_status": "rejected",
+      "commit_sha": "f473a4cc7cbc914da6bb0c5f3b0af2c0f68f8dcb",
+      "event_name": "schedule",
+      "issue_status": "skipped",
+      "model": "gemini-3.1-flash-lite",
+      "overall_status": "rejected",
+      "provider": "gemini",
+      "timestamp_utc": "2026-07-09T17:34:24Z"
+    },
+    "29043545198|1|Scheduled check-agent signal collector|21|sambanova|DeepSeek-V3.1|ok|ok|ok": {
+      "check_status": "ok",
+      "commit_sha": "0e7e3c3356c6912a6814857b788ef88cefd9080d",
+      "event_name": "schedule",
+      "issue_status": "ok",
+      "model": "DeepSeek-V3.1",
+      "overall_status": "ok",
+      "provider": "sambanova",
+      "timestamp_utc": "2026-07-09T19:15:04Z"
+    },
+    "29049903333|1|Scheduled check-agent signal collector|21|openrouter|poolside/laguna-m.1:free|ok|ok|ok": {
+      "check_status": "ok",
+      "commit_sha": "99a8bcf8c2bf25d483d6db5f571d426fb7ed08f3",
+      "event_name": "schedule",
+      "issue_status": "ok",
+      "model": "poolside/laguna-m.1:free",
+      "overall_status": "ok",
+      "provider": "openrouter",
+      "timestamp_utc": "2026-07-09T21:03:17Z"
+    },
+    "29055226768|1|Scheduled check-agent signal collector|22|cerebras|zai-glm-4.7|ok|ok|ok": {
+      "check_status": "ok",
+      "commit_sha": "0fc9f67d3d7dfe1eb95491664178394d76ac5212",
+      "event_name": "schedule",
+      "issue_status": "ok",
+      "model": "zai-glm-4.7",
+      "overall_status": "ok",
+      "provider": "cerebras",
+      "timestamp_utc": "2026-07-09T22:41:37Z"
+    },
+    "29058494281|1|Scheduled check-agent signal collector|23|sambanova|DeepSeek-V3.1|ok|ok|ok": {
+      "check_status": "ok",
+      "commit_sha": "3ff4c8a709964a3543490da700e050641bf63957",
+      "event_name": "schedule",
+      "issue_status": "ok",
+      "model": "DeepSeek-V3.1",
+      "overall_status": "ok",
+      "provider": "sambanova",
+      "timestamp_utc": "2026-07-09T23:52:42Z"
     },
     "local|0|local|1|cerebras|zai-glm-4.7|failed|failed|failed": {
       "check_status": "failed",

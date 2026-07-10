@@ -2,7 +2,7 @@
 
 ## Description
 
-HistoricalRole is the class stereotype for a role an endurant instantiates because it participated in one or more past events of a relevant type. This attribution is grounded in historical semantics: once the relevant event participation is part of fixed history, the role attribution is grounded in that past participation rather than in a current relational context.
+HistoricalRole is the class stereotype for a role that an endurant instantiates because it participated in one or more past events of a relevant type. This attribution is grounded in historical semantics: once the relevant event participation is part of fixed history, the role attribution is grounded in that past participation rather than in a current relational context.
 
 A HistoricalRole must be related to an Event type through a Participation association. The source-specific contribution states that, for this association, the minimum cardinality at the association end attached to the Event type must be one. This expresses that each instance of the HistoricalRole must have participated in at least one event of the relevant type.
 
@@ -41,3 +41,4 @@ TBD in a later phase.
 | 2026-06-05 | Phase 1 | GPT-5.5 Thinking | Consolidation | prompt-phase-1-consolidation-v1.0.0 | Phase 1 Consolidation — Direct Main Commit for One Stereotype | 2026-06-05t1031-almeida-falbo-guizzardi-2019-events-as-entities-full-document.md, 2026-06-05t1042-botti-benevides-2019-events-sroiq-full-document.md | First consolidated stereotype page generated from Phase 1 source-specific intermediate files at 2026-06-05t1711; not final expert-validated documentation. |
 | 2026-06-21 | Phase 2 | Phase 2 automated resolver | Signal resolution | resolve-language-style-signal-issue-v1.2.1 | Phase 2 automated resolver: language-style signals v1.2.1 | GitHub issue #78 | Applied accepted language-style-checker signal edits through automated Phase 2 resolution; not a conceptual or source-faithfulness validation. |
 | 2026-06-21 | Phase 2 | Phase 2 automated resolver | Signal resolution | resolve-language-style-signal-issue-v1.2.1 | Phase 2 automated resolver: language-style signals v1.2.1 | GitHub issue #117 | Applied accepted language-style-checker signal edits through automated Phase 2 resolution; not a conceptual or source-faithfulness validation. |
+| 2026-07-04 | Phase 2 | Phase 2 automated resolver | Signal resolution | resolve-language-style-signal-issue-v1.2.2 | Phase 2 automated resolver: language-style signals v1.2.2 | GitHub issue #196 | Applied accepted language-style-checker signal edits through automated Phase 2 resolution; not a conceptual or source-faithfulness validation. |
