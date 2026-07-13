@@ -2,7 +2,7 @@
 
 ## Description
 
-Triggers represents a relation from a Situation to an Event. The Phase 1 sources characterize the relation as holding when an event occurs because a situation obtains; in the formalized accounts, the triggering situation obtains at the event's begin point and each event occurrence has a unique triggering situation.
+Triggers represents a relation from a Situation to an Event. The sources characterize the relation as holding when an event occurs because a situation obtains; in the formalized accounts, the triggering situation obtains at the event's begin point and each event occurrence has a unique triggering situation.
 
 The supplied sources also connect Triggers to dispositions. For atomic events, a situation triggers an atomic event when the situation activates a disposition manifested by that event. In this role, Triggers relates the obtaining of a situation to the manifestation of a disposition through an event occurrence, and is associated with the source relations `activates` and `manifestedBy`.
 
@@ -46,3 +46,4 @@ TBD in a later phase.
 |---|---|---|---|---|---|---|---|
 | 2026-06-06 | Phase 1 | GPT-5.5 Thinking | Consolidation | prompt-phase-1-consolidation-v1.0.0 | Phase 1 Consolidation — Direct Main Commit for One Stereotype | 2026-06-05t1024-guizzardi-2013-events-full-document.md, 2026-06-05t1031-almeida-falbo-guizzardi-2019-events-as-entities-full-document.md, 2026-06-05t1037-guizzardi-2016-events-endurants-full-document.md, 2026-06-05t1042-botti-benevides-2019-events-sroiq-full-document.md | First consolidated stereotype page generated from Phase 1 source-specific intermediate files at 2026-06-06t0157; not final expert-validated documentation. |
 | 2026-06-20 | Phase 2 | Phase 2 automated resolver | Signal resolution | resolve-page-hygiene-signal-issue-v1.2.1 | Phase 2 automated resolver: page-hygiene signals v1.2.1 | GitHub issue #39 | Applied accepted page-hygiene-checker signal edits through automated Phase 2 resolution; not a conceptual or source-faithfulness validation. |
+| 2026-07-13 | Phase 2 | Phase 2 automated resolver | Signal resolution | resolve-language-style-signal-issue-v1.2.2 | Phase 2 automated resolver: language-style signals v1.2.2 | GitHub issue #238 | Applied accepted language-style-checker signal edits through automated Phase 2 resolution; not a conceptual or source-faithfulness validation. |
