@@ -6,7 +6,7 @@ Its purpose is to provide lightweight deterministic and API-based review infrast
 
 Phase 2 still does **not** perform deep content validation, source-faithfulness analysis, cross-page semantic comparison, OntoUML/UFO semantic validation, or conceptual adequacy assessment. Phase 2 signals remain candidate observations until they are reviewed or resolved within the documented workflow.
 
-This document reflects the repository state verified from committed repository files on **2026-06-28**, with the current repository commit:
+This document includes a historical repository-state snapshot verified from committed repository files on **2026-06-28**, at commit:
 
 ```text
 fed1de9630ee6f09c93262971a3fd14b53aa34fb
@@ -22,6 +22,7 @@ This index page is the entry point for the split Phase 2 methodology documentati
 |---|---|
 | [Scope and architecture](overview.md) | Purpose, boundaries, architecture, implementation status, risks, prerequisites, generated-output policy, and excluded checks. |
 | [Check agents](check-agents.md) | Detailed reference for `page-structure-checker`, `page-hygiene-checker`, and `language-style-checker`. |
+| [Exact-replacement safety](exact-replacement-safety.md) | Authoritative current behavior for deterministic signal-publication checks, resolver revalidation, atomic-group demotion, and automatic-rejection issue records. |
 | [Automated resolver](automated-resolver.md) | Automated signal resolver behavior, issue selection, fallback behavior, PR flow, review-log entries, and workflow details. |
 | [Providers](providers.md) | LLM provider support, provider-specific notes, retry behavior, and resolver provider behavior. |
 | [Signals and issues](signals-and-issues.md) | Signal terminology, signal output structure, validation/rejection policy, structured signal data, issue routing, issue bodies, and duplicate control. |
@@ -31,4 +32,4 @@ This index page is the entry point for the split Phase 2 methodology documentati
 
 ## Preservation note
 
-The split moves content; it does not reinterpret it. Any stale or internally inconsistent claims in the original document should be corrected in a separate documentation update.
+The split generally moves content without reinterpreting it. The exact-replacement safety page is a targeted current-behavior update and supersedes older general summaries only for exact-target publication, revalidation, and automatic-demotion semantics.

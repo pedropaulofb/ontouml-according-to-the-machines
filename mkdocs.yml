@@ -47,6 +47,7 @@ nav:
           - Overview: methodology/phases/phase-2/index.md
           - Scope and architecture: methodology/phases/phase-2/overview.md
           - Check agents: methodology/phases/phase-2/check-agents.md
+          - Exact-replacement safety: methodology/phases/phase-2/exact-replacement-safety.md
           - Automated resolver: methodology/phases/phase-2/automated-resolver.md
           - Providers: methodology/phases/phase-2/providers.md
           - Signals and issues: methodology/phases/phase-2/signals-and-issues.md
