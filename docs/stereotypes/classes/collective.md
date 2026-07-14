@@ -29,8 +29,8 @@ TBD in a later phase.
 - "a kind whose instances are collections." — Source: Guizzardi, G. (2005). Ontological Foundations for Structural Conceptual Models. PhD thesis, University of Twente; Locator: Chapter 5, p. 182, section 5.5.2.
 - "all member parts play the same role type." — Source: Guizzardi, G. (2005). Ontological Foundations for Structural Conceptual Models. PhD thesis, University of Twente; Locator: Chapter 5, p. 183, section 5.5.2.
 - "collectives do not necessarily obey an extensional principle of identity." — Source: Guizzardi, G. (2005). Ontological Foundations for Structural Conceptual Models. PhD thesis, University of Twente; Locator: Chapter 5, p. 183, section 5.5.2.
-- "Collectives are entities whose parts play the same role with respect to the whole" — Source: Guizzardi, G., Botti Benevides, A., Fonseca, C. M., Porello, D., Almeida, J. P. A., & Prince Sales, T. (2022). UFO: Unified foundational ontology. Applied ontology, 17(1), 167-210.; Locator: p. 6, Section 1.
-- "Object(x) ∨Collective(x) ∨Quantity(x) ↔Substantial(x)" — Source: Guizzardi, G., Botti Benevides, A., Fonseca, C. M., Porello, D., Almeida, J. P. A., & Prince Sales, T. (2022). UFO: Unified foundational ontology. Applied ontology, 17(1), 167-210.; Locator: p. 10, Section 2.3.
+- "Collectives are entities whose parts play the same role with respect to the whole" — Source: Guizzardi, G., Botti Benevides, A., Fonseca, C. M., Porello, D., Almeida, J. P. A., & Prince Sales, T. (2022). UFO: Unified foundational ontology. Applied ontology, 17(1), 167-210; Locator: p. 6, Section 1.
+- "Object(x) ∨Collective(x) ∨Quantity(x) ↔Substantial(x)" — Source: Guizzardi, G., Botti Benevides, A., Fonseca, C. M., Porello, D., Almeida, J. P. A., & Prince Sales, T. (2022). UFO: Unified foundational ontology. Applied ontology, 17(1), 167-210; Locator: p. 10, Section 2.3.
 
 ### Consulted Sources
 
@@ -44,3 +44,4 @@ TBD in a later phase.
 | Date | Phase | Agent | Action | Prompt ID | Prompt Title | Inputs | Notes |
 |---|---|---|---|---|---|---|---|
 | 2026-06-05 | Phase 1 | GPT-5.5 Thinking | Consolidation | prompt-phase-1-consolidation-v1.0.0 | Phase 1 Consolidation — Direct Main Commit for One Stereotype | 2026-06-05t0926-guizzardi-2005-thesis-chapter-05.md, 2026-06-05t0930-guizzardi-2005-thesis-chapter-08.md, 2026-06-05t1024-guizzardi-2022-ufo-full-document.md, 2026-06-05t1040-guizzardi-2015-powertypes-full-document.md | First consolidated stereotype page generated from Phase 1 source-specific intermediate files at 2026-06-05t1645; not final expert-validated documentation. |
+| 2026-07-14 | Phase 2 | Phase 2 automated resolver | Signal resolution | resolve-page-hygiene-signal-issue-v1.2.2 | Phase 2 automated resolver: page-hygiene signals v1.2.2 | GitHub issue #240 | Applied accepted page-hygiene-checker signal edits through automated Phase 2 resolution; not a conceptual or source-faithfulness validation. |
