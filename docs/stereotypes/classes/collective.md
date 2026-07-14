@@ -14,11 +14,11 @@ One supplied source analyzes a possible interpretation of powertype instances as
 
 ## Stereotype Profile
 
-TBD in a later phase.
+To be determined in a future phase.
 
 ## Examples
 
-TBD in a later phase.
+To be determined in a future phase.
 
 ## References
 
@@ -45,3 +45,4 @@ TBD in a later phase.
 |---|---|---|---|---|---|---|---|
 | 2026-06-05 | Phase 1 | GPT-5.5 Thinking | Consolidation | prompt-phase-1-consolidation-v1.0.0 | Phase 1 Consolidation — Direct Main Commit for One Stereotype | 2026-06-05t0926-guizzardi-2005-thesis-chapter-05.md, 2026-06-05t0930-guizzardi-2005-thesis-chapter-08.md, 2026-06-05t1024-guizzardi-2022-ufo-full-document.md, 2026-06-05t1040-guizzardi-2015-powertypes-full-document.md | First consolidated stereotype page generated from Phase 1 source-specific intermediate files at 2026-06-05t1645; not final expert-validated documentation. |
 | 2026-07-14 | Phase 2 | Phase 2 automated resolver | Signal resolution | resolve-page-hygiene-signal-issue-v1.2.2 | Phase 2 automated resolver: page-hygiene signals v1.2.2 | GitHub issue #240 | Applied accepted page-hygiene-checker signal edits through automated Phase 2 resolution; not a conceptual or source-faithfulness validation. |
+| 2026-07-14 | Phase 2 | Phase 2 automated resolver | Signal resolution | resolve-language-style-signal-issue-v1.2.2 | Phase 2 automated resolver: language-style signals v1.2.2 | GitHub issue #241 | Applied accepted language-style-checker signal edits through automated Phase 2 resolution; not a conceptual or source-faithfulness validation. |
