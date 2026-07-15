@@ -2,7 +2,7 @@
 
 ## Description
 
-Mode represents types whose instances are modes: intrinsic moment individuals that inhere in a bearer and are existentially dependent on that bearer. The supplied sources consistently distinguish modes from Quality: qualities are intrinsic moments directly associated with measure or value structures, while modes are intrinsic moments not directly related to such structures or not projectable into a value space. Several sources also contrast modes with Relator as relational moments.
+Mode represents types whose instances are modes: intrinsic moment individuals that inhere in a bearer and are existentially dependent on that bearer. Sources consistently distinguish modes from Quality: qualities are intrinsic moments directly associated with measure or value structures, while modes are intrinsic moments not directly related to such structures or not projectable into a value space. Several sources also contrast modes with Relator as relational moments.
 
 Modes can bear moments of their own, including qualities. The sources also identify externally dependent modes as a special case: they inhere in one entity while depending on another individual independent of their bearer, supporting the representation of relationally grounded intrinsic properties.
 
@@ -47,3 +47,4 @@ To be determined.
 | 2026-06-18 | Phase 2 | Phase 2 automated resolver | Signal resolution | resolve-language-style-signal-issue-v1.2.0 | Phase 2 automated resolver: language-style signals v1.2.0 | GitHub issue #19 | Applied accepted language-style-checker signal edits through automated Phase 2 resolution; not a conceptual or source-faithfulness validation. |
 | 2026-06-22 | Phase 2 | Phase 2 automated resolver | Signal resolution | resolve-page-hygiene-signal-issue-v1.2.1 | Phase 2 automated resolver: page-hygiene signals v1.2.1 | GitHub issue #126 | Applied accepted page-hygiene-checker signal edits through automated Phase 2 resolution; not a conceptual or source-faithfulness validation. |
 | 2026-07-15 | Phase 2 | Phase 2 automated resolver | Signal resolution | resolve-page-hygiene-signal-issue-v1.2.2 | Phase 2 automated resolver: page-hygiene signals v1.2.2 | GitHub issue #251 | Applied accepted page-hygiene-checker signal edits through automated Phase 2 resolution; not a conceptual or source-faithfulness validation. |
+| 2026-07-15 | Phase 2 | Phase 2 automated resolver | Signal resolution | resolve-language-style-signal-issue-v1.2.2 | Phase 2 automated resolver: language-style signals v1.2.2 | GitHub issue #252 | Applied accepted language-style-checker signal edits through automated Phase 2 resolution; not a conceptual or source-faithfulness validation. |
