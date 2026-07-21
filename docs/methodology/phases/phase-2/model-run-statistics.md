@@ -12,7 +12,7 @@ Counts shown on this page only include executions recorded since that start time
 
 Models not present in the current active rotation remain listed as `inactive` for historical continuity.
 
-Last generated: `2026-07-21T00:56:49Z`
+Last generated: `2026-07-21T04:25:17Z`
 
 ## Cumulative table
 
@@ -24,7 +24,7 @@ Last generated: `2026-07-21T00:56:49Z`
 | `groq` | `llama-3.3-70b-versatile` | `inactive` | 0 | 0 | 0 | 0 | 0 | 0 |  |  |  |
 | `openrouter` | `nvidia/nemotron-3-ultra-550b-a55b:free` | `active` | 35 | 6 | 29 | 26 | 3 | 0 | `rejected` | `skipped` | `2026-07-20T16:53:59Z` |
 | `openrouter` | `poolside/laguna-m.1:free` | `active` | 36 | 25 | 11 | 7 | 4 | 0 | `ok` | `ok` | `2026-07-20T20:38:53Z` |
-| `sambanova` | `DeepSeek-V3.1` | `active` | 41 | 41 | 0 | 0 | 0 | 0 | `ok` | `ok` | `2026-07-20T19:03:52Z` |
+| `sambanova` | `DeepSeek-V3.1` | `active` | 42 | 42 | 0 | 0 | 0 | 0 | `ok` | `ok` | `2026-07-21T04:25:17Z` |
 | `sambanova` | `Meta-Llama-3.3-70B-Instruct` | `active` | 42 | 40 | 2 | 2 | 0 | 0 | `ok` | `ok` | `2026-07-21T00:56:49Z` |
 
 ## Status derivation
@@ -90,7 +90,7 @@ This page intentionally does not store secrets, raw prompts, raw completions, pr
     }
   ],
   "collection_start_utc": "2026-06-29T12:18:18Z",
-  "generated_at": "2026-07-21T00:56:49Z",
+  "generated_at": "2026-07-21T04:25:17Z",
   "models": {
     "cerebras:gpt-oss-120b": {
       "called": 34,
@@ -201,22 +201,22 @@ This page intentionally does not store secrets, raw prompts, raw completions, pr
       "valid": 25
     },
     "sambanova:DeepSeek-V3.1": {
-      "called": 41,
+      "called": 42,
       "invalid": 0,
       "last_check_status": "ok",
       "last_event_name": "schedule",
       "last_issue_status": "ok",
       "last_overall_status": "ok",
       "last_run_attempt": "1",
-      "last_run_id": "29770392319",
-      "last_run_utc": "2026-07-20T19:03:52Z",
+      "last_run_id": "29801176773",
+      "last_run_utc": "2026-07-21T04:25:17Z",
       "model": "DeepSeek-V3.1",
       "provider": "sambanova",
       "provider_failed": 0,
       "rejected": 0,
       "runner_failed": 0,
       "spec": "sambanova:DeepSeek-V3.1",
-      "valid": 41
+      "valid": 42
     },
     "sambanova:Meta-Llama-3.3-70B-Instruct": {
       "called": 42,
@@ -2938,6 +2938,16 @@ This page intentionally does not store secrets, raw prompts, raw completions, pr
       "overall_status": "ok",
       "provider": "sambanova",
       "timestamp_utc": "2026-07-21T00:56:49Z"
+    },
+    "29801176773|1|Scheduled check-agent signal collector|60|sambanova|DeepSeek-V3.1|ok|ok|ok": {
+      "check_status": "ok",
+      "commit_sha": "620cffdc0893c3fa81eb18fb16e1e43b881d74a4",
+      "event_name": "schedule",
+      "issue_status": "ok",
+      "model": "DeepSeek-V3.1",
+      "overall_status": "ok",
+      "provider": "sambanova",
+      "timestamp_utc": "2026-07-21T04:25:17Z"
     },
     "local|0|local|1|cerebras|zai-glm-4.7|failed|failed|failed": {
       "check_status": "failed",
