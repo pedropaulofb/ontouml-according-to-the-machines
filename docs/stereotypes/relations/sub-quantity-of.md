@@ -8,7 +8,7 @@ SubQuantityOf is governed by extensional mereology. In that setting, the supplie
 
 Both source contributions characterize SubQuantityOf as non-shareable: a quantity part belongs to one maximal quantity whole in the relevant sense, and the relation is recorded with `isShareable = false`. The supplied evidence also treats parthood involving quantities as essential parthood; one contribution states that the part is essential to the whole, while another grounds essentiality in the extensional character of Quantity individuals.
 
-The supplied evidence gives cardinality constraints for the association ends. One contribution states that, when fully specified, cardinality at both ends is exactly one; another specifically requires the maximum cardinality at the part end to be one.
+The supplied evidence gives cardinality constraints for the association ends. One contribution states that, when fully specified, cardinality at both ends is exactly one. Another specifically requires the maximum cardinality at the part end to be one.
 
 ## Stereotype Profile
 
@@ -39,3 +39,4 @@ To be completed.
 |---|---|---|---|---|---|---|---|
 | 2026-06-06 | Phase 1 | GPT-5.5 Thinking | Consolidation | prompt-phase-1-consolidation-v1.0.0 | Phase 1 Consolidation — Direct Main Commit for One Stereotype | 2026-06-05t0926-guizzardi-2005-thesis-chapter-05.md, 2026-06-05t0930-guizzardi-2005-thesis-chapter-08.md | First consolidated stereotype page generated from Phase 1 source-specific intermediate files at 2026-06-06t0151; not final expert-validated documentation. |
 | 2026-07-04 | Phase 2 | Phase 2 automated resolver | Signal resolution | resolve-language-style-signal-issue-v1.2.2 | Phase 2 automated resolver: language-style signals v1.2.2 | GitHub issue #191 | Applied accepted language-style-checker signal edits through automated Phase 2 resolution; not a conceptual or source-faithfulness validation. |
+| 2026-07-21 | Phase 2 | Phase 2 automated resolver | Signal resolution | resolve-language-style-signal-issue-v1.2.2 | Phase 2 automated resolver: language-style signals v1.2.2 | GitHub issue #296 | Applied accepted language-style-checker signal edits through automated Phase 2 resolution; not a conceptual or source-faithfulness validation. |
