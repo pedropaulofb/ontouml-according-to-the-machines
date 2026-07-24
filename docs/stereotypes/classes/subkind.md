@@ -2,13 +2,13 @@
 
 ## Description
 
-Subkind (`«subkind»`) is characterized across the source-specific files as a rigid sortal specialization that carries, rather than supplies, a principle of identity. A Subkind refines a Kind and depends on the identity principle supplied by a unique Kind or ultimate sortal; it is therefore distinguished from Kind, which supplies the identity principle, while remaining grouped with Kind as a rigid sortal.
+Subkind (`«subkind»`) is characterized as a rigid sortal specialization that carries, rather than supplies, a principle of identity. A Subkind refines a Kind and depends on the identity principle supplied by a unique Kind or ultimate sortal; it is therefore distinguished from Kind, which supplies the identity principle, while remaining grouped with Kind as a rigid sortal.
 
 The consolidated sources support a constraint-oriented reading of Subkind: it specializes a unique Kind or ultimate sortal and, as a rigid type, must not specialize anti-rigid types such as Phase, Role, or RoleMixin. Earlier source material presents Subkind as a rigid restriction of a substance sortal, while later OntoUML 2-oriented material allows Subkind to refine endurant kinds of supported ontological natures, with the ultimate Kind determining the relevant identity principle and ontological nature.
 
 Subkind specialization is distinct from phase classification. A generalization set of Subkinds may form a partition, but the available sources do not require every Subkind generalization set to be a partition. One source also notes that the Subkind stereotype may be omitted in conceptual specifications without loss of clarity.
 
-In multi-level and powertype-oriented contexts, the source-specific files use Subkind to mark lower-level rigid subtype positions connected to higher-order classification. In that setting, Subkind classes classify ordinary base-level instances, while associated reified counterparts may be treated as instances of a powertype. One source further treats second-order types specializing Subkind as using immutable intrinsic classification criteria, while preserving an unresolved discrepancy about admissible base types for later review.
+In multi-level and powertype-oriented contexts, Subkind is used to mark lower-level rigid subtype positions connected to higher-order classification. In that setting, Subkind classes classify ordinary base-level instances, while associated reified counterparts may be treated as instances of a powertype. One source further treats second-order types specializing Subkind as using immutable intrinsic classification criteria, while preserving an unresolved discrepancy about admissible base types.
 
 ## Stereotype Profile
 
@@ -51,3 +51,4 @@ To be defined.
 | 2026-06-17 | Phase 2 | Phase 2 automated resolver | Signal resolution | resolve-language-style-signal-issue-v1.2.0 | Phase 2 automated resolver: language-style signals v1.2.0 | GitHub issue #13 | Applied accepted language-style-checker signal edits through automated Phase 2 resolution; not a conceptual or source-faithfulness validation. |
 | 2026-06-30 | Phase 2 | Phase 2 automated resolver | Signal resolution | resolve-page-hygiene-signal-issue-v1.2.2 | Phase 2 automated resolver: page-hygiene signals v1.2.2 | GitHub issue #166 | Applied accepted page-hygiene-checker signal edits through automated Phase 2 resolution; not a conceptual or source-faithfulness validation. |
 | 2026-07-17 | Phase 2 | Phase 2 automated resolver | Signal resolution | resolve-language-style-signal-issue-v1.2.2 | Phase 2 automated resolver: language-style signals v1.2.2 | GitHub issue #264 | Applied accepted language-style-checker signal edits through automated Phase 2 resolution; not a conceptual or source-faithfulness validation. |
+| 2026-07-24 | Phase 2 | Phase 2 automated resolver | Signal resolution | resolve-language-style-signal-issue-v1.2.2 | Phase 2 automated resolver: language-style signals v1.2.2 | GitHub issue #332 | Applied accepted language-style-checker signal edits through automated Phase 2 resolution; not a conceptual or source-faithfulness validation. |
