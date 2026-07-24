@@ -24,7 +24,7 @@ TBD in a later phase.
 
 ### Direct Citations
 
-- "UML classes stereotyped as ´ role ª represent the phased-sortals role" — Source: Guizzardi, G. (2005). Ontological Foundations for Structural Conceptual Models. PhD thesis, University of Twente.; Locator: Chapter 4, Section 4.2.3, p. 110.
+- "UML classes stereotyped as \"role\" represent the phased-sortals role" — Source: Guizzardi, G. (2005). Ontological Foundations for Structural Conceptual Models. PhD thesis, University of Twente.; Locator: Chapter 4, Section 4.2.3, p. 110.
 - "For a role R, conversely, ϕ depends on extrinsic (relational) properties of R" — Source: Guizzardi, G. (2005). Ontological Foundations for Structural Conceptual Models. PhD thesis, University of Twente.; Locator: Chapter 4, Section 4.1, p. 104.
 - "the involvement in this relation is part of the very definition of the role type" — Source: Guizzardi, G. (2005). Ontological Foundations for Structural Conceptual Models. PhD thesis, University of Twente.; Locator: Chapter 4, Section 4.2.3, p. 112.
 - "being part of a car (or plane) is merely a contingent fact." — Source: Guizzardi, G. (2005). Ontological Foundations for Structural Conceptual Models. PhD thesis, University of Twente; Locator: Chapter 5, p. 164, section 5.4.1.
@@ -72,3 +72,4 @@ TBD in a later phase.
 | 2026-06-16 | Phase 2 | Phase 2 automated resolver | Signal resolution | resolve-language-style-signal-issue-v1.2.0 | Phase 2 automated resolver: language-style signals v1.2.0 | GitHub issue #8 | Applied accepted language-style-checker signal edits through automated Phase 2 resolution; not a conceptual or source-faithfulness validation. |
 | 2026-06-23 | Phase 2 | Phase 2 automated resolver | Signal resolution | resolve-language-style-signal-issue-v1.2.1 | Phase 2 automated resolver: language-style signals v1.2.1 | GitHub issue #138 | Applied accepted language-style-checker signal edits through automated Phase 2 resolution; not a conceptual or source-faithfulness validation. |
 | 2026-06-29 | Phase 2 | Phase 2 automated resolver | Signal resolution | resolve-language-style-signal-issue-v1.2.2 | Phase 2 automated resolver: language-style signals v1.2.2 | GitHub issue #162 | Applied accepted language-style-checker signal edits through automated Phase 2 resolution; not a conceptual or source-faithfulness validation. |
+| 2026-07-24 | Phase 2 | Phase 2 automated resolver | Signal resolution | resolve-page-hygiene-signal-issue-v1.2.2 | Phase 2 automated resolver: page-hygiene signals v1.2.2 | GitHub issue #328 | Applied accepted page-hygiene-checker signal edits through automated Phase 2 resolution; not a conceptual or source-faithfulness validation. |
