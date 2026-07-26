@@ -6,7 +6,7 @@ Participational is introduced as a stereotype for event part-whole relations tha
 
 A participational portion is described as maximal with respect to the property under consideration and disjoint from other portions produced by the same criterion. The same source states that the maximum cardinality at the association end attached to the participant is always one, reflecting the rule that participations depend exclusively on a single endurant.
 
-The supplied evidence also constrains Participational to event part-whole relations among Event classes. It states that an Event cannot participate in a part-whole relation with an endurant, that event part-whole relations follow extensional mereology, and that weak supplementation must be enforced by requiring the sum of lower bounds of parts to be at least two.
+Participational is constrained to event part-whole relations among Event classes. It states that an Event cannot participate in a part-whole relation with an endurant, that event part-whole relations follow extensional mereology, and that weak supplementation must be enforced by requiring the sum of lower bounds of parts to be at least two.
 
 ## Stereotype Profile
 
@@ -34,3 +34,4 @@ To be defined.
 |---|---|---|---|---|---|---|---|
 | 2026-06-06 | Phase 1 | GPT-5.5 Thinking | Consolidation | prompt-phase-1-consolidation-v1.0.0 | Phase 1 Consolidation — Direct Main Commit for One Stereotype | 2026-06-05t1031-almeida-falbo-guizzardi-2019-events-as-entities-full-document.md | First consolidated stereotype page generated from Phase 1 source-specific intermediate files at 2026-06-06t0143; not final expert-validated documentation. |
 | 2026-07-03 | Phase 2 | Phase 2 automated resolver | Signal resolution | resolve-language-style-signal-issue-v1.2.2 | Phase 2 automated resolver: language-style signals v1.2.2 | GitHub issue #189 | Applied accepted language-style-checker signal edits through automated Phase 2 resolution; not a conceptual or source-faithfulness validation. |
+| 2026-07-26 | Phase 2 | Phase 2 automated resolver | Signal resolution | resolve-language-style-signal-issue-v1.2.2 | Phase 2 automated resolver: language-style signals v1.2.2 | GitHub issue #352 | Applied accepted language-style-checker signal edits through automated Phase 2 resolution; not a conceptual or source-faithfulness validation. |
