@@ -12,14 +12,14 @@ Counts shown on this page only include executions recorded since that start time
 
 Models not present in the current active rotation remain listed as `inactive` for historical continuity.
 
-Last generated: `2026-07-26T09:37:12Z`
+Last generated: `2026-07-26T11:10:24Z`
 
 ## Cumulative table
 
 | Provider | Model | Status | # called | # valid | # invalid | # rejected | # provider failed | # runner failed | Last check status | Last issue status | Last run UTC |
 |---|---|---|---:|---:|---:|---:|---:|---:|---|---|---|
 | `cerebras` | `gpt-oss-120b` | `active` | 46 | 37 | 9 | 8 | 1 | 0 | `ok` | `ok` | `2026-07-25T22:07:20Z` |
-| `cerebras` | `zai-glm-4.7` | `active` | 42 | 33 | 9 | 2 | 6 | 1 | `ok` | `ok` | `2026-07-24T15:04:01Z` |
+| `cerebras` | `zai-glm-4.7` | `active` | 43 | 34 | 9 | 2 | 6 | 1 | `ok` | `ok` | `2026-07-26T11:10:24Z` |
 | `gemini` | `gemini-3.1-flash-lite` | `active` | 63 | 27 | 36 | 36 | 0 | 0 | `rejected` | `skipped` | `2026-07-25T23:10:15Z` |
 | `groq` | `llama-3.3-70b-versatile` | `inactive` | 0 | 0 | 0 | 0 | 0 | 0 |  |  |  |
 | `openrouter` | `nvidia/nemotron-3-ultra-550b-a55b:free` | `active` | 42 | 8 | 34 | 31 | 3 | 0 | `rejected` | `skipped` | `2026-07-24T23:46:53Z` |
@@ -90,7 +90,7 @@ This page intentionally does not store secrets, raw prompts, raw completions, pr
     }
   ],
   "collection_start_utc": "2026-06-29T12:18:18Z",
-  "generated_at": "2026-07-26T09:37:12Z",
+  "generated_at": "2026-07-26T11:10:24Z",
   "models": {
     "cerebras:gpt-oss-120b": {
       "called": 46,
@@ -111,22 +111,22 @@ This page intentionally does not store secrets, raw prompts, raw completions, pr
       "valid": 37
     },
     "cerebras:zai-glm-4.7": {
-      "called": 42,
+      "called": 43,
       "invalid": 9,
       "last_check_status": "ok",
       "last_event_name": "schedule",
       "last_issue_status": "ok",
       "last_overall_status": "ok",
       "last_run_attempt": "1",
-      "last_run_id": "30103644372",
-      "last_run_utc": "2026-07-24T15:04:01Z",
+      "last_run_id": "30199606963",
+      "last_run_utc": "2026-07-26T11:10:24Z",
       "model": "zai-glm-4.7",
       "provider": "cerebras",
       "provider_failed": 6,
       "rejected": 2,
       "runner_failed": 1,
       "spec": "cerebras:zai-glm-4.7",
-      "valid": 33
+      "valid": 34
     },
     "gemini:gemini-3.1-flash-lite": {
       "called": 63,
@@ -3638,6 +3638,16 @@ This page intentionally does not store secrets, raw prompts, raw completions, pr
       "overall_status": "ok",
       "provider": "openrouter",
       "timestamp_utc": "2026-07-26T09:37:12Z"
+    },
+    "30199606963|1|Scheduled check-agent signal collector|36|cerebras|zai-glm-4.7|ok|ok|ok": {
+      "check_status": "ok",
+      "commit_sha": "b2d8190de918e96a8ffff3bbc2e762076c0ab7fa",
+      "event_name": "schedule",
+      "issue_status": "ok",
+      "model": "zai-glm-4.7",
+      "overall_status": "ok",
+      "provider": "cerebras",
+      "timestamp_utc": "2026-07-26T11:10:24Z"
     },
     "local|0|local|1|cerebras|zai-glm-4.7|failed|failed|failed": {
       "check_status": "failed",
