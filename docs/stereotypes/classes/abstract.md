@@ -2,7 +2,7 @@
 
 ## Description
 
-Abstract characterizes a class that cannot have direct instances. In the available material, abstractness is treated as a UML class property used by parts of the proposed profile, rather than as one of the leaf ontological categories in the typology of substantial universals.
+Abstract characterizes a class that cannot have direct instances. According to the provided information, abstractness is treated as a UML class property used by parts of the proposed profile, rather than as one of the leaf ontological categories in the typology of substantial universals.
 
 For Abstract, the source-grounded modeling relevance is that abstractness constrains where direct instantiation is allowed. The available material identifies two uses of this constraint: when phases form a complete and disjoint phase-partition of a substance sortal, the restricted superclass must be abstract, and a Mixin must be depicted as an abstract class because it is a non-sortal and cannot have direct instances.
 
@@ -33,3 +33,4 @@ TBD in a later phase.
 | 2026-06-05 | Phase 1 | GPT-5.5 Thinking | Consolidation | prompt-phase-1-consolidation-v1.0.0 | Phase 1 Consolidation — Direct Main Commit for One Stereotype | 2026-06-05t0921-guizzardi-2005-thesis-chapter-04.md | First consolidated stereotype page generated from Phase 1 source-specific intermediate files at 2026-06-05t1642; not final expert-validated documentation. |
 | 2026-06-21 | Phase 2 | Phase 2 automated resolver | Signal resolution | resolve-page-hygiene-signal-issue-v1.2.1 | Phase 2 automated resolver: page-hygiene signals v1.2.1 | GitHub issue #89 | Applied accepted page-hygiene-checker signal edits through automated Phase 2 resolution; not a conceptual or source-faithfulness validation. |
 | 2026-06-21 | Phase 2 | Phase 2 automated resolver | Signal resolution | resolve-language-style-signal-issue-v1.2.1 | Phase 2 automated resolver: language-style signals v1.2.1 | GitHub issue #102 | Applied accepted language-style-checker signal edits through automated Phase 2 resolution; not a conceptual or source-faithfulness validation. |
+| 2026-07-21 | Phase 2 | Phase 2 automated resolver | Signal resolution | resolve-language-style-signal-issue-v1.2.2 | Phase 2 automated resolver: language-style signals v1.2.2 | GitHub issue #303 | Applied accepted language-style-checker signal edits through automated Phase 2 resolution; not a conceptual or source-faithfulness validation. |

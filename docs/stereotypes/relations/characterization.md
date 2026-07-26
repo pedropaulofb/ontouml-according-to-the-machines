@@ -2,7 +2,7 @@
 
 ## Description
 
-Characterization connects a characterized universal or type with a characterizing moment universal or type. Across sources, the common commitment is that instances of the characterized endurant or substantial universal bear instances of the characterizing moment, Mode, or Quality universal. At the instance level, this is grounded in inherence: instances of the characterizing moment, Mode, or Quality inhere in instances of the characterized universal or type, as emphasized by some sources, the bearer is unique.
+Characterization connects a characterized universal or type with a characterizing moment universal or type. Across sources, there is a common commitment: instances of the characterized endurant or substantial universal bear instances of the characterizing moment, Mode, or Quality universal. At the instance level, this is grounded in inherence: instances of the characterizing moment, Mode, or Quality inhere in instances of the characterized universal or type, as emphasized by some sources, the bearer is unique.
 
 Sources present the direction of Characterization differently across contexts. Some formulate the relation from the characterized universal or type to a moment type, while others describe it from an intrinsic moment universal to the substantial universal it characterizes or as a profile relation whose source end is a Mode. The general interpretation is therefore the association between a characterized type and a characterizing intrinsic moment type, without fixing a final relation-end profile.
 
@@ -31,9 +31,7 @@ To be defined.
 
 ### Consulted Sources
 
-- Guizzardi, G. (2005). Ontological Foundations for Structural Conceptual Models. PhD thesis, University of Twente. Scope: Chapter 6.
-- Guizzardi, G. (2005). Ontological Foundations for Structural Conceptual Models. PhD thesis, University of Twente. Scope: Chapter 7.
-- Guizzardi, G. (2005). Ontological Foundations for Structural Conceptual Models. PhD thesis, University of Twente. Scope: Chapter 8.
+- Guizzardi, G. (2005). Ontological Foundations for Structural Conceptual Models. PhD thesis, University of Twente. Scope: Chapters 6, 7, 8.
 - Guizzardi, G., Botti Benevides, A., Fonseca, C. M., Porello, D., Almeida, J. P. A., & Prince Sales, T. (2022). UFO: Unified foundational ontology. Applied ontology, 17(1), 167-210. Scope: full document.
 - Guarino, N., & Guizzardi, G. (2016, November). Relationships and events: towards a general theory of reification and truthmaking. In Conference of the Italian Association for Artificial Intelligence (pp. 237-249). Cham: Springer International Publishing. Scope: full document.
 - Carvalho, V. A., Almeida, J. P. A., Fonseca, C. M., & Guizzardi, G. (2017). Multi-level ontology-based conceptual modeling. Data & Knowledge Engineering, 109, 3-24. Scope: full document.
@@ -49,3 +47,5 @@ To be defined.
 | 2026-07-01 | Phase 2 | Phase 2 automated resolver | Signal resolution | resolve-language-style-signal-issue-v1.2.2 | Phase 2 automated resolver: language-style signals v1.2.2 | GitHub issue #172 | Applied accepted language-style-checker signal edits through automated Phase 2 resolution; not a conceptual or source-faithfulness validation. |
 | 2026-07-08 | Phase 2 | Phase 2 automated resolver | Signal resolution | resolve-language-style-signal-issue-v1.2.2 | Phase 2 automated resolver: language-style signals v1.2.2 | GitHub issue #216 | Applied accepted language-style-checker signal edits through automated Phase 2 resolution; not a conceptual or source-faithfulness validation. |
 | 2026-07-17 | Phase 2 | Phase 2 automated resolver | Signal resolution | resolve-language-style-signal-issue-v1.2.2 | Phase 2 automated resolver: language-style signals v1.2.2 | GitHub issue #268 | Applied accepted language-style-checker signal edits through automated Phase 2 resolution; not a conceptual or source-faithfulness validation. |
+| 2026-07-25 | Phase 2 | Phase 2 automated resolver | Signal resolution | resolve-page-hygiene-signal-issue-v1.2.2 | Phase 2 automated resolver: page-hygiene signals v1.2.2 | GitHub issue #337 | Applied accepted page-hygiene-checker signal edits through automated Phase 2 resolution; not a conceptual or source-faithfulness validation. |
+| 2026-07-25 | Phase 2 | Phase 2 automated resolver | Signal resolution | resolve-language-style-signal-issue-v1.2.2 | Phase 2 automated resolver: language-style signals v1.2.2 | GitHub issue #338 | Applied accepted language-style-checker signal edits through automated Phase 2 resolution; not a conceptual or source-faithfulness validation. |
