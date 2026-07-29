@@ -32,8 +32,8 @@ TBD.
 ### Consulted Sources
 
 - Guizzardi, G., Fonseca, C. M., Benevides, A. B., Almeida, J. P. A., Porello, D., & Sales, T. P. (2018, September). Endurant types in ontology-driven conceptual modeling: Towards OntoUML 2.0. In International conference on conceptual modeling (pp. 136-150). Cham: Springer International Publishing. Scope: full document.
-- Guizzardi, G., Botti Benevides, A., Fonseca, C. M., Porello, D., Almeida, J. P. A., & Prince Sales, T. (2022). UFO: Unified foundational ontology. Applied ontology, 17(1), 167-210.. Scope: full document.
-- Guizzardi, G., Fonseca, C. M., Almeida, J. P. A., Sales, T. P., Benevides, A. B., & Porello, D. (2021). Types and taxonomic structures in conceptual modeling: a novel ontological theory and engineering support. Data & Knowledge Engineering, 134, 101891.. Scope: full document.
+- Guizzardi, G., Botti Benevides, A., Fonseca, C. M., Porello, D., Almeida, J. P. A., & Prince Sales, T. (2022). UFO: Unified foundational ontology. Applied ontology, 17(1), 167-210. Scope: full document.
+- Guizzardi, G., Fonseca, C. M., Almeida, J. P. A., Sales, T. P., Benevides, A. B., & Porello, D. (2021). Types and taxonomic structures in conceptual modeling: a novel ontological theory and engineering support. Data & Knowledge Engineering, 134, 101891. Scope: full document.
 - Carvalho, V. A., Almeida, J. P. A., Fonseca, C. M., & Guizzardi, G. (2017). Multi-level ontology-based conceptual modeling. Data & Knowledge Engineering, 109, 3-24. Scope: full document.
 
 ## Generation and Review Log
@@ -45,3 +45,4 @@ TBD.
 | 2026-07-05 | Phase 2 | Phase 2 automated resolver | Signal resolution | resolve-page-hygiene-signal-issue-v1.2.2 | Phase 2 automated resolver: page-hygiene signals v1.2.2 | GitHub issue #199 | Applied accepted page-hygiene-checker signal edits through automated Phase 2 resolution; not a conceptual or source-faithfulness validation. |
 | 2026-07-05 | Phase 2 | Phase 2 automated resolver | Signal resolution | resolve-language-style-signal-issue-v1.2.2 | Phase 2 automated resolver: language-style signals v1.2.2 | GitHub issue #201 | Applied accepted language-style-checker signal edits through automated Phase 2 resolution; not a conceptual or source-faithfulness validation. |
 | 2026-07-23 | Phase 2 | Phase 2 automated resolver | Signal resolution | resolve-language-style-signal-issue-v1.2.2 | Phase 2 automated resolver: language-style signals v1.2.2 | GitHub issue #318 | Applied accepted language-style-checker signal edits through automated Phase 2 resolution; not a conceptual or source-faithfulness validation. |
+| 2026-07-29 | Phase 2 | Phase 2 automated resolver | Signal resolution | resolve-page-hygiene-signal-issue-v1.2.2 | Phase 2 automated resolver: page-hygiene signals v1.2.2 | GitHub issue #378 | Applied accepted page-hygiene-checker signal edits through automated Phase 2 resolution; not a conceptual or source-faithfulness validation. |
