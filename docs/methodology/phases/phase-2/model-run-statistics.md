@@ -12,7 +12,7 @@ Counts shown on this page only include executions recorded since that start time
 
 Models not present in the current active rotation remain listed as `inactive` for historical continuity.
 
-Last generated: `2026-07-29T04:42:16Z`
+Last generated: `2026-07-29T07:32:47Z`
 
 ## Cumulative table
 
@@ -23,7 +23,7 @@ Last generated: `2026-07-29T04:42:16Z`
 | `gemini` | `gemini-3.1-flash-lite` | `active` | 70 | 27 | 43 | 43 | 0 | 0 | `rejected` | `skipped` | `2026-07-28T23:43:13Z` |
 | `groq` | `llama-3.3-70b-versatile` | `inactive` | 0 | 0 | 0 | 0 | 0 | 0 |  |  |  |
 | `openrouter` | `nvidia/nemotron-3-ultra-550b-a55b:free` | `active` | 44 | 8 | 36 | 33 | 3 | 0 | `rejected` | `skipped` | `2026-07-26T19:59:13Z` |
-| `openrouter` | `poolside/laguna-m.1:free` | `active` | 50 | 34 | 16 | 8 | 8 | 0 | `provider_failed` | `skipped` | `2026-07-28T20:00:40Z` |
+| `openrouter` | `poolside/laguna-m.1:free` | `active` | 51 | 34 | 17 | 8 | 9 | 0 | `provider_failed` | `skipped` | `2026-07-29T07:32:47Z` |
 | `sambanova` | `DeepSeek-V3.1` | `active` | 58 | 58 | 0 | 0 | 0 | 0 | `ok` | `ok` | `2026-07-29T01:11:14Z` |
 | `sambanova` | `Meta-Llama-3.3-70B-Instruct` | `active` | 57 | 54 | 3 | 3 | 0 | 0 | `ok` | `ok` | `2026-07-28T14:57:44Z` |
 
@@ -90,7 +90,7 @@ This page intentionally does not store secrets, raw prompts, raw completions, pr
     }
   ],
   "collection_start_utc": "2026-06-29T12:18:18Z",
-  "generated_at": "2026-07-29T04:42:16Z",
+  "generated_at": "2026-07-29T07:32:47Z",
   "models": {
     "cerebras:gpt-oss-120b": {
       "called": 48,
@@ -183,18 +183,18 @@ This page intentionally does not store secrets, raw prompts, raw completions, pr
       "valid": 8
     },
     "openrouter:poolside/laguna-m.1:free": {
-      "called": 50,
-      "invalid": 16,
+      "called": 51,
+      "invalid": 17,
       "last_check_status": "provider_failed",
       "last_event_name": "schedule",
       "last_issue_status": "skipped",
       "last_overall_status": "failed",
       "last_run_attempt": "1",
-      "last_run_id": "30394369040",
-      "last_run_utc": "2026-07-28T20:00:40Z",
+      "last_run_id": "30432019163",
+      "last_run_utc": "2026-07-29T07:32:47Z",
       "model": "poolside/laguna-m.1:free",
       "provider": "openrouter",
-      "provider_failed": 8,
+      "provider_failed": 9,
       "rejected": 8,
       "runner_failed": 0,
       "spec": "openrouter:poolside/laguna-m.1:free",
@@ -3988,6 +3988,16 @@ This page intentionally does not store secrets, raw prompts, raw completions, pr
       "overall_status": "ok",
       "provider": "cerebras",
       "timestamp_utc": "2026-07-29T04:42:16Z"
+    },
+    "30432019163|1|Scheduled check-agent signal collector|65|openrouter|poolside/laguna-m.1:free|failed|provider_failed|skipped": {
+      "check_status": "provider_failed",
+      "commit_sha": "d44fc497d384af062d103762cc90789f801b8229",
+      "event_name": "schedule",
+      "issue_status": "skipped",
+      "model": "poolside/laguna-m.1:free",
+      "overall_status": "failed",
+      "provider": "openrouter",
+      "timestamp_utc": "2026-07-29T07:32:47Z"
     },
     "local|0|local|1|cerebras|zai-glm-4.7|failed|failed|failed": {
       "check_status": "failed",
