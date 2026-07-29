@@ -12,13 +12,13 @@ Counts shown on this page only include executions recorded since that start time
 
 Models not present in the current active rotation remain listed as `inactive` for historical continuity.
 
-Last generated: `2026-07-29T17:58:11Z`
+Last generated: `2026-07-29T19:39:05Z`
 
 ## Cumulative table
 
 | Provider | Model | Status | # called | # valid | # invalid | # rejected | # provider failed | # runner failed | Last check status | Last issue status | Last run UTC |
 |---|---|---|---:|---:|---:|---:|---:|---:|---|---|---|
-| `cerebras` | `gpt-oss-120b` | `active` | 51 | 40 | 11 | 10 | 1 | 0 | `ok` | `ok` | `2026-07-29T14:58:52Z` |
+| `cerebras` | `gpt-oss-120b` | `active` | 52 | 40 | 12 | 11 | 1 | 0 | `rejected` | `skipped` | `2026-07-29T19:39:05Z` |
 | `cerebras` | `zai-glm-4.7` | `active` | 49 | 40 | 9 | 2 | 6 | 1 | `ok` | `ok` | `2026-07-29T04:42:16Z` |
 | `gemini` | `gemini-3.1-flash-lite` | `active` | 70 | 27 | 43 | 43 | 0 | 0 | `rejected` | `skipped` | `2026-07-28T23:43:13Z` |
 | `groq` | `llama-3.3-70b-versatile` | `inactive` | 0 | 0 | 0 | 0 | 0 | 0 |  |  |  |
@@ -90,22 +90,22 @@ This page intentionally does not store secrets, raw prompts, raw completions, pr
     }
   ],
   "collection_start_utc": "2026-06-29T12:18:18Z",
-  "generated_at": "2026-07-29T17:58:11Z",
+  "generated_at": "2026-07-29T19:39:05Z",
   "models": {
     "cerebras:gpt-oss-120b": {
-      "called": 51,
-      "invalid": 11,
-      "last_check_status": "ok",
+      "called": 52,
+      "invalid": 12,
+      "last_check_status": "rejected",
       "last_event_name": "schedule",
-      "last_issue_status": "ok",
-      "last_overall_status": "ok",
+      "last_issue_status": "skipped",
+      "last_overall_status": "rejected",
       "last_run_attempt": "1",
-      "last_run_id": "30463533721",
-      "last_run_utc": "2026-07-29T14:58:52Z",
+      "last_run_id": "30485295939",
+      "last_run_utc": "2026-07-29T19:39:05Z",
       "model": "gpt-oss-120b",
       "provider": "cerebras",
       "provider_failed": 1,
-      "rejected": 10,
+      "rejected": 11,
       "runner_failed": 0,
       "spec": "cerebras:gpt-oss-120b",
       "valid": 40
@@ -4048,6 +4048,16 @@ This page intentionally does not store secrets, raw prompts, raw completions, pr
       "overall_status": "ok",
       "provider": "openrouter",
       "timestamp_utc": "2026-07-29T17:58:11Z"
+    },
+    "30485295939|1|Scheduled check-agent signal collector|71|cerebras|gpt-oss-120b|rejected|rejected|skipped": {
+      "check_status": "rejected",
+      "commit_sha": "84ced126c6cab8e5ec0efe80e64d598799290e97",
+      "event_name": "schedule",
+      "issue_status": "skipped",
+      "model": "gpt-oss-120b",
+      "overall_status": "rejected",
+      "provider": "cerebras",
+      "timestamp_utc": "2026-07-29T19:39:05Z"
     },
     "local|0|local|1|cerebras|zai-glm-4.7|failed|failed|failed": {
       "check_status": "failed",
