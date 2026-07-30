@@ -12,11 +12,11 @@ Situation participates centrally in event triggering, event outcomes, and event 
 
 ## Stereotype Profile
 
-Not specified.
+The stereotype profile is not yet available.
 
 ## Examples
 
-Not specified.
+Examples are not yet available.
 
 ## References
 

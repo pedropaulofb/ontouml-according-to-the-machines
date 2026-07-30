@@ -14,11 +14,11 @@ Because some sources treat modeled events as past occurrences or as existentiall
 
 ## Stereotype Profile
 
-TBD in a later phase.
+The stereotype profile is not yet available.
 
 ## Examples
 
-TBD in a later phase.
+Examples are not yet available.
 
 ## References
 

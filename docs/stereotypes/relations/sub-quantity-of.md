@@ -12,11 +12,11 @@ The supplied evidence gives cardinality constraints for the association ends. On
 
 ## Stereotype Profile
 
-To be completed.
+The stereotype profile is not yet available.
 
 ## Examples
 
-To be completed.
+Examples are not yet available.
 
 ## References
 

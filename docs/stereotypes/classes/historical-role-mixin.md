@@ -6,7 +6,11 @@
 
 ## Stereotype Profile
 
+The stereotype profile is not yet available.
+
 ## Examples
+
+Examples are not yet available.
 
 ## References
 

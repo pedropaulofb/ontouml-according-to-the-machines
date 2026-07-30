@@ -8,11 +8,11 @@ For Abstract, the source-grounded modeling relevance is that abstractness constr
 
 ## Stereotype Profile
 
-TBD in a later phase.
+The stereotype profile is not yet available.
 
 ## Examples
 
-TBD in a later phase.
+Examples are not yet available.
 
 ## References
 

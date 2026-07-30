@@ -14,11 +14,11 @@ Event-oriented sources state that Event instances can bear or manifest qualities
 
 ## Stereotype Profile
 
-To be determined.
+The stereotype profile is not yet available.
 
 ## Examples
 
-To be determined.
+Examples are not yet available.
 
 ## References
 

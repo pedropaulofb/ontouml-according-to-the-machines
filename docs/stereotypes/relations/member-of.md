@@ -14,11 +14,11 @@ A separate quality-theory contribution uses MemberOf in a narrower setting: each
 
 ## Stereotype Profile
 
-TBD in a later phase.
+The stereotype profile is not yet available.
 
 ## Examples
 
-TBD in a later phase.
+Examples are not yet available.
 
 ## References
 

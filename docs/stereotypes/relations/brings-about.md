@@ -12,11 +12,11 @@ BringsAbout is also used in source accounts of causation between events. A commo
 
 ## Stereotype Profile
 
-To be determined.
+The stereotype profile is not yet available.
 
 ## Examples
 
-To be determined.
+Examples are not yet available.
 
 ## References
 

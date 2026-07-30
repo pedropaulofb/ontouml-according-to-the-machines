@@ -12,11 +12,11 @@ The intermediate sources are version-sensitive. Earlier material presents Mode a
 
 ## Stereotype Profile
 
-To be determined.
+The stereotype profile is not yet available.
 
 ## Examples
 
-To be determined.
+Examples are not yet available.
 
 ## References
 

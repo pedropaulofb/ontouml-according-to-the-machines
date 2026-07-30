@@ -12,11 +12,11 @@ Parthood is central to the consolidated characterization of Quantity. Sources re
 
 ## Stereotype Profile
 
-TBD in a later phase.
+The stereotype profile is not yet available.
 
 ## Examples
 
-TBD in a later phase.
+Examples are not yet available.
 
 ## References
 

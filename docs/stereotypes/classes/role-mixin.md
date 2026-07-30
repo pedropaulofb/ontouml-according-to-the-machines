@@ -14,11 +14,11 @@ One multi-level source further uses RoleMixin in second-order patterns, where ro
 
 ## Stereotype Profile
 
-To be determined.
+The stereotype profile is not yet available.
 
 ## Examples
 
-To be determined.
+Examples are not yet available.
 
 ## References
 

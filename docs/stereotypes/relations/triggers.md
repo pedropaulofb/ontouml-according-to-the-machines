@@ -10,11 +10,11 @@ Triggers is also used in accounts of event causation. If one event brings about 
 
 ## Stereotype Profile
 
-TBD in a later phase.
+The stereotype profile is not yet available.
 
 ## Examples
 
-TBD in a later phase.
+Examples are not yet available.
 
 ## References
 

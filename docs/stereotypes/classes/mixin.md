@@ -12,11 +12,11 @@ One supplied contribution also connects mixins with characterizing universals an
 
 ## Stereotype Profile
 
-TBD in a later phase.
+The stereotype profile is not yet available.
 
 ## Examples
 
-TBD in a later phase.
+Examples are not yet available.
 
 ## References
 

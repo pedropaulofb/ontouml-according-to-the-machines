@@ -10,11 +10,11 @@ When the relation is fully specified, the part end is described as having cardin
 
 ## Stereotype Profile
 
-To be determined.
+The stereotype profile is not yet available.
 
 ## Examples
 
-To be determined.
+Examples are not yet available.
 
 ## References
 

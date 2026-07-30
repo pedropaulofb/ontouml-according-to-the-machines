@@ -18,11 +18,11 @@ The inputs consistently caution against treating events as mutable endurants. Cl
 
 ## Stereotype Profile
 
-TBD in a later phase.
+The stereotype profile is not yet available.
 
 ## Examples
 
-TBD in a later phase.
+Examples are not yet available.
 
 ## References
 

@@ -10,11 +10,11 @@ For complex quality domains, the sources support structured datatypes. A structu
 
 ## Stereotype Profile
 
-Content to be added.
+The stereotype profile is not yet available.
 
 ## Examples
 
-Content to be added.
+Examples are not yet available.
 
 ## References
 

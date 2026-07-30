@@ -14,11 +14,11 @@ One supplied source analyzes a possible interpretation of powertype instances as
 
 ## Stereotype Profile
 
-To be determined in a future phase.
+The stereotype profile is not yet available.
 
 ## Examples
 
-To be determined in a future phase.
+Examples are not yet available.
 
 ## References
 

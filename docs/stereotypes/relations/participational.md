@@ -10,11 +10,11 @@ Participational is constrained to event part-whole relations among Event classes
 
 ## Stereotype Profile
 
-To be defined.
+The stereotype profile is not yet available.
 
 ## Examples
 
-To be defined.
+Examples are not yet available.
 
 ## References
 

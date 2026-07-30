@@ -12,11 +12,11 @@ In multi-level and powertype-oriented contexts, Subkind is used to mark lower-le
 
 ## Stereotype Profile
 
-To be defined.
+The stereotype profile is not yet available.
 
 ## Examples
 
-To be defined.
+Examples are not yet available.
 
 ## References
 

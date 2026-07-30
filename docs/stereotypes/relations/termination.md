@@ -12,11 +12,11 @@ Taken together, the sources support Termination as a constrained event-related t
 
 ## Stereotype Profile
 
-To be determined.
+The stereotype profile is not yet available.
 
 ## Examples
 
-To be determined.
+Examples are not yet available.
 
 ## References
 

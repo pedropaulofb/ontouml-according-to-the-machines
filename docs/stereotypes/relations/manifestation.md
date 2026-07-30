@@ -12,11 +12,11 @@ A more isolated source uses manifestation in the theory of variable embodiments,
 
 ## Stereotype Profile
 
-TBD in a later phase.
+The stereotype profile is not yet available.
 
 ## Examples
 
-TBD in a later phase.
+Examples are not yet available.
 
 ## References
 

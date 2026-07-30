@@ -14,11 +14,11 @@ Phase can also serve as a structural representation of lifecycle states and chan
 
 ## Stereotype Profile
 
-Under development.
+The stereotype profile is not yet available.
 
 ## Examples
 
-Under development.
+Examples are not yet available.
 
 ## References
 

@@ -14,11 +14,11 @@ One powertype-focused source treats powertypes as a specific use of Type for dom
 
 ## Stereotype Profile
 
-This profile is currently under development.
+The stereotype profile is not yet available.
 
 ## Examples
 
-Examples are currently under development.
+Examples are not yet available.
 
 ## References
 

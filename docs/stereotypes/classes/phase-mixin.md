@@ -12,11 +12,11 @@ Several constraints are relevant to PhaseMixin. Non-sortals, including PhaseMixi
 
 ## Stereotype Profile
 
-TBD.
+The stereotype profile is not yet available.
 
 ## Examples
 
-TBD.
+Examples are not yet available.
 
 ## References
 

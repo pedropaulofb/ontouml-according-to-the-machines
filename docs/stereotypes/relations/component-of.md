@@ -12,11 +12,11 @@ Chapter 8 identifies ComponentOf as a commonly used conceptual parthood relation
 
 ## Stereotype Profile
 
-TBD in a later phase.
+The stereotype profile is not yet available.
 
 ## Examples
 
-TBD in a later phase.
+Examples are not yet available.
 
 ## References
 

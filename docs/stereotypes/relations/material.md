@@ -14,11 +14,11 @@ One later source revises the earlier classification by treating many extrinsic r
 
 ## Stereotype Profile
 
-TBD in a later phase.
+The stereotype profile is not yet available.
 
 ## Examples
 
-TBD in a later phase.
+Examples are not yet available.
 
 ## References
 

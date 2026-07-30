@@ -10,11 +10,11 @@ For OntoUML 2-oriented sources, Category decorates rigid non-sortals. Their inst
 
 ## Stereotype Profile
 
-To be defined.
+The stereotype profile is not yet available.
 
 ## Examples
 
-To be defined.
+Examples are not yet available.
 
 ## References
 
