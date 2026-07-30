@@ -2,7 +2,7 @@
 
 ## Description
 
-A Phase is an anti-rigid sortal endurant type that classifies its instances contingently. Sources characterize Phase membership as depending on intrinsic classification conditions and as relationally or externally independent, distinguishing Phase from Role, whose anti-rigid classification depends on relational conditions.
+A Phase is an anti-rigid sortal endurant type that classifies its instances contingently. Sources characterize Phase membership as depending on intrinsic classification conditions (i.e., the inherent criteria for classification) and as relationally or externally independent, distinguishing Phase from Role, whose anti-rigid classification depends on relational conditions.
 
 Because Phase is sortal, it does not replace the identity principle of its instances. In first-order taxonomic accounts, a Phase specializes a Kind or ultimate sortal and carries the identity principle supplied by that more fundamental sortal. An individual may enter or leave a Phase without losing its identity.
 
@@ -61,3 +61,4 @@ Under development.
 | 2026-07-05 | Phase 2 | Phase 2 automated resolver | Signal resolution | resolve-page-hygiene-signal-issue-v1.2.2 | Phase 2 automated resolver: page-hygiene signals v1.2.2 | GitHub issue #202 | Applied accepted page-hygiene-checker signal edits through automated Phase 2 resolution; not a conceptual or source-faithfulness validation. |
 | 2026-07-15 | Phase 2 | Phase 2 automated resolver | Signal resolution | resolve-language-style-signal-issue-v1.2.2 | Phase 2 automated resolver: language-style signals v1.2.2 | GitHub issue #253 | Applied accepted language-style-checker signal edits through automated Phase 2 resolution; not a conceptual or source-faithfulness validation. |
 | 2026-07-23 | Phase 2 | Phase 2 automated resolver | Signal resolution | resolve-language-style-signal-issue-v1.2.2 | Phase 2 automated resolver: language-style signals v1.2.2 | GitHub issue #321 | Applied accepted language-style-checker signal edits through automated Phase 2 resolution; not a conceptual or source-faithfulness validation. |
+| 2026-07-30 | Phase 2 | Phase 2 automated resolver | Signal resolution | resolve-language-style-signal-issue-v1.2.2 | Phase 2 automated resolver: language-style signals v1.2.2 | GitHub issue #382 | Applied accepted language-style-checker signal edits through automated Phase 2 resolution; not a conceptual or source-faithfulness validation. |
