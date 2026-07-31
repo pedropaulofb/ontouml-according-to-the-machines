@@ -2,13 +2,13 @@
 
 ## Description
 
-HistoricalDependence is characterized in the supplied sources as an association stereotype for historical dependence between Event instances. It is used for dependencies grounded in causal or precondition-like relations among events and the situations they bring about or trigger.
+HistoricalDependence is characterized as an association stereotype for historical dependence between Event instances. It is used for dependencies grounded in causal or precondition-like relations among events and the situations they bring about or trigger.
 
 One source specifies four conditions for historical dependence: an event, or one of its parts, may bring about the situation that triggers another event or one of its parts; it may bring about a situation that is necessary but not sufficient for such triggering; it may bring about a situation that is necessary and more than sufficient for such triggering; or the dependence may hold transitively through another historically dependent event. On this account, HistoricalDependence covers direct causation and, through transitivity, indirect causation.
 
 The same source distinguishes HistoricalDependence from mere temporal precedence. HistoricalDependence is presented as the stronger relation: it may represent direct and indirect causation, and it may also represent dependence without causation.
 
-A complementary source places historical relations in a broader relation taxonomy. It distinguishes historical descriptive relations, which hold in virtue of a past quality of a relatum, from merely historical non-descriptive relations, which hold in virtue of a past event. In that account, non-descriptive historical relations need not themselves be reified as relationships, although explicitly modeling the past event may still be useful. This supports treating historical grounding cautiously: the supplied sources connect HistoricalDependence primarily to event-based dependence, while also recording that some historical relations may be grounded in past qualities.
+A complementary source places historical relations in a broader relation taxonomy. It distinguishes historical descriptive relations, which hold in virtue of a past quality of a relatum, from merely historical non-descriptive relations, which hold in virtue of a past event. In that account, non-descriptive historical relations need not themselves be reified as relationships, although explicitly modeling the past event may still be useful. This supports treating historical grounding cautiously: HistoricalDependence is primarily connected to event-based dependence, while some historical relations may be grounded in past qualities.
 
 ## Stereotype Profile
 
@@ -37,3 +37,4 @@ Examples are not yet available.
 |---|---|---|---|---|---|---|---|
 | 2026-06-06 | Phase 1 | GPT-5.5 Thinking | Consolidation | prompt-phase-1-consolidation-v1.0.0 | Phase 1 Consolidation — Direct Main Commit for One Stereotype | 2026-06-05t1031-almeida-falbo-guizzardi-2019-events-as-entities-full-document.md, 2026-06-05t1033-guarino-guizzardi-2016-relationships-events-full-document.md | First consolidated stereotype page generated from Phase 1 source-specific intermediate files at 2026-06-06t0052; not final expert-validated documentation. |
 | 2026-07-02 | Phase 2 | Phase 2 automated resolver | Signal resolution | resolve-page-hygiene-signal-issue-v1.2.2 | Phase 2 automated resolver: page-hygiene signals v1.2.2 | GitHub issue #179 | Applied accepted page-hygiene-checker signal edits through automated Phase 2 resolution; not a conceptual or source-faithfulness validation. |
+| 2026-07-31 | Phase 2 | Phase 2 automated resolver | Signal resolution | resolve-language-style-signal-issue-v1.2.2 | Phase 2 automated resolver: language-style signals v1.2.2 | GitHub issue #410 | Applied accepted language-style-checker signal edits through automated Phase 2 resolution; not a conceptual or source-faithfulness validation. |
