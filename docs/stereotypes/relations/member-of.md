@@ -4,7 +4,7 @@
 
 MemberOf is a member-collection parthood relation connecting a singular member to a plural or collective whole. The supplied source-specific contributions characterize the member as atomic relative to the context in which the collection is defined. In the Chapter 8 contribution, the part may be either a functional complex or a Collective considered as a unity, while the whole is a Collective.
 
-The consolidated evidence consistently distinguishes MemberOf from transitive parthood relations. MemberOf is characterized as intransitive: if an entity is a member of a collection, the parts of that entity are not thereby members of the same collection. One source further states that, although transitivity does not hold across two MemberOf relations, transitivity does hold across MemberOf followed by SubCollectionOf.
+The consolidated evidence consistently distinguishes MemberOf from transitive parthood relations. MemberOf is characterized as intransitive, meaning that if an entity is a member of a collection, its parts do not automatically become members of that collection. One source further states that, although transitivity does not hold across two MemberOf relations, transitivity does hold across MemberOf followed by SubCollectionOf.
 
 The source-specific contributions also associate MemberOf with formal meta-properties including non-reflexivity or irreflexivity, anti-symmetry or asymmetry, intransitivity or anti-transitivity, and weak supplementation. One contribution states that MemberOf can represent essential parthood only when the whole is extensional, in which case all parthood relations involving that whole are essential parthood relations.
 
@@ -44,3 +44,4 @@ Examples are not yet available.
 | Date | Phase | Agent | Action | Prompt ID | Prompt Title | Inputs | Notes |
 |---|---|---|---|---|---|---|---|
 | 2026-06-06 | Phase 1 | GPT-5.5 Thinking | Consolidation | prompt-phase-1-consolidation-v1.0.0 | Phase 1 Consolidation — Direct Main Commit for One Stereotype | 2026-06-05t0926-guizzardi-2005-thesis-chapter-05.md, 2026-06-05t0930-guizzardi-2005-thesis-chapter-08.md, 2026-06-05t1040-guizzardi-2015-powertypes-full-document.md, 2026-06-05t1042-botti-benevides-2019-events-sroiq-full-document.md | First consolidated stereotype page generated from Phase 1 source-specific intermediate files at 2026-06-06t0134; not final expert-validated documentation. |
+| 2026-08-06 | Phase 2 | Phase 2 automated resolver | Signal resolution | resolve-language-style-signal-issue-v1.2.2 | Phase 2 automated resolver: language-style signals v1.2.2 | GitHub issue #462 | Applied accepted language-style-checker signal edits through automated Phase 2 resolution; not a conceptual or source-faithfulness validation. |
