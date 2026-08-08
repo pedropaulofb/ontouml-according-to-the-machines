@@ -2,7 +2,7 @@
 
 ## Description
 
-Enumeration is an OntoUML stereotype for classes that are treated as particular types of Datatype. In the consulted source, Enumeration is also used in the treatment of quality structures as a datatype-like representational device for a finite space of admissible quality values.
+Enumeration is an OntoUML stereotype for classes that are treated as particular types of Datatype. Enumeration is also used in the treatment of quality structures as a datatype-like representational device for a finite space of admissible quality values.
 
 The following description is limited to characterizations grounded in the consulted sources. A complete stereotype profile for Enumeration is not provided here.
 
@@ -33,3 +33,4 @@ Examples are not yet available.
 | 2026-06-21 | Phase 2 | Phase 2 automated resolver | Signal resolution | resolve-language-style-signal-issue-v1.2.1 | Phase 2 automated resolver: language-style signals v1.2.1 | GitHub issue #84 | Applied accepted language-style-checker signal edits through automated Phase 2 resolution; not a conceptual or source-faithfulness validation. |
 | 2026-07-14 | Phase 2 | Phase 2 automated resolver | Signal resolution | resolve-language-style-signal-issue-v1.2.2 | Phase 2 automated resolver: language-style signals v1.2.2 | GitHub issue #245 | Applied accepted language-style-checker signal edits through automated Phase 2 resolution; not a conceptual or source-faithfulness validation. |
 | 2026-07-28 | Phase 2 | Phase 2 automated resolver | Signal resolution | resolve-language-style-signal-issue-v1.2.2 | Phase 2 automated resolver: language-style signals v1.2.2 | GitHub issue #367 | Applied accepted language-style-checker signal edits through automated Phase 2 resolution; not a conceptual or source-faithfulness validation. |
+| 2026-08-08 | Phase 2 | Phase 2 automated resolver | Signal resolution | resolve-language-style-signal-issue-v1.2.2 | Phase 2 automated resolver: language-style signals v1.2.2 | GitHub issue #475 | Applied accepted language-style-checker signal edits through automated Phase 2 resolution; not a conceptual or source-faithfulness validation. |
