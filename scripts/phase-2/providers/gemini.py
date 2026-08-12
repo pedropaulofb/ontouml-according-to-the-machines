@@ -8,6 +8,11 @@ from typing import Any
 
 from google import genai
 from google.genai import types
+from provider_model_registry import (
+    RegistryValidationError,
+    require_executable_slot,
+    validate_completion_token_cap,
+)
 
 
 class GeminiProviderError(RuntimeError):
@@ -36,6 +41,19 @@ QUOTA_OR_RATE_LIMIT_MARKERS = (
     "generaterequestsperday",
     "tokens per minute",
     "tpm",
+)
+
+PROVIDER_POLICY_BLOCK_MARKERS = (
+    "402",
+    "billing",
+    "payment required",
+    "payment method",
+    "insufficient credit",
+    "insufficient funds",
+    "purchase",
+    "paygo",
+    "pay-as-you-go",
+    "paid tier",
 )
 
 TRANSIENT_ERROR_MARKERS = (
@@ -139,6 +157,8 @@ def _is_retryable_error(exc: Exception) -> bool:
     """Return whether an exception should receive the single transient retry."""
     diagnostic_lower = _diagnostic(exc).lower()
     diagnostic_upper = _diagnostic(exc).upper()
+    if any(marker in diagnostic_lower for marker in PROVIDER_POLICY_BLOCK_MARKERS):
+        return False
     if any(marker in diagnostic_lower for marker in QUOTA_OR_RATE_LIMIT_MARKERS):
         return False
     if any(marker in diagnostic_lower for marker in NON_RETRYABLE_ERROR_MARKERS):
@@ -150,21 +170,23 @@ def _provider_error_kind(exc: Exception) -> str:
     """Return a stable error category for workflow-level failure handling."""
     diagnostic_lower = _diagnostic(exc).lower()
     diagnostic_upper = _diagnostic(exc).upper()
+    if any(marker in diagnostic_lower for marker in PROVIDER_POLICY_BLOCK_MARKERS):
+        return "provider_policy_block"
     if any(marker in diagnostic_lower for marker in QUOTA_OR_RATE_LIMIT_MARKERS):
         return "rate_or_quota_limited"
     if "empty response" in diagnostic_lower:
         return "empty_response"
     if "request too large" in diagnostic_lower or "413" in diagnostic_lower or "context length" in diagnostic_lower:
-        return "request_too_large"
+        return "execution_configuration_block"
     if any(
         marker in diagnostic_lower
         for marker in ("invalid api key", "authentication", "unauthorized", "forbidden", "401", "403")
     ):
-        return "auth_or_configuration"
+        return "execution_configuration_block"
     if any(
         marker in diagnostic_lower for marker in ("400", "404", "422", "invalid request", "bad request", "not found")
     ):
-        return "invalid_request"
+        return "execution_configuration_block"
     if any(marker in diagnostic_upper for marker in TRANSIENT_ERROR_MARKERS):
         return "provider_unavailable"
     return "unknown_provider_error"
@@ -217,6 +239,12 @@ def generate_review(
 ) -> str:
     """Generate one Phase 2 page-review issue comment using Google Gemini."""
     del provider, review_date, page_path, commit_sha, page_content
+
+    try:
+        configured_slot = require_executable_slot("gemini", model)
+        validate_completion_token_cap(configured_slot, max_completion_tokens)
+    except RegistryValidationError as exc:
+        raise GeminiProviderError(f"provider_error_kind=execution_configuration_block: {exc}") from exc
 
     if max_completion_tokens <= 0:
         raise GeminiProviderError("max_completion_tokens must be greater than 0.")

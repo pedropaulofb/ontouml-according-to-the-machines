@@ -30,6 +30,19 @@ QUOTA_OR_RATE_LIMIT_MARKERS = (
     "rpm",
 )
 
+PROVIDER_POLICY_BLOCK_MARKERS = (
+    "402",
+    "billing",
+    "payment required",
+    "payment method",
+    "insufficient credit",
+    "insufficient funds",
+    "purchase",
+    "paygo",
+    "pay-as-you-go",
+    "paid tier",
+)
+
 TRANSIENT_ERROR_MARKERS = (
     "500",
     "502",
@@ -88,6 +101,8 @@ def _is_quota_or_rate_limit_error(exc: Exception) -> bool:
 
 def _is_retryable_exception(exc: Exception) -> bool:
     diagnostic = _diagnostic(exc)
+    if any(marker in diagnostic for marker in PROVIDER_POLICY_BLOCK_MARKERS):
+        return False
     if _is_quota_or_rate_limit_error(exc):
         return False
     if any(marker in diagnostic for marker in NON_RETRYABLE_ERROR_MARKERS):
@@ -98,19 +113,21 @@ def _is_retryable_exception(exc: Exception) -> bool:
 def _provider_error_kind(exc: Exception) -> str:
     """Return a stable error category for workflow-level failure handling."""
     diagnostic = _diagnostic(exc)
+    if any(marker in diagnostic for marker in PROVIDER_POLICY_BLOCK_MARKERS):
+        return "provider_policy_block"
     if _is_quota_or_rate_limit_error(exc):
         return "rate_or_quota_limited"
     if "empty response" in diagnostic:
         return "empty_response"
     if "request too large" in diagnostic or "413" in diagnostic or "context length" in diagnostic:
-        return "request_too_large"
+        return "execution_configuration_block"
     if any(
         marker in diagnostic
         for marker in ("invalid api key", "authentication", "unauthorized", "forbidden", "401", "403")
     ):
-        return "auth_or_configuration"
+        return "execution_configuration_block"
     if any(marker in diagnostic for marker in ("400", "404", "422", "invalid request", "bad request", "not found")):
-        return "invalid_request"
+        return "execution_configuration_block"
     if any(marker in diagnostic for marker in TRANSIENT_ERROR_MARKERS):
         return "provider_unavailable"
     return "unknown_provider_error"

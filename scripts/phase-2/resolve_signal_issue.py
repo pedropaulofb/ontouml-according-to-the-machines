@@ -28,6 +28,12 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Callable
 
+SCRIPT_DIRECTORY = Path(__file__).resolve().parent
+if str(SCRIPT_DIRECTORY) not in sys.path:
+    sys.path.insert(0, str(SCRIPT_DIRECTORY))
+
+from provider_model_registry import RegistryValidationError, require_executable_slot  # noqa: E402
+
 SUPPORTED_AGENTS = {
     "page-hygiene-checker": "prompts/phase-2/resolve-page-hygiene-signal-issue-v1.2.2.md",
     "language-style-checker": "prompts/phase-2/resolve-language-style-signal-issue-v1.2.2.md",
@@ -72,8 +78,6 @@ JSON_SYSTEM_INSTRUCTION = (
     "Return only valid JSON matching the requested schema. "
     "Do not include Markdown fences, analysis, prefaces, or explanations outside JSON."
 )
-CEREBRAS_BASE_URL = "https://api.cerebras.ai/v1"
-CEREBRAS_RESOLVER_MODEL = "gpt-oss-120b"
 
 
 class ResolverError(RuntimeError):
@@ -114,7 +118,7 @@ def parse_args() -> argparse.Namespace:
             "oldest open page-hygiene-checker or language-style-checker signal issue."
         ),
     )
-    parser.add_argument("--provider", choices=["groq", "gemini", "cerebras"], default="gemini")
+    parser.add_argument("--provider", choices=["groq", "gemini"], default="gemini")
     parser.add_argument("--model", default="gemini-3.5-flash")
     parser.add_argument("--max-completion-tokens", type=int, default=8000)
     parser.add_argument(
@@ -395,35 +399,6 @@ def call_gemini_json(model: str, review_input: str, max_completion_tokens: int, 
     return call_with_retries("Gemini resolver call", invoke, max_attempts=max_attempts)
 
 
-def call_cerebras_json(model: str, review_input: str, max_completion_tokens: int, max_attempts: int) -> str:
-    if model != CEREBRAS_RESOLVER_MODEL:
-        raise ResolverError(f"Unsupported Cerebras resolver model: {model!r}. Expected {CEREBRAS_RESOLVER_MODEL!r}.")
-    api_key = os.getenv("CEREBRAS_API_KEY")
-    if not api_key:
-        raise ResolverError("CEREBRAS_API_KEY environment variable is not set.")
-    base_url = os.getenv("CEREBRAS_BASE_URL", CEREBRAS_BASE_URL)
-
-    def invoke() -> str:
-        from openai import OpenAI
-
-        client = OpenAI(api_key=api_key, base_url=base_url, max_retries=0)
-        response = client.chat.completions.create(
-            model=model,
-            messages=[
-                {"role": "system", "content": JSON_SYSTEM_INSTRUCTION},
-                {"role": "user", "content": review_input},
-            ],
-            temperature=0,
-            max_completion_tokens=max_completion_tokens,
-            reasoning_effort="low",
-            response_format={"type": "json_object"},
-        )
-        content = response.choices[0].message.content
-        return content if isinstance(content, str) else ""
-
-    return call_with_retries("Cerebras resolver call", invoke, max_attempts=max_attempts)
-
-
 def call_provider(
     provider: str,
     model: str,
@@ -433,13 +408,17 @@ def call_provider(
     max_attempts: int,
 ) -> str:
     review_input = f"{prompt}\n\n## Input\n\n{user_input}"
+    if provider not in {"groq", "gemini"}:
+        raise ResolverError(f"Unsupported provider: {provider}")
+    try:
+        require_executable_slot(provider, model)
+    except RegistryValidationError as exc:
+        raise ResolverError(str(exc)) from exc
     if provider == "groq":
         return call_groq_json(model, review_input, max_tokens, max_attempts)
     if provider == "gemini":
         return call_gemini_json(model, review_input, max_tokens, max_attempts)
-    if provider == "cerebras":
-        return call_cerebras_json(model, review_input, max_tokens, max_attempts)
-    raise ResolverError(f"Unsupported provider: {provider}")
+    raise ResolverError(f"Unsupported provider: {provider}")  # pragma: no cover - guarded above.
 
 
 def parse_json(text: str) -> dict[str, Any]:

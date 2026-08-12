@@ -68,7 +68,6 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.PHASE2_AUTOMATION_TOKEN }}
           GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
-          CEREBRAS_API_KEY: ${{ secrets.CEREBRAS_API_KEY }}
           ISSUE_INPUT: ${{ github.event.inputs.issue }}
           PROVIDER_INPUT: ${{ github.event.inputs.provider }}
           MODEL_INPUT: ${{ github.event.inputs.model }}
@@ -78,8 +77,8 @@ jobs:
 
           provider="${PROVIDER_INPUT:-gemini}"
           model="${MODEL_INPUT:-gemini-3.5-flash}"
-          fallback_provider="cerebras"
-          fallback_model="gpt-oss-120b"
+          fallback_provider="groq"
+          fallback_model="openai/gpt-oss-120b"
           fallback_max_completion_tokens="6000"
           dry_run="${DRY_RUN_INPUT:-false}"
           issue_label="${ISSUE_INPUT:-oldest eligible open issue}"
@@ -192,7 +191,7 @@ jobs:
             exit "$primary_exit_code"
           fi
 
-          echo "::warning::Primary Gemini resolver model failed with provider unavailability for issue #${fallback_issue}. Running Cerebras fallback once: ${fallback_model}"
+          echo "::warning::Primary Gemini resolver model failed with provider unavailability for issue #${fallback_issue}. Running Groq fallback once: ${fallback_model}"
           preserve_primary_provider_error_artifacts
 
           if run_resolver "$fallback_provider" "$fallback_model" "${ISSUE_INPUT:-$fallback_issue}" "fallback" "$fallback_max_completion_tokens"; then

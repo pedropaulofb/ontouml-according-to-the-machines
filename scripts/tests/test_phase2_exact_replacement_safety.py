@@ -124,6 +124,15 @@ Language-style check only. This run reviewed grammar, spelling, clarity, profess
             with (
                 mock.patch.object(check_agent, "parse_args", return_value=args),
                 mock.patch.object(check_agent, "get_repo_root", return_value=root),
+                mock.patch.object(
+                    check_agent,
+                    "require_executable_slot",
+                    return_value=mock.Mock(
+                        agents=("language-style-checker",),
+                        spec="gemini:test-model",
+                        max_completion_tokens=3000,
+                    ),
+                ),
                 mock.patch.object(check_agent, "load_provider", return_value=mock.Mock(return_value=report)),
             ):
                 result = check_agent.main()
@@ -437,6 +446,15 @@ Language-style check only. This run reviewed grammar, spelling, clarity, profess
             with (
                 mock.patch.object(check_agent, "parse_args", return_value=args),
                 mock.patch.object(check_agent, "get_repo_root", return_value=root),
+                mock.patch.object(
+                    check_agent,
+                    "require_executable_slot",
+                    return_value=mock.Mock(
+                        agents=("language-style-checker",),
+                        spec="gemini:test-model",
+                        max_completion_tokens=3000,
+                    ),
+                ),
                 mock.patch.object(check_agent, "load_provider", return_value=provider),
             ):
                 result = check_agent.main()
@@ -480,6 +498,15 @@ Language-style check only. This run reviewed grammar, spelling, clarity, profess
             with (
                 mock.patch.object(check_agent, "parse_args", return_value=args),
                 mock.patch.object(check_agent, "get_repo_root", return_value=root),
+                mock.patch.object(
+                    check_agent,
+                    "require_executable_slot",
+                    return_value=mock.Mock(
+                        agents=("language-style-checker",),
+                        spec="gemini:test-model",
+                        max_completion_tokens=3000,
+                    ),
+                ),
                 mock.patch.object(check_agent, "load_provider", return_value=mock.Mock(return_value=report)),
             ):
                 result = check_agent.main()
@@ -523,6 +550,15 @@ Language-style check only. This run reviewed grammar, spelling, clarity, profess
             with (
                 mock.patch.object(check_agent, "parse_args", return_value=args),
                 mock.patch.object(check_agent, "get_repo_root", return_value=root),
+                mock.patch.object(
+                    check_agent,
+                    "require_executable_slot",
+                    return_value=mock.Mock(
+                        agents=("language-style-checker",),
+                        spec="gemini:test-model",
+                        max_completion_tokens=3000,
+                    ),
+                ),
                 mock.patch.object(check_agent, "load_provider", return_value=mock.Mock(return_value=report)),
             ):
                 result = check_agent.main()
@@ -1247,7 +1283,9 @@ class ResolverExactReplacementTests(unittest.TestCase):
                         resolver,
                         "load_text",
                         side_effect=lambda path: (
-                            page_path.read_text(encoding="utf-8") if str(path) == issue.reviewed_page else "prompt"
+                            page_path.read_text(encoding="utf-8")
+                            if Path(path) == Path(issue.reviewed_page)
+                            else "prompt"
                         ),
                     ),
                     mock.patch.object(resolver, "resolver_output_dir", return_value=output_dir),
@@ -1309,7 +1347,9 @@ class ResolverExactReplacementTests(unittest.TestCase):
                         resolver,
                         "load_text",
                         side_effect=lambda path: (
-                            page_path.read_text(encoding="utf-8") if str(path) == issue.reviewed_page else "prompt"
+                            page_path.read_text(encoding="utf-8")
+                            if Path(path) == Path(issue.reviewed_page)
+                            else "prompt"
                         ),
                     ),
                     mock.patch.object(resolver, "resolver_output_dir", return_value=output_dir),

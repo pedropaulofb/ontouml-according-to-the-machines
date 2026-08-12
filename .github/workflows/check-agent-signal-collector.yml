@@ -20,22 +20,21 @@ run-name: Scheduled check-agent signal collector (${{ github.event_name }})
           - post
 
       provider:
-        description: "Fallback single-provider adapter, used only when provider_model_specs is empty."
+        description: "Provider used with the optional models subset when provider_model_specs is empty."
         type: choice
         required: true
         default: groq
         options:
           - groq
-          - cerebras
           - sambanova
           - gemini
           - openrouter
 
       provider_model_specs:
-        description: "Primary rotation list. Comma-separated provider:model values. Leave default to use the full rotation."
+        description: "Optional configured provider:model subset. Empty uses all slots from the authoritative registry."
         type: string
         required: false
-        default: "cerebras:gpt-oss-120b,sambanova:DeepSeek-V3.1,openrouter:nvidia/nemotron-3-ultra-550b-a55b:free,gemini:gemini-3.1-flash-lite,cerebras:zai-glm-4.7,sambanova:Meta-Llama-3.3-70B-Instruct,openrouter:poolside/laguna-m.1:free"
+        default: ""
 
       selection:
         description: "How to select triples. Keep rotate for normal manual and scheduled signal collection."
@@ -56,7 +55,7 @@ run-name: Scheduled check-agent signal collector (${{ github.event_name }})
           - daily
 
       rotation_index:
-        description: "Optional provider/model slot override: 0=Cerebras GPT-OSS, 1=SambaNova DeepSeek, 2=OpenRouter Nemotron, 3=Gemini, 4=Cerebras GLM, 5=SambaNova Llama, 6=OpenRouter Laguna."
+        description: "Optional zero-based provider/model rotation index. Empty derives it from the schedule."
         type: string
         required: false
         default: ""
@@ -74,7 +73,7 @@ run-name: Scheduled check-agent signal collector (${{ github.event_name }})
         default: "page-hygiene-checker,language-style-checker"
 
       models:
-        description: "Fallback comma-separated models, used only when provider_model_specs is empty."
+        description: "Optional comma-separated configured models for the selected provider."
         type: string
         required: false
         default: ""
@@ -119,7 +118,6 @@ jobs:
     env:
       GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
       GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
-      CEREBRAS_API_KEY: ${{ secrets.CEREBRAS_API_KEY }}
       SAMBANOVA_API_KEY: ${{ secrets.SAMBANOVA_API_KEY }}
       OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
       GH_TOKEN: ${{ github.token }}
@@ -192,72 +190,47 @@ jobs:
             printf '%s' "$1" | sed 's/^[[:space:]]*//;s/[[:space:]]*$//'
           }
 
-          is_allowed_openrouter_model() {
-            case "$1" in
-              nvidia/nemotron-3-ultra-550b-a55b:free|poolside/laguna-m.1:free) return 0 ;;
-              *) return 1 ;;
-            esac
-          }
-
-          default_periodic_provider_model_specs="cerebras:gpt-oss-120b,sambanova:DeepSeek-V3.1,openrouter:nvidia/nemotron-3-ultra-550b-a55b:free,gemini:gemini-3.1-flash-lite,cerebras:zai-glm-4.7,sambanova:Meta-Llama-3.3-70B-Instruct,openrouter:poolside/laguna-m.1:free"
-
           provider="${WORKFLOW_PROVIDER:-groq}"
           provider_model_specs="${WORKFLOW_PROVIDER_MODEL_SPECS:-}"
+          models_input="${WORKFLOW_MODELS:-}"
 
-          if [[ -z "$provider_model_specs" && "${GITHUB_EVENT_NAME:-}" == "schedule" ]]; then
-            provider_model_specs="$default_periodic_provider_model_specs"
+          python scripts/phase-2/provider_model_registry.py validate
+
+          if [[ -z "$provider_model_specs" && -n "$models_input" ]]; then
+            IFS=',' read -ra fallback_models <<< "$models_input"
+            fallback_specs=()
+            for model in "${fallback_models[@]}"; do
+              model="$(trim "$model")"
+              if [[ -n "$model" ]]; then
+                fallback_specs+=("${provider}:${model}")
+              fi
+            done
+            provider_model_specs="$(IFS=','; printf '%s' "${fallback_specs[*]}")"
           fi
+          if [[ -z "$provider_model_specs" ]]; then
+            provider_model_specs="$(python scripts/phase-2/provider_model_registry.py list-specs)"
+          fi
+          provider_model_specs="$(python scripts/phase-2/provider_model_registry.py validate-specs --specs "$provider_model_specs")"
 
           uses_groq=false
           uses_gemini=false
-          uses_cerebras=false
           uses_sambanova=false
           uses_openrouter=false
 
-          if [[ -n "$provider_model_specs" ]]; then
-            IFS=',' read -ra specs <<< "$provider_model_specs"
-            for spec in "${specs[@]}"; do
-              spec="$(trim "$spec")"
-              if [[ -z "$spec" ]]; then
-                continue
-              fi
-              if [[ "$spec" != *:* ]]; then
-                echo "::error::Invalid provider:model spec: ${spec}"
-                exit 1
-              fi
-              spec_provider="$(trim "${spec%%:*}")"
-              spec_model="$(trim "${spec#*:}")"
-              case "$spec_provider" in
-                groq) uses_groq=true ;;
-                gemini) uses_gemini=true ;;
-                cerebras) uses_cerebras=true ;;
-                sambanova) uses_sambanova=true ;;
-                openrouter)
-                  uses_openrouter=true
-                  if ! is_allowed_openrouter_model "$spec_model"; then
-                    echo "::error::Unsupported OpenRouter model in provider_model_specs: ${spec_model}. Use only :free OpenRouter model IDs configured for this workflow."
-                    exit 1
-                  fi
-                  ;;
-                *)
-                  echo "::error::Unsupported provider in provider_model_specs: ${spec_provider}"
-                  exit 1
-                  ;;
-              esac
-            done
-          else
-            case "$provider" in
+          IFS=',' read -ra specs <<< "$provider_model_specs"
+          for spec in "${specs[@]}"; do
+            spec_provider="${spec%%:*}"
+            case "$spec_provider" in
               groq) uses_groq=true ;;
               gemini) uses_gemini=true ;;
-              cerebras) uses_cerebras=true ;;
               sambanova) uses_sambanova=true ;;
               openrouter) uses_openrouter=true ;;
               *)
-                echo "::error::Unsupported provider: ${provider}"
+                echo "::error::Unsupported provider after registry validation: ${spec_provider}"
                 exit 1
                 ;;
             esac
-          fi
+          done
 
           if [[ "$uses_groq" == "true" && -z "${GROQ_API_KEY:-}" ]]; then
             echo "::error::Missing required repository secret: GROQ_API_KEY"
@@ -265,10 +238,6 @@ jobs:
           fi
           if [[ "$uses_gemini" == "true" && -z "${GEMINI_API_KEY:-}" ]]; then
             echo "::error::Missing required repository secret: GEMINI_API_KEY"
-            exit 1
-          fi
-          if [[ "$uses_cerebras" == "true" && -z "${CEREBRAS_API_KEY:-}" ]]; then
-            echo "::error::Missing required repository secret: CEREBRAS_API_KEY"
             exit 1
           fi
           if [[ "$uses_sambanova" == "true" && -z "${SAMBANOVA_API_KEY:-}" ]]; then
@@ -297,6 +266,8 @@ jobs:
           set -euo pipefail
 
           python -m py_compile \
+            scripts/phase-2/provider_model_registry.py \
+            scripts/phase-2/free_policy.py \
             scripts/phase-2/run_check_agent.py \
             scripts/phase-2/run_check_batch.py \
             scripts/phase-2/update_model_run_statistics.py \
@@ -304,7 +275,6 @@ jobs:
             scripts/phase-2/providers/openai_compatible.py \
             scripts/phase-2/providers/groq.py \
             scripts/phase-2/providers/gemini.py \
-            scripts/phase-2/providers/cerebras.py \
             scripts/phase-2/providers/sambanova.py \
             scripts/phase-2/providers/openrouter.py
 
@@ -317,16 +287,6 @@ jobs:
             printf '%s' "$1" | sed 's/^[[:space:]]*//;s/[[:space:]]*$//'
           }
 
-          is_allowed_openrouter_model() {
-            case "$1" in
-              nvidia/nemotron-3-ultra-550b-a55b:free|poolside/laguna-m.1:free) return 0 ;;
-              *) return 1 ;;
-            esac
-          }
-
-          default_groq_models=""
-          default_periodic_provider_model_specs="cerebras:gpt-oss-120b,sambanova:DeepSeek-V3.1,openrouter:nvidia/nemotron-3-ultra-550b-a55b:free,gemini:gemini-3.1-flash-lite,cerebras:zai-glm-4.7,sambanova:Meta-Llama-3.3-70B-Instruct,openrouter:poolside/laguna-m.1:free"
-
           mode="${WORKFLOW_MODE:-post}"
           provider="${WORKFLOW_PROVIDER:-groq}"
           provider_model_specs="${WORKFLOW_PROVIDER_MODEL_SPECS:-}"
@@ -335,19 +295,26 @@ jobs:
           rotation_index="${WORKFLOW_ROTATION_INDEX:-}"
           pages_input="${WORKFLOW_PAGES:-}"
           agents_input="${WORKFLOW_AGENTS:-page-hygiene-checker,language-style-checker}"
-          models_input="${WORKFLOW_MODELS:-$default_groq_models}"
+          models_input="${WORKFLOW_MODELS:-}"
           max_runs="${WORKFLOW_MAX_RUNS:-1}"
           sleep_seconds="${WORKFLOW_SLEEP_SECONDS:-0}"
           max_completion_tokens="${WORKFLOW_MAX_COMPLETION_TOKENS:-}"
 
-          if [[ -z "$provider_model_specs" && "${GITHUB_EVENT_NAME:-}" == "schedule" ]]; then
-            provider_model_specs="$default_periodic_provider_model_specs"
+          if [[ -z "$provider_model_specs" && -n "$models_input" ]]; then
+            IFS=',' read -ra fallback_models <<< "$models_input"
+            fallback_specs=()
+            for model in "${fallback_models[@]}"; do
+              model="$(trim "$model")"
+              if [[ -n "$model" ]]; then
+                fallback_specs+=("${provider}:${model}")
+              fi
+            done
+            provider_model_specs="$(IFS=','; printf '%s' "${fallback_specs[*]}")"
           fi
-
-          if [[ -z "$provider_model_specs" && -z "$models_input" ]]; then
-            echo "::error::No provider/model rotation spec or fallback model was configured. Set provider_model_specs, or explicitly set provider and models."
-            exit 1
+          if [[ -z "$provider_model_specs" ]]; then
+            provider_model_specs="$(python scripts/phase-2/provider_model_registry.py list-specs)"
           fi
+          provider_model_specs="$(python scripts/phase-2/provider_model_registry.py validate-specs --specs "$provider_model_specs")"
 
           if [[ -z "$rotation_index" && "$selection" == "rotate" && -n "$provider_model_specs" ]]; then
             # Align provider:model rotation buckets with the cron schedule:
@@ -400,22 +367,11 @@ jobs:
             models_input="$(trim "${selected_provider_model_spec#*:}")"
             rotation_index="$runner_rotation_index"
 
-            if [[ "$provider" == "openrouter" ]] && ! is_allowed_openrouter_model "$models_input"; then
-              echo "::error::Unsupported OpenRouter model in selected provider_model_specs slot: ${models_input}. Use only :free OpenRouter model IDs configured for this workflow."
-              exit 1
-            fi
-
             echo "Provider/model rotation specs: ${normalized_specs[*]}"
             echo "Provider/model slot count: ${#normalized_specs[@]}"
             echo "Provider/model slot index: ${provider_model_index}"
             echo "Runner rotation index: ${runner_rotation_index}"
             echo "Selected provider/model spec: ${selected_provider_model_spec}"
-          elif [[ "$provider" == "gemini" && "$models_input" == "$default_groq_models" ]]; then
-            echo "Provider is gemini and no fallback model was supplied; using gemini-3.1-flash-lite."
-            models_input="gemini-3.1-flash-lite"
-          elif [[ "$provider" == "openrouter" && "$models_input" == "$default_groq_models" ]]; then
-            echo "Provider is openrouter and no fallback model was supplied; using nvidia/nemotron-3-ultra-550b-a55b:free."
-            models_input="nvidia/nemotron-3-ultra-550b-a55b:free"
           fi
 
           if [[ -z "$max_completion_tokens" && "$provider" == "groq" && "$models_input" == "openai/gpt-oss-20b" ]]; then
@@ -455,10 +411,6 @@ jobs:
           for model in "${models[@]}"; do
             model="$(trim "$model")"
             if [[ -n "$model" ]]; then
-              if [[ "$provider" == "openrouter" ]] && ! is_allowed_openrouter_model "$model"; then
-                echo "::error::Unsupported OpenRouter model: ${model}. Use only :free OpenRouter model IDs configured for this workflow."
-                exit 1
-              fi
               model_args+=(--model "$model")
             fi
           done
@@ -524,19 +476,7 @@ jobs:
           fi
 
           statistics_page="docs/methodology/phases/phase-2/model-run-statistics.md"
-          default_periodic_provider_model_specs="cerebras:gpt-oss-120b,sambanova:DeepSeek-V3.1,openrouter:nvidia/nemotron-3-ultra-550b-a55b:free,gemini:gemini-3.1-flash-lite,cerebras:zai-glm-4.7,sambanova:Meta-Llama-3.3-70B-Instruct,openrouter:poolside/laguna-m.1:free"
-          provider_model_specs="${WORKFLOW_PROVIDER_MODEL_SPECS:-}"
-
-          if [[ -z "$provider_model_specs" && "${GITHUB_EVENT_NAME:-}" == "schedule" ]]; then
-            provider_model_specs="$default_periodic_provider_model_specs"
-          fi
-          if [[ -z "$provider_model_specs" ]]; then
-            if [[ -z "${WORKFLOW_MODELS:-}" ]]; then
-              echo "::warning::No provider/model specs available; skipping model run statistics update."
-              exit 0
-            fi
-            provider_model_specs="${WORKFLOW_PROVIDER:-groq}:${WORKFLOW_MODELS}"
-          fi
+          provider_model_specs="$(python scripts/phase-2/provider_model_registry.py list-specs)"
 
           python scripts/phase-2/update_model_run_statistics.py \
             --summary .tmp/phase-2/batch-summary.md \

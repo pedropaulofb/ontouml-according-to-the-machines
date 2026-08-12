@@ -23,6 +23,17 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Iterable, Sequence
 
+SCRIPT_DIRECTORY = Path(__file__).resolve().parent
+if str(SCRIPT_DIRECTORY) not in sys.path:
+    sys.path.insert(0, str(SCRIPT_DIRECTORY))
+
+from provider_model_registry import (  # noqa: E402 - direct script execution needs its directory on sys.path.
+    DEFAULT_REGISTRY_PATH,
+    SUPPORTED_PROVIDERS,
+    require_executable_slot,
+    validate_completion_token_cap,
+)
+
 DEFAULT_AGENTS = ["page-hygiene-checker", "language-style-checker"]
 DEFAULT_OUTPUT_ROOT = Path(".tmp/phase-2")
 DEFAULT_SLEEP_SECONDS = 0.0
@@ -91,7 +102,9 @@ def parse_args() -> argparse.Namespace:
         "--exclude-pages-glob", action="append", default=[], help="Repository-relative glob for pages to exclude."
     )
     parser.add_argument("--agent", action="append", default=[], choices=DEFAULT_AGENTS, help="Check agent to run.")
-    parser.add_argument("--provider", required=True, help="LLM provider to use.")
+    parser.add_argument(
+        "--provider", required=True, choices=SUPPORTED_PROVIDERS, help="Configured LLM provider to use."
+    )
     parser.add_argument(
         "--model", action="append", required=True, help="Model to use. Must be passed at least once; may be repeated."
     )
@@ -302,6 +315,20 @@ def classify_provider_failure(result: subprocess.CompletedProcess[str]) -> Provi
         if any(
             marker in lower
             for marker in (
+                "billing",
+                "payment",
+                "insufficient credit",
+                "insufficient funds",
+                "purchase",
+                "paygo",
+                "pay-as-you-go",
+                "paid tier",
+            )
+        ):
+            kind = "provider_policy_block"
+        elif any(
+            marker in lower
+            for marker in (
                 "429",
                 "rate_limit",
                 "rate limit",
@@ -327,9 +354,22 @@ def classify_provider_failure(result: subprocess.CompletedProcess[str]) -> Provi
                 "403",
             )
         ):
-            kind = "auth_or_configuration"
-        elif any(marker in lower for marker in ("request too large", "error code: 413", "context length")):
-            kind = "request_too_large"
+            kind = "execution_configuration_block"
+        elif any(
+            marker in lower
+            for marker in (
+                "400",
+                "404",
+                "413",
+                "422",
+                "invalid request",
+                "bad request",
+                "not found",
+                "request too large",
+                "context length",
+            )
+        ):
+            kind = "execution_configuration_block"
         elif "empty response" in lower:
             kind = "empty_response"
         elif any(
@@ -369,17 +409,13 @@ def classify_provider_failure(result: subprocess.CompletedProcess[str]) -> Provi
             "Provider call failed. Reason: rate_or_quota_limited. Action required: reduce workflow frequency, "
             "reduce token usage, change model rotation, or adjust provider quota."
         ),
-        "auth_or_configuration": (
-            "Provider call failed. Reason: auth_or_configuration. Action required: check repository secrets, "
+        "provider_policy_block": (
+            "Provider call blocked. Reason: provider_policy_block. The selected capacity could not be proven free; "
+            "no paid fallback is allowed."
+        ),
+        "execution_configuration_block": (
+            "Provider call failed. Reason: execution_configuration_block. Action required: check repository secrets, "
             "API keys, provider access, or workflow configuration."
-        ),
-        "request_too_large": (
-            "Provider call failed. Reason: request_too_large. Action required: reduce --max-completion-tokens, "
-            "reduce input scope, or remove this model from rotation."
-        ),
-        "invalid_request": (
-            "Provider call failed. Reason: invalid_request. Action required: inspect provider/model parameters, "
-            "model availability, request payload, or SDK compatibility."
         ),
         "unknown_provider_error": (
             "Provider call failed. Reason: unknown_provider_error. Action required: inspect the per-run log stderr "
@@ -722,8 +758,14 @@ def main() -> int:
         models = args.model
         if not models:
             raise ValueError("At least one --model must be provided.")
+        provider = args.provider.strip().lower()
+        registry_path = repo_root / DEFAULT_REGISTRY_PATH
+        for model in models:
+            configured_slot = require_executable_slot(provider, model, path=registry_path)
+            if args.max_completion_tokens is not None:
+                validate_completion_token_cap(configured_slot, args.max_completion_tokens)
         available_runs = plan_runs(
-            pages=pages, agents=agents, provider=args.provider, models=models, output_root=output_root
+            pages=pages, agents=agents, provider=provider, models=models, output_root=output_root
         )
         planned_runs, applied_rotation_index = select_runs(
             planned_runs=available_runs,

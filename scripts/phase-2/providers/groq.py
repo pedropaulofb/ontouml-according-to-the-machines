@@ -7,6 +7,11 @@ import time
 from typing import Any
 
 from groq import Groq
+from provider_model_registry import (
+    RegistryValidationError,
+    require_executable_slot,
+    validate_completion_token_cap,
+)
 
 
 class GroqProviderError(RuntimeError):
@@ -34,6 +39,19 @@ QUOTA_OR_RATE_LIMIT_MARKERS = (
     "tpm",
     "requests per minute",
     "rpm",
+)
+
+PROVIDER_POLICY_BLOCK_MARKERS = (
+    "402",
+    "billing",
+    "payment required",
+    "payment method",
+    "insufficient credit",
+    "insufficient funds",
+    "purchase",
+    "paygo",
+    "pay-as-you-go",
+    "paid tier",
 )
 
 TRANSIENT_ERROR_MARKERS = (
@@ -80,6 +98,8 @@ def _diagnostic(exc: Exception) -> str:
 def _is_retryable_exception(exc: Exception) -> bool:
     """Return whether a Groq exception looks transient enough to retry."""
     diagnostic = _diagnostic(exc)
+    if any(marker in diagnostic for marker in PROVIDER_POLICY_BLOCK_MARKERS):
+        return False
     if any(marker in diagnostic for marker in QUOTA_OR_RATE_LIMIT_MARKERS):
         return False
     if any(marker in diagnostic for marker in NON_RETRYABLE_ERROR_MARKERS):
@@ -90,19 +110,21 @@ def _is_retryable_exception(exc: Exception) -> bool:
 def _provider_error_kind(exc: Exception) -> str:
     """Return a stable error category for workflow-level failure handling."""
     diagnostic = _diagnostic(exc)
+    if any(marker in diagnostic for marker in PROVIDER_POLICY_BLOCK_MARKERS):
+        return "provider_policy_block"
     if any(marker in diagnostic for marker in QUOTA_OR_RATE_LIMIT_MARKERS):
         return "rate_or_quota_limited"
     if "empty response" in diagnostic:
         return "empty_response"
     if "request too large" in diagnostic or "413" in diagnostic or "context length" in diagnostic:
-        return "request_too_large"
+        return "execution_configuration_block"
     if any(
         marker in diagnostic
         for marker in ("invalid api key", "authentication", "unauthorized", "forbidden", "401", "403")
     ):
-        return "auth_or_configuration"
+        return "execution_configuration_block"
     if any(marker in diagnostic for marker in ("400", "404", "422", "invalid request", "bad request", "not found")):
-        return "invalid_request"
+        return "execution_configuration_block"
     if any(marker in diagnostic for marker in TRANSIENT_ERROR_MARKERS):
         return "provider_unavailable"
     return "unknown_provider_error"
@@ -214,6 +236,12 @@ def generate_review(
 ) -> str:
     """Generate one Phase 2 page-review issue comment using Groq."""
     del provider, review_date, page_path, commit_sha, page_content
+
+    try:
+        configured_slot = require_executable_slot("groq", model)
+        validate_completion_token_cap(configured_slot, max_completion_tokens)
+    except RegistryValidationError as exc:
+        raise GroqProviderError(f"provider_error_kind=execution_configuration_block: {exc}") from exc
 
     if not os.getenv("GROQ_API_KEY"):
         raise GroqProviderError("GROQ_API_KEY environment variable is not set.")

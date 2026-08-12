@@ -19,20 +19,18 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Iterable, Sequence
 
+SCRIPT_DIRECTORY = Path(__file__).resolve().parent
+if str(SCRIPT_DIRECTORY) not in sys.path:
+    sys.path.insert(0, str(SCRIPT_DIRECTORY))
+
+from provider_model_registry import configured_provider_model_specs  # noqa: E402
+
 DEFAULT_STATISTICS_PAGE = Path("docs/methodology/phases/phase-2/model-run-statistics.md")
 DEFAULT_SUMMARY_PATH = Path(".tmp/phase-2/batch-summary.md")
 STATE_START = "<!-- model-run-statistics-state"
 STATE_END = "-->"
 STATE_SCHEMA_VERSION = 1
-DEFAULT_PROVIDER_MODEL_SPECS = (
-    "cerebras:gpt-oss-120b,"
-    "sambanova:DeepSeek-V3.1,"
-    "openrouter:nvidia/nemotron-3-ultra-550b-a55b:free,"
-    "gemini:gemini-3.1-flash-lite,"
-    "cerebras:zai-glm-4.7,"
-    "sambanova:Meta-Llama-3.3-70B-Instruct,"
-    "openrouter:poolside/laguna-m.1:free"
-)
+DEFAULT_PROVIDER_MODEL_SPECS = ",".join(configured_provider_model_specs())
 
 VALID_CHECK_STATUS = "ok"
 INVALID_CHECK_STATUSES = {"failed", "provider_failed", "rejected"}
@@ -659,8 +657,12 @@ def run_self_test() -> int:
         assert "Models not present in the current active rotation remain listed as `inactive`" in rendered
         assert "| `legacy-provider` | `legacy-model` | `inactive` |" in rendered
         assert "openrouter:nvidia/nemotron-3-ultra-550b-a55b:free" in state["models"]
-        assert all(not spec["provider"].lower().startswith("groq") for spec in state["active_rotation"])
-        assert len(state["active_rotation"]) == 7
+        assert len(state["active_rotation"]) == 26
+        assert sum(spec["provider"] == "sambanova" for spec in state["active_rotation"]) == 6
+        assert sum(spec["provider"] == "groq" for spec in state["active_rotation"]) == 3
+        assert sum(spec["provider"] == "gemini" for spec in state["active_rotation"]) == 8
+        assert sum(spec["provider"] == "openrouter" for spec in state["active_rotation"]) == 9
+        assert model_record_status(laguna, active_keys) == "inactive"
     print(
         "Self-test passed: counters increment, duplicate events are ignored, issue-manager failures do not invalidate model output, inactive historical models are retained, collection start is persisted, and OpenRouter colon model IDs are preserved."
     )

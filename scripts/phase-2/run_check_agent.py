@@ -18,6 +18,16 @@ from datetime import date
 from pathlib import Path
 from typing import Callable
 
+SCRIPT_DIRECTORY = Path(__file__).resolve().parent
+if str(SCRIPT_DIRECTORY) not in sys.path:
+    sys.path.insert(0, str(SCRIPT_DIRECTORY))
+
+from provider_model_registry import (  # noqa: E402 - direct script execution needs its directory on sys.path.
+    RegistryValidationError,
+    require_executable_slot,
+    validate_completion_token_cap,
+)
+
 DEFAULT_MAX_COMPLETION_TOKENS = 3000
 NO_SIGNALS_SENTENCE = "None identified within the configured check-agent scope."
 SEMANTIC_PLACEHOLDER_VALUES = {"none", "n/a", "not applicable"}
@@ -185,7 +195,6 @@ AGENT_CONTRACTS: dict[str, AgentContract] = {
 }
 
 SUPPORTED_PROVIDERS: dict[str, str] = {
-    "cerebras": "providers.cerebras",
     "gemini": "providers.gemini",
     "groq": "providers.groq",
     "openrouter": "providers.openrouter",
@@ -1082,6 +1091,16 @@ def main() -> int:
             raise CheckAgentRunnerError("--max-completion-tokens must be greater than 0.")
         contract = AGENT_CONTRACTS[validate_agent_slug(args.agent)]
         provider = args.provider.strip().lower()
+        model = args.model.strip()
+        try:
+            configured_slot = require_executable_slot(provider, model)
+            validate_completion_token_cap(configured_slot, args.max_completion_tokens)
+        except RegistryValidationError as exc:
+            raise CheckAgentRunnerError(str(exc)) from exc
+        if contract.slug not in configured_slot.agents:
+            raise CheckAgentRunnerError(
+                f"Check agent {contract.slug!r} is not configured for provider-model slot {configured_slot.spec}."
+            )
         prompt_path = args.prompt or contract.prompt_path
         prompt_id = args.prompt_id or (
             contract.prompt_id if prompt_path == contract.prompt_path else derive_prompt_id(prompt_path)
@@ -1102,7 +1121,7 @@ def main() -> int:
             checker_prompt=checker_prompt,
             agent=contract.slug,
             provider=provider,
-            model=args.model,
+            model=model,
             prompt_id=prompt_id,
             review_date=review_date,
             page_path=args.page,
@@ -1115,7 +1134,7 @@ def main() -> int:
             issue_comment = provider_function(
                 review_input=review_input,
                 provider=provider,
-                model=args.model,
+                model=model,
                 review_date=review_date,
                 page_path=args.page,
                 commit_sha=commit_sha,
@@ -1132,7 +1151,7 @@ def main() -> int:
             text=issue_comment,
             contract=contract,
             provider=provider,
-            model=args.model,
+            model=model,
             review_date=review_date,
         )
         for normalization in [*replacement_normalizations, *schema_normalizations]:
@@ -1144,7 +1163,7 @@ def main() -> int:
             text=issue_comment,
             contract=contract,
             provider=provider,
-            model=args.model,
+            model=model,
             prompt_id=prompt_id,
             review_date=review_date,
             page_path=args.page,

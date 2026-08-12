@@ -4,6 +4,12 @@ from __future__ import annotations
 
 import os
 
+from provider_model_registry import (
+    RegistryValidationError,
+    require_executable_slot,
+    validate_completion_token_cap,
+)
+
 from providers.openai_compatible import OpenAICompatibleProviderError, generate_chat_completion
 
 
@@ -24,6 +30,12 @@ def generate_review(
 ) -> str:
     """Generate one Phase 2 page-review issue comment using SambaNova."""
     del provider, review_date, page_path, commit_sha, page_content
+
+    try:
+        configured_slot = require_executable_slot("sambanova", model)
+        validate_completion_token_cap(configured_slot, max_completion_tokens)
+    except RegistryValidationError as exc:
+        raise SambaNovaProviderError(f"provider_error_kind=execution_configuration_block: {exc}") from exc
 
     api_key = os.getenv("SAMBANOVA_API_KEY")
     if not api_key:
