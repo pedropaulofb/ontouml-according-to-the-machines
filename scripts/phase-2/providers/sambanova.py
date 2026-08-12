@@ -9,6 +9,7 @@ from provider_model_registry import (
     require_executable_slot,
     validate_completion_token_cap,
 )
+from provider_runtime import record_provider_failure
 
 from providers.openai_compatible import OpenAICompatibleProviderError, generate_chat_completion
 
@@ -39,7 +40,9 @@ def generate_review(
 
     api_key = os.getenv("SAMBANOVA_API_KEY")
     if not api_key:
-        raise SambaNovaProviderError("SAMBANOVA_API_KEY environment variable is not set.")
+        error = SambaNovaProviderError("SAMBANOVA_API_KEY environment variable is not set.")
+        record_provider_failure(provider="sambanova", model=model, exc=error, request_sent=False)
+        raise error
 
     try:
         return generate_chat_completion(

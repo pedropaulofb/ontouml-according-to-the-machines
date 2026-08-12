@@ -6,6 +6,7 @@ import time
 from typing import Any
 
 from openai import OpenAI
+from provider_runtime import classify_provider_failure, record_provider_event, record_provider_failure
 
 SYSTEM_MESSAGE = (
     "Return only the GitHub issue comment requested by the prompt. "
@@ -155,6 +156,16 @@ def _extract_content(response: Any) -> str:
     return content if isinstance(content, str) else ""
 
 
+def _create_chat_completion(client: OpenAI, kwargs: dict[str, Any]) -> tuple[Any, dict[str, str]]:
+    """Create one completion while retaining response headers when the SDK exposes them."""
+    raw_resource = getattr(client.chat.completions, "with_raw_response", None)
+    if raw_resource is None:
+        return client.chat.completions.create(**kwargs), {}
+    raw_response = raw_resource.create(**kwargs)
+    headers = dict(getattr(raw_response, "headers", {}) or {})
+    return raw_response.parse(), headers
+
+
 def generate_chat_completion(
     *,
     provider_label: str,
@@ -199,9 +210,17 @@ def generate_chat_completion(
             if extra_request_kwargs:
                 kwargs.update(extra_request_kwargs)
 
-            response = client.chat.completions.create(**kwargs)
+            response, headers = _create_chat_completion(client, kwargs)
             content = _extract_content(response)
             if content.strip():
+                record_provider_event(
+                    provider=provider_label.lower(),
+                    model=model,
+                    outcome="success",
+                    request_sent=True,
+                    response=response,
+                    headers=headers,
+                )
                 return content.strip() + "\n"
 
             last_error = OpenAICompatibleProviderError(
@@ -209,9 +228,18 @@ def generate_chat_completion(
                 f"({_response_diagnostic(response)}; prompt_chars={prompt_chars}; "
                 f"prompt_bytes={prompt_bytes}; max_completion_tokens={max_completion_tokens})."
             )
+            record_provider_failure(
+                provider=provider_label.lower(),
+                model=model,
+                exc=last_error,
+                request_sent=True,
+            )
         except Exception as exc:  # noqa: BLE001 - provider SDKs raise heterogeneous exceptions.
             last_error = exc
-            if not _is_retryable_exception(exc):
+            classification = record_provider_failure(
+                provider=provider_label.lower(), model=model, exc=exc, request_sent=True
+            )
+            if not classification.retryable_immediately:
                 break
 
         if attempt_number == total_attempts:
@@ -222,7 +250,11 @@ def generate_chat_completion(
     if last_error is None:
         raise OpenAICompatibleProviderError(f"{provider_label} API call failed without an exception.")
 
-    kind = _provider_error_kind(last_error)
+    kind = classify_provider_failure(
+        provider=provider_label.lower(),
+        model=model,
+        exc=last_error,
+    ).kind
     raise OpenAICompatibleProviderError(
         f"{provider_label} API call failed after {attempt_number} attempt(s); provider_error_kind={kind}: {last_error}"
     ) from last_error

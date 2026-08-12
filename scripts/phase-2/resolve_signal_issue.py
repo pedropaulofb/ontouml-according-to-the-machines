@@ -32,7 +32,22 @@ SCRIPT_DIRECTORY = Path(__file__).resolve().parent
 if str(SCRIPT_DIRECTORY) not in sys.path:
     sys.path.insert(0, str(SCRIPT_DIRECTORY))
 
-from provider_model_registry import RegistryValidationError, require_executable_slot  # noqa: E402
+from provider_model_registry import (  # noqa: E402
+    DEFAULT_REGISTRY_PATH,
+    RegistryValidationError,
+    load_registry,
+    require_executable_slot,
+)
+from provider_runtime import record_provider_event, record_provider_failure  # noqa: E402
+from quota_state import (  # noqa: E402
+    DEFAULT_EVENT_DIRECTORY,
+    DEFAULT_STATE_PATH,
+    QuotaStateError,
+    aggregate_events,
+    load_event_files,
+    slot_eligibility,
+)
+from quota_state import load_state as load_quota_state  # noqa: E402
 
 SUPPORTED_AGENTS = {
     "page-hygiene-checker": "prompts/phase-2/resolve-page-hygiene-signal-issue-v1.2.2.md",
@@ -62,13 +77,10 @@ LEGACY_AUTO_RESOLVER_LOG_RE = re.compile(
     r"(?P<agent>[a-z0-9-]+) signal edits from issue #(?P<issue>\d+)\.\s*$"
 )
 TRANSIENT_ERROR_MARKERS = (
-    "429",
     "500",
     "502",
     "503",
     "504",
-    "rate_limit_exceeded",
-    "resource_exhausted",
     "service_unavailable",
     "temporarily unavailable",
     "timeout",
@@ -333,23 +345,47 @@ def call_with_retries(operation_name: str, fn: Callable[[], str], *, max_attempt
 
 def call_groq_json(model: str, review_input: str, max_completion_tokens: int, max_attempts: int) -> str:
     if not os.getenv("GROQ_API_KEY"):
-        raise ResolverError("GROQ_API_KEY environment variable is not set.")
+        error = ResolverError("GROQ_API_KEY environment variable is not set.")
+        record_provider_failure(provider="groq", model=model, exc=error, request_sent=False)
+        raise error
 
     def invoke() -> str:
         from groq import Groq
 
         client = Groq()
-        response = client.chat.completions.create(
-            model=model,
-            messages=[
+        kwargs = {
+            "model": model,
+            "messages": [
                 {"role": "system", "content": JSON_SYSTEM_INSTRUCTION},
                 {"role": "user", "content": review_input},
             ],
-            temperature=0,
-            max_completion_tokens=max_completion_tokens,
-        )
-        content = response.choices[0].message.content
-        return content if isinstance(content, str) else ""
+            "temperature": 0,
+            "max_completion_tokens": max_completion_tokens,
+        }
+        try:
+            raw_resource = getattr(client.chat.completions, "with_raw_response", None)
+            if raw_resource is None:
+                response = client.chat.completions.create(**kwargs)
+                headers: dict[str, str] = {}
+            else:
+                raw_response = raw_resource.create(**kwargs)
+                response = raw_response.parse()
+                headers = dict(getattr(raw_response, "headers", {}) or {})
+            content = response.choices[0].message.content
+            if not isinstance(content, str) or not content.strip():
+                raise ResolverError("Groq resolver call returned an empty response.")
+            record_provider_event(
+                provider="groq",
+                model=model,
+                outcome="success",
+                request_sent=True,
+                response=response,
+                headers=headers,
+            )
+            return content
+        except Exception as exc:  # noqa: BLE001 - provider SDKs raise heterogeneous exceptions.
+            record_provider_failure(provider="groq", model=model, exc=exc, request_sent=True)
+            raise
 
     return call_with_retries("Groq resolver call", invoke, max_attempts=max_attempts)
 
@@ -357,7 +393,9 @@ def call_groq_json(model: str, review_input: str, max_completion_tokens: int, ma
 def call_gemini_json(model: str, review_input: str, max_completion_tokens: int, max_attempts: int) -> str:
     api_key = os.getenv("GOOGLE_API_KEY") or os.getenv("GEMINI_API_KEY")
     if not api_key:
-        raise ResolverError("Neither GOOGLE_API_KEY nor GEMINI_API_KEY environment variable is set.")
+        error = ResolverError("Neither GOOGLE_API_KEY nor GEMINI_API_KEY environment variable is set.")
+        record_provider_failure(provider="gemini", model=model, exc=error, request_sent=False)
+        raise error
 
     def invoke() -> str:
         from google import genai
@@ -377,24 +415,37 @@ def call_gemini_json(model: str, review_input: str, max_completion_tokens: int, 
         if thinking_config is not None:
             config_kwargs["thinking_config"] = thinking_config
         client = genai.Client(api_key=api_key)
-        response = client.models.generate_content(
-            model=model,
-            contents=review_input,
-            config=types.GenerateContentConfig(**config_kwargs),
-        )
-        text = getattr(response, "text", None)
-        if isinstance(text, str) and text.strip():
+        try:
+            response = client.models.generate_content(
+                model=model,
+                contents=review_input,
+                config=types.GenerateContentConfig(**config_kwargs),
+            )
+            text = getattr(response, "text", None)
+            if not isinstance(text, str) or not text.strip():
+                candidates = getattr(response, "candidates", None) or []
+                parts_text: list[str] = []
+                for candidate in candidates:
+                    content = getattr(candidate, "content", None)
+                    parts = getattr(content, "parts", None) if content is not None else None
+                    for part in parts or []:
+                        part_text = getattr(part, "text", None)
+                        if isinstance(part_text, str):
+                            parts_text.append(part_text)
+                text = "".join(parts_text)
+            if not text.strip():
+                raise ResolverError("Gemini resolver call returned an empty response.")
+            record_provider_event(
+                provider="gemini",
+                model=model,
+                outcome="success",
+                request_sent=True,
+                response=response,
+            )
             return text
-        candidates = getattr(response, "candidates", None) or []
-        parts_text: list[str] = []
-        for candidate in candidates:
-            content = getattr(candidate, "content", None)
-            parts = getattr(content, "parts", None) if content is not None else None
-            for part in parts or []:
-                part_text = getattr(part, "text", None)
-                if isinstance(part_text, str):
-                    parts_text.append(part_text)
-        return "".join(parts_text)
+        except Exception as exc:  # noqa: BLE001 - provider SDKs raise heterogeneous exceptions.
+            record_provider_failure(provider="gemini", model=model, exc=exc, request_sent=True)
+            raise
 
     return call_with_retries("Gemini resolver call", invoke, max_attempts=max_attempts)
 
@@ -414,6 +465,27 @@ def call_provider(
         require_executable_slot(provider, model)
     except RegistryValidationError as exc:
         raise ResolverError(str(exc)) from exc
+    try:
+        registry = load_registry(DEFAULT_REGISTRY_PATH)
+        quota = load_quota_state(DEFAULT_STATE_PATH, registry)
+        pending_events = load_event_files(Path(os.getenv("PHASE2_QUOTA_EVENT_DIR", str(DEFAULT_EVENT_DIRECTORY))))
+        if pending_events:
+            quota, _ = aggregate_events(quota, pending_events, registry)
+        eligible, reason = slot_eligibility(
+            quota,
+            provider=provider,
+            model=model,
+            task_id=None,
+            resolver_work_pending=False,
+            now=datetime.now(timezone.utc),
+        )
+    except (OSError, QuotaStateError, ValueError) as exc:
+        raise ResolverError(f"Could not evaluate resolver quota eligibility: {exc}") from exc
+    if not eligible:
+        failure_marker = (
+            " provider_error_kind=provider_unavailable" if reason in {"slot-cooldown", "slot-recheck-required"} else ""
+        )
+        raise ResolverError(f"Resolver provider call withheld by quota/runtime guard: {reason}.{failure_marker}")
     if provider == "groq":
         return call_groq_json(model, review_input, max_tokens, max_attempts)
     if provider == "gemini":

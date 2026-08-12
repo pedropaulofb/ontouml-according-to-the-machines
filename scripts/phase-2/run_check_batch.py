@@ -14,6 +14,7 @@ from __future__ import annotations
 
 import argparse
 import itertools
+import os
 import re
 import subprocess
 import sys
@@ -21,7 +22,7 @@ import time
 from dataclasses import dataclass
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import Iterable, Sequence
+from typing import Iterable, Mapping, Sequence
 
 SCRIPT_DIRECTORY = Path(__file__).resolve().parent
 if str(SCRIPT_DIRECTORY) not in sys.path:
@@ -30,8 +31,22 @@ if str(SCRIPT_DIRECTORY) not in sys.path:
 from provider_model_registry import (  # noqa: E402 - direct script execution needs its directory on sys.path.
     DEFAULT_REGISTRY_PATH,
     SUPPORTED_PROVIDERS,
+    load_registry,
     require_executable_slot,
     validate_completion_token_cap,
+)
+from quota_state import (  # noqa: E402 - direct script execution needs its directory on sys.path.
+    DEFAULT_EVENT_DIRECTORY,
+    QuotaStateError,
+    aggregate_events,
+    load_event_files,
+    slot_eligibility,
+)
+from quota_state import (  # noqa: E402 - direct script execution needs its directory on sys.path.
+    DEFAULT_STATE_PATH as DEFAULT_QUOTA_STATE_PATH,
+)
+from quota_state import (  # noqa: E402 - direct script execution needs its directory on sys.path.
+    load_state as load_quota_state,
 )
 from run_check_agent import AGENT_CONTRACTS  # noqa: E402 - shared active agent contracts.
 from task_identity import build_task_identity, task_id_for  # noqa: E402 - shared task identity contract.
@@ -154,6 +169,16 @@ def parse_args() -> argparse.Namespace:
             "Treat transient provider-side availability failures as nonfatal. "
             "Quota, rate-limit, authentication, configuration, and request-shape failures remain fatal."
         ),
+    )
+    parser.add_argument(
+        "--quota-state",
+        default=str(DEFAULT_QUOTA_STATE_PATH),
+        help="Persistent best-known quota state used by the pre-call eligibility guard.",
+    )
+    parser.add_argument(
+        "--resolver-work-pending",
+        action="store_true",
+        help="Withhold the two shared resolver provider-model slots from signal calls.",
     )
     return parser.parse_args()
 
@@ -279,9 +304,17 @@ def select_runs(
     return selected_pool, applied_rotation_index
 
 
-def run_subprocess(command: Sequence[str], repo_root: Path) -> subprocess.CompletedProcess[str]:
+def run_subprocess(
+    command: Sequence[str], repo_root: Path, *, environment: Mapping[str, str] | None = None
+) -> subprocess.CompletedProcess[str]:
     return subprocess.run(
-        list(command), cwd=repo_root, text=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, check=False
+        list(command),
+        cwd=repo_root,
+        text=True,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+        check=False,
+        env=environment,
     )
 
 
@@ -570,6 +603,49 @@ def build_planned_task_id(
     return task_id_for(identity)
 
 
+def effective_quota_state(
+    *,
+    repo_root: Path,
+    state_path: Path,
+    event_directory: Path,
+):
+    registry = load_registry(repo_root / DEFAULT_REGISTRY_PATH)
+    state = load_quota_state(filesystem_path(repo_root, state_path), registry)
+    events = load_event_files(filesystem_path(repo_root, event_directory))
+    if events:
+        state, _ = aggregate_events(state, events, registry)
+    return state
+
+
+def pre_call_eligibility(
+    *,
+    planned: PlannedRun,
+    repo_root: Path,
+    max_completion_tokens: int | None,
+    quota_state_path: Path,
+    quota_event_directory: Path,
+    resolver_work_pending: bool,
+) -> tuple[bool, str]:
+    task_id = build_planned_task_id(
+        planned=planned,
+        repo_root=repo_root,
+        max_completion_tokens=max_completion_tokens,
+    )
+    state = effective_quota_state(
+        repo_root=repo_root,
+        state_path=quota_state_path,
+        event_directory=quota_event_directory,
+    )
+    return slot_eligibility(
+        state,
+        provider=planned.provider,
+        model=planned.model,
+        task_id=task_id,
+        resolver_work_pending=resolver_work_pending,
+        now=datetime.now(timezone.utc),
+    )
+
+
 def run_one(
     *,
     planned: PlannedRun,
@@ -601,7 +677,9 @@ def run_one(
     filesystem_path(repo_root, planned.output_path).parent.mkdir(parents=True, exist_ok=True)
     check_command = build_check_command(planned=planned, max_completion_tokens=max_completion_tokens)
     print(f"[{planned.index}] {planned.agent} / {planned.provider} / {planned.model} / {planned.page}")
-    check_result = run_subprocess(check_command, repo_root)
+    check_environment = dict(os.environ)
+    check_environment["PHASE2_TASK_ID"] = task_id
+    check_result = run_subprocess(check_command, repo_root, environment=check_environment)
     echo_child_output(check_result)
 
     if check_result.returncode != 0:
@@ -862,6 +940,33 @@ def main() -> int:
         return 0
 
     for run_number, planned in enumerate(planned_runs, start=1):
+        quota_event_directory = Path(os.getenv("PHASE2_QUOTA_EVENT_DIR", str(DEFAULT_EVENT_DIRECTORY)))
+        try:
+            eligible, eligibility_reason = pre_call_eligibility(
+                planned=planned,
+                repo_root=repo_root,
+                max_completion_tokens=args.max_completion_tokens,
+                quota_state_path=Path(args.quota_state),
+                quota_event_directory=quota_event_directory,
+                resolver_work_pending=args.resolver_work_pending,
+            )
+        except (OSError, QuotaStateError, ValueError) as exc:
+            print(f"ERROR: Could not evaluate pre-call quota eligibility: {exc}", file=sys.stderr)
+            return 2
+        if not eligible:
+            message = f"provider call withheld by quota/runtime guard: {eligibility_reason}."
+            print(f"[{planned.index}] Skipped: {message}")
+            completed_runs.append(
+                CompletedRun(
+                    planned,
+                    RUN_STATUS_SKIPPED,
+                    None,
+                    RUN_STATUS_SKIPPED,
+                    None,
+                    message,
+                )
+            )
+            continue
         completed = run_one(
             planned=planned,
             repo_root=repo_root,

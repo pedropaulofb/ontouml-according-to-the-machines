@@ -112,7 +112,7 @@ jobs:
     runs-on: ubuntu-latest
 
     concurrency:
-      group: check-agent-signal-collector-${{ github.ref }}
+      group: phase-2-operational-state-write-${{ github.ref }}
       cancel-in-progress: false
 
     env:
@@ -121,6 +121,8 @@ jobs:
       SAMBANOVA_API_KEY: ${{ secrets.SAMBANOVA_API_KEY }}
       OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
       GH_TOKEN: ${{ github.token }}
+      PHASE2_QUOTA_EVENT_DIR: .tmp/phase-2/quota-events
+      PHASE2_CALL_SOURCE: signal
 
       WORKFLOW_MODE: ${{ github.event.inputs.mode }}
       WORKFLOW_PROVIDER: ${{ github.event.inputs.provider }}
@@ -249,13 +251,11 @@ jobs:
             exit 1
           fi
 
-          if [[ "${GITHUB_EVENT_NAME:-}" == "schedule" || "${WORKFLOW_UPDATE_MODEL_STATISTICS:-}" == "true" ]]; then
-            if [[ -z "${PHASE2_AUTOMATION_TOKEN:-}" ]]; then
-              echo "::error::Missing required repository secret: PHASE2_AUTOMATION_TOKEN"
-              exit 1
-            fi
-            echo "::add-mask::${PHASE2_AUTOMATION_TOKEN}"
+          if [[ -z "${PHASE2_AUTOMATION_TOKEN:-}" ]]; then
+            echo "::error::Missing required repository secret: PHASE2_AUTOMATION_TOKEN"
+            exit 1
           fi
+          echo "::add-mask::${PHASE2_AUTOMATION_TOKEN}"
 
           gh --version
           echo "gh API access confirmed for: $(gh api "repos/${GITHUB_REPOSITORY}" --jq '.full_name')"
@@ -268,6 +268,8 @@ jobs:
           python -m py_compile \
             scripts/phase-2/provider_model_registry.py \
             scripts/phase-2/free_policy.py \
+            scripts/phase-2/provider_runtime.py \
+            scripts/phase-2/quota_state.py \
             scripts/phase-2/task_identity.py \
             scripts/phase-2/task_state.py \
             scripts/phase-2/task_reconciler.py \
@@ -458,9 +460,9 @@ jobs:
             --allow-rejected-check-outputs \
             --allow-provider-failures
 
-      - name: Update model run statistics page
-        id: model_statistics
-        if: ${{ always() && (github.event_name == 'schedule' || github.event.inputs.update_model_statistics == 'true') }}
+      - name: Update persistent Phase 2 state
+        id: persistent_state
+        if: always()
         shell: bash
         run: |
           set -euo pipefail
@@ -473,35 +475,50 @@ jobs:
           # statistics when another commit reached the branch first.
           git pull --ff-only origin "${GITHUB_REF_NAME}"
 
-          if [[ ! -f .tmp/phase-2/batch-summary.md ]]; then
-            echo "::warning::No batch summary found; skipping model run statistics update."
-            exit 0
+          quota_state="data/phase-2/quota-state.json"
+          task_state="data/phase-2/task-state.json"
+          quota_events="${PHASE2_QUOTA_EVENT_DIR}"
+          updated=false
+
+          if compgen -G "${quota_events}/*.json" > /dev/null; then
+            python scripts/phase-2/quota_state.py aggregate \
+              --state "$quota_state" \
+              --task-state "$task_state" \
+              --events "$quota_events"
+            updated=true
+          else
+            echo "No quota observation events found; quota state is unchanged."
           fi
 
-          statistics_page="docs/methodology/phases/phase-2/model-run-statistics.md"
-          provider_model_specs="$(python scripts/phase-2/provider_model_registry.py list-specs)"
+          if [[ "${GITHUB_EVENT_NAME:-}" == "schedule" || "${WORKFLOW_UPDATE_MODEL_STATISTICS:-}" == "true" ]]; then
+            if [[ -f .tmp/phase-2/batch-summary.md ]]; then
+              statistics_page="docs/methodology/phases/phase-2/model-run-statistics.md"
+              provider_model_specs="$(python scripts/phase-2/provider_model_registry.py list-specs)"
 
-          python scripts/phase-2/update_model_run_statistics.py \
-            --summary .tmp/phase-2/batch-summary.md \
-            --statistics-page "$statistics_page" \
-            --provider-model-specs "$provider_model_specs" \
-            --run-id "$GITHUB_RUN_ID" \
-            --run-attempt "$GITHUB_RUN_ATTEMPT" \
-            --workflow "$GITHUB_WORKFLOW" \
-            --event-name "$GITHUB_EVENT_NAME" \
-            --commit-sha "$GITHUB_SHA"
+              python scripts/phase-2/update_model_run_statistics.py \
+                --summary .tmp/phase-2/batch-summary.md \
+                --statistics-page "$statistics_page" \
+                --provider-model-specs "$provider_model_specs" \
+                --run-id "$GITHUB_RUN_ID" \
+                --run-attempt "$GITHUB_RUN_ATTEMPT" \
+                --workflow "$GITHUB_WORKFLOW" \
+                --event-name "$GITHUB_EVENT_NAME" \
+                --commit-sha "$GITHUB_SHA"
+              updated=true
+            else
+              echo "::warning::No batch summary found; skipping model run statistics update."
+            fi
+          fi
 
-          echo "updated=true" >> "$GITHUB_OUTPUT"
+          echo "updated=${updated}" >> "$GITHUB_OUTPUT"
 
-      - name: Commit model run statistics page
-        if: ${{ always() && steps.model_statistics.outcome == 'success' && steps.model_statistics.outputs.updated == 'true' && (github.event_name == 'schedule' || github.event.inputs.update_model_statistics == 'true') }}
+      - name: Commit persistent Phase 2 state
+        if: ${{ always() && steps.persistent_state.outcome == 'success' && steps.persistent_state.outputs.updated == 'true' }}
         shell: bash
         env:
           PHASE2_AUTOMATION_TOKEN: ${{ secrets.PHASE2_AUTOMATION_TOKEN }}
         run: |
           set -euo pipefail
-
-          statistics_page="docs/methodology/phases/phase-2/model-run-statistics.md"
 
           if [[ -z "${PHASE2_AUTOMATION_TOKEN:-}" ]]; then
             echo "::error::Missing required repository secret: PHASE2_AUTOMATION_TOKEN"
@@ -509,7 +526,10 @@ jobs:
           fi
           echo "::add-mask::${PHASE2_AUTOMATION_TOKEN}"
 
-          git add "$statistics_page"
+          git add \
+            data/phase-2/quota-state.json \
+            data/phase-2/task-state.json \
+            docs/methodology/phases/phase-2/model-run-statistics.md
           if git diff --cached --quiet; then
             echo "No model run statistics changes to commit."
             exit 0
@@ -517,11 +537,11 @@ jobs:
 
           git config user.name "phase2-automation"
           git config user.email "phase2-automation@users.noreply.github.com"
-          git commit -m "docs: update check-agent model run statistics"
+          git commit -m "chore(phase-2): update operational state"
 
           push_url="https://x-access-token:${PHASE2_AUTOMATION_TOKEN}@github.com/${GITHUB_REPOSITORY}.git"
           if ! git push "$push_url" HEAD:"${GITHUB_REF_NAME}"; then
-            echo "::error::Failed to push model run statistics to ${GITHUB_REF_NAME}. Ensure PHASE2_AUTOMATION_TOKEN has contents:write access and is allowed to update the protected branch or bypass the applicable branch protection/ruleset."
+            echo "::error::Failed to push Phase 2 operational state to ${GITHUB_REF_NAME}. Ensure PHASE2_AUTOMATION_TOKEN has contents:write access and is allowed to update the protected branch or bypass the applicable branch protection/ruleset."
             exit 1
           fi
 

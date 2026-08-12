@@ -12,6 +12,7 @@ from provider_model_registry import (
     require_executable_slot,
     validate_completion_token_cap,
 )
+from provider_runtime import classify_provider_failure, record_provider_event, record_provider_failure
 
 
 class GroqProviderError(RuntimeError):
@@ -160,17 +161,22 @@ def _call_groq_once(
     model: str,
     review_input: str,
     max_completion_tokens: int,
-) -> Any:
+) -> tuple[Any, dict[str, str]]:
     """Make one Groq chat-completion request."""
-    return client.chat.completions.create(
-        model=model,
-        messages=[
+    kwargs = {
+        "model": model,
+        "messages": [
             {"role": "system", "content": SYSTEM_MESSAGE},
             {"role": "user", "content": review_input},
         ],
-        temperature=0,
-        max_completion_tokens=max_completion_tokens,
-    )
+        "temperature": 0,
+        "max_completion_tokens": max_completion_tokens,
+    }
+    raw_resource = getattr(client.chat.completions, "with_raw_response", None)
+    if raw_resource is None:
+        return client.chat.completions.create(**kwargs), {}
+    raw_response = raw_resource.create(**kwargs)
+    return raw_response.parse(), dict(getattr(raw_response, "headers", {}) or {})
 
 
 def _generate_with_retries(
@@ -188,7 +194,7 @@ def _generate_with_retries(
 
     for attempt_number in range(1, total_attempts + 1):
         try:
-            response = _call_groq_once(
+            response, headers = _call_groq_once(
                 client=client,
                 model=model,
                 review_input=review_input,
@@ -196,6 +202,14 @@ def _generate_with_retries(
             )
             content = _extract_content(response)
             if content.strip():
+                record_provider_event(
+                    provider="groq",
+                    model=model,
+                    outcome="success",
+                    request_sent=True,
+                    response=response,
+                    headers=headers,
+                )
                 return content.strip() + "\n"
 
             diagnostic = _response_diagnostic(response)
@@ -204,9 +218,11 @@ def _generate_with_retries(
                 f"({diagnostic}; prompt_chars={prompt_chars}; prompt_bytes={prompt_bytes}; "
                 f"max_completion_tokens={max_completion_tokens})."
             )
+            record_provider_failure(provider="groq", model=model, exc=last_error, request_sent=True)
         except Exception as exc:  # noqa: BLE001 - provider SDKs raise heterogeneous exceptions.
             last_error = exc
-            if not _is_retryable_exception(exc):
+            classification = record_provider_failure(provider="groq", model=model, exc=exc, request_sent=True)
+            if not classification.retryable_immediately:
                 break
 
         if attempt_number == total_attempts:
@@ -217,7 +233,7 @@ def _generate_with_retries(
     if last_error is None:
         raise GroqProviderError("Groq API call failed without an exception.")
 
-    kind = _provider_error_kind(last_error)
+    kind = classify_provider_failure(provider="groq", model=model, exc=last_error).kind
     raise GroqProviderError(
         f"Groq API call failed after {attempt_number} attempt(s); provider_error_kind={kind}: {last_error}"
     ) from last_error
@@ -244,7 +260,9 @@ def generate_review(
         raise GroqProviderError(f"provider_error_kind=execution_configuration_block: {exc}") from exc
 
     if not os.getenv("GROQ_API_KEY"):
-        raise GroqProviderError("GROQ_API_KEY environment variable is not set.")
+        error = GroqProviderError("GROQ_API_KEY environment variable is not set.")
+        record_provider_failure(provider="groq", model=model, exc=error, request_sent=False)
+        raise error
 
     if max_completion_tokens <= 0:
         raise GroqProviderError("max_completion_tokens must be greater than 0.")

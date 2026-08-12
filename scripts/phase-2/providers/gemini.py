@@ -13,6 +13,7 @@ from provider_model_registry import (
     require_executable_slot,
     validate_completion_token_cap,
 )
+from provider_runtime import classify_provider_failure, record_provider_event, record_provider_failure
 
 
 class GeminiProviderError(RuntimeError):
@@ -214,13 +215,14 @@ def _generate_content_with_retries(
             )
         except Exception as exc:  # noqa: BLE001 - provider SDKs raise heterogeneous exceptions.
             last_exc = exc
-            if attempt_number == total_attempts or not _is_retryable_error(exc):
+            classification = record_provider_failure(provider="gemini", model=model, exc=exc, request_sent=True)
+            if attempt_number == total_attempts or not classification.retryable_immediately:
                 break
             time.sleep(RETRY_DELAYS_SECONDS[attempt_number - 1])
 
     if last_exc is None:
         raise GeminiProviderError("Gemini API call failed without an exception.")
-    kind = _provider_error_kind(last_exc)
+    kind = classify_provider_failure(provider="gemini", model=model, exc=last_exc).kind
     raise GeminiProviderError(
         f"Gemini API call failed after {attempts_made} attempt(s); provider_error_kind={kind}: {last_exc}"
     ) from last_exc
@@ -249,7 +251,12 @@ def generate_review(
     if max_completion_tokens <= 0:
         raise GeminiProviderError("max_completion_tokens must be greater than 0.")
 
-    client = genai.Client(api_key=_api_key())
+    try:
+        api_key = _api_key()
+    except GeminiProviderError as exc:
+        record_provider_failure(provider="gemini", model=model, exc=exc, request_sent=False)
+        raise
+    client = genai.Client(api_key=api_key)
     config = _generation_config(model=model, max_completion_tokens=max_completion_tokens)
     response = _generate_content_with_retries(
         client=client,
@@ -260,5 +267,14 @@ def generate_review(
 
     content = _response_text(response)
     if not content.strip():
-        raise GeminiProviderError("Gemini returned an empty response.")
+        error = GeminiProviderError("Gemini returned an empty response.")
+        record_provider_failure(provider="gemini", model=model, exc=error, request_sent=True)
+        raise error
+    record_provider_event(
+        provider="gemini",
+        model=model,
+        outcome="success",
+        request_sent=True,
+        response=response,
+    )
     return content.strip() + "\n"
