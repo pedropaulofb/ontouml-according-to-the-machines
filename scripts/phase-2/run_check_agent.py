@@ -27,6 +27,16 @@ from provider_model_registry import (  # noqa: E402 - direct script execution ne
     require_executable_slot,
     validate_completion_token_cap,
 )
+from task_identity import (  # noqa: E402 - direct script execution needs its directory on sys.path.
+    FENCED_BLOCK_PATTERN,
+    LANGUAGE_STYLE_EXCLUDED_SECTIONS,
+    TaskIdentityError,
+    build_review_input,
+    normalize_markdown_section_title,
+)
+from task_identity import (  # noqa: E402 - Ruff separates aliased imports.
+    scope_page_content_for_agent as scope_identity_page_content,
+)
 
 DEFAULT_MAX_COMPLETION_TOKENS = 3000
 NO_SIGNALS_SENTENCE = "None identified within the configured check-agent scope."
@@ -61,14 +71,6 @@ LOCATION_LINE_PATTERN = re.compile(
     re.MULTILINE,
 )
 MARKDOWN_HEADING_PATTERN = re.compile(r"^(?P<hashes>#{1,6})\s+(?P<title>.+?)\s*#*\s*$")
-FENCED_BLOCK_PATTERN = re.compile(r"^\s*(```|~~~)")
-
-LANGUAGE_STYLE_EXCLUDED_SECTIONS = {
-    "references",
-    "direct citations",
-    "consulted sources",
-    "generation and review log",
-}
 
 UNRESOLVED_TEMPLATE_PATTERNS = [
     "{provider}",
@@ -327,57 +329,6 @@ def derive_prompt_id(prompt_path: str) -> str:
     return Path(prompt_path).name.removesuffix(".md")
 
 
-def build_review_input(
-    *,
-    checker_prompt: str,
-    agent: str,
-    provider: str,
-    model: str,
-    prompt_id: str,
-    review_date: str,
-    page_path: str,
-    commit_sha: str,
-    max_completion_tokens: int,
-    page_content: str,
-    input_scope_note: str,
-) -> str:
-    return f"""# Check-agent prompt
-
-{checker_prompt}
-
----
-
-# Deterministic exact-replacement reminder
-
-- A signal may describe one problem that occurs once or multiple times.
-- Include `current_text` and `proposed_text` only for one intended occurrence that is exact and unambiguous in the provided page content; the deterministic wrapper will recheck it against the full reviewed page.
-- Use only the smallest reasonably sufficient contiguous context needed to make that occurrence unique.
-- If one safe pair would be ambiguous, incomplete, or misleading for a repeated problem, keep the valid signal and omit both optional replacement fields.
-
----
-
-# Run input
-
-Agent name: {agent}
-Provider name: {provider}
-Model name: {model}
-Prompt ID: {prompt_id}
-Review date: {review_date}
-Reviewed page path: {page_path}
-Repository commit SHA: {commit_sha}
-Max completion tokens: {max_completion_tokens}
-Input scope: {input_scope_note}
-
----
-
-# Canonical stereotype page Markdown selected for the configured check-agent scope
-
-BEGIN_CANONICAL_STEREOTYPE_PAGE_MARKDOWN
-{page_content}
-END_CANONICAL_STEREOTYPE_PAGE_MARKDOWN
-"""
-
-
 def load_provider(provider_name: str) -> Callable[..., str]:
     normalized = provider_name.strip().lower()
     module_name = SUPPORTED_PROVIDERS.get(normalized)
@@ -461,49 +412,11 @@ def strip_inline_code(value: str) -> str:
     return normalized
 
 
-def normalize_markdown_section_title(section: str) -> str:
-    normalized = section.strip()
-    while normalized.startswith("#"):
-        normalized = normalized[1:].strip()
-    normalized = re.sub(r"\s+#*$", "", normalized).strip()
-    return re.sub(r"\s+", " ", normalized).lower()
-
-
-def remove_markdown_sections(text: str, excluded_sections: set[str]) -> str:
-    kept_lines: list[str] = []
-    skip_until_heading_level: int | None = None
-    in_fenced_block = False
-    for line in text.splitlines():
-        if FENCED_BLOCK_PATTERN.match(line):
-            if skip_until_heading_level is None:
-                kept_lines.append(line)
-            in_fenced_block = not in_fenced_block
-            continue
-        heading_match = None if in_fenced_block else MARKDOWN_HEADING_PATTERN.match(line)
-        if heading_match is not None:
-            heading_level = len(heading_match.group("hashes"))
-            heading_title = normalize_markdown_section_title(heading_match.group("title"))
-            if skip_until_heading_level is not None and heading_level <= skip_until_heading_level:
-                skip_until_heading_level = None
-            if skip_until_heading_level is None and heading_title in excluded_sections:
-                skip_until_heading_level = heading_level
-                continue
-        if skip_until_heading_level is None:
-            kept_lines.append(line)
-    scoped_text = "\n".join(kept_lines).strip()
-    return scoped_text + "\n" if scoped_text else ""
-
-
 def scope_page_content_for_agent(*, contract: AgentContract, page_content: str) -> tuple[str, str]:
-    if contract.slug != "language-style-checker":
-        return page_content, "full canonical stereotype page"
-    scoped_content = remove_markdown_sections(page_content, LANGUAGE_STYLE_EXCLUDED_SECTIONS)
-    if not scoped_content.strip():
-        raise CheckAgentRunnerError("Language-style input scoping removed all page content; refusing to call provider.")
-    return (
-        scoped_content,
-        "reader-facing page content only; excluded References, Direct Citations, Consulted Sources, and Generation and Review Log sections",
-    )
+    try:
+        return scope_identity_page_content(agent=contract.slug, page_content=page_content)
+    except TaskIdentityError as exc:
+        raise CheckAgentRunnerError(f"{exc} Refusing to call provider.") from exc
 
 
 def extract_signal_fields(signal_block: str) -> list[tuple[str, str]]:

@@ -72,7 +72,11 @@ COMMENT_IDENTITY_MARKER_PATTERN = re.compile(
 AGENT_SLUG_PATTERN = re.compile(r"^[a-z0-9][a-z0-9-]*$")
 ISSUE_TITLE_PREFIX = "Check signal"
 COMMENT_IDENTITY_MARKER_NAME = "check-signal-comment"
-COMMENT_IDENTITY_KEYS = ("page", "agent", "provider", "model", "prompt", "commit")
+CONTENT_IDENTITY_KEYS = ("page", "agent", "provider", "model", "task_id")
+LEGACY_IDENTITY_KEYS = ("page", "agent", "provider", "model", "prompt", "commit")
+KNOWN_IDENTITY_KEYS = set(CONTENT_IDENTITY_KEYS) | set(LEGACY_IDENTITY_KEYS)
+CONTENT_ADDRESSED_AGENTS = {"page-hygiene-checker", "language-style-checker"}
+TASK_ID_PATTERN = re.compile(r"^[0-9a-f]{64}$")
 
 
 class IssueManagerError(RuntimeError):
@@ -154,6 +158,14 @@ def parse_args() -> argparse.Namespace:
             "Create/post even when Signal count is 0 and no issue exists. "
             "By default, zero-signal comments are posted only if the issue "
             "already exists."
+        ),
+    )
+
+    parser.add_argument(
+        "--task-id",
+        help=(
+            "Content-addressed Phase 2 task ID. Required for the page-hygiene-checker "
+            "and language-style-checker agents."
         ),
     )
 
@@ -252,8 +264,28 @@ def require_identity_value(value: str | None, field_name: str) -> str:
     return normalized
 
 
-def build_comment_identity(metadata: ReviewCommentMetadata) -> dict[str, str]:
+def normalize_task_id(task_id: str | None) -> str | None:
+    if task_id is None:
+        return None
+    normalized = task_id.strip().lower()
+    if not TASK_ID_PATTERN.fullmatch(normalized):
+        raise IssueManagerError("--task-id must be a full lowercase SHA-256 value.")
+    return normalized
+
+
+def build_comment_identity(metadata: ReviewCommentMetadata, task_id: str | None = None) -> dict[str, str]:
     """Build the stable identity used to find an existing issue comment."""
+    normalized_task_id = normalize_task_id(task_id)
+    if normalized_task_id is not None:
+        return {
+            "page": require_identity_value(metadata.reviewed_page, "Reviewed page"),
+            "agent": metadata.agent,
+            "provider": require_identity_value(metadata.provider, "Provider"),
+            "model": require_identity_value(metadata.model, "Model"),
+            "task_id": normalized_task_id,
+        }
+    if metadata.agent in CONTENT_ADDRESSED_AGENTS:
+        raise IssueManagerError(f"--task-id is required for content-addressed agent {metadata.agent}.")
     return {
         "page": require_identity_value(metadata.reviewed_page, "Reviewed page"),
         "agent": metadata.agent,
@@ -268,7 +300,8 @@ def render_comment_identity_marker(identity: dict[str, str]) -> str:
     """Render the hidden marker that identifies one posted check-signal comment."""
     lines = [f"<!-- {COMMENT_IDENTITY_MARKER_NAME}"]
 
-    for key in COMMENT_IDENTITY_KEYS:
+    keys = CONTENT_IDENTITY_KEYS if "task_id" in identity else LEGACY_IDENTITY_KEYS
+    for key in keys:
         lines.append(f"{key}: {identity[key]}")
 
     lines.append("-->")
@@ -304,13 +337,14 @@ def parse_comment_identity_marker(comment_body: str) -> dict[str, str] | None:
         key = key.strip()
         value = value.strip()
 
-        if key in COMMENT_IDENTITY_KEYS:
+        if key in KNOWN_IDENTITY_KEYS:
             identity[key] = value
 
-    if any(key not in identity for key in COMMENT_IDENTITY_KEYS):
-        return None
-
-    return identity
+    if all(key in identity for key in CONTENT_IDENTITY_KEYS):
+        return {key: identity[key] for key in CONTENT_IDENTITY_KEYS}
+    if all(key in identity for key in LEGACY_IDENTITY_KEYS):
+        return {key: identity[key] for key in LEGACY_IDENTITY_KEYS}
+    return None
 
 
 def comment_identity_matches(comment_body: str, identity: dict[str, str]) -> bool:
@@ -726,7 +760,7 @@ def print_dry_run(
     print(f"Prompt: {metadata.prompt or '(not found)'}")
     print(f"Commit SHA: {metadata.commit_sha or '(not found)'}")
     print("Stable comment identity:")
-    for key in COMMENT_IDENTITY_KEYS:
+    for key in comment_identity:
         print(f"  {key}: {comment_identity[key]}")
     print(f"Labels: {', '.join(labels) if labels else '(none)'}")
     print(f"Post empty if issue is missing: {post_empty}")
@@ -765,7 +799,7 @@ def main() -> int:
             agent=metadata.agent,
         )
 
-        comment_identity = build_comment_identity(metadata)
+        comment_identity = build_comment_identity(metadata, args.task_id)
         issue_comment_body = build_issue_comment_body(comment_text, comment_identity)
 
         labels = [label.strip() for label in args.label if label.strip()]

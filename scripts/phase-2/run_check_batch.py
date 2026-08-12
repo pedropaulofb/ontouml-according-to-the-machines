@@ -33,6 +33,8 @@ from provider_model_registry import (  # noqa: E402 - direct script execution ne
     require_executable_slot,
     validate_completion_token_cap,
 )
+from run_check_agent import AGENT_CONTRACTS  # noqa: E402 - shared active agent contracts.
+from task_identity import build_task_identity, task_id_for  # noqa: E402 - shared task identity contract.
 
 DEFAULT_AGENTS = ["page-hygiene-checker", "language-style-checker"]
 DEFAULT_OUTPUT_ROOT = Path(".tmp/phase-2")
@@ -520,7 +522,9 @@ def build_check_command(*, planned: PlannedRun, max_completion_tokens: int | Non
     return command
 
 
-def build_issue_command(*, planned: PlannedRun, mode: str, repo: str, post_empty: bool) -> list[str] | None:
+def build_issue_command(
+    *, planned: PlannedRun, mode: str, repo: str, post_empty: bool, task_id: str
+) -> list[str] | None:
     if mode == "generate":
         return None
     command = [
@@ -530,12 +534,40 @@ def build_issue_command(*, planned: PlannedRun, mode: str, repo: str, post_empty
         planned.output_path.as_posix(),
         "--repo",
         repo,
+        "--task-id",
+        task_id,
     ]
     if mode == "dry-run":
         command.append("--dry-run")
     if post_empty:
         command.append("--post-empty")
     return command
+
+
+def build_planned_task_id(
+    *,
+    planned: PlannedRun,
+    repo_root: Path,
+    max_completion_tokens: int | None,
+) -> str:
+    contract = AGENT_CONTRACTS[planned.agent]
+    slot = require_executable_slot(
+        planned.provider,
+        planned.model,
+        path=repo_root / DEFAULT_REGISTRY_PATH,
+    )
+    identity = build_task_identity(
+        page=planned.page,
+        agent=planned.agent,
+        provider=planned.provider,
+        model=planned.model,
+        page_content=(repo_root / planned.page).read_text(encoding="utf-8"),
+        prompt_id=contract.prompt_id,
+        prompt_content=(repo_root / contract.prompt_path).read_text(encoding="utf-8"),
+        slot=slot,
+        max_completion_tokens=max_completion_tokens,
+    )
+    return task_id_for(identity)
 
 
 def run_one(
@@ -549,6 +581,23 @@ def run_one(
     allow_rejected_check_outputs: bool,
     allow_provider_failures: bool,
 ) -> CompletedRun:
+    try:
+        task_id = build_planned_task_id(
+            planned=planned,
+            repo_root=repo_root,
+            max_completion_tokens=max_completion_tokens,
+        )
+    except (OSError, ValueError) as exc:
+        message = f"Could not construct content-addressed task identity: {exc}"
+        print(f"ERROR: {message}", file=sys.stderr)
+        return CompletedRun(
+            planned,
+            RUN_STATUS_FAILED,
+            None,
+            RUN_STATUS_SKIPPED,
+            None,
+            message,
+        )
     filesystem_path(repo_root, planned.output_path).parent.mkdir(parents=True, exist_ok=True)
     check_command = build_check_command(planned=planned, max_completion_tokens=max_completion_tokens)
     print(f"[{planned.index}] {planned.agent} / {planned.provider} / {planned.model} / {planned.page}")
@@ -605,7 +654,13 @@ def run_one(
             "run_check_agent.py failed; issue_manager.py was not run.",
         )
 
-    issue_command = build_issue_command(planned=planned, mode=mode, repo=repo or "", post_empty=post_empty)
+    issue_command = build_issue_command(
+        planned=planned,
+        mode=mode,
+        repo=repo or "",
+        post_empty=post_empty,
+        task_id=task_id,
+    )
     issue_result = run_subprocess(issue_command, repo_root) if issue_command is not None else None
     if issue_result is not None:
         echo_child_output(issue_result)
