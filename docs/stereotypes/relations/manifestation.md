@@ -2,7 +2,7 @@
 
 ## Description
 
-Manifestation is used in the analyzed sources primarily to relate event-like perdurants to the particularized properties, dispositions, qualities, or relationships whose occurrence they express. Several sources characterize events, especially atomic events, as manifestations of dispositions. In that account, dispositions inhere in endurants and may remain unmanifested; when manifested, they are manifested through events. For atomic events, the sources repeatedly state that the event is associated with a single disposition, while one source notes that complex events may manifest several dispositions.
+Manifestation is used in the analyzed sources primarily to relate event-like perdurants to the particularized properties, dispositions, qualities, or relationships whose occurrence they express. Several sources characterize events, especially atomic events, as manifestations of dispositions. In that account, dispositions inhere in endurants and may remain unmanifested; when manifested, they occur through events. For atomic events, the sources repeatedly state that the event is associated with a single disposition, while one source notes that complex events may manifest several dispositions.
 
 Because dispositions and qualities depend on endurants, Manifestation is also used to ground the dependence of events on endurants. When a disposition inheres in an object and is manifested by an event, the event depends on that object. Related sources connect this to Participation: an endurant participates in an event when the event is a manifestation of a disposition of that endurant or is composed of such a manifestation. In one formal account, the triggering and resulting situations of an atomic event are constrained by the presence of the manifested disposition.
 
@@ -12,11 +12,11 @@ A more isolated source uses manifestation in the theory of variable embodiments,
 
 ## Stereotype Profile
 
-The stereotype profile is not yet available.
+The stereotype profile is currently unavailable.
 
 ## Examples
 
-Examples are not yet available.
+Examples are currently unavailable.
 
 ## References
 
@@ -53,3 +53,4 @@ Examples are not yet available.
 | 2026-07-10 | Phase 2 | Phase 2 automated resolver | Signal resolution | resolve-page-hygiene-signal-issue-v1.2.2 | Phase 2 automated resolver: page-hygiene signals v1.2.2 | GitHub issue #228 | Applied accepted page-hygiene-checker signal edits through automated Phase 2 resolution; not a conceptual or source-faithfulness validation. |
 | 2026-08-01 | Phase 2 | Phase 2 automated resolver | Signal resolution | resolve-page-hygiene-signal-issue-v1.2.2 | Phase 2 automated resolver: page-hygiene signals v1.2.2 | GitHub issue #414 | Applied accepted page-hygiene-checker signal edits through automated Phase 2 resolution; not a conceptual or source-faithfulness validation. |
 | 2026-08-13 | Phase 2 | Phase 2 automated resolver | Signal resolution | resolve-page-hygiene-signal-issue-v1.2.2 | Phase 2 automated resolver: page-hygiene signals v1.2.2 | GitHub issue #516 | Applied accepted page-hygiene-checker signal edits through automated Phase 2 resolution; not a conceptual or source-faithfulness validation. |
+| 2026-08-13 | Phase 2 | Phase 2 automated resolver | Signal resolution | resolve-language-style-signal-issue-v1.2.2 | Phase 2 automated resolver: language-style signals v1.2.2 | GitHub issue #517 | Applied accepted language-style-checker signal edits through automated Phase 2 resolution; not a conceptual or source-faithfulness validation. |
