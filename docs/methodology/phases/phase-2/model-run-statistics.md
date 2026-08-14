@@ -12,7 +12,7 @@ Counts shown on this page only include executions recorded since that start time
 
 Models not present in the current active rotation remain listed as `inactive` for historical continuity.
 
-Last generated: `2026-08-14T20:16:51Z`
+Last generated: `2026-08-14T20:54:06Z`
 
 ## Cumulative table
 
@@ -24,7 +24,7 @@ Last generated: `2026-08-14T20:16:51Z`
 | `groq` | `llama-3.3-70b-versatile` | `inactive` | 0 | 0 | 0 | 0 | 0 | 0 |  |  |  |
 | `openrouter` | `nvidia/nemotron-3-ultra-550b-a55b:free` | `active` | 86 | 29 | 57 | 51 | 6 | 0 | `ok` | `ok` | `2026-08-14T16:35:23Z` |
 | `openrouter` | `poolside/laguna-m.1:free` | `active` | 88 | 34 | 54 | 8 | 46 | 0 | `provider_failed` | `skipped` | `2026-08-14T20:16:51Z` |
-| `sambanova` | `DeepSeek-V3.1` | `active` | 96 | 90 | 6 | 0 | 6 | 0 | `provider_failed` | `skipped` | `2026-08-14T18:35:15Z` |
+| `sambanova` | `DeepSeek-V3.1` | `active` | 97 | 90 | 7 | 0 | 7 | 0 | `provider_failed` | `skipped` | `2026-08-14T20:54:06Z` |
 | `sambanova` | `Meta-Llama-3.3-70B-Instruct` | `active` | 97 | 90 | 7 | 5 | 2 | 0 | `provider_failed` | `skipped` | `2026-08-14T17:40:24Z` |
 
 ## Status derivation
@@ -90,7 +90,7 @@ This page intentionally does not store secrets, raw prompts, raw completions, pr
     }
   ],
   "collection_start_utc": "2026-06-29T12:18:18Z",
-  "generated_at": "2026-08-14T20:16:51Z",
+  "generated_at": "2026-08-14T20:54:06Z",
   "models": {
     "cerebras:gpt-oss-120b": {
       "called": 90,
@@ -201,18 +201,18 @@ This page intentionally does not store secrets, raw prompts, raw completions, pr
       "valid": 34
     },
     "sambanova:DeepSeek-V3.1": {
-      "called": 96,
-      "invalid": 6,
+      "called": 97,
+      "invalid": 7,
       "last_check_status": "provider_failed",
       "last_event_name": "schedule",
       "last_issue_status": "skipped",
       "last_overall_status": "failed",
       "last_run_attempt": "1",
-      "last_run_id": "31829300747",
-      "last_run_utc": "2026-08-14T18:35:15Z",
+      "last_run_id": "31839988994",
+      "last_run_utc": "2026-08-14T20:54:06Z",
       "model": "DeepSeek-V3.1",
       "provider": "sambanova",
-      "provider_failed": 6,
+      "provider_failed": 7,
       "rejected": 0,
       "runner_failed": 0,
       "spec": "sambanova:DeepSeek-V3.1",
@@ -6728,6 +6728,16 @@ This page intentionally does not store secrets, raw prompts, raw completions, pr
       "overall_status": "failed",
       "provider": "openrouter",
       "timestamp_utc": "2026-08-14T20:16:51Z"
+    },
+    "31839988994|1|Scheduled check-agent signal collector|2|sambanova|DeepSeek-V3.1|failed|provider_failed|skipped": {
+      "check_status": "provider_failed",
+      "commit_sha": "fd8dbf8dcb3dd94f594237c5386c07643ad78b6b",
+      "event_name": "schedule",
+      "issue_status": "skipped",
+      "model": "DeepSeek-V3.1",
+      "overall_status": "failed",
+      "provider": "sambanova",
+      "timestamp_utc": "2026-08-14T20:54:06Z"
     },
     "local|0|local|1|cerebras|zai-glm-4.7|failed|failed|failed": {
       "check_status": "failed",
