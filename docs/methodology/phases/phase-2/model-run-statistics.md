@@ -12,7 +12,7 @@ Counts shown on this page only include executions recorded since that start time
 
 Models not present in the current active rotation remain listed as `inactive` for historical continuity.
 
-Last generated: `2026-08-16T05:38:12Z`
+Last generated: `2026-08-16T06:04:23Z`
 
 ## Cumulative table
 
@@ -22,7 +22,7 @@ Last generated: `2026-08-16T05:38:12Z`
 | `cerebras` | `zai-glm-4.7` | `active` | 103 | 91 | 12 | 3 | 8 | 1 | `ok` | `ok` | `2026-08-16T01:53:52Z` |
 | `gemini` | `gemini-3.1-flash-lite` | `active` | 108 | 36 | 72 | 72 | 0 | 0 | `rejected` | `skipped` | `2026-08-16T04:06:53Z` |
 | `groq` | `llama-3.3-70b-versatile` | `inactive` | 0 | 0 | 0 | 0 | 0 | 0 |  |  |  |
-| `openrouter` | `nvidia/nemotron-3-ultra-550b-a55b:free` | `active` | 92 | 34 | 58 | 51 | 7 | 0 | `ok` | `ok` | `2026-08-15T23:00:21Z` |
+| `openrouter` | `nvidia/nemotron-3-ultra-550b-a55b:free` | `active` | 93 | 35 | 58 | 51 | 7 | 0 | `ok` | `ok` | `2026-08-16T06:04:23Z` |
 | `openrouter` | `poolside/laguna-m.1:free` | `active` | 96 | 34 | 62 | 8 | 54 | 0 | `provider_failed` | `skipped` | `2026-08-16T04:48:09Z` |
 | `sambanova` | `DeepSeek-V3.1` | `active` | 106 | 90 | 16 | 0 | 16 | 0 | `provider_failed` | `skipped` | `2026-08-16T05:38:12Z` |
 | `sambanova` | `Meta-Llama-3.3-70B-Instruct` | `active` | 103 | 90 | 13 | 5 | 8 | 0 | `provider_failed` | `skipped` | `2026-08-15T23:58:17Z` |
@@ -90,7 +90,7 @@ This page intentionally does not store secrets, raw prompts, raw completions, pr
     }
   ],
   "collection_start_utc": "2026-06-29T12:18:18Z",
-  "generated_at": "2026-08-16T05:38:12Z",
+  "generated_at": "2026-08-16T06:04:23Z",
   "models": {
     "cerebras:gpt-oss-120b": {
       "called": 96,
@@ -165,22 +165,22 @@ This page intentionally does not store secrets, raw prompts, raw completions, pr
       "valid": 0
     },
     "openrouter:nvidia/nemotron-3-ultra-550b-a55b:free": {
-      "called": 92,
+      "called": 93,
       "invalid": 58,
       "last_check_status": "ok",
       "last_event_name": "schedule",
       "last_issue_status": "ok",
       "last_overall_status": "ok",
       "last_run_attempt": "1",
-      "last_run_id": "31913565070",
-      "last_run_utc": "2026-08-15T23:00:21Z",
+      "last_run_id": "31930424359",
+      "last_run_utc": "2026-08-16T06:04:23Z",
       "model": "nvidia/nemotron-3-ultra-550b-a55b:free",
       "provider": "openrouter",
       "provider_failed": 7,
       "rejected": 51,
       "runner_failed": 0,
       "spec": "openrouter:nvidia/nemotron-3-ultra-550b-a55b:free",
-      "valid": 34
+      "valid": 35
     },
     "openrouter:poolside/laguna-m.1:free": {
       "called": 96,
@@ -7268,6 +7268,16 @@ This page intentionally does not store secrets, raw prompts, raw completions, pr
       "overall_status": "failed",
       "provider": "sambanova",
       "timestamp_utc": "2026-08-16T05:38:12Z"
+    },
+    "31930424359|1|Scheduled check-agent signal collector|16|openrouter|nvidia/nemotron-3-ultra-550b-a55b:free|ok|ok|ok": {
+      "check_status": "ok",
+      "commit_sha": "48dc738e529125c4509f3c71968acb4240123e33",
+      "event_name": "schedule",
+      "issue_status": "ok",
+      "model": "nvidia/nemotron-3-ultra-550b-a55b:free",
+      "overall_status": "ok",
+      "provider": "openrouter",
+      "timestamp_utc": "2026-08-16T06:04:23Z"
     },
     "local|0|local|1|cerebras|zai-glm-4.7|failed|failed|failed": {
       "check_status": "failed",
