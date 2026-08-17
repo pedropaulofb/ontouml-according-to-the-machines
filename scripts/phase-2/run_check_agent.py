@@ -152,6 +152,7 @@ class AgentContract:
     """Validation contract for one LLM-based check agent."""
 
     slug: str
+    shared_prompt_path: str
     prompt_path: str
     prompt_id: str
     allowed_categories: set[str]
@@ -161,8 +162,9 @@ class AgentContract:
 AGENT_CONTRACTS: dict[str, AgentContract] = {
     "page-hygiene-checker": AgentContract(
         slug="page-hygiene-checker",
-        prompt_path="prompts/phase-2/page-hygiene-checker-v1.0.3.md",
-        prompt_id="page-hygiene-checker-v1.0.3",
+        shared_prompt_path="prompts/phase-2/check-signal-shared-contract-v1.0.0.md",
+        prompt_path="prompts/phase-2/page-hygiene-checker-v1.1.0.md",
+        prompt_id="page-hygiene-checker-v1.1.0",
         allowed_categories={
             "reference_hygiene",
             "markdown_hygiene",
@@ -178,8 +180,9 @@ AGENT_CONTRACTS: dict[str, AgentContract] = {
     ),
     "language-style-checker": AgentContract(
         slug="language-style-checker",
-        prompt_path="prompts/phase-2/language-style-checker-v1.0.3.md",
-        prompt_id="language-style-checker-v1.0.3",
+        shared_prompt_path="prompts/phase-2/check-signal-shared-contract-v1.0.0.md",
+        prompt_path="prompts/phase-2/language-style-checker-v1.1.0.md",
+        prompt_id="language-style-checker-v1.1.0",
         allowed_categories={
             "grammar",
             "spelling",
@@ -283,6 +286,18 @@ def read_text_file(path: Path, description: str) -> str:
         return path.read_text(encoding="utf-8")
     except UnicodeDecodeError as exc:
         raise CheckAgentRunnerError(f"{description} is not valid UTF-8: {path}") from exc
+
+
+def load_effective_prompt(*, repo_root: Path, contract: AgentContract, prompt_override: str | None = None) -> str:
+    """Load the shared plus agent contract, or one standalone explicit override."""
+    if prompt_override is not None:
+        prompt_file = resolve_repo_relative_path(repo_root, prompt_override)
+        return read_text_file(prompt_file, "Check-agent prompt override")
+    shared_file = resolve_repo_relative_path(repo_root, contract.shared_prompt_path)
+    agent_file = resolve_repo_relative_path(repo_root, contract.prompt_path)
+    shared_prompt = read_text_file(shared_file, "Shared check-signal contract").strip()
+    agent_prompt = read_text_file(agent_file, "Agent-specific check contract").strip()
+    return f"{shared_prompt}\n\n---\n\n{agent_prompt}\n"
 
 
 def get_commit_sha(repo_root: Path, override: str | None) -> str:
@@ -1014,15 +1029,16 @@ def main() -> int:
             raise CheckAgentRunnerError(
                 f"Check agent {contract.slug!r} is not configured for provider-model slot {configured_slot.spec}."
             )
-        prompt_path = args.prompt or contract.prompt_path
-        prompt_id = args.prompt_id or (
-            contract.prompt_id if prompt_path == contract.prompt_path else derive_prompt_id(prompt_path)
-        )
+        prompt_path = args.prompt
+        prompt_id = args.prompt_id or (contract.prompt_id if prompt_path is None else derive_prompt_id(prompt_path))
         repo_root = get_repo_root()
-        prompt_file = resolve_repo_relative_path(repo_root, prompt_path)
         page_file = resolve_repo_relative_path(repo_root, args.page)
         output_path = resolve_output_path(repo_root, args.output)
-        checker_prompt = read_text_file(prompt_file, "Check-agent prompt")
+        checker_prompt = load_effective_prompt(
+            repo_root=repo_root,
+            contract=contract,
+            prompt_override=prompt_path,
+        )
         page_content = read_text_file(page_file, "Canonical stereotype page")
         scoped_page_content, input_scope_note = scope_page_content_for_agent(
             contract=contract, page_content=page_content

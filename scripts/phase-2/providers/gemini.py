@@ -14,6 +14,7 @@ from provider_model_registry import (
     validate_completion_token_cap,
 )
 from provider_runtime import classify_provider_failure, record_provider_event, record_provider_failure
+from reasoning_policy import gemini_thinking_kwargs
 
 
 class GeminiProviderError(RuntimeError):
@@ -97,6 +98,8 @@ def _api_key() -> str:
 
 def _part_text(part: Any) -> str:
     """Extract text from one Gemini response part when available."""
+    if getattr(part, "thought", False):
+        return ""
     text = getattr(part, "text", None)
     return text if isinstance(text, str) else ""
 
@@ -112,34 +115,26 @@ def _candidate_text(candidate: Any) -> str:
 
 def _response_text(response: Any) -> str:
     """Extract generated text from a Gemini response."""
+    candidates = getattr(response, "candidates", None) or []
+    candidate_text = "".join(_candidate_text(candidate) for candidate in candidates)
+    if candidates:
+        return candidate_text
     text = getattr(response, "text", None)
     if isinstance(text, str) and text.strip():
         return text
 
-    candidates = getattr(response, "candidates", None) or []
-    return "".join(_candidate_text(candidate) for candidate in candidates)
+    return ""
 
 
-def _thinking_config_for_model(model: str) -> types.ThinkingConfig | None:
-    """Return a reduced-thinking configuration for strict-format review output."""
-    normalized = model.strip().lower()
-    if normalized.startswith("gemini-2.5-flash"):
-        return types.ThinkingConfig(thinking_budget=0)
-    if normalized.startswith("gemini-3."):
-        return types.ThinkingConfig(thinking_level="low")
-    return None
-
-
-def _generation_config(*, model: str, max_completion_tokens: int) -> types.GenerateContentConfig:
+def _generation_config(*, slot: Any, max_completion_tokens: int) -> types.GenerateContentConfig:
     """Build the Gemini generation config used by Phase 2 check agents."""
     kwargs: dict[str, Any] = {
         "system_instruction": SYSTEM_INSTRUCTION,
         "max_output_tokens": max_completion_tokens,
-        "temperature": 0,
     }
-    thinking_config = _thinking_config_for_model(model)
-    if thinking_config is not None:
-        kwargs["thinking_config"] = thinking_config
+    if "temperature" in slot.request_config:
+        kwargs["temperature"] = slot.request_config["temperature"]
+    kwargs["thinking_config"] = types.ThinkingConfig(**gemini_thinking_kwargs(slot))
     return types.GenerateContentConfig(**kwargs)
 
 
@@ -257,7 +252,7 @@ def generate_review(
         record_provider_failure(provider="gemini", model=model, exc=exc, request_sent=False)
         raise
     client = genai.Client(api_key=api_key)
-    config = _generation_config(model=model, max_completion_tokens=max_completion_tokens)
+    config = _generation_config(slot=configured_slot, max_completion_tokens=max_completion_tokens)
     response = _generate_content_with_retries(
         client=client,
         model=model,

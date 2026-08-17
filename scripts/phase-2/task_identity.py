@@ -45,36 +45,27 @@ def build_review_input(
     input_scope_note: str,
 ) -> str:
     """Render the exact prompt sent to a check-agent provider."""
-    return f"""# Check-agent prompt
+    return f"""# Stable check-agent contract
 
 {checker_prompt}
 
 ---
 
-# Deterministic exact-replacement reminder
-
-- A signal may describe one problem that occurs once or multiple times.
-- Include `current_text` and `proposed_text` only for one intended occurrence that is exact and unambiguous in the provided page content; the deterministic wrapper will recheck it against the full reviewed page.
-- Use only the smallest reasonably sufficient contiguous context needed to make that occurrence unique.
-- If one safe pair would be ambiguous, incomplete, or misleading for a repeated problem, keep the valid signal and omit both optional replacement fields.
-
----
-
 # Run input
 
-Agent name: {agent}
-Provider name: {provider}
-Model name: {model}
-Prompt ID: {prompt_id}
-Review date: {review_date}
-Reviewed page path: {page_path}
-Repository commit SHA: {commit_sha}
-Max completion tokens: {max_completion_tokens}
-Input scope: {input_scope_note}
+agent: {agent}
+provider: {provider}
+model: {model}
+prompt: {prompt_id}
+date: {review_date}
+page: {page_path}
+commit: {commit_sha}
+output-token-cap: {max_completion_tokens}
+input-scope: {input_scope_note}
 
 ---
 
-# Canonical stereotype page Markdown selected for the configured check-agent scope
+# Agent-scoped canonical page Markdown
 
 BEGIN_CANONICAL_STEREOTYPE_PAGE_MARKDOWN
 {page_content}
@@ -90,19 +81,19 @@ def build_effective_prompt_content(
     input_scope_note: str,
 ) -> str:
     """Render stable effective prompt content with mutable run values excluded."""
-    return build_review_input(
-        checker_prompt=checker_prompt,
-        agent=agent,
-        provider="<provider>",
-        model="<model>",
-        prompt_id=prompt_id,
-        review_date="<review-date>",
-        page_path="<page-path>",
-        commit_sha="<commit-sha>",
-        max_completion_tokens="<max-completion-tokens>",
-        page_content="<agent-scoped-page-content>",
-        input_scope_note=input_scope_note,
-    )
+    return f"""# Stable check-agent contract
+
+{checker_prompt}
+
+---
+
+# Stable run-input schema
+
+agent: {agent}
+prompt: {prompt_id}
+input-scope: {input_scope_note}
+mutable-fields: provider, model, date, page, commit, output-token-cap, agent-scoped-page-content
+"""
 
 
 def normalize_utf8_text(text: str) -> str:

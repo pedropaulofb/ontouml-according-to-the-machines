@@ -48,7 +48,10 @@ from quota_state import (  # noqa: E402 - direct script execution needs its dire
 from quota_state import (  # noqa: E402 - direct script execution needs its directory on sys.path.
     load_state as load_quota_state,
 )
-from run_check_agent import AGENT_CONTRACTS  # noqa: E402 - shared active agent contracts.
+from run_check_agent import (  # noqa: E402 - shared active agent contracts.
+    AGENT_CONTRACTS,
+    load_effective_prompt,
+)
 from task_identity import build_task_identity, task_id_for  # noqa: E402 - shared task identity contract.
 
 DEFAULT_AGENTS = ["page-hygiene-checker", "language-style-checker"]
@@ -596,7 +599,7 @@ def build_planned_task_id(
         model=planned.model,
         page_content=(repo_root / planned.page).read_text(encoding="utf-8"),
         prompt_id=contract.prompt_id,
-        prompt_content=(repo_root / contract.prompt_path).read_text(encoding="utf-8"),
+        prompt_content=load_effective_prompt(repo_root=repo_root, contract=contract),
         slot=slot,
         max_completion_tokens=max_completion_tokens,
     )

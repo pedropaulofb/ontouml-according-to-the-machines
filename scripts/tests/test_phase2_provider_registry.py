@@ -21,6 +21,7 @@ if str(PHASE2_SCRIPT_DIR) not in sys.path:
 
 free_policy = importlib.import_module("free_policy")
 registry_module = importlib.import_module("provider_model_registry")
+reasoning_policy = importlib.import_module("reasoning_policy")
 sys.modules.setdefault("openai", types.SimpleNamespace(OpenAI=object))
 sys.modules.setdefault("groq", types.SimpleNamespace(Groq=object))
 google_module = types.ModuleType("google")
@@ -109,6 +110,8 @@ class ProviderModelRegistryTests(unittest.TestCase):
             [slot.model for slot in configured if slot.provider == "openrouter" and "laguna" in slot.model],
             ["poolside/laguna-s-2.1:free", "poolside/laguna-xs-2.1:free"],
         )
+        self.assertEqual(registry.configuration_version, "phase-2-recalibration-v2")
+        self.assertEqual({slot.request_config_version for slot in configured}, {"2"})
 
     def test_duplicate_slot_is_rejected(self) -> None:
         document = registry_document()
@@ -137,6 +140,15 @@ class ProviderModelRegistryTests(unittest.TestCase):
         del slots[0]["request_config"]
 
         with self.assertRaisesRegex(registry_module.RegistryValidationError, "request_config"):
+            registry_module.validate_registry_document(document)
+
+    def test_provider_specific_unsupported_request_field_is_rejected(self) -> None:
+        document = registry_document()
+        slots = document["slots"]
+        assert isinstance(slots, list)
+        slots[0]["request_config"]["reasoning_effort"] = "low"
+
+        with self.assertRaisesRegex(registry_module.RegistryValidationError, "unsupported field"):
             registry_module.validate_registry_document(document)
 
     def test_non_free_openrouter_identifier_is_rejected(self) -> None:
@@ -254,7 +266,13 @@ class OpenRouterFreePolicyTests(unittest.TestCase):
 
         def completion(**kwargs: object) -> str:
             events.append("completion")
-            self.assertEqual(kwargs["extra_body"], {"provider": {"allow_fallbacks": False}})
+            self.assertEqual(
+                kwargs["extra_body"],
+                {
+                    "provider": {"allow_fallbacks": False},
+                    "reasoning": {"effort": "minimal", "exclude": True},
+                },
+            )
             return "report\n"
 
         with (
@@ -299,6 +317,134 @@ class OpenRouterFreePolicyTests(unittest.TestCase):
                 )
 
         completion.assert_not_called()
+
+
+class ReasoningRequestTests(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls) -> None:
+        cls.registry = registry_module.load_registry(REGISTRY_PATH)
+
+    def slot(self, provider: str, model: str):
+        slot = self.registry.find(provider, model)
+        self.assertIsNotNone(slot)
+        return slot
+
+    def test_groq_uses_only_supported_reasoning_controls(self) -> None:
+        gpt_oss = self.slot("groq", "openai/gpt-oss-120b")
+        qwen = self.slot("groq", "qwen/qwen3.6-27b")
+
+        self.assertEqual(
+            reasoning_policy.groq_request_kwargs(gpt_oss),
+            {"reasoning_effort": "low", "include_reasoning": False},
+        )
+        self.assertEqual(
+            reasoning_policy.groq_request_kwargs(qwen),
+            {"reasoning_effort": "none", "include_reasoning": False},
+        )
+
+    def test_gemini_config_uses_registry_control_and_excludes_thoughts(self) -> None:
+        flash = self.slot("gemini", "gemini-3.6-flash")
+        pro = self.slot("gemini", "gemini-2.5-pro")
+
+        self.assertEqual(
+            reasoning_policy.gemini_thinking_kwargs(flash),
+            {"thinking_level": "low", "include_thoughts": False},
+        )
+        self.assertNotIn("temperature", flash.request_config)
+        self.assertEqual(
+            reasoning_policy.gemini_thinking_kwargs(pro),
+            {"thinking_budget": 1024, "include_thoughts": False},
+        )
+
+    def test_openrouter_uses_normalized_reasoning_and_excludes_trace(self) -> None:
+        low = self.slot("openrouter", "openai/gpt-oss-20b:free")
+        none = self.slot("openrouter", "nvidia/nemotron-nano-9b-v2:free")
+
+        self.assertEqual(
+            reasoning_policy.openrouter_extra_body(low)["reasoning"],
+            {"effort": "low", "exclude": True},
+        )
+        self.assertEqual(
+            reasoning_policy.openrouter_extra_body(none)["reasoning"],
+            {"effort": "none", "exclude": True},
+        )
+
+    def test_sambanova_does_not_send_unsupported_reasoning_fields(self) -> None:
+        minimax = self.slot("sambanova", "MiniMax-M2.7")
+        gpt_oss = self.slot("sambanova", "gpt-oss-120b")
+
+        self.assertEqual(reasoning_policy.sambanova_request_kwargs(minimax), {})
+        self.assertEqual(reasoning_policy.sambanova_request_kwargs(gpt_oss), {"reasoning_effort": "low"})
+
+    def test_reasoning_trace_is_removed_from_openai_compatible_content(self) -> None:
+        content = "<think>private reasoning</think>\n## Check signal report: final"
+        self.assertEqual(
+            openai_compatible.exclude_reasoning_trace(content),
+            "## Check signal report: final",
+        )
+        self.assertEqual(openai_compatible.exclude_reasoning_trace("<think>unfinished"), "")
+
+    def test_groq_adapter_sends_no_internal_registry_fields(self) -> None:
+        slot = self.slot("groq", "openai/gpt-oss-120b")
+        response = types.SimpleNamespace(choices=[])
+        create = mock.Mock(return_value=response)
+        client = types.SimpleNamespace(chat=types.SimpleNamespace(completions=types.SimpleNamespace(create=create)))
+
+        groq_provider._call_groq_once(
+            client=client,
+            model=slot.model,
+            review_input="input",
+            max_completion_tokens=3000,
+            request_kwargs=reasoning_policy.groq_request_kwargs(slot),
+        )
+
+        sent = create.call_args.kwargs
+        self.assertEqual(sent["reasoning_effort"], "low")
+        self.assertIs(sent["include_reasoning"], False)
+        self.assertNotIn("reasoning", sent)
+        self.assertNotIn("allow_paid_service_tier", sent)
+
+    def test_gemini_adapter_builds_only_supported_generation_fields(self) -> None:
+        slot = self.slot("gemini", "gemini-3.6-flash")
+
+        with (
+            mock.patch.object(
+                gemini_provider.types,
+                "ThinkingConfig",
+                side_effect=lambda **kwargs: {"thinking": kwargs},
+                create=True,
+            ),
+            mock.patch.object(
+                gemini_provider.types,
+                "GenerateContentConfig",
+                side_effect=lambda **kwargs: kwargs,
+                create=True,
+            ),
+        ):
+            config = gemini_provider._generation_config(slot=slot, max_completion_tokens=3000)
+
+        self.assertNotIn("temperature", config)
+        self.assertEqual(
+            config["thinking_config"],
+            {"thinking": {"thinking_level": "low", "include_thoughts": False}},
+        )
+
+    def test_gemini_candidate_extraction_omits_thought_parts(self) -> None:
+        response = types.SimpleNamespace(
+            text="private reasoning plus final",
+            candidates=[
+                types.SimpleNamespace(
+                    content=types.SimpleNamespace(
+                        parts=[
+                            types.SimpleNamespace(text="private reasoning", thought=True),
+                            types.SimpleNamespace(text="final report", thought=False),
+                        ]
+                    )
+                )
+            ],
+        )
+
+        self.assertEqual(gemini_provider._response_text(response), "final report")
 
 
 if __name__ == "__main__":

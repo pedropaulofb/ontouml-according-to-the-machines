@@ -140,9 +140,7 @@ Language-style check only. This run reviewed grammar, spelling, clarity, profess
             invalid_text = invalid_path.read_text(encoding="utf-8") if invalid_path.exists() else None
         return result, output_text, invalid_text
 
-    def test_run_input_reinforces_minimal_unambiguous_targeting_without_replacing_versioned_prompt(
-        self,
-    ) -> None:
+    def test_run_input_preserves_effective_prompt_and_compacts_run_metadata(self) -> None:
         review_input = check_agent.build_review_input(
             checker_prompt="Existing versioned prompt",
             agent="language-style-checker",
@@ -158,12 +156,10 @@ Language-style check only. This run reviewed grammar, spelling, clarity, profess
         )
 
         self.assertIn("Existing versioned prompt", review_input)
-        self.assertIn(
-            "A signal may describe one problem that occurs once or multiple times.",
-            review_input,
-        )
-        self.assertIn("smallest reasonably sufficient contiguous context", review_input)
-        self.assertIn("omit both optional replacement fields", review_input)
+        self.assertIn("agent: language-style-checker", review_input)
+        self.assertIn("provider: gemini", review_input)
+        self.assertIn("commit: abc123", review_input)
+        self.assertNotIn("Deterministic exact-replacement reminder", review_input)
 
     def test_one_uniquely_identifiable_occurrence_is_preserved(self) -> None:
         page = "## Description\n\nSee Sect. 2.1. for details.\n"

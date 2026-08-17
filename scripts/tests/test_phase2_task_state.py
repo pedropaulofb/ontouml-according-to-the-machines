@@ -148,13 +148,17 @@ class TaskReconciliationTests(unittest.TestCase):
         self.assertEqual(len(desired), 2028)
         self.assertEqual(len(set(desired)), 2028)
 
-    def test_checked_in_initial_state_has_2028_pending_desired_tasks(self) -> None:
+    def test_checked_in_state_has_2028_pending_desired_tasks(self) -> None:
         desired = task_reconciler.build_desired_task_identities(repo_root=REPO_ROOT, registry=self.registry)
         state = task_state.load_task_state(TASK_STATE_PATH)
         registry_sha = task_identity.sha256_text(REGISTRY_PATH.read_text(encoding="utf-8"))
         task_reconciler.validate_desired_state(state, desired, registry_sha)
-        self.assertEqual(len(state["tasks"]), 2028)
-        self.assertEqual({record["status"] for record in state["tasks"].values()}, {"pending"})
+        self.assertEqual(len(state["tasks"]), 4056)
+        self.assertEqual({state["tasks"][task_id]["status"] for task_id in desired}, {"pending"})
+        self.assertEqual(
+            sum(record["status"] == "obsolete" for record in state["tasks"].values()),
+            2028,
+        )
 
     def test_superseded_task_becomes_obsolete(self) -> None:
         old_identity = {"provider": "groq", "model": "model", "content_sha256": "old"}

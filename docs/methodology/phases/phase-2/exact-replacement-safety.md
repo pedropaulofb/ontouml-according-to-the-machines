@@ -8,16 +8,17 @@ Phase 2 treats exact-replacement fields as optional automation instructions. A s
 
 This page is the authoritative Phase 2 reference for exact-target publication, resolver revalidation, and automatic group demotion. Where an older general status summary describes an ambiguous exact target as a whole-run plan-validation failure, this page supersedes that description for target-specific failures. Unrelated malformed plan structure remains fail-closed.
 
-The implementation keeps the existing versioned prompt files unchanged:
+The active signal-generation prompt is composed from a shared contract and one agent-specific contract:
 
 ```text
-prompts/phase-2/page-hygiene-checker-v1.0.3.md
-prompts/phase-2/language-style-checker-v1.0.3.md
+prompts/phase-2/check-signal-shared-contract-v1.0.0.md
+prompts/phase-2/page-hygiene-checker-v1.1.0.md
+prompts/phase-2/language-style-checker-v1.1.0.md
 prompts/phase-2/resolve-page-hygiene-signal-issue-v1.2.2.md
 prompts/phase-2/resolve-language-style-signal-issue-v1.2.2.md
 ```
 
-Those prompts already require exact, unique targets and allow unsafe optional replacement fields to be omitted. To make the repeated-problem and minimum-context interpretation explicit without rewriting unrelated prompt policy, `run_check_agent.py` adds a short deterministic exact-replacement reminder to each generated run input.
+The shared contract requires exact, unique targets, permits unsafe optional replacement fields to be omitted, and defines the repeated-problem and minimum-context interpretation once for both agents. The deterministic run-input wrapper supplies only compact run metadata and the agent-scoped page content.
 
 ## Signal-creation validation
 

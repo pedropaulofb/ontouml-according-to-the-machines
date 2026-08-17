@@ -32,6 +32,33 @@ REMOVED_SPECS = {
     "openrouter:poolside/laguna-m.1:free",
     "groq:llama-3.3-70b-versatile",
 }
+REQUEST_CONFIG_VERSION = "2"
+REQUEST_CONFIG_FIELDS = {
+    "sambanova": {"temperature", "max_completion_tokens", "reasoning", "final_output_only"},
+    "groq": {
+        "temperature",
+        "max_completion_tokens",
+        "reasoning",
+        "allow_paid_service_tier",
+        "final_output_only",
+    },
+    "gemini": {
+        "temperature",
+        "max_completion_tokens",
+        "thinking_level",
+        "thinking_budget",
+        "tools",
+        "final_output_only",
+    },
+    "openrouter": {
+        "temperature",
+        "max_completion_tokens",
+        "reasoning",
+        "exclude_reasoning",
+        "allow_fallbacks",
+        "final_output_only",
+    },
+}
 
 
 class RegistryValidationError(ValueError):
@@ -196,7 +223,22 @@ def _parse_slot(raw: Any, expected_number: int) -> ProviderModelSlot:
     request_config = raw["request_config"]
     if not isinstance(request_config, dict) or not request_config:
         raise RegistryValidationError(f"Registry slot {expected_number} request_config must be a non-empty object.")
-    if request_config.get("temperature") != 0:
+    unsupported_request_fields = sorted(set(request_config) - REQUEST_CONFIG_FIELDS[provider])
+    if unsupported_request_fields:
+        raise RegistryValidationError(
+            f"Registry slot {expected_number} request_config has unsupported field(s) for {provider}: "
+            f"{', '.join(unsupported_request_fields)}."
+        )
+    if request_config_version != REQUEST_CONFIG_VERSION:
+        raise RegistryValidationError(
+            f"Registry slot {expected_number} request_config_version must be {REQUEST_CONFIG_VERSION}."
+        )
+    if provider == "gemini" and model.startswith("gemini-3"):
+        if "temperature" in request_config:
+            raise RegistryValidationError(
+                f"Registry slot {expected_number} must omit unsupported Gemini 3 sampling temperature."
+            )
+    elif request_config.get("temperature") != 0:
         raise RegistryValidationError(f"Registry slot {expected_number} request_config.temperature must be 0.")
     if request_config.get("max_completion_tokens") != raw["max_completion_tokens"]:
         raise RegistryValidationError(
@@ -219,13 +261,57 @@ def _parse_slot(raw: Any, expected_number: int) -> ProviderModelSlot:
             raise RegistryValidationError(
                 f"Registry slot {expected_number} OpenRouter request_config.allow_fallbacks must be false."
             )
-    elif provider == "groq" and request_config.get("allow_paid_service_tier") is not False:
+        if request_config.get("exclude_reasoning") is not True:
+            raise RegistryValidationError(
+                f"Registry slot {expected_number} OpenRouter request_config.exclude_reasoning must be true."
+            )
+        if request_config.get("reasoning") not in {"lowest-supported", "low", "none", "none-unless-required"}:
+            raise RegistryValidationError(
+                f"Registry slot {expected_number} OpenRouter request_config.reasoning is unsupported."
+            )
+    elif provider == "groq":
+        if request_config.get("allow_paid_service_tier") is not False:
+            raise RegistryValidationError(
+                f"Registry slot {expected_number} Groq request_config.allow_paid_service_tier must be false."
+            )
+        expected_reasoning = "none" if model == "qwen/qwen3.6-27b" else "low"
+        if request_config.get("reasoning") != expected_reasoning:
+            raise RegistryValidationError(
+                f"Registry slot {expected_number} Groq request_config.reasoning must be {expected_reasoning}."
+            )
+    elif provider == "gemini":
+        if request_config.get("tools") != []:
+            raise RegistryValidationError(
+                f"Registry slot {expected_number} Gemini request_config.tools must be an empty list."
+            )
+        reasoning_fields = {field for field in ("thinking_level", "thinking_budget") if field in request_config}
+        if len(reasoning_fields) != 1:
+            raise RegistryValidationError(
+                f"Registry slot {expected_number} Gemini request_config must define exactly one supported thinking control."
+            )
+        if "thinking_level" in request_config and request_config["thinking_level"] not in {
+            "minimal",
+            "low",
+            "medium",
+            "high",
+        }:
+            raise RegistryValidationError(f"Registry slot {expected_number} Gemini thinking_level is unsupported.")
+        if "thinking_budget" in request_config and (
+            not isinstance(request_config["thinking_budget"], int)
+            or isinstance(request_config["thinking_budget"], bool)
+            or request_config["thinking_budget"] < 0
+        ):
+            raise RegistryValidationError(
+                f"Registry slot {expected_number} Gemini thinking_budget must be a nonnegative integer."
+            )
+    elif request_config.get("reasoning") not in {
+        "lowest-supported",
+        "none",
+        "low-where-supported",
+        "thinking-disabled",
+    }:
         raise RegistryValidationError(
-            f"Registry slot {expected_number} Groq request_config.allow_paid_service_tier must be false."
-        )
-    elif provider == "gemini" and request_config.get("tools") != []:
-        raise RegistryValidationError(
-            f"Registry slot {expected_number} Gemini request_config.tools must be an empty list."
+            f"Registry slot {expected_number} SambaNova request_config.reasoning is unsupported."
         )
     elif model.endswith(":free"):
         raise RegistryValidationError(

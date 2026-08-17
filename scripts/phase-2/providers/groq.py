@@ -13,6 +13,7 @@ from provider_model_registry import (
     validate_completion_token_cap,
 )
 from provider_runtime import classify_provider_failure, record_provider_event, record_provider_failure
+from reasoning_policy import groq_request_kwargs
 
 
 class GroqProviderError(RuntimeError):
@@ -161,6 +162,7 @@ def _call_groq_once(
     model: str,
     review_input: str,
     max_completion_tokens: int,
+    request_kwargs: dict[str, Any] | None = None,
 ) -> tuple[Any, dict[str, str]]:
     """Make one Groq chat-completion request."""
     kwargs = {
@@ -172,6 +174,8 @@ def _call_groq_once(
         "temperature": 0,
         "max_completion_tokens": max_completion_tokens,
     }
+    if request_kwargs:
+        kwargs.update(request_kwargs)
     raw_resource = getattr(client.chat.completions, "with_raw_response", None)
     if raw_resource is None:
         return client.chat.completions.create(**kwargs), {}
@@ -185,6 +189,7 @@ def _generate_with_retries(
     model: str,
     review_input: str,
     max_completion_tokens: int,
+    request_kwargs: dict[str, Any] | None = None,
 ) -> str:
     """Call Groq with one retry for transient errors and no retries for quota/rate limits."""
     total_attempts = len(RETRY_DELAYS_SECONDS) + 1
@@ -199,6 +204,7 @@ def _generate_with_retries(
                 model=model,
                 review_input=review_input,
                 max_completion_tokens=max_completion_tokens,
+                request_kwargs=request_kwargs,
             )
             content = _extract_content(response)
             if content.strip():
@@ -273,4 +279,5 @@ def generate_review(
         model=model,
         review_input=review_input,
         max_completion_tokens=max_completion_tokens,
+        request_kwargs=groq_request_kwargs(configured_slot),
     )

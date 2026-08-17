@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "configuration_version": "phase-2-recalibration-v1",
+  "configuration_version": "phase-2-recalibration-v2",
   "phase": "phase-2",
   "slots": [
     {
@@ -16,7 +16,7 @@
       "reasoning_policy": "lowest-supported",
       "output_policy": "final-only",
       "max_completion_tokens": 3000,
-      "request_config_version": "1",
+      "request_config_version": "2",
       "request_config": {
         "temperature": 0,
         "max_completion_tokens": 3000,
@@ -37,7 +37,7 @@
       "reasoning_policy": "lowest-supported",
       "output_policy": "final-only",
       "max_completion_tokens": 3000,
-      "request_config_version": "1",
+      "request_config_version": "2",
       "request_config": {
         "temperature": 0,
         "max_completion_tokens": 3000,
@@ -58,7 +58,7 @@
       "reasoning_policy": "none",
       "output_policy": "final-only",
       "max_completion_tokens": 3000,
-      "request_config_version": "1",
+      "request_config_version": "2",
       "request_config": {
         "temperature": 0,
         "max_completion_tokens": 3000,
@@ -79,7 +79,7 @@
       "reasoning_policy": "low-where-supported",
       "output_policy": "final-only",
       "max_completion_tokens": 3000,
-      "request_config_version": "1",
+      "request_config_version": "2",
       "request_config": {
         "temperature": 0,
         "max_completion_tokens": 3000,
@@ -100,7 +100,7 @@
       "reasoning_policy": "thinking-disabled",
       "output_policy": "final-only",
       "max_completion_tokens": 3000,
-      "request_config_version": "1",
+      "request_config_version": "2",
       "request_config": {
         "temperature": 0,
         "max_completion_tokens": 3000,
@@ -121,7 +121,7 @@
       "reasoning_policy": "lowest-supported",
       "output_policy": "final-only",
       "max_completion_tokens": 3000,
-      "request_config_version": "1",
+      "request_config_version": "2",
       "request_config": {
         "temperature": 0,
         "max_completion_tokens": 3000,
@@ -142,7 +142,7 @@
       "reasoning_policy": "low",
       "output_policy": "final-only",
       "max_completion_tokens": 3000,
-      "request_config_version": "1",
+      "request_config_version": "2",
       "request_config": {
         "temperature": 0,
         "max_completion_tokens": 3000,
@@ -164,7 +164,7 @@
       "reasoning_policy": "low",
       "output_policy": "final-only",
       "max_completion_tokens": 3000,
-      "request_config_version": "1",
+      "request_config_version": "2",
       "request_config": {
         "temperature": 0,
         "max_completion_tokens": 3000,
@@ -186,7 +186,7 @@
       "reasoning_policy": "none",
       "output_policy": "final-only",
       "max_completion_tokens": 3000,
-      "request_config_version": "1",
+      "request_config_version": "2",
       "request_config": {
         "temperature": 0,
         "max_completion_tokens": 3000,
@@ -208,9 +208,8 @@
       "reasoning_policy": "low",
       "output_policy": "final-only",
       "max_completion_tokens": 3000,
-      "request_config_version": "1",
+      "request_config_version": "2",
       "request_config": {
-        "temperature": 0,
         "max_completion_tokens": 3000,
         "thinking_level": "low",
         "tools": [],
@@ -230,9 +229,8 @@
       "reasoning_policy": "low",
       "output_policy": "final-only",
       "max_completion_tokens": 3000,
-      "request_config_version": "1",
+      "request_config_version": "2",
       "request_config": {
-        "temperature": 0,
         "max_completion_tokens": 3000,
         "thinking_level": "low",
         "tools": [],
@@ -252,9 +250,8 @@
       "reasoning_policy": "minimal",
       "output_policy": "final-only",
       "max_completion_tokens": 3000,
-      "request_config_version": "1",
+      "request_config_version": "2",
       "request_config": {
-        "temperature": 0,
         "max_completion_tokens": 3000,
         "thinking_level": "minimal",
         "tools": [],
@@ -274,11 +271,10 @@
       "reasoning_policy": "lowest-supported",
       "output_policy": "final-only",
       "max_completion_tokens": 3000,
-      "request_config_version": "1",
+      "request_config_version": "2",
       "request_config": {
-        "temperature": 0,
         "max_completion_tokens": 3000,
-        "reasoning": "lowest-supported",
+        "thinking_level": "minimal",
         "tools": [],
         "final_output_only": true
       }
@@ -296,9 +292,8 @@
       "reasoning_policy": "low",
       "output_policy": "final-only",
       "max_completion_tokens": 3000,
-      "request_config_version": "1",
+      "request_config_version": "2",
       "request_config": {
-        "temperature": 0,
         "max_completion_tokens": 3000,
         "thinking_level": "low",
         "tools": [],
@@ -318,11 +313,11 @@
       "reasoning_policy": "lowest-supported-bounded",
       "output_policy": "final-only",
       "max_completion_tokens": 3000,
-      "request_config_version": "1",
+      "request_config_version": "2",
       "request_config": {
         "temperature": 0,
         "max_completion_tokens": 3000,
-        "reasoning": "lowest-supported-bounded",
+        "thinking_budget": 1024,
         "tools": [],
         "final_output_only": true
       }
@@ -340,7 +335,7 @@
       "reasoning_policy": "thinking-budget-zero",
       "output_policy": "final-only",
       "max_completion_tokens": 3000,
-      "request_config_version": "1",
+      "request_config_version": "2",
       "request_config": {
         "temperature": 0,
         "max_completion_tokens": 3000,
@@ -362,7 +357,7 @@
       "reasoning_policy": "thinking-budget-zero",
       "output_policy": "final-only",
       "max_completion_tokens": 3000,
-      "request_config_version": "1",
+      "request_config_version": "2",
       "request_config": {
         "temperature": 0,
         "max_completion_tokens": 3000,
@@ -384,7 +379,7 @@
       "reasoning_policy": "lowest-supported-exclude",
       "output_policy": "final-only",
       "max_completion_tokens": 3000,
-      "request_config_version": "1",
+      "request_config_version": "2",
       "request_config": {
         "temperature": 0,
         "max_completion_tokens": 3000,
@@ -407,7 +402,7 @@
       "reasoning_policy": "lowest-supported-exclude",
       "output_policy": "final-only",
       "max_completion_tokens": 3000,
-      "request_config_version": "1",
+      "request_config_version": "2",
       "request_config": {
         "temperature": 0,
         "max_completion_tokens": 3000,
@@ -430,7 +425,7 @@
       "reasoning_policy": "none-unless-required",
       "output_policy": "final-only",
       "max_completion_tokens": 3000,
-      "request_config_version": "1",
+      "request_config_version": "2",
       "request_config": {
         "temperature": 0,
         "max_completion_tokens": 3000,
@@ -453,7 +448,7 @@
       "reasoning_policy": "none-unless-required",
       "output_policy": "final-only",
       "max_completion_tokens": 3000,
-      "request_config_version": "1",
+      "request_config_version": "2",
       "request_config": {
         "temperature": 0,
         "max_completion_tokens": 3000,
@@ -476,7 +471,7 @@
       "reasoning_policy": "lowest-supported",
       "output_policy": "final-only",
       "max_completion_tokens": 3000,
-      "request_config_version": "1",
+      "request_config_version": "2",
       "request_config": {
         "temperature": 0,
         "max_completion_tokens": 3000,
@@ -499,7 +494,7 @@
       "reasoning_policy": "lowest-supported",
       "output_policy": "final-only",
       "max_completion_tokens": 3000,
-      "request_config_version": "1",
+      "request_config_version": "2",
       "request_config": {
         "temperature": 0,
         "max_completion_tokens": 3000,
@@ -522,7 +517,7 @@
       "reasoning_policy": "lowest-supported-exclude",
       "output_policy": "final-only",
       "max_completion_tokens": 3000,
-      "request_config_version": "1",
+      "request_config_version": "2",
       "request_config": {
         "temperature": 0,
         "max_completion_tokens": 3000,
@@ -545,7 +540,7 @@
       "reasoning_policy": "low-exclude",
       "output_policy": "final-only",
       "max_completion_tokens": 3000,
-      "request_config_version": "1",
+      "request_config_version": "2",
       "request_config": {
         "temperature": 0,
         "max_completion_tokens": 3000,
@@ -568,7 +563,7 @@
       "reasoning_policy": "none",
       "output_policy": "final-only",
       "max_completion_tokens": 3000,
-      "request_config_version": "1",
+      "request_config_version": "2",
       "request_config": {
         "temperature": 0,
         "max_completion_tokens": 3000,

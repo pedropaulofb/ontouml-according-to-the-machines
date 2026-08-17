@@ -16,7 +16,7 @@ if str(SCRIPT_DIRECTORY) not in sys.path:
     sys.path.insert(0, str(SCRIPT_DIRECTORY))
 
 from provider_model_registry import DEFAULT_REGISTRY_PATH, ProviderModelRegistry, load_registry  # noqa: E402
-from run_check_agent import AGENT_CONTRACTS  # noqa: E402
+from run_check_agent import AGENT_CONTRACTS, load_effective_prompt  # noqa: E402
 from task_identity import build_task_identity, sha256_text, task_id_for  # noqa: E402
 from task_state import (  # noqa: E402
     TaskStateError,
@@ -75,7 +75,7 @@ def build_desired_task_identities(
 
     page_contents = {page: (repo_root / page).read_text(encoding="utf-8") for page in pages}
     prompt_contents = {
-        agent: (repo_root / AGENT_CONTRACTS[agent].prompt_path).read_text(encoding="utf-8") for agent in agents
+        agent: load_effective_prompt(repo_root=repo_root, contract=AGENT_CONTRACTS[agent]) for agent in agents
     }
     desired: dict[str, dict[str, str]] = {}
     for page in pages:

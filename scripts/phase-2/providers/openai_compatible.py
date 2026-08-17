@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import re
 import time
 from typing import Any
 
@@ -156,6 +157,12 @@ def _extract_content(response: Any) -> str:
     return content if isinstance(content, str) else ""
 
 
+def exclude_reasoning_trace(content: str) -> str:
+    """Remove provider-rendered ``<think>`` blocks from final report text."""
+    cleaned = re.sub(r"<think\b[^>]*>.*?</think>\s*", "", content, flags=re.IGNORECASE | re.DOTALL)
+    return "" if re.search(r"</?think\b", cleaned, flags=re.IGNORECASE) else cleaned
+
+
 def _create_chat_completion(client: OpenAI, kwargs: dict[str, Any]) -> tuple[Any, dict[str, str]]:
     """Create one completion while retaining response headers when the SDK exposes them."""
     raw_resource = getattr(client.chat.completions, "with_raw_response", None)
@@ -211,7 +218,7 @@ def generate_chat_completion(
                 kwargs.update(extra_request_kwargs)
 
             response, headers = _create_chat_completion(client, kwargs)
-            content = _extract_content(response)
+            content = exclude_reasoning_trace(_extract_content(response))
             if content.strip():
                 record_provider_event(
                     provider=provider_label.lower(),

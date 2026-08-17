@@ -11,6 +11,7 @@ from provider_model_registry import (
     validate_completion_token_cap,
 )
 from provider_runtime import record_provider_failure
+from reasoning_policy import openrouter_extra_body
 
 from providers.openai_compatible import OpenAICompatibleProviderError, generate_chat_completion
 
@@ -59,7 +60,7 @@ def generate_review(
             model=model,
             review_input=review_input,
             max_completion_tokens=max_completion_tokens,
-            extra_body={"provider": {"allow_fallbacks": False}},
+            extra_body=openrouter_extra_body(configured_slot),
         )
     except OpenAICompatibleProviderError as exc:
         raise OpenRouterProviderError(str(exc)) from exc
