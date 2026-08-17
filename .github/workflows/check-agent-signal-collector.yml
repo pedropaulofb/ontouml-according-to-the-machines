@@ -4,23 +4,25 @@ run-name: Scheduled check-agent signal collector (${{ github.event_name }})
 
 "on":
   schedule:
-    # Every 20 minutes, UTC. Offset away from minute 00 to reduce scheduler contention.
+    # Every 20 minutes, UTC. Each trigger is a useful-work scheduling opportunity.
     - cron: "7,27,47 * * * *"
 
   workflow_dispatch:
     inputs:
       mode:
-        description: "Issue-manager mode for manual runs. Use dry-run for smoke tests; scheduled runs still post."
+        description: "Queue mode, or an explicit diagnostic provider-call mode."
         type: choice
         required: true
-        default: dry-run
+        default: plan
         options:
+          - plan
+          - simulate
           - generate
           - dry-run
           - post
 
       provider:
-        description: "Provider used with the optional models subset when provider_model_specs is empty."
+        description: "Provider for explicit generate/dry-run diagnostics."
         type: choice
         required: true
         default: groq
@@ -31,89 +33,61 @@ run-name: Scheduled check-agent signal collector (${{ github.event_name }})
           - openrouter
 
       provider_model_specs:
-        description: "Optional configured provider:model subset. Empty uses all slots from the authoritative registry."
-        type: string
-        required: false
-        default: ""
-
-      selection:
-        description: "How to select triples. Keep rotate for normal manual and scheduled signal collection."
-        type: choice
-        required: true
-        default: rotate
-        options:
-          - rotate
-          - first
-
-      rotation_seed:
-        description: "Fallback runner rotation seed. Ignored when provider_model_specs rotation_index is explicit."
-        type: choice
-        required: true
-        default: hourly
-        options:
-          - hourly
-          - daily
-
-      rotation_index:
-        description: "Optional zero-based provider/model rotation index. Empty derives it from the schedule."
+        description: "Optional comma-separated provider:model queue filter."
         type: string
         required: false
         default: ""
 
       pages:
-        description: "Optional comma- or newline-separated page list for manual smoke tests. Empty means all canonical stereotype pages."
+        description: "Optional comma- or newline-separated page filter; required for provider-call diagnostics."
         type: string
         required: false
         default: ""
 
       agents:
-        description: "Comma-separated check-agent slugs."
+        description: "Comma-separated check-agent slugs; explicit diagnostics require at least one."
         type: string
-        required: true
+        required: false
         default: "page-hygiene-checker,language-style-checker"
 
       models:
-        description: "Optional comma-separated configured models for the selected provider."
+        description: "Comma-separated models for explicit generate/dry-run diagnostics."
         type: string
         required: false
         default: ""
 
-      max_runs:
-        description: "Maximum number of selected triples to run. Use 1 for rotating scheduled collection."
-        type: string
-        required: true
-        default: "1"
-
-      sleep_seconds:
-        description: "Seconds to sleep between selected triples."
+      max_tasks_per_provider:
+        description: "Optional queue planning bound per provider; 0 means no fixed task-count limit."
         type: string
         required: true
         default: "0"
 
+      execution_budget_seconds:
+        description: "Provider execution budget before deterministic aggregation/persistence reserve."
+        type: string
+        required: true
+        default: "720"
+
       max_completion_tokens:
-        description: "Optional provider completion-token cap. Leave empty to use provider-specific workflow defaults."
+        description: "Optional completion-token cap for explicit provider-call diagnostics."
         type: string
         required: false
         default: ""
 
-      update_model_statistics:
-        description: "Update the cumulative model-run statistics Markdown page. Scheduled runs always update it."
-        type: boolean
-        required: true
-        default: false
-
 permissions:
-  contents: read
+  actions: read
+  contents: write
   issues: write
 
-jobs:
-  collect-check-agent-signal:
-    name: Collect rotating check-agent signal
-    runs-on: ubuntu-latest
+concurrency:
+  group: phase-2-signal-collector-${{ github.ref }}
+  cancel-in-progress: false
 
-    concurrency:
-      group: phase-2-operational-state-write-${{ github.ref }}
-      cancel-in-progress: false
+jobs:
+  diagnostic:
+    name: Explicit provider-call diagnostic
+    if: ${{ github.event_name == 'workflow_dispatch' && (github.event.inputs.mode == 'generate' || github.event.inputs.mode == 'dry-run') }}
+    runs-on: ubuntu-latest
 
     env:
       GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
@@ -124,19 +98,165 @@ jobs:
       PHASE2_QUOTA_EVENT_DIR: .tmp/phase-2/quota-events
       PHASE2_CALL_SOURCE: signal
 
-      WORKFLOW_MODE: ${{ github.event.inputs.mode }}
-      WORKFLOW_PROVIDER: ${{ github.event.inputs.provider }}
-      WORKFLOW_PROVIDER_MODEL_SPECS: ${{ github.event.inputs.provider_model_specs }}
-      WORKFLOW_SELECTION: ${{ github.event.inputs.selection }}
-      WORKFLOW_ROTATION_SEED: ${{ github.event.inputs.rotation_seed }}
-      WORKFLOW_ROTATION_INDEX: ${{ github.event.inputs.rotation_index }}
-      WORKFLOW_PAGES: ${{ github.event.inputs.pages }}
-      WORKFLOW_AGENTS: ${{ github.event.inputs.agents }}
-      WORKFLOW_MODELS: ${{ github.event.inputs.models }}
-      WORKFLOW_MAX_RUNS: ${{ github.event.inputs.max_runs }}
-      WORKFLOW_SLEEP_SECONDS: ${{ github.event.inputs.sleep_seconds }}
-      WORKFLOW_MAX_COMPLETION_TOKENS: ${{ github.event.inputs.max_completion_tokens }}
-      WORKFLOW_UPDATE_MODEL_STATISTICS: ${{ github.event.inputs.update_model_statistics }}
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v7
+        with:
+          ref: ${{ github.ref_name }}
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v7
+        with:
+          python-version: "3.12"
+
+      - name: Install Python dependencies
+        run: python -m pip install -r requirements.txt
+
+      - name: Validate and run explicit diagnostic
+        shell: bash
+        env:
+          MODE_INPUT: ${{ github.event.inputs.mode }}
+          PROVIDER_INPUT: ${{ github.event.inputs.provider }}
+          PAGES_INPUT: ${{ github.event.inputs.pages }}
+          AGENTS_INPUT: ${{ github.event.inputs.agents }}
+          MODELS_INPUT: ${{ github.event.inputs.models }}
+          MAX_COMPLETION_TOKENS_INPUT: ${{ github.event.inputs.max_completion_tokens }}
+        run: |
+          set -euo pipefail
+
+          if [[ -z "${PAGES_INPUT//[[:space:],]/}" || -z "${AGENTS_INPUT//[[:space:],]/}" || -z "${MODELS_INPUT//[[:space:],]/}" ]]; then
+            echo "::error::generate and dry-run diagnostics require explicit pages, agents, provider, and models."
+            exit 1
+          fi
+
+          python scripts/phase-2/provider_model_registry.py validate
+
+          page_args=()
+          while IFS= read -r page; do
+            [[ -n "$page" ]] && page_args+=(--page "$page")
+          done < <(printf '%s' "$PAGES_INPUT" | tr ',' '\n' | sed 's/^[[:space:]]*//;s/[[:space:]]*$//' | sed '/^$/d')
+
+          agent_args=()
+          while IFS= read -r agent; do
+            [[ -n "$agent" ]] && agent_args+=(--agent "$agent")
+          done < <(printf '%s' "$AGENTS_INPUT" | tr ',' '\n' | sed 's/^[[:space:]]*//;s/[[:space:]]*$//' | sed '/^$/d')
+
+          model_args=()
+          spec_args=()
+          while IFS= read -r model; do
+            if [[ -n "$model" ]]; then
+              model_args+=(--model "$model")
+              spec_args+=("${PROVIDER_INPUT}:${model}")
+            fi
+          done < <(printf '%s' "$MODELS_INPUT" | tr ',' '\n' | sed 's/^[[:space:]]*//;s/[[:space:]]*$//' | sed '/^$/d')
+          specs="$(IFS=','; printf '%s' "${spec_args[*]}")"
+          python scripts/phase-2/provider_model_registry.py validate-specs --specs "$specs"
+
+          completion_args=()
+          [[ -n "$MAX_COMPLETION_TOKENS_INPUT" ]] && completion_args+=(--max-completion-tokens "$MAX_COMPLETION_TOKENS_INPUT")
+
+          python scripts/phase-2/run_check_batch.py \
+            "${page_args[@]}" \
+            "${agent_args[@]}" \
+            --provider "$PROVIDER_INPUT" \
+            "${model_args[@]}" \
+            --mode "$MODE_INPUT" \
+            --repo "$GITHUB_REPOSITORY" \
+            --selection first \
+            --sleep-seconds 0 \
+            "${completion_args[@]}" \
+            --allow-rejected-check-outputs \
+            --allow-provider-failures
+
+      - name: Upload diagnostic artifacts
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: phase-2-diagnostic-${{ github.run_id }}-${{ github.run_attempt }}
+          path: |
+            .tmp/phase-2/batch
+            .tmp/phase-2/batch-summary.md
+            .tmp/phase-2/quota-events
+          if-no-files-found: ignore
+
+  persist-diagnostic-quota:
+    name: Persist diagnostic quota observations
+    if: ${{ always() && needs.diagnostic.result != 'skipped' }}
+    needs: diagnostic
+    runs-on: ubuntu-latest
+    concurrency:
+      group: phase-2-operational-state-write
+      cancel-in-progress: false
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v7
+        with:
+          ref: ${{ github.ref_name }}
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Download diagnostic artifacts
+        uses: actions/download-artifact@v7
+        continue-on-error: true
+        with:
+          name: phase-2-diagnostic-${{ github.run_id }}-${{ github.run_attempt }}
+          path: .tmp/phase-2/diagnostic-artifact
+
+      - name: Aggregate and push diagnostic quota state
+        shell: bash
+        env:
+          PHASE2_AUTOMATION_TOKEN: ${{ secrets.PHASE2_AUTOMATION_TOKEN }}
+        run: |
+          set -euo pipefail
+
+          event_root="$PWD/.tmp/phase-2/diagnostic-artifact/quota-events"
+          if ! compgen -G "${event_root}/*.json" > /dev/null; then
+            echo "No diagnostic quota observation events found."
+            exit 0
+          fi
+          if [[ -z "${PHASE2_AUTOMATION_TOKEN:-}" ]]; then
+            echo "::error::Missing required repository secret: PHASE2_AUTOMATION_TOKEN"
+            exit 1
+          fi
+          echo "::add-mask::${PHASE2_AUTOMATION_TOKEN}"
+
+          worktree_root="$(mktemp -d)"
+          push_url="https://x-access-token:${PHASE2_AUTOMATION_TOKEN}@github.com/${GITHUB_REPOSITORY}.git"
+          trap 'git worktree prune; rm -rf "$worktree_root"' EXIT
+          for attempt in 1 2 3; do
+            git fetch origin "$GITHUB_REF_NAME"
+            state_worktree="${worktree_root}/state-${attempt}"
+            git worktree add --detach "$state_worktree" "origin/${GITHUB_REF_NAME}"
+            python "$state_worktree/scripts/phase-2/quota_state.py" aggregate --repo-root "$state_worktree" --events "$event_root"
+            git -C "$state_worktree" add data/phase-2/quota-state.json data/phase-2/task-state.json
+            if git -C "$state_worktree" diff --cached --quiet; then
+              exit 0
+            fi
+            git -C "$state_worktree" config user.name "github-actions[bot]"
+            git -C "$state_worktree" config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            git -C "$state_worktree" commit -m "chore(phase-2): update diagnostic quota state"
+            if git -C "$state_worktree" push "$push_url" HEAD:"${GITHUB_REF_NAME}"; then
+              exit 0
+            fi
+            git worktree remove --force "$state_worktree"
+            [[ "$attempt" -lt 3 ]] || { echo "::error::Failed to persist diagnostic quota state."; exit 1; }
+          done
+
+  lease-and-plan:
+    name: Reconcile, lease, and create provider plans
+    if: ${{ github.event_name == 'schedule' || github.event.inputs.mode == 'plan' || github.event.inputs.mode == 'simulate' || github.event.inputs.mode == 'post' }}
+    runs-on: ubuntu-latest
+    concurrency:
+      group: phase-2-operational-state-write
+      cancel-in-progress: false
+    outputs:
+      lease_sha: ${{ steps.scheduler.outputs.lease_sha }}
+      has_sambanova: ${{ steps.scheduler.outputs.has_sambanova }}
+      has_groq: ${{ steps.scheduler.outputs.has_groq }}
+      has_gemini: ${{ steps.scheduler.outputs.has_gemini }}
+      has_openrouter: ${{ steps.scheduler.outputs.has_openrouter }}
 
     steps:
       - name: Check out repository
@@ -151,405 +271,260 @@ jobs:
         with:
           python-version: "3.12"
 
-      - name: Install Python dependencies
-        shell: bash
+      - name: Validate scheduler prerequisites
         run: |
-          set -euo pipefail
-
-          python -m pip install --upgrade pip
-          python -m pip install -r requirements.txt
-
-      - name: Show runtime context
-        shell: bash
-        run: |
-          set -euo pipefail
-
-          echo "Event: ${GITHUB_EVENT_NAME}"
-          echo "Repository: ${GITHUB_REPOSITORY}"
-          echo "Ref: ${GITHUB_REF}"
-          echo "SHA: ${GITHUB_SHA}"
-
-          python --version
-          python - <<'PY'
-          from importlib import metadata
-
-          for package in ("groq", "google-genai", "openai"):
-              try:
-                  version = metadata.version(package)
-              except metadata.PackageNotFoundError:
-                  version = "not installed"
-              print(f"{package}=={version}")
-          PY
-
-      - name: Validate required secrets and tools
-        shell: bash
-        env:
-          PHASE2_AUTOMATION_TOKEN: ${{ secrets.PHASE2_AUTOMATION_TOKEN }}
-        run: |
-          set -euo pipefail
-
-          trim() {
-            printf '%s' "$1" | sed 's/^[[:space:]]*//;s/[[:space:]]*$//'
-          }
-
-          provider="${WORKFLOW_PROVIDER:-groq}"
-          provider_model_specs="${WORKFLOW_PROVIDER_MODEL_SPECS:-}"
-          models_input="${WORKFLOW_MODELS:-}"
-
           python scripts/phase-2/provider_model_registry.py validate
+          python scripts/phase-2/provider_model_registry.py list-specs > /dev/null
+          python scripts/phase-2/task_reconciler.py validate
+          python scripts/phase-2/quota_state.py validate
+          python -m py_compile scripts/phase-2/task_scheduler.py scripts/phase-2/provider_worker.py
 
-          if [[ -z "$provider_model_specs" && -n "$models_input" ]]; then
-            IFS=',' read -ra fallback_models <<< "$models_input"
-            fallback_specs=()
-            for model in "${fallback_models[@]}"; do
-              model="$(trim "$model")"
-              if [[ -n "$model" ]]; then
-                fallback_specs+=("${provider}:${model}")
-              fi
-            done
-            provider_model_specs="$(IFS=','; printf '%s' "${fallback_specs[*]}")"
-          fi
-          if [[ -z "$provider_model_specs" ]]; then
-            provider_model_specs="$(python scripts/phase-2/provider_model_registry.py list-specs)"
-          fi
-          provider_model_specs="$(python scripts/phase-2/provider_model_registry.py validate-specs --specs "$provider_model_specs")"
-
-          uses_groq=false
-          uses_gemini=false
-          uses_sambanova=false
-          uses_openrouter=false
-
-          IFS=',' read -ra specs <<< "$provider_model_specs"
-          for spec in "${specs[@]}"; do
-            spec_provider="${spec%%:*}"
-            case "$spec_provider" in
-              groq) uses_groq=true ;;
-              gemini) uses_gemini=true ;;
-              sambanova) uses_sambanova=true ;;
-              openrouter) uses_openrouter=true ;;
-              *)
-                echo "::error::Unsupported provider after registry validation: ${spec_provider}"
-                exit 1
-                ;;
-            esac
-          done
-
-          if [[ "$uses_groq" == "true" && -z "${GROQ_API_KEY:-}" ]]; then
-            echo "::error::Missing required repository secret: GROQ_API_KEY"
-            exit 1
-          fi
-          if [[ "$uses_gemini" == "true" && -z "${GEMINI_API_KEY:-}" ]]; then
-            echo "::error::Missing required repository secret: GEMINI_API_KEY"
-            exit 1
-          fi
-          if [[ "$uses_sambanova" == "true" && -z "${SAMBANOVA_API_KEY:-}" ]]; then
-            echo "::error::Missing required repository secret: SAMBANOVA_API_KEY"
-            exit 1
-          fi
-          if [[ "$uses_openrouter" == "true" && -z "${OPENROUTER_API_KEY:-}" ]]; then
-            echo "::error::Missing required repository secret: OPENROUTER_API_KEY"
-            exit 1
-          fi
-
-          if [[ -z "${PHASE2_AUTOMATION_TOKEN:-}" ]]; then
-            echo "::error::Missing required repository secret: PHASE2_AUTOMATION_TOKEN"
-            exit 1
-          fi
-          echo "::add-mask::${PHASE2_AUTOMATION_TOKEN}"
-
-          gh --version
-          echo "gh API access confirmed for: $(gh api "repos/${GITHUB_REPOSITORY}" --jq '.full_name')"
-
-      - name: Compile signal scripts
+      - name: Download recent worker result artifacts for lease recovery
         shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
         run: |
           set -euo pipefail
-
-          python -m py_compile \
-            scripts/phase-2/provider_model_registry.py \
-            scripts/phase-2/free_policy.py \
-            scripts/phase-2/provider_runtime.py \
-            scripts/phase-2/quota_state.py \
-            scripts/phase-2/task_identity.py \
-            scripts/phase-2/task_state.py \
-            scripts/phase-2/task_reconciler.py \
-            scripts/phase-2/run_check_agent.py \
-            scripts/phase-2/run_check_batch.py \
-            scripts/phase-2/update_model_run_statistics.py \
-            scripts/phase-2/issue_manager.py \
-            scripts/phase-2/providers/openai_compatible.py \
-            scripts/phase-2/providers/groq.py \
-            scripts/phase-2/providers/gemini.py \
-            scripts/phase-2/providers/sambanova.py \
-            scripts/phase-2/providers/openrouter.py
-
-      - name: Run check-agent signal collector
-        shell: bash
-        run: |
-          set -euo pipefail
-
-          trim() {
-            printf '%s' "$1" | sed 's/^[[:space:]]*//;s/[[:space:]]*$//'
-          }
-
-          mode="${WORKFLOW_MODE:-post}"
-          provider="${WORKFLOW_PROVIDER:-groq}"
-          provider_model_specs="${WORKFLOW_PROVIDER_MODEL_SPECS:-}"
-          selection="${WORKFLOW_SELECTION:-rotate}"
-          rotation_seed="${WORKFLOW_ROTATION_SEED:-hourly}"
-          rotation_index="${WORKFLOW_ROTATION_INDEX:-}"
-          pages_input="${WORKFLOW_PAGES:-}"
-          agents_input="${WORKFLOW_AGENTS:-page-hygiene-checker,language-style-checker}"
-          models_input="${WORKFLOW_MODELS:-}"
-          max_runs="${WORKFLOW_MAX_RUNS:-1}"
-          sleep_seconds="${WORKFLOW_SLEEP_SECONDS:-0}"
-          max_completion_tokens="${WORKFLOW_MAX_COMPLETION_TOKENS:-}"
-
-          if [[ -z "$provider_model_specs" && -n "$models_input" ]]; then
-            IFS=',' read -ra fallback_models <<< "$models_input"
-            fallback_specs=()
-            for model in "${fallback_models[@]}"; do
-              model="$(trim "$model")"
-              if [[ -n "$model" ]]; then
-                fallback_specs+=("${provider}:${model}")
-              fi
-            done
-            provider_model_specs="$(IFS=','; printf '%s' "${fallback_specs[*]}")"
-          fi
-          if [[ -z "$provider_model_specs" ]]; then
-            provider_model_specs="$(python scripts/phase-2/provider_model_registry.py list-specs)"
-          fi
-          provider_model_specs="$(python scripts/phase-2/provider_model_registry.py validate-specs --specs "$provider_model_specs")"
-
-          if [[ -z "$rotation_index" && "$selection" == "rotate" && -n "$provider_model_specs" ]]; then
-            # Align provider:model rotation buckets with the cron schedule:
-            # 7,27,47 * * * *
-            #
-            # Without this offset, delayed runs near :20 or :40 can cross into the
-            # next Unix-anchored 20-minute bucket and select the next model slot.
-            rotation_period_seconds=1200
-            rotation_schedule_offset_seconds=420
-            rotation_timestamp="$(date -u +%s)"
-
-            rotation_index="$(( (rotation_timestamp - rotation_schedule_offset_seconds) / rotation_period_seconds ))"
-
-            echo "Rotation timestamp UTC: $(date -u --date="@${rotation_timestamp}" '+%Y-%m-%dT%H:%M:%SZ')"
-            echo "Raw provider/model rotation index: ${rotation_index}"
-          fi
-
-          if [[ -n "$provider_model_specs" ]]; then
-            provider_model_specs_normalized="${provider_model_specs//$'\n'/,}"
-            IFS=',' read -ra provider_model_specs_array <<< "$provider_model_specs_normalized"
-
-            normalized_specs=()
-            for spec in "${provider_model_specs_array[@]}"; do
-              spec="$(trim "$spec")"
-              if [[ -n "$spec" ]]; then
-                normalized_specs+=("$spec")
-              fi
-            done
-
-            if [[ "${#normalized_specs[@]}" -eq 0 ]]; then
-              echo "::error::provider_model_specs was provided but no usable provider:model spec was found."
-              exit 1
-            fi
-
-            provider_model_index=0
-            runner_rotation_index="$rotation_index"
-
-            if [[ "$selection" == "rotate" && -n "$rotation_index" ]]; then
-              provider_model_index="$((rotation_index % ${#normalized_specs[@]}))"
-              runner_rotation_index="$((rotation_index / ${#normalized_specs[@]}))"
-            fi
-
-            selected_provider_model_spec="${normalized_specs[$provider_model_index]}"
-            if [[ "$selected_provider_model_spec" != *:* ]]; then
-              echo "::error::Invalid provider:model spec: ${selected_provider_model_spec}"
-              exit 1
-            fi
-
-            provider="$(trim "${selected_provider_model_spec%%:*}")"
-            models_input="$(trim "${selected_provider_model_spec#*:}")"
-            rotation_index="$runner_rotation_index"
-
-            echo "Provider/model rotation specs: ${normalized_specs[*]}"
-            echo "Provider/model slot count: ${#normalized_specs[@]}"
-            echo "Provider/model slot index: ${provider_model_index}"
-            echo "Runner rotation index: ${runner_rotation_index}"
-            echo "Selected provider/model spec: ${selected_provider_model_spec}"
-          fi
-
-          if [[ -z "$max_completion_tokens" && "$provider" == "groq" && "$models_input" == "openai/gpt-oss-20b" ]]; then
-            max_completion_tokens="1400"
-          fi
-
-          if [[ -z "$max_completion_tokens" ]]; then
-            max_completion_tokens="3000"
-          fi
-
-          page_args=()
-          if [[ -n "$pages_input" ]]; then
-            pages_normalized="${pages_input//,/$'\n'}"
-            while IFS= read -r page; do
-              page="$(trim "$page")"
-              if [[ -n "$page" ]]; then
-                page_args+=(--page "$page")
-              fi
-            done <<< "$pages_normalized"
-          else
-            page_args+=(--pages-glob "docs/stereotypes/classes/*.md")
-            page_args+=(--pages-glob "docs/stereotypes/relations/*.md")
-            page_args+=(--exclude-pages-glob "docs/stereotypes/**/index.md")
-          fi
-
-          agent_args=()
-          IFS=',' read -ra agents <<< "$agents_input"
-          for agent in "${agents[@]}"; do
-            agent="$(trim "$agent")"
-            if [[ -n "$agent" ]]; then
-              agent_args+=(--agent "$agent")
-            fi
+          mkdir -p .tmp/phase-2/recovery-events
+          gh run list --workflow check-agent-signal-collector.yml --branch "$GITHUB_REF_NAME" --limit 20 --json databaseId --jq '.[].databaseId' | while read -r run_id; do
+            [[ -n "$run_id" ]] || continue
+            gh run download "$run_id" --pattern 'phase-2-worker-*' --dir ".tmp/phase-2/recovery-events/${run_id}" || true
           done
 
-          model_args=()
-          IFS=',' read -ra models <<< "$models_input"
-          for model in "${models[@]}"; do
-            model="$(trim "$model")"
-            if [[ -n "$model" ]]; then
-              model_args+=(--model "$model")
-            fi
-          done
-
-          if [[ "${#model_args[@]}" -eq 0 ]]; then
-            echo "::error::No model was selected for provider=${provider}. Set provider_model_specs, or explicitly set models."
-            exit 1
-          fi
-          rotation_args=()
-          if [[ -n "$rotation_index" ]]; then
-            rotation_args+=(--rotation-index "$rotation_index")
-          fi
-
-          completion_args=()
-          if [[ -n "$max_completion_tokens" ]]; then
-            completion_args+=(--max-completion-tokens "$max_completion_tokens")
-          fi
-
-          echo "Mode: ${mode}"
-          echo "Provider: ${provider}"
-          echo "Models: ${models_input}"
-          echo "Selection: ${selection}"
-          echo "Rotation seed: ${rotation_seed}"
-          echo "Rotation index: ${rotation_index:-n/a}"
-          echo "Max runs: ${max_runs}"
-          echo "Sleep seconds: ${sleep_seconds}"
-          echo "Max completion tokens: ${max_completion_tokens:-default}"
-
-          python scripts/phase-2/run_check_batch.py \
-            "${page_args[@]}" \
-            "${agent_args[@]}" \
-            --provider "$provider" \
-            "${model_args[@]}" \
-            --mode "$mode" \
-            --repo "$GITHUB_REPOSITORY" \
-            --selection "$selection" \
-            --rotation-seed "$rotation_seed" \
-            "${rotation_args[@]}" \
-            --max-runs "$max_runs" \
-            --sleep-seconds "$sleep_seconds" \
-            "${completion_args[@]}" \
-            --allow-rejected-check-outputs \
-            --allow-provider-failures
-
-      - name: Update persistent Phase 2 state
-        id: persistent_state
-        if: always()
+      - name: Check resolver priority
+        id: resolver_preflight
         shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PHASE2_QUOTA_EVENT_DIR: .tmp/phase-2/recovery-quota-events
         run: |
           set -euo pipefail
+          result="$(python scripts/phase-2/resolve_signal_issue.py --repo "$GITHUB_REPOSITORY" --preflight-only)"
+          echo "$result"
+          pending="$(printf '%s\n' "$result" | sed -n 's/^resolver_work_pending=//p' | tail -1)"
+          [[ "$pending" == "true" || "$pending" == "false" ]] || { echo "::error::Invalid resolver preflight output."; exit 1; }
+          echo "pending=$pending" >> "$GITHUB_OUTPUT"
 
-          echo "updated=false" >> "$GITHUB_OUTPUT"
-
-          # Refresh the target branch before reading and rewriting the persistent
-          # Markdown counter page. Workflow-level concurrency reduces overlap
-          # between scheduled runs, but this also avoids starting from stale
-          # statistics when another commit reached the branch first.
-          git pull --ff-only origin "${GITHUB_REF_NAME}"
-
-          quota_state="data/phase-2/quota-state.json"
-          task_state="data/phase-2/task-state.json"
-          quota_events="${PHASE2_QUOTA_EVENT_DIR}"
-          updated=false
-
-          if compgen -G "${quota_events}/*.json" > /dev/null; then
-            python scripts/phase-2/quota_state.py aggregate \
-              --state "$quota_state" \
-              --task-state "$task_state" \
-              --events "$quota_events"
-            updated=true
-          else
-            echo "No quota observation events found; quota state is unchanged."
-          fi
-
-          if [[ "${GITHUB_EVENT_NAME:-}" == "schedule" || "${WORKFLOW_UPDATE_MODEL_STATISTICS:-}" == "true" ]]; then
-            if [[ -f .tmp/phase-2/batch-summary.md ]]; then
-              statistics_page="docs/methodology/phases/phase-2/model-run-statistics.md"
-              provider_model_specs="$(python scripts/phase-2/provider_model_registry.py list-specs)"
-
-              python scripts/phase-2/update_model_run_statistics.py \
-                --summary .tmp/phase-2/batch-summary.md \
-                --statistics-page "$statistics_page" \
-                --provider-model-specs "$provider_model_specs" \
-                --run-id "$GITHUB_RUN_ID" \
-                --run-attempt "$GITHUB_RUN_ATTEMPT" \
-                --workflow "$GITHUB_WORKFLOW" \
-                --event-name "$GITHUB_EVENT_NAME" \
-                --commit-sha "$GITHUB_SHA"
-              updated=true
-            else
-              echo "::warning::No batch summary found; skipping model run statistics update."
-            fi
-          fi
-
-          echo "updated=${updated}" >> "$GITHUB_OUTPUT"
-
-      - name: Commit persistent Phase 2 state
-        if: ${{ always() && steps.persistent_state.outcome == 'success' && steps.persistent_state.outputs.updated == 'true' }}
+      - name: Reconcile and persist leases
+        id: scheduler
         shell: bash
         env:
           PHASE2_AUTOMATION_TOKEN: ${{ secrets.PHASE2_AUTOMATION_TOKEN }}
+          MODE_INPUT: ${{ github.event.inputs.mode }}
+          PAGES_INPUT: ${{ github.event.inputs.pages }}
+          AGENTS_INPUT: ${{ github.event.inputs.agents }}
+          SPECS_INPUT: ${{ github.event.inputs.provider_model_specs }}
+          MAX_TASKS_INPUT: ${{ github.event.inputs.max_tasks_per_provider }}
+          EXECUTION_BUDGET_INPUT: ${{ github.event.inputs.execution_budget_seconds }}
+          RESOLVER_WORK_PENDING: ${{ steps.resolver_preflight.outputs.pending }}
         run: |
           set -euo pipefail
 
-          if [[ -z "${PHASE2_AUTOMATION_TOKEN:-}" ]]; then
+          mode="${MODE_INPUT:-post}"
+          [[ "${GITHUB_EVENT_NAME}" == "schedule" ]] && mode="post"
+          scheduler_command="$mode"
+          [[ "$mode" == "post" ]] && scheduler_command="lease"
+          max_tasks="${MAX_TASKS_INPUT:-0}"
+          execution_budget="${EXECUTION_BUDGET_INPUT:-720}"
+          source_root="$PWD"
+          worktree_root="$(mktemp -d)"
+          push_url="https://x-access-token:${PHASE2_AUTOMATION_TOKEN}@github.com/${GITHUB_REPOSITORY}.git"
+          trap 'git worktree prune; rm -rf "$worktree_root"' EXIT
+
+          filter_args=()
+          while IFS= read -r page; do [[ -n "$page" ]] && filter_args+=(--page "$page"); done < <(printf '%s' "${PAGES_INPUT:-}" | tr ',' '\n' | sed 's/^[[:space:]]*//;s/[[:space:]]*$//' | sed '/^$/d')
+          while IFS= read -r agent; do [[ -n "$agent" ]] && filter_args+=(--agent "$agent"); done < <(printf '%s' "${AGENTS_INPUT:-}" | tr ',' '\n' | sed 's/^[[:space:]]*//;s/[[:space:]]*$//' | sed '/^$/d')
+          while IFS= read -r spec; do [[ -n "$spec" ]] && filter_args+=(--provider-model-spec "$spec"); done < <(printf '%s' "${SPECS_INPUT:-}" | tr ',' '\n' | sed 's/^[[:space:]]*//;s/[[:space:]]*$//' | sed '/^$/d')
+          resolver_args=()
+          [[ "$RESOLVER_WORK_PENDING" == "true" ]] && resolver_args+=(--resolver-work-pending)
+
+          if [[ "$scheduler_command" == "lease" && -z "${PHASE2_AUTOMATION_TOKEN:-}" ]]; then
             echo "::error::Missing required repository secret: PHASE2_AUTOMATION_TOKEN"
             exit 1
           fi
-          echo "::add-mask::${PHASE2_AUTOMATION_TOKEN}"
+          [[ -z "${PHASE2_AUTOMATION_TOKEN:-}" ]] || echo "::add-mask::${PHASE2_AUTOMATION_TOKEN}"
 
-          git add \
-            data/phase-2/quota-state.json \
-            data/phase-2/task-state.json \
-            docs/methodology/phases/phase-2/model-run-statistics.md
-          if git diff --cached --quiet; then
-            echo "No model run statistics changes to commit."
-            exit 0
-          fi
+          for attempt in 1 2 3; do
+            git fetch origin "$GITHUB_REF_NAME"
+            state_worktree="${worktree_root}/state-${attempt}"
+            git worktree add --detach "$state_worktree" "origin/${GITHUB_REF_NAME}"
+            python "$state_worktree/scripts/phase-2/task_reconciler.py" reconcile --repo-root "$state_worktree" --commit-sha "$(git -C "$state_worktree" rev-parse HEAD)"
+            plan_root="${state_worktree}/.tmp/phase-2/work-plans"
+            python "$state_worktree/scripts/phase-2/task_scheduler.py" "$scheduler_command" \
+              --repo-root "$state_worktree" \
+              --workflow-run-id "${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}" \
+              --work-plan-root "$plan_root" \
+              --result-events "${source_root}/.tmp/phase-2/recovery-events" \
+              --max-tasks-per-provider "$max_tasks" \
+              --execution-budget-seconds "$execution_budget" \
+              "${resolver_args[@]}" \
+              "${filter_args[@]}"
 
-          git config user.name "phase2-automation"
-          git config user.email "phase2-automation@users.noreply.github.com"
-          git commit -m "chore(phase-2): update operational state"
+            if [[ "$scheduler_command" != "lease" ]]; then
+              lease_sha="$(git -C "$state_worktree" rev-parse HEAD)"
+              mkdir -p "$source_root/.tmp/phase-2/work-plans"
+              cp "$plan_root"/*.json "$source_root/.tmp/phase-2/work-plans/"
+              python "$source_root/scripts/phase-2/task_scheduler.py" stamp-plans --work-plan-root "$source_root/.tmp/phase-2/work-plans" --lease-commit-sha "$lease_sha"
+              break
+            fi
 
-          push_url="https://x-access-token:${PHASE2_AUTOMATION_TOKEN}@github.com/${GITHUB_REPOSITORY}.git"
-          if ! git push "$push_url" HEAD:"${GITHUB_REF_NAME}"; then
-            echo "::error::Failed to push Phase 2 operational state to ${GITHUB_REF_NAME}. Ensure PHASE2_AUTOMATION_TOKEN has contents:write access and is allowed to update the protected branch or bypass the applicable branch protection/ruleset."
-            exit 1
-          fi
+            git -C "$state_worktree" add data/phase-2/task-state.json data/phase-2/quota-state.json
+            git -C "$state_worktree" config user.name "github-actions[bot]"
+            git -C "$state_worktree" config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            if ! git -C "$state_worktree" diff --cached --quiet; then
+              git -C "$state_worktree" commit -m "chore(phase-2): lease scheduled provider work"
+              if ! git -C "$state_worktree" push "$push_url" HEAD:"${GITHUB_REF_NAME}"; then
+                git worktree remove --force "$state_worktree"
+                [[ "$attempt" -lt 3 ]] || { echo "::error::Lease push conflicted after three fresh selections."; exit 1; }
+                echo "::warning::Lease push conflicted; reconciling and reselecting from the latest branch state."
+                continue
+              fi
+            fi
+            lease_sha="$(git -C "$state_worktree" rev-parse HEAD)"
+            mkdir -p "$source_root/.tmp/phase-2/work-plans"
+            cp "$plan_root"/*.json "$source_root/.tmp/phase-2/work-plans/"
+            python "$source_root/scripts/phase-2/task_scheduler.py" stamp-plans --work-plan-root "$source_root/.tmp/phase-2/work-plans" --lease-commit-sha "$lease_sha"
+            break
+          done
 
-      - name: Upload check-agent artifacts
-        if: always()
+          echo "lease_sha=$lease_sha" >> "$GITHUB_OUTPUT"
+          for provider in sambanova groq gemini openrouter; do
+            count="$(jq '.assignments | length' ".tmp/phase-2/work-plans/${provider}.json")"
+            [[ "$count" -gt 0 ]] && has_work=true || has_work=false
+            echo "has_${provider}=${has_work}" >> "$GITHUB_OUTPUT"
+          done
+
+      - name: Upload provider work plans
         uses: actions/upload-artifact@v7
         with:
-          name: check-agent-signal-collector-${{ github.run_id }}
-          path: .tmp/phase-2
+          name: phase-2-provider-work-plans-${{ github.run_id }}-${{ github.run_attempt }}
+          path: .tmp/phase-2/work-plans
+          if-no-files-found: error
+
+  sambanova-worker:
+    name: SambaNova provider worker
+    needs: lease-and-plan
+    if: ${{ needs.lease-and-plan.result == 'success' && needs.lease-and-plan.outputs.has_sambanova == 'true' && (github.event_name == 'schedule' || github.event.inputs.mode == 'post') }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          ref: ${{ needs.lease-and-plan.outputs.lease_sha }}
+      - uses: actions/setup-python@v7
+        with:
+          python-version: "3.12"
+      - run: python -m pip install -r requirements.txt
+      - uses: actions/download-artifact@v7
+        with:
+          name: phase-2-provider-work-plans-${{ github.run_id }}-${{ github.run_attempt }}
+          path: .tmp/phase-2/work-plans
+      - name: Run SambaNova assignments
+        env:
+          SAMBANOVA_API_KEY: ${{ secrets.SAMBANOVA_API_KEY }}
+          PHASE2_QUOTA_EVENT_DIR: .tmp/phase-2/quota-events
+        run: python scripts/phase-2/provider_worker.py --provider sambanova --plan .tmp/phase-2/work-plans/sambanova.json
+      - if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: phase-2-worker-sambanova-${{ github.run_id }}-${{ github.run_attempt }}
+          path: |
+            .tmp/phase-2/result-events
+            .tmp/phase-2/quota-events
+            .tmp/phase-2/worker-output
           if-no-files-found: warn
-          retention-days: 90
+
+  groq-worker:
+    name: Groq provider worker
+    needs: lease-and-plan
+    if: ${{ needs.lease-and-plan.result == 'success' && needs.lease-and-plan.outputs.has_groq == 'true' && (github.event_name == 'schedule' || github.event.inputs.mode == 'post') }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          ref: ${{ needs.lease-and-plan.outputs.lease_sha }}
+      - uses: actions/setup-python@v7
+        with:
+          python-version: "3.12"
+      - run: python -m pip install -r requirements.txt
+      - uses: actions/download-artifact@v7
+        with:
+          name: phase-2-provider-work-plans-${{ github.run_id }}-${{ github.run_attempt }}
+          path: .tmp/phase-2/work-plans
+      - name: Run Groq assignments
+        env:
+          GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
+          PHASE2_QUOTA_EVENT_DIR: .tmp/phase-2/quota-events
+        run: python scripts/phase-2/provider_worker.py --provider groq --plan .tmp/phase-2/work-plans/groq.json
+      - if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: phase-2-worker-groq-${{ github.run_id }}-${{ github.run_attempt }}
+          path: |
+            .tmp/phase-2/result-events
+            .tmp/phase-2/quota-events
+            .tmp/phase-2/worker-output
+          if-no-files-found: warn
+
+  gemini-worker:
+    name: Gemini provider worker
+    needs: lease-and-plan
+    if: ${{ needs.lease-and-plan.result == 'success' && needs.lease-and-plan.outputs.has_gemini == 'true' && (github.event_name == 'schedule' || github.event.inputs.mode == 'post') }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          ref: ${{ needs.lease-and-plan.outputs.lease_sha }}
+      - uses: actions/setup-python@v7
+        with:
+          python-version: "3.12"
+      - run: python -m pip install -r requirements.txt
+      - uses: actions/download-artifact@v7
+        with:
+          name: phase-2-provider-work-plans-${{ github.run_id }}-${{ github.run_attempt }}
+          path: .tmp/phase-2/work-plans
+      - name: Run Gemini assignments
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          PHASE2_QUOTA_EVENT_DIR: .tmp/phase-2/quota-events
+        run: python scripts/phase-2/provider_worker.py --provider gemini --plan .tmp/phase-2/work-plans/gemini.json
+      - if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: phase-2-worker-gemini-${{ github.run_id }}-${{ github.run_attempt }}
+          path: |
+            .tmp/phase-2/result-events
+            .tmp/phase-2/quota-events
+            .tmp/phase-2/worker-output
+          if-no-files-found: warn
+
+  openrouter-worker:
+    name: OpenRouter provider worker
+    needs: lease-and-plan
+    if: ${{ needs.lease-and-plan.result == 'success' && needs.lease-and-plan.outputs.has_openrouter == 'true' && (github.event_name == 'schedule' || github.event.inputs.mode == 'post') }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          ref: ${{ needs.lease-and-plan.outputs.lease_sha }}
+      - uses: actions/setup-python@v7
+        with:
+          python-version: "3.12"
+      - run: python -m pip install -r requirements.txt
+      - uses: actions/download-artifact@v7
+        with:
+          name: phase-2-provider-work-plans-${{ github.run_id }}-${{ github.run_attempt }}
+          path: .tmp/phase-2/work-plans
+      - name: Run OpenRouter assignments
+        env:
+          OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
+          PHASE2_QUOTA_EVENT_DIR: .tmp/phase-2/quota-events
+        run: python scripts/phase-2/provider_worker.py --provider openrouter --plan .tmp/phase-2/work-plans/openrouter.json
+      - if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: phase-2-worker-openrouter-${{ github.run_id }}-${{ github.run_attempt }}
+          path: |
+            .tmp/phase-2/result-events
+            .tmp/phase-2/quota-events
+            .tmp/phase-2/worker-output
+          if-no-files-found: warn

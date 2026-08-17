@@ -35,7 +35,7 @@ permissions:
   pull-requests: write
 
 concurrency:
-  group: phase-2-operational-state-write-${{ github.ref }}
+  group: phase-2-operational-state-write
   cancel-in-progress: false
 
 jobs:

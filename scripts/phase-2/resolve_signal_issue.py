@@ -90,6 +90,8 @@ JSON_SYSTEM_INSTRUCTION = (
     "Return only valid JSON matching the requested schema. "
     "Do not include Markdown fences, analysis, prefaces, or explanations outside JSON."
 )
+RESOLVER_PRIMARY_SPEC = ("gemini", "gemini-3.5-flash")
+RESOLVER_FALLBACK_SPEC = ("groq", "openai/gpt-oss-120b")
 
 
 class ResolverError(RuntimeError):
@@ -148,6 +150,11 @@ def parse_args() -> argparse.Namespace:
         help="Generate and validate a plan without modifying files or writing to GitHub.",
     )
     parser.add_argument("--branch-prefix", default="phase-2/auto-resolve")
+    parser.add_argument(
+        "--preflight-only",
+        action="store_true",
+        help="Report whether eligible resolver work should reserve either shared provider-model slot.",
+    )
     return parser.parse_args()
 
 
@@ -491,6 +498,44 @@ def call_provider(
     if provider == "gemini":
         return call_gemini_json(model, review_input, max_tokens, max_attempts)
     raise ResolverError(f"Unsupported provider: {provider}")  # pragma: no cover - guarded above.
+
+
+def eligible_resolver_work_exists(repo: str, *, now: datetime | None = None) -> bool:
+    """Return whether the scheduler must reserve an eligible shared resolver slot."""
+    if find_oldest_open_signal_issue(repo) is None:
+        return False
+    try:
+        registry = load_registry(DEFAULT_REGISTRY_PATH)
+        quota = load_quota_state(DEFAULT_STATE_PATH, registry)
+        pending_events = load_event_files(Path(os.getenv("PHASE2_QUOTA_EVENT_DIR", str(DEFAULT_EVENT_DIRECTORY))))
+        if pending_events:
+            quota, _ = aggregate_events(quota, pending_events, registry)
+        check_at = now or datetime.now(timezone.utc)
+        primary_provider, primary_model = RESOLVER_PRIMARY_SPEC
+        primary_eligible, primary_reason = slot_eligibility(
+            quota,
+            provider=primary_provider,
+            model=primary_model,
+            task_id=None,
+            resolver_work_pending=False,
+            now=check_at,
+        )
+        if primary_eligible:
+            return True
+        if primary_reason not in {"slot-cooldown", "slot-recheck-required"}:
+            return False
+        fallback_provider, fallback_model = RESOLVER_FALLBACK_SPEC
+        fallback_eligible, _fallback_reason = slot_eligibility(
+            quota,
+            provider=fallback_provider,
+            model=fallback_model,
+            task_id=None,
+            resolver_work_pending=False,
+            now=check_at,
+        )
+        return fallback_eligible
+    except (OSError, QuotaStateError, ValueError) as exc:
+        raise ResolverError(f"Could not evaluate resolver preflight eligibility: {exc}") from exc
 
 
 def parse_json(text: str) -> dict[str, Any]:
@@ -1425,6 +1470,10 @@ def write_json_artifact(output_dir: Path, filename: str, value: Any) -> None:
 def main() -> int:
     args = parse_args()
     try:
+        if getattr(args, "preflight_only", False):
+            pending = eligible_resolver_work_exists(args.repo)
+            print(f"resolver_work_pending={str(pending).lower()}")
+            return 0
         if args.issue:
             number = issue_number(args.issue)
         else:
