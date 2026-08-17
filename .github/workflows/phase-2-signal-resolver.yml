@@ -224,43 +224,17 @@ jobs:
           echo "::add-mask::${PHASE2_AUTOMATION_TOKEN}"
 
           source_root="$PWD"
-          worktree_root="$(mktemp -d)"
-          cleanup() {
-            for state_worktree in "${worktree_root}"/state-*; do
-              [[ -d "$state_worktree" ]] || continue
-              git worktree remove --force "$state_worktree" 2>/dev/null || true
-            done
-            rm -rf "$worktree_root"
-          }
-          trap cleanup EXIT
-
-          push_url="https://x-access-token:${PHASE2_AUTOMATION_TOKEN}@github.com/${GITHUB_REPOSITORY}.git"
-          for attempt in 1 2 3; do
-            state_worktree="${worktree_root}/state-${attempt}"
-            git fetch origin "${GITHUB_REF_NAME}"
-            git worktree add --detach "$state_worktree" "origin/${GITHUB_REF_NAME}"
-
-            python "${state_worktree}/scripts/phase-2/quota_state.py" aggregate \
-              --repo-root "$state_worktree" \
-              --events "${source_root}/${PHASE2_QUOTA_EVENT_DIR}"
-
-            git -C "$state_worktree" add data/phase-2/quota-state.json data/phase-2/task-state.json
-            if git -C "$state_worktree" diff --cached --quiet; then
-              echo "No resolver quota-state changes to commit."
-              exit 0
-            fi
-
-            git -C "$state_worktree" commit -m "chore(phase-2): update resolver quota state"
-            if git -C "$state_worktree" push "$push_url" HEAD:"${GITHUB_REF_NAME}"; then
-              exit 0
-            fi
-            git worktree remove --force "$state_worktree"
-            if [[ "$attempt" -eq 3 ]]; then
-              echo "::error::Failed to persist resolver quota state after ${attempt} attempts."
-              exit 1
-            fi
-            echo "::warning::Resolver quota-state push conflicted; rebuilding from the latest branch state."
-          done
+          export PHASE2_PUSH_URL="https://x-access-token:${PHASE2_AUTOMATION_TOKEN}@github.com/${GITHUB_REPOSITORY}.git"
+          python scripts/phase-2/state_writer.py \
+            --repo-root "$source_root" \
+            --branch "$GITHUB_REF_NAME" \
+            --commit-message "chore(phase-2): update resolver quota state" \
+            --add data/phase-2/quota-state.json \
+            --add data/phase-2/task-state.json \
+            -- \
+            python "{worktree}/scripts/phase-2/quota_state.py" aggregate \
+            --repo-root "{worktree}" \
+            --events "${source_root}/${PHASE2_QUOTA_EVENT_DIR}"
 
       - name: Upload resolver plan
         if: always()

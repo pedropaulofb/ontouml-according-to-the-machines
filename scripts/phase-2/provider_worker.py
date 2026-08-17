@@ -204,7 +204,13 @@ def emit_not_called(
         "outcome": "not_called",
         "signal_count": 0,
         "provider_attempts": 0,
-        "usage": {"input_tokens": None, "output_tokens": None, "total_tokens": None},
+        "usage": {
+            "input_tokens": None,
+            "output_tokens": None,
+            "total_tokens": None,
+            "reasoning_tokens": None,
+            "cached_tokens": None,
+        },
         "quota_observations": [],
         "output_sha256": None,
         "output_artifact": None,
@@ -231,7 +237,13 @@ def _load_new_quota_observations(
 
 
 def _usage_total(observations: Sequence[Mapping[str, Any]]) -> dict[str, int | None]:
-    totals: dict[str, int | None] = {"input_tokens": None, "output_tokens": None, "total_tokens": None}
+    totals: dict[str, int | None] = {
+        "input_tokens": None,
+        "output_tokens": None,
+        "total_tokens": None,
+        "reasoning_tokens": None,
+        "cached_tokens": None,
+    }
     for field in totals:
         values = [
             observation.get("usage", {}).get(field)

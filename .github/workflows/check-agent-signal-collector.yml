@@ -222,27 +222,18 @@ jobs:
           fi
           echo "::add-mask::${PHASE2_AUTOMATION_TOKEN}"
 
-          worktree_root="$(mktemp -d)"
-          push_url="https://x-access-token:${PHASE2_AUTOMATION_TOKEN}@github.com/${GITHUB_REPOSITORY}.git"
-          trap 'git worktree prune; rm -rf "$worktree_root"' EXIT
-          for attempt in 1 2 3; do
-            git fetch origin "$GITHUB_REF_NAME"
-            state_worktree="${worktree_root}/state-${attempt}"
-            git worktree add --detach "$state_worktree" "origin/${GITHUB_REF_NAME}"
-            python "$state_worktree/scripts/phase-2/quota_state.py" aggregate --repo-root "$state_worktree" --events "$event_root"
-            git -C "$state_worktree" add data/phase-2/quota-state.json data/phase-2/task-state.json
-            if git -C "$state_worktree" diff --cached --quiet; then
-              exit 0
-            fi
-            git -C "$state_worktree" config user.name "github-actions[bot]"
-            git -C "$state_worktree" config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-            git -C "$state_worktree" commit -m "chore(phase-2): update diagnostic quota state"
-            if git -C "$state_worktree" push "$push_url" HEAD:"${GITHUB_REF_NAME}"; then
-              exit 0
-            fi
-            git worktree remove --force "$state_worktree"
-            [[ "$attempt" -lt 3 ]] || { echo "::error::Failed to persist diagnostic quota state."; exit 1; }
-          done
+          source_root="$PWD"
+          export PHASE2_PUSH_URL="https://x-access-token:${PHASE2_AUTOMATION_TOKEN}@github.com/${GITHUB_REPOSITORY}.git"
+          python scripts/phase-2/state_writer.py \
+            --repo-root "$source_root" \
+            --branch "$GITHUB_REF_NAME" \
+            --commit-message "chore(phase-2): update diagnostic quota state" \
+            --add data/phase-2/quota-state.json \
+            --add data/phase-2/task-state.json \
+            -- \
+            python "{worktree}/scripts/phase-2/quota_state.py" aggregate \
+            --repo-root "{worktree}" \
+            --events "$event_root"
 
   lease-and-plan:
     name: Reconcile, lease, and create provider plans
@@ -327,9 +318,6 @@ jobs:
           max_tasks="${MAX_TASKS_INPUT:-0}"
           execution_budget="${EXECUTION_BUDGET_INPUT:-720}"
           source_root="$PWD"
-          worktree_root="$(mktemp -d)"
-          push_url="https://x-access-token:${PHASE2_AUTOMATION_TOKEN}@github.com/${GITHUB_REPOSITORY}.git"
-          trap 'git worktree prune; rm -rf "$worktree_root"' EXIT
 
           filter_args=()
           while IFS= read -r page; do [[ -n "$page" ]] && filter_args+=(--page "$page"); done < <(printf '%s' "${PAGES_INPUT:-}" | tr ',' '\n' | sed 's/^[[:space:]]*//;s/[[:space:]]*$//' | sed '/^$/d')
@@ -344,48 +332,43 @@ jobs:
           fi
           [[ -z "${PHASE2_AUTOMATION_TOKEN:-}" ]] || echo "::add-mask::${PHASE2_AUTOMATION_TOKEN}"
 
-          for attempt in 1 2 3; do
-            git fetch origin "$GITHUB_REF_NAME"
-            state_worktree="${worktree_root}/state-${attempt}"
-            git worktree add --detach "$state_worktree" "origin/${GITHUB_REF_NAME}"
-            python "$state_worktree/scripts/phase-2/task_reconciler.py" reconcile --repo-root "$state_worktree" --commit-sha "$(git -C "$state_worktree" rev-parse HEAD)"
-            plan_root="${state_worktree}/.tmp/phase-2/work-plans"
-            python "$state_worktree/scripts/phase-2/task_scheduler.py" "$scheduler_command" \
-              --repo-root "$state_worktree" \
+          if [[ "$scheduler_command" == "lease" ]]; then
+            export PHASE2_PUSH_URL="https://x-access-token:${PHASE2_AUTOMATION_TOKEN}@github.com/${GITHUB_REPOSITORY}.git"
+            mkdir -p "$source_root/.tmp/phase-2"
+            python scripts/phase-2/state_writer.py \
+              --repo-root "$source_root" \
+              --branch "$GITHUB_REF_NAME" \
+              --commit-message "chore(phase-2): lease scheduled provider work" \
+              --add data/phase-2/task-state.json \
+              --add data/phase-2/quota-state.json \
+              --export ".tmp/phase-2/work-plans=${source_root}/.tmp/phase-2/work-plans" \
+              --sha-output "$source_root/.tmp/phase-2/lease-sha.txt" \
+              -- \
+              python "{worktree}/scripts/phase-2/task_scheduler.py" lease \
+              --repo-root "{worktree}" \
+              --reconcile \
               --workflow-run-id "${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}" \
-              --work-plan-root "$plan_root" \
+              --work-plan-root "{worktree}/.tmp/phase-2/work-plans" \
               --result-events "${source_root}/.tmp/phase-2/recovery-events" \
               --max-tasks-per-provider "$max_tasks" \
               --execution-budget-seconds "$execution_budget" \
               "${resolver_args[@]}" \
               "${filter_args[@]}"
-
-            if [[ "$scheduler_command" != "lease" ]]; then
-              lease_sha="$(git -C "$state_worktree" rev-parse HEAD)"
-              mkdir -p "$source_root/.tmp/phase-2/work-plans"
-              cp "$plan_root"/*.json "$source_root/.tmp/phase-2/work-plans/"
-              python "$source_root/scripts/phase-2/task_scheduler.py" stamp-plans --work-plan-root "$source_root/.tmp/phase-2/work-plans" --lease-commit-sha "$lease_sha"
-              break
-            fi
-
-            git -C "$state_worktree" add data/phase-2/task-state.json data/phase-2/quota-state.json
-            git -C "$state_worktree" config user.name "github-actions[bot]"
-            git -C "$state_worktree" config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-            if ! git -C "$state_worktree" diff --cached --quiet; then
-              git -C "$state_worktree" commit -m "chore(phase-2): lease scheduled provider work"
-              if ! git -C "$state_worktree" push "$push_url" HEAD:"${GITHUB_REF_NAME}"; then
-                git worktree remove --force "$state_worktree"
-                [[ "$attempt" -lt 3 ]] || { echo "::error::Lease push conflicted after three fresh selections."; exit 1; }
-                echo "::warning::Lease push conflicted; reconciling and reselecting from the latest branch state."
-                continue
-              fi
-            fi
-            lease_sha="$(git -C "$state_worktree" rev-parse HEAD)"
-            mkdir -p "$source_root/.tmp/phase-2/work-plans"
-            cp "$plan_root"/*.json "$source_root/.tmp/phase-2/work-plans/"
-            python "$source_root/scripts/phase-2/task_scheduler.py" stamp-plans --work-plan-root "$source_root/.tmp/phase-2/work-plans" --lease-commit-sha "$lease_sha"
-            break
-          done
+            lease_sha="$(tr -d '[:space:]' < "$source_root/.tmp/phase-2/lease-sha.txt")"
+          else
+            python scripts/phase-2/task_scheduler.py "$scheduler_command" \
+              --repo-root "$source_root" \
+              --reconcile \
+              --workflow-run-id "${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}" \
+              --work-plan-root "$source_root/.tmp/phase-2/work-plans" \
+              --result-events "$source_root/.tmp/phase-2/recovery-events" \
+              --max-tasks-per-provider "$max_tasks" \
+              --execution-budget-seconds "$execution_budget" \
+              "${resolver_args[@]}" \
+              "${filter_args[@]}"
+            lease_sha="$(git rev-parse HEAD)"
+          fi
+          python scripts/phase-2/task_scheduler.py stamp-plans --work-plan-root "$source_root/.tmp/phase-2/work-plans" --lease-commit-sha "$lease_sha"
 
           echo "lease_sha=$lease_sha" >> "$GITHUB_OUTPUT"
           for provider in sambanova groq gemini openrouter; do
@@ -528,3 +511,90 @@ jobs:
             .tmp/phase-2/quota-events
             .tmp/phase-2/worker-output
           if-no-files-found: warn
+
+  aggregate-results:
+    name: Aggregate, publish, and persist provider results
+    needs:
+      - lease-and-plan
+      - sambanova-worker
+      - groq-worker
+      - gemini-worker
+      - openrouter-worker
+    if: ${{ always() && needs.lease-and-plan.result == 'success' && (github.event_name == 'schedule' || github.event.inputs.mode == 'post') }}
+    runs-on: ubuntu-latest
+    concurrency:
+      group: phase-2-operational-state-write
+      cancel-in-progress: false
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v7
+        with:
+          ref: ${{ github.ref_name }}
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Set up Python
+        uses: actions/setup-python@v7
+        with:
+          python-version: "3.12"
+
+      - name: Download available provider artifacts
+        uses: actions/download-artifact@v7
+        continue-on-error: true
+        with:
+          pattern: phase-2-worker-*-${{ github.run_id }}-${{ github.run_attempt }}
+          path: .tmp/phase-2/worker-artifacts
+          merge-multiple: false
+
+      - name: Download recent replayable provider artifacts
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          recovery_root="$PWD/.tmp/phase-2/worker-artifacts/recovery"
+          mkdir -p "$recovery_root"
+          gh run list --workflow check-agent-signal-collector.yml --branch "$GITHUB_REF_NAME" --limit 20 --json databaseId --jq '.[].databaseId' | while read -r run_id; do
+            [[ -n "$run_id" ]] || continue
+            gh run download "$run_id" --pattern 'phase-2-worker-*' --dir "${recovery_root}/${run_id}" || true
+          done
+
+      - name: Reapply, publish, and push aggregate state
+        shell: bash
+        env:
+          GH_TOKEN: ${{ secrets.PHASE2_AUTOMATION_TOKEN }}
+          PHASE2_AUTOMATION_TOKEN: ${{ secrets.PHASE2_AUTOMATION_TOKEN }}
+        run: |
+          set -euo pipefail
+
+          if [[ -z "${PHASE2_AUTOMATION_TOKEN:-}" ]]; then
+            echo "::error::Missing required repository secret: PHASE2_AUTOMATION_TOKEN"
+            exit 1
+          fi
+          echo "::add-mask::${PHASE2_AUTOMATION_TOKEN}"
+          source_root="$PWD"
+          artifact_root="$source_root/.tmp/phase-2/worker-artifacts"
+          aggregation_timestamp="$(date -u '+%Y-%m-%dT%H:%M:%SZ')"
+          export PHASE2_PUSH_URL="https://x-access-token:${PHASE2_AUTOMATION_TOKEN}@github.com/${GITHUB_REPOSITORY}.git"
+
+          python scripts/phase-2/state_writer.py \
+            --repo-root "$source_root" \
+            --branch "$GITHUB_REF_NAME" \
+            --commit-message "chore(phase-2): aggregate provider results" \
+            --add data/phase-2 \
+            --add docs/methodology/phases/phase-2/model-run-statistics.md \
+            -- \
+            python "{worktree}/scripts/phase-2/aggregate_task_results.py" aggregate \
+            --repo-root "{worktree}" \
+            --repository "$GITHUB_REPOSITORY" \
+            --artifact-root "$artifact_root" \
+            --timestamp "$aggregation_timestamp"
+
+      - name: Upload aggregation replay artifact
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: phase-2-aggregation-replay-${{ github.run_id }}-${{ github.run_attempt }}
+          path: .tmp/phase-2/worker-artifacts
+          if-no-files-found: ignore

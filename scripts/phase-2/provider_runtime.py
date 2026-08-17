@@ -357,11 +357,17 @@ def extract_usage(response: Any) -> dict[str, int | None]:
         prompt_tokens = getattr(usage, "prompt_tokens", None)
         completion_tokens = getattr(usage, "completion_tokens", None)
         total_tokens = getattr(usage, "total_tokens", None)
+        completion_details = getattr(usage, "completion_tokens_details", None)
+        prompt_details = getattr(usage, "prompt_tokens_details", None)
+        reasoning_tokens = getattr(completion_details, "reasoning_tokens", None)
+        cached_tokens = getattr(prompt_details, "cached_tokens", None)
     else:
         usage = getattr(response, "usage_metadata", None)
         prompt_tokens = getattr(usage, "prompt_token_count", None) if usage is not None else None
         completion_tokens = getattr(usage, "candidates_token_count", None) if usage is not None else None
         total_tokens = getattr(usage, "total_token_count", None) if usage is not None else None
+        reasoning_tokens = getattr(usage, "thoughts_token_count", None) if usage is not None else None
+        cached_tokens = getattr(usage, "cached_content_token_count", None) if usage is not None else None
 
     def normalized_token_count(value: Any) -> int | None:
         return value if isinstance(value, int) and not isinstance(value, bool) and value >= 0 else None
@@ -370,6 +376,8 @@ def extract_usage(response: Any) -> dict[str, int | None]:
         "input_tokens": normalized_token_count(prompt_tokens),
         "output_tokens": normalized_token_count(completion_tokens),
         "total_tokens": normalized_token_count(total_tokens),
+        "reasoning_tokens": normalized_token_count(reasoning_tokens),
+        "cached_tokens": normalized_token_count(cached_tokens),
     }
 
 

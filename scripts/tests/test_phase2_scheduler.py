@@ -219,7 +219,7 @@ class LeaseRecoveryTests(unittest.TestCase):
         }
         return record, state_with(record)
 
-    def test_expired_not_called_lease_returns_to_pending(self) -> None:
+    def test_expired_not_called_lease_waits_for_validated_aggregation(self) -> None:
         record, state = self.leased()
         with tempfile.TemporaryDirectory() as temporary:
             event_root = Path(temporary)
@@ -231,8 +231,10 @@ class LeaseRecoveryTests(unittest.TestCase):
             loaded = task_scheduler.load_terminal_events(event_root)
         self.assertEqual(loaded[0]["_event_path"], "worker/event.json")
         counts = task_scheduler.recover_expired_leases(state, loaded, now=NOW)
-        self.assertEqual(record["status"], "pending")
-        self.assertEqual(counts["released_not_called"], 1)
+        self.assertEqual(record["status"], "leased")
+        self.assertEqual(record["last_outcome"]["kind"], "replayable_result")
+        self.assertEqual(record["last_outcome"]["outcome"], "not_called")
+        self.assertEqual(counts["replayable_result"], 1)
 
     def test_expired_replayable_result_is_retained_without_recall(self) -> None:
         record, state = self.leased()
@@ -488,11 +490,15 @@ class ResolverAndWorkflowTests(unittest.TestCase):
         collector = (REPO_ROOT / ".github/workflows/check-agent-signal-collector.yml").read_text(encoding="utf-8")
         resolver_workflow = (REPO_ROOT / ".github/workflows/phase-2-signal-resolver.yml").read_text(encoding="utf-8")
         self.assertIn('cron: "7,27,47 * * * *"', collector)
-        self.assertIn('task_scheduler.py" "$scheduler_command"', collector)
+        self.assertIn('task_scheduler.py" lease', collector)
         self.assertIn("--lease-commit-sha", collector)
         self.assertIn("ref: ${{ needs.lease-and-plan.outputs.lease_sha }}", collector)
-        self.assertEqual(collector.count("group: phase-2-operational-state-write"), 2)
+        self.assertIn("aggregate_task_results.py", collector)
+        self.assertIn("Download recent replayable provider artifacts", collector)
+        self.assertEqual(collector.count("group: phase-2-operational-state-write"), 3)
+        self.assertGreaterEqual(collector.count("scripts/phase-2/state_writer.py"), 3)
         self.assertIn("group: phase-2-operational-state-write", resolver_workflow)
+        self.assertIn("scripts/phase-2/state_writer.py", resolver_workflow)
         self.assertNotIn("phase-2-operational-state-write-${{ github.ref }}", resolver_workflow)
 
 

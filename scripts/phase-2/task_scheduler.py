@@ -7,6 +7,7 @@ import argparse
 import copy
 import hashlib
 import json
+import subprocess
 import sys
 from datetime import datetime, timedelta
 from fractions import Fraction
@@ -140,16 +141,10 @@ def recover_expired_leases(
             continue
         matches = [event for event in events if _event_matches_lease(event, task_id, lease)]
         timestamp = format_timestamp(now)
-        if len(matches) == 1 and matches[0].get("outcome") == "not_called" and matches[0].get("provider_attempts") == 0:
-            task["status"] = "pending"
-            task["lease"] = None
-            task["last_outcome"] = {
-                "kind": "not_called",
-                "attempt_id": lease.get("attempt_id"),
-                "event_path": matches[0].get("_event_path"),
-            }
-            counts["released_not_called"] += 1
-        elif len(matches) == 1 and matches[0].get("outcome") != "not_called":
+        if len(matches) == 1:
+            # The scheduler may identify replayable evidence, but only the
+            # aggregator validates and durably persists a terminal event. Keep
+            # the lease non-schedulable until that deterministic transition.
             task["last_outcome"] = {
                 "kind": "replayable_result",
                 "attempt_id": lease.get("attempt_id"),
@@ -437,6 +432,7 @@ def parse_args(argv: Sequence[str] | None = None) -> argparse.Namespace:
     parser.add_argument("--result-events", default=str(DEFAULT_RESULT_EVENT_ROOT))
     parser.add_argument("--workflow-run-id")
     parser.add_argument("--lease-commit-sha")
+    parser.add_argument("--reconcile", action="store_true")
     parser.add_argument("--timestamp")
     parser.add_argument("--lease-seconds", type=int, default=DEFAULT_LEASE_SECONDS)
     parser.add_argument("--execution-budget-seconds", type=int, default=DEFAULT_EXECUTION_BUDGET_SECONDS)
@@ -459,6 +455,35 @@ def main(argv: Sequence[str] | None = None) -> int:
             return 0
         if not args.workflow_run_id:
             raise SchedulerError(f"{args.command} requires --workflow-run-id.")
+        if args.reconcile:
+            commit_result = subprocess.run(
+                ["git", "rev-parse", "HEAD"],
+                cwd=repo_root,
+                text=True,
+                capture_output=True,
+                check=False,
+            )
+            if commit_result.returncode != 0 or not commit_result.stdout.strip():
+                raise SchedulerError("Could not determine the reconciliation source commit SHA.")
+            reconciled = subprocess.run(
+                [
+                    sys.executable,
+                    str(SCRIPT_DIRECTORY / "task_reconciler.py"),
+                    "reconcile",
+                    "--repo-root",
+                    str(repo_root),
+                    "--commit-sha",
+                    commit_result.stdout.strip(),
+                ],
+                cwd=repo_root,
+                text=True,
+                capture_output=True,
+                check=False,
+            )
+            if reconciled.returncode != 0:
+                raise SchedulerError(reconciled.stderr.strip() or reconciled.stdout.strip() or "Reconciliation failed.")
+            if reconciled.stdout:
+                print(reconciled.stdout, end="")
         registry = load_registry(_resolve(repo_root, args.registry))
         task_state_path = _resolve(repo_root, args.task_state)
         quota_state_path = _resolve(repo_root, args.quota_state)
