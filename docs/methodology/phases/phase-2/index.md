@@ -6,7 +6,7 @@ Its purpose is to provide lightweight deterministic and API-based review infrast
 
 Phase 2 still does **not** perform deep content validation, source-faithfulness analysis, cross-page semantic comparison, OntoUML/UFO semantic validation, or conceptual adequacy assessment. Phase 2 signals remain candidate observations until they are reviewed or resolved within the documented workflow.
 
-The current implementation follows the accepted [quota-aware multi-provider recalibration RFC](recalibration-rfc.md). It replaces time-based provider/model rotation with a content-addressed queue over 39 pages, two LLM check agents, and 26 configured provider-model slots: 2,028 desired tasks for each active configuration generation.
+The current implementation follows the accepted [quota-aware multi-provider recalibration RFC](recalibration-rfc.md). It replaces time-based provider/model rotation with a content-addressed queue over 39 pages, two LLM check agents, and 25 configured provider-model slots: 1,950 desired tasks for the current configuration generation.
 
 This index page is the entry point for the split Phase 2 methodology documentation. The original single-page Phase 2 document was split into topical pages to improve readability, navigation, and maintenance while preserving the original content in the linked subpages.
 

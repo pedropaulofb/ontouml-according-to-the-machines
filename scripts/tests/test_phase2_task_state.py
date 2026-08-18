@@ -143,21 +143,21 @@ class TaskReconciliationTests(unittest.TestCase):
     def setUpClass(cls) -> None:
         cls.registry = registry_module.load_registry(REGISTRY_PATH)
 
-    def test_repository_reconciliation_universe_has_exactly_2028_tasks(self) -> None:
+    def test_repository_reconciliation_universe_has_exactly_1950_tasks(self) -> None:
         desired = task_reconciler.build_desired_task_identities(repo_root=REPO_ROOT, registry=self.registry)
-        self.assertEqual(len(desired), 2028)
-        self.assertEqual(len(set(desired)), 2028)
+        self.assertEqual(len(desired), 1950)
+        self.assertEqual(len(set(desired)), 1950)
 
-    def test_checked_in_state_has_2028_pending_desired_tasks(self) -> None:
+    def test_checked_in_state_has_1950_desired_tasks_and_retired_history(self) -> None:
         desired = task_reconciler.build_desired_task_identities(repo_root=REPO_ROOT, registry=self.registry)
         state = task_state.load_task_state(TASK_STATE_PATH)
         registry_sha = task_identity.sha256_text(REGISTRY_PATH.read_text(encoding="utf-8"))
         task_reconciler.validate_desired_state(state, desired, registry_sha)
-        self.assertEqual(len(state["tasks"]), 4680)
-        self.assertEqual({state["tasks"][task_id]["status"] for task_id in desired}, {"pending"})
+        self.assertEqual(len(state["tasks"]), 4758)
+        self.assertEqual(len(desired), 1950)
         self.assertEqual(
-            sum(record["status"] == "obsolete" for record in state["tasks"].values()),
-            2652,
+            sum(record["status"] == "retired" for record in state["tasks"].values()),
+            360,
         )
 
     def test_superseded_task_becomes_obsolete(self) -> None:

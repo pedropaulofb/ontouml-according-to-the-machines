@@ -178,7 +178,7 @@ Check signal: page-hygiene-checker: classes/event
 
 The current implementation includes check execution, output validation, page-plus-agent issue routing, duplicate-control for comments, content-addressed quota-aware collection through SambaNova, Groq, Gemini, and OpenRouter, archived manual signal-review prompts for the two LLM-based check agents, automated signal-resolution prompts for those check agents, deterministic patch application, PR creation, branch update by rebase, squash auto-merge enablement, issue closure, and a one-shot Groq fallback for recognized primary Gemini resolver unavailability.
 
-Signal collection reconciles 39 canonical pages × 2 LLM check agents × 26 configured provider-model slots into 2,028 desired tasks. The global repository SHA is traceability metadata rather than completion identity, so unrelated commits do not repeat completed work.
+Signal collection reconciles 39 canonical pages × 2 LLM check agents × 25 configured provider-model slots into 1,950 desired tasks. The global repository SHA is traceability metadata rather than completion identity, so unrelated commits do not repeat completed work.
 
 There is no current dedicated manual or automated closure prompt for `page-structure-checker`; page-structure issues remain subject to direct maintainer review and normal PR review.
 
@@ -257,7 +257,7 @@ The current implementation can:
 - write invalid generated comments to `.invalid.md` files for debugging;
 - run page × check agent × provider × model collection through the scheduled workflow;
 - run page × check agent × model batches for one selected provider through `run_check_batch.py`;
-- reconcile and schedule the 2,028-task content-addressed queue by eligibility, age, provider capacity, and quota state;
+- reconcile and schedule the 1,950-task content-addressed queue by eligibility, age, provider capacity, and quota state;
 - isolate provider workers and aggregate replayable terminal events into durable operational state;
 - run the collector in `plan`, `simulate`, `generate`, `dry-run`, or `post` mode;
 - write per-run logs and a batch summary under `.tmp/phase-2/`;

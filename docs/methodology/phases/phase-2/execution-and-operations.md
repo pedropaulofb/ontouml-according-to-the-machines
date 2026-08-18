@@ -9,10 +9,10 @@ Phase 2 signal collection is a content-addressed queue, not a time-based provide
 The current desired universe is:
 
 ```text
-39 canonical pages × 2 LLM check agents × 26 configured provider-model slots = 2,028 tasks
+39 canonical pages × 2 LLM check agents × 25 configured provider-model slots = 1,950 tasks
 ```
 
-Each slot has 78 tasks. A valid zero-signal result and a valid result with signals both complete the task. Historical identities remain in task state as `obsolete` or `retired`, so `total_records` may exceed 2,028 while `desired_tasks` remains exactly 2,028.
+Each slot has 78 tasks. A valid zero-signal result and a valid result with signals both complete the task. Historical identities remain in task state as `obsolete` or `retired`, so `total_records` may exceed 1,950 while `desired_tasks` remains exactly 1,950.
 
 The production path is:
 
@@ -235,7 +235,7 @@ Filters reduce the current dispatch only; they do not remove desired tasks from 
 
 ## Quota behavior
 
-`data/phase-2/quota-state.json` stores the best-known state for 30 shared and model-specific quota groups and 26 runtime slots. Managed signal and resolver calls emit idempotent quota events; the state writer replays those events against the latest branch after a push conflict.
+`data/phase-2/quota-state.json` stores the best-known state for 29 shared and model-specific quota groups and 25 runtime slots. Managed signal and resolver calls emit idempotent quota events; the state writer replays those events against the latest branch after a push conflict.
 
 Quota certainty must be read from each field's provenance:
 

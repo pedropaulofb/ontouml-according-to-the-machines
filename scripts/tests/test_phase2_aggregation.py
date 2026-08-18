@@ -392,7 +392,7 @@ class StatisticsTests(AggregationFixture):
             queue = state["queue"]
             status_total = sum(value for key, value in queue.items() if key != "desired_task_count")
             self.assertEqual(status_total, len(tasks["tasks"]))
-            self.assertEqual(queue["desired_task_count"], 2028)
+            self.assertEqual(queue["desired_task_count"], 1950)
 
 
 class StateWriterTests(unittest.TestCase):

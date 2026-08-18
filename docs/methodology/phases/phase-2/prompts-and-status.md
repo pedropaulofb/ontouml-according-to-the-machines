@@ -261,8 +261,8 @@ Completed:
 - the scheduled signal-collector workflow grants `contents: write` and `issues: write`;
 - scheduled runs can create or update GitHub issues/comments in `post` mode;
 - serialized lease and aggregation state commits require `PHASE2_AUTOMATION_TOKEN`;
-- the configured signal queue contains 26 provider-model slots across SambaNova, Groq, Gemini, and OpenRouter;
-- reconciliation produces 2,028 desired tasks from 39 pages, two LLM agents, and those 26 slots;
+- the configured signal queue contains 25 provider-model slots across SambaNova, Groq, Gemini, and OpenRouter;
+- reconciliation produces 1,950 desired tasks from 39 pages, two LLM agents, and those 25 slots;
 - configured signal-generation requests use the registry's per-slot completion cap, currently 3,000 tokens for all slots;
 - generated output paths are ignored by `.gitignore`;
 - the two archived manual issue-review and resolution prompts remain available for `page-hygiene-checker` and `language-style-checker` issues;
@@ -333,7 +333,7 @@ Phase 2 can be considered complete when:
 - generated outputs remain uncommitted;
 - small batch execution works locally;
 - page-structure CI blocks structural regressions;
-- quota-aware scheduled LLM execution operates over all 2,028 desired tasks across the 26 configured SambaNova, Groq, Gemini, and OpenRouter slots;
+- quota-aware scheduled LLM execution operates over all 1,950 desired tasks across the 25 configured SambaNova, Groq, Gemini, and OpenRouter slots;
 - the two manual issue-review and resolution prompts for the LLM-based agents exist and are documented;
 - the absence of a dedicated `page-structure-checker` closure prompt is documented as intentional;
 - the two agent-specific automated resolver prompts exist and are documented;
@@ -351,7 +351,7 @@ Phase 2 can be considered complete when:
 - The `page-structure-checker` validates the `Generation and Review Log` table schema.
 - The two LLM-based check agents run periodically through the quota-aware scheduled workflow.
 - The supported LLM signal-generation provider adapters are `sambanova`, `groq`, `gemini`, and `openrouter`.
-- The content-addressed queue contains 2,028 desired tasks across 39 pages, two LLM agents, and 26 configured provider-model slots.
+- The content-addressed queue contains 1,950 desired tasks across 39 pages, two LLM agents, and 25 configured provider-model slots.
 - The scheduler selects eligible oldest work within shared and model-specific free-quota constraints rather than rotating by time.
 - Gemini runs use reduced-thinking configuration to improve strict-format output reliability.
 - Issue routing is one GitHub issue per page and check agent.

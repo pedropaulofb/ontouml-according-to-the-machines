@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "configuration_version": "phase-2-recalibration-v2",
+  "configuration_version": "phase-2-recalibration-v3",
   "phase": "phase-2",
   "slots": [
     {
@@ -304,7 +304,7 @@
       "slot": 15,
       "provider": "gemini",
       "model": "gemini-2.5-pro",
-      "configuration_status": "configured",
+      "configuration_status": "retired",
       "execution_status": "eligible",
       "lifecycle": "stable",
       "agents": ["page-hygiene-checker", "language-style-checker"],
@@ -348,7 +348,7 @@
       "slot": 17,
       "provider": "gemini",
       "model": "gemini-2.5-flash-lite",
-      "configuration_status": "configured",
+      "configuration_status": "retired",
       "execution_status": "eligible",
       "lifecycle": "stable",
       "agents": ["page-hygiene-checker", "language-style-checker"],
@@ -570,6 +570,27 @@
         "reasoning": "none",
         "exclude_reasoning": true,
         "allow_fallbacks": false,
+        "final_output_only": true
+      }
+    },
+    {
+      "slot": 27,
+      "provider": "gemini",
+      "model": "gemini-3.7-flash",
+      "configuration_status": "configured",
+      "execution_status": "eligible",
+      "lifecycle": "stable",
+      "agents": ["page-hygiene-checker", "language-style-checker"],
+      "quota_groups": ["gemini-project", "gemini:gemini-3.7-flash"],
+      "free_policy": "confirmed-no-charge-project",
+      "reasoning_policy": "low",
+      "output_policy": "final-only",
+      "max_completion_tokens": 3000,
+      "request_config_version": "2",
+      "request_config": {
+        "max_completion_tokens": 3000,
+        "thinking_level": "low",
+        "tools": [],
         "final_output_only": true
       }
     }

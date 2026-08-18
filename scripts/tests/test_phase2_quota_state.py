@@ -114,8 +114,11 @@ class QuotaStateTests(unittest.TestCase):
 
     def test_checked_in_initial_state_matches_registry(self) -> None:
         state = quota_state.load_state(QUOTA_STATE_PATH, self.registry)
-        self.assertEqual(len(state["quota_groups"]), 30)
-        self.assertEqual(len(state["runtime_slots"]), 26)
+        self.assertEqual(len(state["quota_groups"]), 29)
+        self.assertEqual(len(state["runtime_slots"]), 25)
+        self.assertIn("gemini:gemini-3.7-flash", state["runtime_slots"])
+        self.assertNotIn("gemini:gemini-2.5-pro", state["runtime_slots"])
+        self.assertNotIn("gemini:gemini-2.5-flash-lite", state["runtime_slots"])
 
     def test_sambanova_model_headers_exhaust_only_that_model(self) -> None:
         exhausted = "MiniMax-M2.7"

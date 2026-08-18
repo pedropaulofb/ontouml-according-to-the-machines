@@ -10,7 +10,7 @@ The only authoritative configured-slot list is:
 config/phase-2/provider-models.json
 ```
 
-`scripts/phase-2/provider_model_registry.py` validates that file before provider execution. A slot is the exact combination of provider and model; the same underlying model exposed by two providers is two independent slots. The current registry has configuration version `phase-2-recalibration-v2` and 26 configured, non-retired slots.
+`scripts/phase-2/provider_model_registry.py` validates that file before provider execution. A slot is the exact combination of provider and model; the same underlying model exposed by two providers is two independent slots. The current registry has configuration version `phase-2-recalibration-v3`, 25 configured slots, and two explicitly retired Gemini slots retained for history.
 
 The standard signal-generation entry points support four providers:
 
@@ -18,7 +18,7 @@ The standard signal-generation entry points support four providers:
 |---|---|---|---:|
 | `sambanova` | `scripts/phase-2/providers/sambanova.py` | `SAMBANOVA_API_KEY` | 6 |
 | `groq` | `scripts/phase-2/providers/groq.py` | `GROQ_API_KEY` | 3 |
-| `gemini` | `scripts/phase-2/providers/gemini.py` | `GEMINI_API_KEY` | 8 |
+| `gemini` | `scripts/phase-2/providers/gemini.py` | `GEMINI_API_KEY` | 7 |
 | `openrouter` | `scripts/phase-2/providers/openrouter.py` | `OPENROUTER_API_KEY` | 9 |
 
 An unused provider file is not executable support. Cerebras is not registered by the runner, batch runner, scheduler, workflow dispatch, or resolver and has no required workflow secret. Historical Cerebras statistics remain visible only as inactive/retired records.
@@ -43,9 +43,7 @@ Each slot below appears once in registry order. Lifecycle, reasoning, request se
 | 12 | `gemini` | `gemini-3.5-flash-lite` | stable | confirmed no-charge project |
 | 13 | `gemini` | `gemini-3.1-flash-lite` | stable | confirmed no-charge project |
 | 14 | `gemini` | `gemini-3-flash-preview` | preview | confirmed no-charge project |
-| 15 | `gemini` | `gemini-2.5-pro` | stable | confirmed no-charge project |
 | 16 | `gemini` | `gemini-2.5-flash` | stable | confirmed no-charge project |
-| 17 | `gemini` | `gemini-2.5-flash-lite` | stable | confirmed no-charge project |
 | 18 | `openrouter` | `nvidia/nemotron-3-ultra-550b-a55b:free` | free variant | live zero-price metadata required |
 | 19 | `openrouter` | `nvidia/nemotron-3-super-120b-a12b:free` | free variant | live zero-price metadata required |
 | 20 | `openrouter` | `google/gemma-4-26b-a4b-it:free` | free variant | live zero-price metadata required |
@@ -55,6 +53,9 @@ Each slot below appears once in registry order. Lifecycle, reasoning, request se
 | 24 | `openrouter` | `inclusionai/ling-3.0-flash:free` | free variant | live zero-price metadata required |
 | 25 | `openrouter` | `openai/gpt-oss-20b:free` | free variant | live zero-price metadata required |
 | 26 | `openrouter` | `nvidia/nemotron-nano-9b-v2:free` | free variant | live zero-price metadata required |
+| 27 | `gemini` | `gemini-3.7-flash` | stable | published free Standard tier and confirmed no-charge project |
+
+Slots 15 (`gemini-2.5-pro`) and 17 (`gemini-2.5-flash-lite`) are `retired`. Both exact endpoints returned provider model-unavailable responses during acceptance testing. Their task and statistics records remain historical; neither is executable. Google lists [`gemini-3.7-flash`](https://ai.google.dev/gemini-api/docs/models) as a current model and publishes free Standard-tier input and output in its [Gemini API pricing](https://ai.google.dev/gemini-api/docs/pricing), so slot 27 is its feasible free replacement. The provider-suggested `gemini-3.1-pro-preview` replacement is not configured because its Standard tier has no free input or output. `gemini-3.5-flash-lite`, already configured in slot 12, is the active Flash-Lite replacement.
 
 Display or validate the executable list without making a provider call:
 

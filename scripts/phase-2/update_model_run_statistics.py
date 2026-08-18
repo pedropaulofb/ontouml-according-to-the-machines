@@ -717,7 +717,7 @@ def render_markdown(state: dict[str, Any]) -> str:
         "",
         "The tables are updated from deterministic queue state, validated terminal events, and provider quota observations.",
         "",
-        "The current desired universe is 39 canonical pages × 2 LLM check agents × 26 configured provider-model slots = 2,028 tasks. Historical obsolete and retired identities remain stored, so total records may be higher.",
+        "The current desired universe is 39 canonical pages × 2 LLM check agents × 25 configured provider-model slots = 1,950 tasks. Historical obsolete and retired identities remain stored, so total records may be higher.",
         "",
         f"Statistics collection started on: `{collection_start_utc}`",
         "",
@@ -993,10 +993,10 @@ def run_self_test() -> int:
         assert "Models not present in the configured, non-retired registry remain listed as `inactive`" in rendered
         assert "| `legacy-provider` | `legacy-model` | `inactive` |" in rendered
         assert "openrouter:nvidia/nemotron-3-ultra-550b-a55b:free" in state["models"]
-        assert len(state["active_rotation"]) == 26
+        assert len(state["active_rotation"]) == 25
         assert sum(spec["provider"] == "sambanova" for spec in state["active_rotation"]) == 6
         assert sum(spec["provider"] == "groq" for spec in state["active_rotation"]) == 3
-        assert sum(spec["provider"] == "gemini" for spec in state["active_rotation"]) == 8
+        assert sum(spec["provider"] == "gemini" for spec in state["active_rotation"]) == 7
         assert sum(spec["provider"] == "openrouter" for spec in state["active_rotation"]) == 9
         assert model_record_status(laguna, active_keys) == "inactive"
     print(

@@ -205,15 +205,15 @@ Consequences:
 ```text
 SambaNova slots: 6
 Groq slots:      3
-Gemini slots:    8
+Gemini slots:    7
 OpenRouter slots:9
-Total slots:     26
+Total slots:     25
 ```
 
 The initial task universe is:
 
 ```text
-39 pages × 2 LLM agents × 26 provider–model slots = 2,028 tasks
+39 pages × 2 LLM agents × 25 provider–model slots = 1,950 tasks
 ```
 
 This preserves the accepted rule that eligible free models are included directly.
@@ -308,11 +308,12 @@ The Groq free-plan account MUST be used. The implementation MUST NOT select a pa
 | 12 | `gemini` | `gemini-3.5-flash-lite` | Stable | `minimal` |
 | 13 | `gemini` | `gemini-3.1-flash-lite` | Stable | Lowest supported |
 | 14 | `gemini` | `gemini-3-flash-preview` | Preview | `low` |
-| 15 | `gemini` | `gemini-2.5-pro` | Stable | Lowest supported bounded thinking |
 | 16 | `gemini` | `gemini-2.5-flash` | Stable | Thinking budget `0` |
-| 17 | `gemini` | `gemini-2.5-flash-lite` | Stable | Thinking budget `0` |
+| 27 | `gemini` | `gemini-3.7-flash` | Stable | `low` |
 
 Every Gemini project used for Phase 2 calls MUST remain on a no-charge API tier. Grounding, paid tools, and paid-only request modes MUST NOT be enabled.
+
+Slots 15 (`gemini-2.5-pro`) and 17 (`gemini-2.5-flash-lite`) are explicitly retired after their exact endpoints returned provider model-unavailable responses during acceptance testing. `gemini-3.7-flash` is configured because Google lists it as current and publishes free Standard-tier input and output. `gemini-3.1-pro-preview` is not a feasible Pro replacement under the free-only invariant because Google publishes no free Standard tier for it. The already-configured `gemini-3.5-flash-lite` is the active Flash-Lite replacement.
 
 ### 9.5 Configured OpenRouter slots
 
@@ -337,6 +338,8 @@ The following MUST NOT be configured or supported for current Phase 2 execution:
 ```text
 cerebras:gpt-oss-120b
 cerebras:zai-glm-4.7
+gemini:gemini-2.5-pro
+gemini:gemini-2.5-flash-lite
 openrouter:poolside/laguna-m.1:free
 groq:llama-3.3-70b-versatile
 ```
@@ -422,8 +425,8 @@ The initial expected universe is:
 ```text
 39 pages
 × 2 agents
-× 26 provider–model slots
-= 2,028 tasks
+× 25 provider–model slots
+= 1,950 tasks
 ```
 
 ### 11.2 Independent slots
@@ -662,7 +665,7 @@ A task MUST NOT rely on an expiring workflow artifact as the sole copy of a vali
 
 Existing aggregate model statistics MUST NOT be interpreted as proof that any exact task is complete.
 
-The recalibration MUST start a new queue generation in which all 2,028 current tasks are initially pending.
+The current registry generation contains 1,950 desired tasks. Reconciliation MUST preserve unchanged task states, retire identities belonging to retired slots, and create pending identities for newly configured slots.
 
 Historical issues, comments, and statistics remain historical evidence but do not seed completion.
 
@@ -1819,13 +1822,13 @@ Do not reopen accepted product decisions without a definite incompatibility.
 
 ### Objective
 
-Create the authoritative 26-slot registry and remove obsolete production paths.
+Create the authoritative configured-slot registry and remove obsolete production paths.
 
 ### Required changes
 
 - Add `config/phase-2/provider-models.json`.
 - Add registry validation.
-- Add all 26 slots.
+- Add every accepted configured slot.
 - Remove Cerebras slots from the configured execution registry.
 - Remove Laguna M.1.
 - Add Laguna S 2.1 and XS 2.1 exact free IDs.
@@ -1844,7 +1847,7 @@ Create the authoritative 26-slot registry and remove obsolete production paths.
 - non-`:free` OpenRouter model rejected;
 - nonzero OpenRouter price rejected;
 - every OpenRouter execution entry point performs the free-price preflight before requesting a completion;
-- all 26 expected configured slots load;
+- all expected configured slots load;
 - `gemini-3-flash-preview` is present and marked Preview;
 - removed slots are absent from the configured execution registry;
 - historical statistics remain readable.
@@ -1852,7 +1855,7 @@ Create the authoritative 26-slot registry and remove obsolete production paths.
 ### Completion criteria
 
 - [ ] Registry validates deterministically.
-- [ ] Exact configured, non-retired slot count is 26.
+- [ ] Exact configured, non-retired slot count matches the accepted registry generation.
 - [ ] No supported Cerebras or Laguna M.1 execution path remains.
 - [ ] No paid OpenRouter route can pass preflight.
 
@@ -1895,13 +1898,13 @@ Implement exact content-addressed completion tracking.
 - same model through different providers creates different tasks;
 - prompt content change creates a new task;
 - request reasoning setting change creates a new task;
-- reconciliation produces exactly 2,028 desired tasks;
+- reconciliation produces the exact desired task count for the accepted registry generation;
 - superseded tasks become obsolete;
 - completed desired tasks remain completed.
 
 ### Completion criteria
 
-- [ ] The initial generation contains exactly 2,028 tasks.
+- [ ] The current generation contains exactly 1,950 desired tasks.
 - [ ] Duplicate unchanged tasks cannot be created.
 - [ ] Existing aggregate statistics are not used as completion proof.
 
@@ -2197,8 +2200,8 @@ Make the recalibrated system fully operable without reconstructing decisions.
 
 - [ ] No current documentation describes Cerebras as active.
 - [ ] No current documentation lists Laguna M.1 as active.
-- [ ] All 26 slots are listed exactly once.
-- [ ] The expected 2,028-task universe is documented.
+- [ ] All configured and retired slots are listed exactly once.
+- [ ] The expected 1,950-task current universe is documented.
 - [ ] Quota certainty versus estimation is explicit.
 - [ ] Dry-run semantics are explicit.
 
@@ -2223,7 +2226,7 @@ Prove the branch is safe to merge.
 3. Run simulation fixtures for every state transition.
 4. Run shadow queue generation.
 5. Make at least one real smoke request to every selected provider–model slot.
-6. Confirm output validation and request shape for all 26 slots.
+6. Confirm output validation and request shape for all 25 configured slots.
 7. Run one valid-zero-signal scenario.
 8. Run one valid-signal publication dry run.
 9. Exercise one quota failure for each provider through fixtures.
@@ -2389,9 +2392,9 @@ Perform:
 
 At merge:
 
-1. load and validate the 26-slot registry;
+1. load and validate the configured-slot registry;
 2. create `phase-2-recalibration-v1`;
-3. reconcile all 2,028 tasks as pending;
+3. reconcile the current desired task universe;
 4. preserve historical aggregate statistics;
 5. mark removed slots `retired` in registry/task state while preserving their historical statistics as inactive or retired;
 6. disable current time-based rotation;
@@ -2453,12 +2456,14 @@ Manual intervention MUST be auditable through committed state or PR history.
 
 ### Registry and scope
 
-- [ ] Exactly 26 provider–model slots are configured and non-retired.
+- [ ] Exactly 25 provider–model slots are configured and non-retired.
 - [ ] Exactly 6 SambaNova slots are configured.
 - [ ] Exactly 3 Groq slots are configured.
-- [ ] Exactly 8 Gemini slots are configured.
+- [ ] Exactly 7 Gemini slots are configured.
 - [ ] Exactly 9 OpenRouter slots are configured.
 - [ ] `gemini-3-flash-preview` is configured as a free Preview slot.
+- [ ] `gemini-3.7-flash` is configured as a free Stable slot.
+- [ ] `gemini-2.5-pro` and `gemini-2.5-flash-lite` are retired and non-executable.
 - [ ] Cerebras is rejected by every standard scheduled, manual, and direct Phase 2 execution entry point.
 - [ ] Laguna M.1 has no active path.
 - [ ] Laguna S 2.1 and XS 2.1 use exact `:free` IDs.
@@ -2466,7 +2471,7 @@ Manual intervention MUST be auditable through committed state or PR history.
 
 ### Task identity and queue
 
-- [ ] Reconciliation produces exactly 2,028 desired initial tasks.
+- [ ] Reconciliation produces exactly 1,950 desired tasks for the current generation.
 - [ ] Provider and model are both task-identity fields.
 - [ ] Same model through two providers produces two tasks.
 - [ ] Global commit SHA does not determine completion identity.
@@ -2609,7 +2614,7 @@ These uncertainties are handled through runtime verification, local accounting, 
 
 An amendment is required before merge if implementation would:
 
-- reduce the 26-slot accepted registry for reasons other than current paid/unavailable policy status;
+- reduce the accepted configured registry for reasons other than current paid/unavailable policy status;
 - make the same model through two providers one task;
 - reintroduce a fixed global daily-call limit;
 - permit paid fallback;
@@ -2653,7 +2658,7 @@ Low-level refactoring, file placement, naming, or data structures do not require
 - [ ] Add prompt hashing.
 - [ ] Add request-config hashing.
 - [ ] Add task-ID generation.
-- [ ] Add 2,028-task reconciliation.
+- [ ] Add exact configured-universe reconciliation.
 - [ ] Add state schema.
 - [ ] Add obsolete/retired preservation.
 - [ ] Add durable pre-call lease writes.
@@ -2765,9 +2770,8 @@ Gemini
   gemini-3.5-flash-lite
   gemini-3.1-flash-lite
   gemini-3-flash-preview
-  gemini-2.5-pro
   gemini-2.5-flash
-  gemini-2.5-flash-lite
+  gemini-3.7-flash
 
 OpenRouter
   nvidia/nemotron-3-ultra-550b-a55b:free

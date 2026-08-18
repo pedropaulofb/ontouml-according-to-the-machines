@@ -43,6 +43,8 @@ REGISTRY_PATH = REPO_ROOT / "config" / "phase-2" / "provider-models.json"
 REMOVED_SPECS = {
     "cerebras:gpt-oss-120b",
     "cerebras:zai-glm-4.7",
+    "gemini:gemini-2.5-pro",
+    "gemini:gemini-2.5-flash-lite",
     "openrouter:poolside/laguna-m.1:free",
     "groq:llama-3.3-70b-versatile",
 }
@@ -61,9 +63,7 @@ EXPECTED_SPECS = [
     "gemini:gemini-3.5-flash-lite",
     "gemini:gemini-3.1-flash-lite",
     "gemini:gemini-3-flash-preview",
-    "gemini:gemini-2.5-pro",
     "gemini:gemini-2.5-flash",
-    "gemini:gemini-2.5-flash-lite",
     "openrouter:nvidia/nemotron-3-ultra-550b-a55b:free",
     "openrouter:nvidia/nemotron-3-super-120b-a12b:free",
     "openrouter:google/gemma-4-26b-a4b-it:free",
@@ -73,6 +73,7 @@ EXPECTED_SPECS = [
     "openrouter:inclusionai/ling-3.0-flash:free",
     "openrouter:openai/gpt-oss-20b:free",
     "openrouter:nvidia/nemotron-nano-9b-v2:free",
+    "gemini:gemini-3.7-flash",
 ]
 
 
@@ -96,11 +97,11 @@ class ProviderModelRegistryTests(unittest.TestCase):
         registry = registry_module.load_registry(REGISTRY_PATH)
         configured = registry.configured_slots
 
-        self.assertEqual(len(configured), 26)
+        self.assertEqual(len(configured), 25)
         self.assertEqual([slot.spec for slot in configured], EXPECTED_SPECS)
         self.assertEqual(
             Counter(slot.provider for slot in configured),
-            Counter({"sambanova": 6, "groq": 3, "gemini": 8, "openrouter": 9}),
+            Counter({"sambanova": 6, "groq": 3, "gemini": 7, "openrouter": 9}),
         )
         preview = registry.find("gemini", "gemini-3-flash-preview")
         self.assertIsNotNone(preview)
@@ -110,7 +111,11 @@ class ProviderModelRegistryTests(unittest.TestCase):
             [slot.model for slot in configured if slot.provider == "openrouter" and "laguna" in slot.model],
             ["poolside/laguna-s-2.1:free", "poolside/laguna-xs-2.1:free"],
         )
-        self.assertEqual(registry.configuration_version, "phase-2-recalibration-v2")
+        replacement = registry.find("gemini", "gemini-3.7-flash")
+        self.assertIsNotNone(replacement)
+        self.assertEqual(replacement.lifecycle, "stable")
+        self.assertEqual(replacement.request_config["thinking_level"], "low")
+        self.assertEqual(registry.configuration_version, "phase-2-recalibration-v3")
         self.assertEqual({slot.request_config_version for slot in configured}, {"2"})
 
     def test_duplicate_slot_is_rejected(self) -> None:
@@ -182,6 +187,15 @@ class ProviderModelRegistryTests(unittest.TestCase):
             self.assertRaises(SystemExit),
         ):
             run_check_batch.parse_args()
+
+    def test_retired_gemini_slots_are_not_executable(self) -> None:
+        registry = registry_module.load_registry(REGISTRY_PATH)
+        for model in ("gemini-2.5-pro", "gemini-2.5-flash-lite"):
+            slot = registry.find("gemini", model)
+            self.assertIsNotNone(slot)
+            self.assertEqual(slot.configuration_status, "retired")
+            with self.assertRaisesRegex(registry_module.RegistryValidationError, "is retired"):
+                registry_module.require_executable_slot("gemini", model, path=REGISTRY_PATH)
 
     def test_collector_uses_registry_and_has_no_removed_route(self) -> None:
         workflow = (REPO_ROOT / ".github" / "workflows" / "check-agent-signal-collector.yml").read_text(
@@ -343,8 +357,8 @@ class ReasoningRequestTests(unittest.TestCase):
         )
 
     def test_gemini_config_uses_registry_control_and_excludes_thoughts(self) -> None:
-        flash = self.slot("gemini", "gemini-3.6-flash")
-        pro = self.slot("gemini", "gemini-2.5-pro")
+        flash = self.slot("gemini", "gemini-3.7-flash")
+        legacy_flash = self.slot("gemini", "gemini-2.5-flash")
 
         self.assertEqual(
             reasoning_policy.gemini_thinking_kwargs(flash),
@@ -352,8 +366,8 @@ class ReasoningRequestTests(unittest.TestCase):
         )
         self.assertNotIn("temperature", flash.request_config)
         self.assertEqual(
-            reasoning_policy.gemini_thinking_kwargs(pro),
-            {"thinking_budget": 1024, "include_thoughts": False},
+            reasoning_policy.gemini_thinking_kwargs(legacy_flash),
+            {"thinking_budget": 0, "include_thoughts": False},
         )
 
     def test_openrouter_uses_normalized_reasoning_and_excludes_trace(self) -> None:

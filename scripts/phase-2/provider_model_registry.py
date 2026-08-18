@@ -29,6 +29,8 @@ FREE_POLICIES = {
 REMOVED_SPECS = {
     "cerebras:gpt-oss-120b",
     "cerebras:zai-glm-4.7",
+    "gemini:gemini-2.5-flash-lite",
+    "gemini:gemini-2.5-pro",
     "openrouter:poolside/laguna-m.1:free",
     "groq:llama-3.3-70b-versatile",
 }
