@@ -10864,9 +10864,9 @@
       },
       "last_attempt_at": null,
       "last_outcome": {
-        "event_id": "01787044581979911965-dc543420-95a3-406c-96af-e913abf31b7f",
+        "event_id": "01787049246709927370-db5928f1-d0fe-47fe-b760-53c3eb463ea7",
         "kind": "rate_or_quota_limited",
-        "observed_at": "2026-08-18T09:16:21Z"
+        "observed_at": "2026-08-18T10:34:06Z"
       },
       "lease": null,
       "publication": {
@@ -10880,13 +10880,13 @@
         "output_sha256": null,
         "validated_output_path": null
       },
-      "retry_not_before": "2026-08-18T10:16:21Z",
+      "retry_not_before": "2026-08-18T11:34:06Z",
       "source_metadata": {
         "repository_commit_sha": "ce92069bcdf491a87550eb0b43b275a1ce24555e"
       },
       "status": "deferred_quota",
       "task_id": "0d7a5751212b2aecfe168201224bb90a4ed544c5a3ab357026a74c7714e8c859",
-      "updated_at": "2026-08-18T09:16:21Z",
+      "updated_at": "2026-08-18T10:34:06Z",
       "validation_rejection_count": 0
     },
     "0d9269ebff3306d303da716a8b30fac5d0f380e605a7e83c59e16cc7256b57f1": {
@@ -35711,9 +35711,9 @@
       },
       "last_attempt_at": null,
       "last_outcome": {
-        "event_id": "01787044578572383222-966719cd-7fa5-46a3-a0d6-3a110180d3b5",
+        "event_id": "01787049242950372531-faa775d3-dd98-4ff9-be35-5b5b872be3e8",
         "kind": "rate_or_quota_limited",
-        "observed_at": "2026-08-18T09:16:18Z"
+        "observed_at": "2026-08-18T10:34:02Z"
       },
       "lease": null,
       "publication": {
@@ -35727,13 +35727,13 @@
         "output_sha256": null,
         "validated_output_path": null
       },
-      "retry_not_before": "2026-08-18T10:16:18Z",
+      "retry_not_before": "2026-08-18T11:34:02Z",
       "source_metadata": {
         "repository_commit_sha": "ce92069bcdf491a87550eb0b43b275a1ce24555e"
       },
       "status": "deferred_quota",
       "task_id": "32a4c69c107fdc17548ebfaae451efc492874e330932745cd70129527448308c",
-      "updated_at": "2026-08-18T09:16:18Z",
+      "updated_at": "2026-08-18T10:34:02Z",
       "validation_rejection_count": 0
     },
     "32b6f650f011b7dafbd7738ba45eda4f34ac83fd46f76084c46107c5b7cee5c5": {
@@ -62937,9 +62937,9 @@
       },
       "last_attempt_at": null,
       "last_outcome": {
-        "event_id": "01787044588688919978-8cd22f8a-c0a0-4cdd-a180-341e620d0d20",
+        "event_id": "01787049254197515012-e05eb9d5-b705-400c-873e-fbcb92972467",
         "kind": "rate_or_quota_limited",
-        "observed_at": "2026-08-18T09:16:28Z"
+        "observed_at": "2026-08-18T10:34:14Z"
       },
       "lease": null,
       "publication": {
@@ -62953,13 +62953,13 @@
         "output_sha256": null,
         "validated_output_path": null
       },
-      "retry_not_before": "2026-08-18T10:16:28Z",
+      "retry_not_before": "2026-08-18T11:34:14Z",
       "source_metadata": {
         "repository_commit_sha": "ce92069bcdf491a87550eb0b43b275a1ce24555e"
       },
       "status": "deferred_quota",
       "task_id": "594cf80aa6ed21a4a2d346130c3092f5e984cd6843ec597bf9e999b534ecf190",
-      "updated_at": "2026-08-18T09:16:28Z",
+      "updated_at": "2026-08-18T10:34:14Z",
       "validation_rejection_count": 0
     },
     "595db483c578218539faab9904ffcb6c89d51a2a542c163ccab9d6bde5045bc5": {
@@ -84196,9 +84196,9 @@
       },
       "last_attempt_at": null,
       "last_outcome": {
-        "event_id": "01787044585200643729-20c0948d-7b13-4438-8c07-f02857314db2",
+        "event_id": "01787049250378982990-7c4254a7-db4b-452c-8f9f-847abd82efaa",
         "kind": "rate_or_quota_limited",
-        "observed_at": "2026-08-18T09:16:25Z"
+        "observed_at": "2026-08-18T10:34:10Z"
       },
       "lease": null,
       "publication": {
@@ -84212,13 +84212,13 @@
         "output_sha256": null,
         "validated_output_path": null
       },
-      "retry_not_before": "2026-08-18T10:16:25Z",
+      "retry_not_before": "2026-08-18T11:34:10Z",
       "source_metadata": {
         "repository_commit_sha": "ce92069bcdf491a87550eb0b43b275a1ce24555e"
       },
       "status": "deferred_quota",
       "task_id": "7665f5769a029524583c919618ad5ad2063bb35ee4050c97095ab8ede70db2f9",
-      "updated_at": "2026-08-18T09:16:25Z",
+      "updated_at": "2026-08-18T10:34:10Z",
       "validation_rejection_count": 0
     },
     "76756b880a157e778b5f73008ac50546553c2606bd61ee227c3f5648581ca2fe": {
