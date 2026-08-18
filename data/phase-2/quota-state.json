@@ -4,7 +4,7 @@
     "daily_period_start": "2026-08-18",
     "source": "configured"
   },
-  "last_updated_at": "2026-08-18T12:08:08Z",
+  "last_updated_at": "2026-08-18T12:13:05Z",
   "processed_event_ids": [
     "01787044575385241714-da20d73c-26ec-462c-a1d4-198de5477b38",
     "01787044578572383222-966719cd-7fa5-46a3-a0d6-3a110180d3b5",
@@ -19,7 +19,10 @@
     "01787054877336530982-04a0aebd-6006-46b2-8d36-c9fc1ac296b5",
     "01787054881042231532-6d5c9c9e-c122-470e-bcd0-483d4ded6dd7",
     "01787054884654524282-4486d8db-b23a-4a47-8c26-7d931d6ea973",
-    "01787054888307833961-401d9754-19ba-4cc5-8c66-f27426bbe7a5"
+    "01787054888307833961-401d9754-19ba-4cc5-8c66-f27426bbe7a5",
+    "01787055182786648267-6df09c5a-b0b3-4f2b-adcd-b51423b87e38",
+    "01787055183911655825-45d2b95c-2780-41fb-bbdb-7e7b0f40f9b7",
+    "01787055185260874086-0d8fc8e2-a521-43ed-8cf2-25eea790b05f"
   ],
   "provider_blocks": {},
   "quota_groups": {
@@ -798,18 +801,18 @@
       "total_tokens_used_day_local": 0
     },
     "groq-organization": {
-      "input_tokens_used_day_local": 0,
-      "last_updated_at": "2026-08-12T14:00:00Z",
-      "output_tokens_used_day_local": 0,
+      "input_tokens_used_day_local": 7657,
+      "last_updated_at": "2026-08-18T12:13:05Z",
+      "output_tokens_used_day_local": 815,
       "provenance": {
         "input_tokens_used_day_local": {
           "estimated": false,
-          "observed_at": "2026-08-18T09:16:15Z",
+          "observed_at": "2026-08-18T12:13:05Z",
           "source": "locally-counted"
         },
         "output_tokens_used_day_local": {
           "estimated": false,
-          "observed_at": "2026-08-18T09:16:15Z",
+          "observed_at": "2026-08-18T12:13:05Z",
           "source": "locally-counted"
         },
         "remaining_estimate": {
@@ -834,7 +837,7 @@
         },
         "requests_used_day_local": {
           "estimated": false,
-          "observed_at": "2026-08-18T09:16:15Z",
+          "observed_at": "2026-08-18T12:13:05Z",
           "source": "locally-counted"
         },
         "reset_at": {
@@ -864,7 +867,7 @@
         },
         "total_tokens_used_day_local": {
           "estimated": false,
-          "observed_at": "2026-08-18T09:16:15Z",
+          "observed_at": "2026-08-18T12:13:05Z",
           "source": "locally-counted"
         }
       },
@@ -873,40 +876,40 @@
       "requests_limit_day": null,
       "requests_limit_minute": null,
       "requests_remaining_minute": null,
-      "requests_used_day_local": 0,
+      "requests_used_day_local": 3,
       "reset_at": null,
       "retry_not_before": null,
       "scope": "organization",
-      "source": "unknown",
+      "source": "locally-counted",
       "status": "eligible",
       "tokens_limit_minute": null,
       "tokens_remaining_minute": null,
-      "total_tokens_used_day_local": 0
+      "total_tokens_used_day_local": 8472
     },
     "groq:openai/gpt-oss-120b": {
-      "input_tokens_used_day_local": 0,
-      "last_updated_at": "2026-08-12T14:00:00Z",
-      "output_tokens_used_day_local": 0,
+      "input_tokens_used_day_local": 2531,
+      "last_updated_at": "2026-08-18T12:13:02Z",
+      "output_tokens_used_day_local": 292,
       "provenance": {
         "input_tokens_used_day_local": {
           "estimated": false,
-          "observed_at": "2026-08-18T09:16:15Z",
+          "observed_at": "2026-08-18T12:13:02Z",
           "source": "locally-counted"
         },
         "output_tokens_used_day_local": {
           "estimated": false,
-          "observed_at": "2026-08-18T09:16:15Z",
+          "observed_at": "2026-08-18T12:13:02Z",
           "source": "locally-counted"
         },
         "remaining_estimate": {
           "estimated": true,
-          "observed_at": "2026-08-12T14:00:00Z",
-          "source": "unknown"
+          "observed_at": "2026-08-18T12:13:02Z",
+          "source": "provider-reported"
         },
         "requests_limit_day": {
           "estimated": false,
-          "observed_at": "2026-08-12T14:00:00Z",
-          "source": "unknown"
+          "observed_at": "2026-08-18T12:13:02Z",
+          "source": "provider-reported"
         },
         "requests_limit_minute": {
           "estimated": false,
@@ -920,7 +923,7 @@
         },
         "requests_used_day_local": {
           "estimated": false,
-          "observed_at": "2026-08-18T09:16:15Z",
+          "observed_at": "2026-08-18T12:13:02Z",
           "source": "locally-counted"
         },
         "reset_at": {
@@ -940,59 +943,59 @@
         },
         "tokens_limit_minute": {
           "estimated": false,
-          "observed_at": "2026-08-12T14:00:00Z",
-          "source": "unknown"
+          "observed_at": "2026-08-18T12:13:02Z",
+          "source": "provider-reported"
         },
         "tokens_remaining_minute": {
           "estimated": false,
-          "observed_at": "2026-08-12T14:00:00Z",
-          "source": "unknown"
+          "observed_at": "2026-08-18T12:13:02Z",
+          "source": "provider-reported"
         },
         "total_tokens_used_day_local": {
           "estimated": false,
-          "observed_at": "2026-08-18T09:16:15Z",
+          "observed_at": "2026-08-18T12:13:02Z",
           "source": "locally-counted"
         }
       },
       "provider": "groq",
-      "remaining_estimate": null,
-      "requests_limit_day": null,
+      "remaining_estimate": 999,
+      "requests_limit_day": 1000,
       "requests_limit_minute": null,
       "requests_remaining_minute": null,
-      "requests_used_day_local": 0,
+      "requests_used_day_local": 1,
       "reset_at": null,
       "retry_not_before": null,
       "scope": "model",
-      "source": "unknown",
+      "source": "provider-reported",
       "status": "eligible",
-      "tokens_limit_minute": null,
-      "tokens_remaining_minute": null,
-      "total_tokens_used_day_local": 0
+      "tokens_limit_minute": 8000,
+      "tokens_remaining_minute": 2469,
+      "total_tokens_used_day_local": 2823
     },
     "groq:openai/gpt-oss-20b": {
-      "input_tokens_used_day_local": 0,
-      "last_updated_at": "2026-08-12T14:00:00Z",
-      "output_tokens_used_day_local": 0,
+      "input_tokens_used_day_local": 2531,
+      "last_updated_at": "2026-08-18T12:13:03Z",
+      "output_tokens_used_day_local": 268,
       "provenance": {
         "input_tokens_used_day_local": {
           "estimated": false,
-          "observed_at": "2026-08-18T09:16:15Z",
+          "observed_at": "2026-08-18T12:13:03Z",
           "source": "locally-counted"
         },
         "output_tokens_used_day_local": {
           "estimated": false,
-          "observed_at": "2026-08-18T09:16:15Z",
+          "observed_at": "2026-08-18T12:13:03Z",
           "source": "locally-counted"
         },
         "remaining_estimate": {
           "estimated": true,
-          "observed_at": "2026-08-12T14:00:00Z",
-          "source": "unknown"
+          "observed_at": "2026-08-18T12:13:03Z",
+          "source": "provider-reported"
         },
         "requests_limit_day": {
           "estimated": false,
-          "observed_at": "2026-08-12T14:00:00Z",
-          "source": "unknown"
+          "observed_at": "2026-08-18T12:13:03Z",
+          "source": "provider-reported"
         },
         "requests_limit_minute": {
           "estimated": false,
@@ -1006,7 +1009,7 @@
         },
         "requests_used_day_local": {
           "estimated": false,
-          "observed_at": "2026-08-18T09:16:15Z",
+          "observed_at": "2026-08-18T12:13:03Z",
           "source": "locally-counted"
         },
         "reset_at": {
@@ -1026,59 +1029,59 @@
         },
         "tokens_limit_minute": {
           "estimated": false,
-          "observed_at": "2026-08-12T14:00:00Z",
-          "source": "unknown"
+          "observed_at": "2026-08-18T12:13:03Z",
+          "source": "provider-reported"
         },
         "tokens_remaining_minute": {
           "estimated": false,
-          "observed_at": "2026-08-12T14:00:00Z",
-          "source": "unknown"
+          "observed_at": "2026-08-18T12:13:03Z",
+          "source": "provider-reported"
         },
         "total_tokens_used_day_local": {
           "estimated": false,
-          "observed_at": "2026-08-18T09:16:15Z",
+          "observed_at": "2026-08-18T12:13:03Z",
           "source": "locally-counted"
         }
       },
       "provider": "groq",
-      "remaining_estimate": null,
-      "requests_limit_day": null,
+      "remaining_estimate": 999,
+      "requests_limit_day": 1000,
       "requests_limit_minute": null,
       "requests_remaining_minute": null,
-      "requests_used_day_local": 0,
+      "requests_used_day_local": 1,
       "reset_at": null,
       "retry_not_before": null,
       "scope": "model",
-      "source": "unknown",
+      "source": "provider-reported",
       "status": "eligible",
-      "tokens_limit_minute": null,
-      "tokens_remaining_minute": null,
-      "total_tokens_used_day_local": 0
+      "tokens_limit_minute": 8000,
+      "tokens_remaining_minute": 2469,
+      "total_tokens_used_day_local": 2799
     },
     "groq:qwen/qwen3.6-27b": {
-      "input_tokens_used_day_local": 0,
-      "last_updated_at": "2026-08-12T14:00:00Z",
-      "output_tokens_used_day_local": 0,
+      "input_tokens_used_day_local": 2595,
+      "last_updated_at": "2026-08-18T12:13:05Z",
+      "output_tokens_used_day_local": 255,
       "provenance": {
         "input_tokens_used_day_local": {
           "estimated": false,
-          "observed_at": "2026-08-18T09:16:15Z",
+          "observed_at": "2026-08-18T12:13:05Z",
           "source": "locally-counted"
         },
         "output_tokens_used_day_local": {
           "estimated": false,
-          "observed_at": "2026-08-18T09:16:15Z",
+          "observed_at": "2026-08-18T12:13:05Z",
           "source": "locally-counted"
         },
         "remaining_estimate": {
           "estimated": true,
-          "observed_at": "2026-08-12T14:00:00Z",
-          "source": "unknown"
+          "observed_at": "2026-08-18T12:13:05Z",
+          "source": "provider-reported"
         },
         "requests_limit_day": {
           "estimated": false,
-          "observed_at": "2026-08-12T14:00:00Z",
-          "source": "unknown"
+          "observed_at": "2026-08-18T12:13:05Z",
+          "source": "provider-reported"
         },
         "requests_limit_minute": {
           "estimated": false,
@@ -1092,7 +1095,7 @@
         },
         "requests_used_day_local": {
           "estimated": false,
-          "observed_at": "2026-08-18T09:16:15Z",
+          "observed_at": "2026-08-18T12:13:05Z",
           "source": "locally-counted"
         },
         "reset_at": {
@@ -1112,34 +1115,34 @@
         },
         "tokens_limit_minute": {
           "estimated": false,
-          "observed_at": "2026-08-12T14:00:00Z",
-          "source": "unknown"
+          "observed_at": "2026-08-18T12:13:05Z",
+          "source": "provider-reported"
         },
         "tokens_remaining_minute": {
           "estimated": false,
-          "observed_at": "2026-08-12T14:00:00Z",
-          "source": "unknown"
+          "observed_at": "2026-08-18T12:13:05Z",
+          "source": "provider-reported"
         },
         "total_tokens_used_day_local": {
           "estimated": false,
-          "observed_at": "2026-08-18T09:16:15Z",
+          "observed_at": "2026-08-18T12:13:05Z",
           "source": "locally-counted"
         }
       },
       "provider": "groq",
-      "remaining_estimate": null,
-      "requests_limit_day": null,
+      "remaining_estimate": 999,
+      "requests_limit_day": 1000,
       "requests_limit_minute": null,
       "requests_remaining_minute": null,
-      "requests_used_day_local": 0,
+      "requests_used_day_local": 1,
       "reset_at": null,
       "retry_not_before": null,
       "scope": "model",
-      "source": "unknown",
+      "source": "provider-reported",
       "status": "eligible",
-      "tokens_limit_minute": null,
-      "tokens_remaining_minute": null,
-      "total_tokens_used_day_local": 0
+      "tokens_limit_minute": 8000,
+      "tokens_remaining_minute": 2405,
+      "total_tokens_used_day_local": 2850
     },
     "openrouter-free-account": {
       "input_tokens_used_day_local": 0,
