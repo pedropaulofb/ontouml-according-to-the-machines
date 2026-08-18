@@ -6,11 +6,13 @@ This page stores cumulative execution statistics and the current queue snapshot 
 
 The tables are updated from deterministic queue state, validated terminal events, and provider quota observations.
 
+The current desired universe is 39 canonical pages × 2 LLM check agents × 26 configured provider-model slots = 2,028 tasks. Historical obsolete and retired identities remain stored, so total records may be higher.
+
 Statistics collection started on: `2026-06-29T12:18:18Z`
 
 Counts shown on this page only include executions recorded since that start time.
 
-Models not present in the current active rotation remain listed as `inactive` for historical continuity.
+Models not present in the configured, non-retired registry remain listed as `inactive` for historical continuity.
 
 Last generated: `2026-08-18T08:08:11Z`
 
@@ -139,12 +141,12 @@ Last generated: `2026-08-18T08:08:11Z`
 
 ## Status derivation and accuracy
 
-- `Status` is derived from the hidden `active_rotation` state: models in that list are `active`; previously recorded models outside it are `inactive`.
+- `Status` is derived from the hidden configured-slot snapshot: configured, non-retired models are `active`; previously recorded models outside it are `inactive`.
 - Historical called, valid, rejection, provider-failure, and runner-failure values are preserved from the previous aggregate statistics.
 - Historical provider-attempt totals are inferred as one attempt per legacy call; new queue attempts are locally counted from validated terminal events.
 - Queue completion and age fields are derived from `task-state.json`; configuration and lifecycle come from the registry; execution status comes from runtime quota state when present.
 - Token values are provider-reported when available and then locally summed. `unknown` is distinct from a reported value of zero.
-- Quota remaining-capacity fields are not labeled as authoritative; quota-state provenance marks observations as provider-reported, locally counted, configured, inferred, or unknown.
+- Quota state is best-known capacity, not a guarantee. Provenance marks observations as provider-reported, locally counted, configured, inferred, or unknown, and `estimated: true` explicitly identifies estimates such as remaining capacity.
 
 ## Storage strategy and limitations
 

@@ -1,169 +1,127 @@
 # Phase 2 — Execution and Operations
 
-← Previous: [Signals and Issues](signals-and-issues.md) | [Phase 2 index](index.md) | Next: [Prompts and Status](prompts-and-status.md) →
+← Previous: [Signals and Issues](signals-and-issues.md) | [Phase 2 index](index.md) | Next: [Model Run Statistics](model-run-statistics.md) →
 
-## Batch execution model
+## Operational model
 
-The active LLM batch runner is:
+Phase 2 signal collection is a content-addressed queue, not a time-based provider rotation. The desired task identity includes the scoped page content, check agent, prompt and validator configuration, provider-model slot, and request configuration. An unrelated repository commit does not create new work.
 
-```text
-scripts/phase-2/run_check_batch.py
-```
-
-A direct `run_check_batch.py` invocation iterates over:
+The current desired universe is:
 
 ```text
-pages × check agents × models
+39 canonical pages × 2 LLM check agents × 26 configured provider-model slots = 2,028 tasks
 ```
 
-for one selected provider.
+Each slot has 78 tasks. A valid zero-signal result and a valid result with signals both complete the task. Historical identities remain in task state as `obsolete` or `retired`, so `total_records` may exceed 2,028 while `desired_tasks` remains exactly 2,028.
 
-Default active LLM check agents:
+The production path is:
 
 ```text
-page-hygiene-checker
-language-style-checker
+reconcile desired identities
+→ recover expired leases from retained terminal events
+→ reserve resolver-priority capacity
+→ select eligible work by age and quota state
+→ persist leases and provider plans
+→ run isolated provider workers
+→ aggregate validated terminal events
+→ publish valid signals
+→ persist task, quota, result, publication, and statistics state
 ```
 
-The direct batch runner does not provide a default provider or model. Current signal-generation runs must pass an explicit supported provider and at least one model, or use the canonical scheduled workflow `provider_model_specs` rotation:
+The canonical workflows are:
 
 ```text
---provider <provider>
---model <model>
+.github/workflows/check-agent-signal-collector.yml
+.github/workflows/phase-2-signal-resolver.yml
 ```
 
-Default output root:
+## Prerequisites
 
-```text
-.tmp/phase-2
-```
+Local validation needs Python 3 and the repository development dependencies. Real provider calls additionally need the selected provider secret. GitHub issue or resolver operations require authenticated `gh` access.
 
-Main modes:
+Production secrets:
 
-| Mode | Behavior |
+| Secret | Use |
 |---|---|
-| `generate` | Calls the LLM runner, validates output, and writes local files only. |
-| `dry-run` | Calls the LLM runner, validates output, then calls `issue_manager.py --dry-run` for valid outputs. |
-| `post` | Calls the LLM runner, validates output, then creates/updates GitHub issues/comments for valid outputs. |
+| `SAMBANOVA_API_KEY` | SambaNova signal tasks |
+| `GROQ_API_KEY` | Groq signal tasks and resolver fallback |
+| `GEMINI_API_KEY` | Gemini signal tasks and resolver primary |
+| `OPENROUTER_API_KEY` | OpenRouter signal tasks |
+| `PHASE2_AUTOMATION_TOKEN` | Lease/state commits, result publication, resolver branches, PRs, and issue updates |
 
-Important: `dry-run` still calls the LLM provider and still validates the generated report. It only dry-runs the issue-manager operation.
+No Cerebras secret is used by current Phase 2 automation.
 
-Common Cerebras signal-generation example:
-
-```bash
-export CEREBRAS_API_KEY="..."
-
-python scripts/phase-2/run_check_batch.py \
-  --page docs/stereotypes/classes/event.md \
-  --agent page-hygiene-checker \
-  --provider cerebras \
-  --model gpt-oss-120b \
-  --mode generate \
-  --max-runs 1 \
-  --max-completion-tokens 3000 \
-  --allow-rejected-check-outputs
-```
-
-Common Gemini signal-generation example:
+Install dependencies and validate the persisted control state:
 
 ```bash
-export GEMINI_API_KEY="..."
-
-python scripts/phase-2/run_check_batch.py \
-  --page docs/stereotypes/classes/event.md \
-  --agent page-hygiene-checker \
-  --provider gemini \
-  --model gemini-3.1-flash-lite \
-  --mode generate \
-  --max-runs 1 \
-  --max-completion-tokens 3000 \
-  --allow-rejected-check-outputs
+python -m pip install -r requirements.txt -r requirements-dev.txt
+python scripts/phase-2/provider_model_registry.py validate
+python scripts/phase-2/task_reconciler.py validate
+python scripts/phase-2/quota_state.py validate
+python scripts/phase-2/resolver_attempt_state.py validate
 ```
 
-On Windows PowerShell:
+## Collector workflow modes
 
-```powershell
-$env:GEMINI_API_KEY = "..."
-```
+The signal collector runs every 20 minutes at `7,27,47 * * * *`. Scheduled executions always use production `post` behavior. Manual dispatch exposes five modes:
 
-Rotating local example:
+| Mode | Provider call | Production task mutation | Quota observations | GitHub issue write | Purpose |
+|---|---:|---:|---:|---:|---|
+| `plan` | No | No | No | No | Reconcile in memory and display eligible work plans. |
+| `simulate` | No | No | No | No | Exercise the same scheduler selection path without leases or calls. |
+| `generate` | Yes | No | Persisted by the production diagnostic workflow | No | Produce and validate real provider output. |
+| `dry-run` | Yes | No | Persisted by the production diagnostic workflow | Issue-manager dry run only | Exercise a real call and intended issue action without issue or task-state mutation. |
+| `post` | Yes | Yes | Yes | Yes | Queue-managed production execution. |
+
+`dry-run` is not call-free: it consumes real provider quota. `generate` and `dry-run` require explicit pages, agents, provider, and models; they do not lease or complete production tasks and are never scheduled. Every real diagnostic still enforces the free-only policy. Out-of-band local or branch calls can make production counters stale if their quota events are not persisted.
+
+There is no separate `shadow` workflow input. Use `plan` or `simulate` on a feature branch for a call-free shadow of current selection. A branch-local real call is a diagnostic and never production completion.
+
+### Call-free planning examples
+
+Plan all currently eligible work without writing state:
 
 ```bash
-python scripts/phase-2/run_check_batch.py \
-  --pages-glob "docs/stereotypes/classes/*.md" \
-  --pages-glob "docs/stereotypes/relations/*.md" \
-  --exclude-pages-glob "docs/stereotypes/**/index.md" \
-  --provider cerebras \
-  --model gpt-oss-120b \
-  --selection rotate \
-  --rotation-seed hourly \
-  --max-runs 1 \
-  --mode dry-run \
-  --repo pedropaulofb/ontouml-according-to-the-machines \
-  --allow-rejected-check-outputs
+python scripts/phase-2/task_scheduler.py plan --repo-root . --reconcile --workflow-run-id local-plan
 ```
 
-## Automated resolver commands
-
-The resolver supports Gemini and Groq directly. The scheduled workflow uses Gemini as primary and Groq as a cross-provider fallback.
-
-Manual Gemini dry-run for one issue:
+Plan one provider-model slot and one agent:
 
 ```bash
-export GEMINI_API_KEY="..."
-
-python scripts/phase-2/resolve_signal_issue.py \
-  --repo pedropaulofb/ontouml-according-to-the-machines \
-  --issue 6 \
-  --provider gemini \
-  --model gemini-3.5-flash \
-  --max-completion-tokens 8000 \
-  --dry-run
+python scripts/phase-2/task_scheduler.py plan --repo-root . --reconcile --workflow-run-id local-plan --provider-model-spec groq:openai/gpt-oss-120b --agent page-hygiene-checker
 ```
 
-Manual Groq dry-run using the scheduled fallback configuration:
+Simulate the scheduler path without calls or state writes:
 
 ```bash
-export GROQ_API_KEY="..."
-
-python scripts/phase-2/resolve_signal_issue.py \
-  --repo pedropaulofb/ontouml-according-to-the-machines \
-  --issue 6 \
-  --provider groq \
-  --model openai/gpt-oss-120b \
-  --max-completion-tokens 6000 \
-  --dry-run
+python scripts/phase-2/task_scheduler.py simulate --repo-root . --reconcile --workflow-run-id local-simulation
 ```
 
-Manual real Gemini run for one issue:
+Manual GitHub Actions plan:
 
 ```bash
-python scripts/phase-2/resolve_signal_issue.py \
-  --repo pedropaulofb/ontouml-according-to-the-machines \
-  --issue 6 \
-  --provider gemini \
-  --model gemini-3.5-flash \
-  --max-completion-tokens 8000
+gh workflow run check-agent-signal-collector.yml --ref feat/phase-2-recalibration -f mode=plan -f max_tasks_per_provider=1 -f execution_budget_seconds=720
 ```
 
-Manual real run for the oldest eligible issue:
+### Explicit diagnostic examples
+
+`generate` performs a real call, validates the output, and does not invoke the issue manager:
 
 ```bash
-python scripts/phase-2/resolve_signal_issue.py \
-  --repo pedropaulofb/ontouml-according-to-the-machines \
-  --provider gemini \
-  --model gemini-3.5-flash
+python scripts/phase-2/run_check_batch.py --page docs/stereotypes/classes/event.md --agent page-hygiene-checker --provider groq --model openai/gpt-oss-120b --mode generate --selection first --max-runs 1 --allow-rejected-check-outputs --allow-provider-failures
 ```
 
-The resolver must be run from a clean repository checkout with GitHub CLI authentication and the relevant provider API key.
+`dry-run` performs a real call and asks the issue manager to print the intended action without writing to GitHub:
 
-The cross-provider fallback from `gemini-3.5-flash` to Groq `openai/gpt-oss-120b` is implemented by the GitHub Actions workflow. A local command-line run of `resolve_signal_issue.py` does not automatically select a fallback provider unless the operator reproduces the workflow logic manually.
+```bash
+python scripts/phase-2/run_check_batch.py --page docs/stereotypes/classes/event.md --agent language-style-checker --provider gemini --model gemini-3.5-flash --mode dry-run --repo OWNER/REPOSITORY --selection first --max-runs 1 --allow-rejected-check-outputs --allow-provider-failures
+```
 
-The script itself continues to implement the existing deterministic normalization and plan validation for whichever provider/model is selected directly.
+For OpenRouter, the exact model must be registered and end in `:free`; live metadata must prove zero pricing before either diagnostic sends a completion request.
 
 ## Operator option reference
 
-This section documents implemented runner options that are useful for maintainers but are not all shown in the common-command examples.
+The common examples above are intentionally small. The following existing command-line options remain supported.
 
 ### `run_page_structure_batch.py`
 
@@ -183,442 +141,275 @@ This section documents implemented runner options that are useful for maintainer
 
 | Option | Purpose |
 |---|---|
-| `--page` | Select one page. May be repeated. |
-| `--pages-glob` | Select pages by repository-relative glob. May be repeated. |
-| `--exclude-page` | Exclude one selected page. May be repeated. |
-| `--exclude-pages-glob` | Exclude pages matching a repository-relative glob. May be repeated. |
-| `--agent` | Select an LLM-based Phase 2 agent. May be repeated. |
-| `--provider` | Select one provider for the batch. |
-| `--model` | Select one provider-specific model. May be repeated. |
-| `--mode` | Choose `generate`, `dry-run`, or `post`. |
-| `--repo` | Required for `dry-run` and `post` modes. |
-| `--post-empty` | Forward zero-signal comments to `issue_manager.py`; otherwise missing zero-signal issues are skipped. |
-| `--output-root` | Set the root directory for generated comments. |
-| `--summary` | Write the Markdown batch summary to a custom path. |
-| `--sleep-seconds` | Sleep between individual LLM calls. |
-| `--max-runs` | Limit the number of selected planned runs. |
-| `--selection` | Use `first` or `rotate` selection. |
-| `--rotation-seed` | Use `hourly` or `daily` time-based rotation when no explicit rotation index is supplied. |
-| `--rotation-index` | Use an explicit non-negative rotation index for deterministic runs. |
-| `--fail-fast` | Stop after the first fatal failed individual run. |
-| `--plan-only` | Print and summarize planned runs without executing provider calls. |
-| `--max-completion-tokens` | Forward a completion-token cap to `run_check_agent.py`. |
-| `--allow-rejected-check-outputs` | Treat validation-rejected LLM outputs as nonfatal and preserve invalid artifacts. |
-| `--allow-provider-failures` | Treat transient provider-side availability failures and empty responses as nonfatal; quota, rate-limit, authentication, configuration, request-shape, and unknown provider failures remain fatal. |
+| `--repo-root` | Select the repository root. |
+| `--page`, `--pages-glob` | Select pages explicitly or by repository-relative glob; each may be repeated. |
+| `--exclude-page`, `--exclude-pages-glob` | Exclude selected pages explicitly or by glob; each may be repeated. |
+| `--agent` | Select an LLM-based Phase 2 agent; may be repeated. |
+| `--provider`, `--model` | Select one supported provider and one or more registered models. |
+| `--mode` | Choose diagnostic `generate`, `dry-run`, or `post` behavior. |
+| `--repo` | Required for `dry-run` and `post`. |
+| `--post-empty` | Forward zero-signal comments to `issue_manager.py`. |
+| `--output-root`, `--summary` | Select generated-comment and batch-summary paths. |
+| `--sleep-seconds`, `--max-runs` | Bound diagnostic sequencing and selected combinations. |
+| `--selection`, `--rotation-seed`, `--rotation-index` | Retained diagnostic batch-selection controls; these are not the production queue scheduler. |
+| `--fail-fast` | Stop after the first fatal individual run. |
+| `--plan-only` | Print and summarize batch combinations without provider calls. |
+| `--max-completion-tokens` | Forward a completion-token cap to `run_check_agent.py`; the cap must not exceed the registered slot limit. |
+| `--allow-rejected-check-outputs` | Preserve validator-rejected outputs without making the diagnostic batch fatal. |
+| `--allow-provider-failures` | Keep recognized transient provider availability failures nonfatal; actionable failures remain fatal. |
+| `--quota-state` | Select the persisted best-known quota state used by the pre-call guard. |
+| `--resolver-work-pending` | Withhold the shared Gemini and Groq resolver slots from signal diagnostics. |
 
 ### `run_check_agent.py`
 
 | Option | Purpose |
 |---|---|
-| `--agent` | Select `page-hygiene-checker` or `language-style-checker`. |
-| `--page` | Select the repository-relative canonical stereotype page. |
-| `--provider` | Select the LLM provider adapter. |
-| `--model` | Select the provider-specific model name. |
-| `--output` | Set the generated issue-comment output path. |
-| `--prompt` | Override the configured prompt path. |
-| `--prompt-id` | Override prompt metadata. |
-| `--commit-sha` | Override the commit SHA metadata; otherwise `git rev-parse HEAD` is used. |
-| `--review-date` | Override the review date in `YYYY-MM-DD` form. |
-| `--max-completion-tokens` | Set the provider completion-token cap. |
+| `--agent`, `--page` | Select one supported LLM agent and canonical page. |
+| `--provider`, `--model` | Select one registered provider-model slot. |
+| `--output` | Set the generated issue-comment path. |
+| `--prompt`, `--prompt-id` | Override configured prompt content or metadata. |
+| `--commit-sha`, `--review-date` | Override traceability metadata. |
+| `--max-completion-tokens` | Set the requested completion cap within the registry limit. |
 
 ### `issue_manager.py`
 
 | Option | Purpose |
 |---|---|
-| `--comment` | Select the generated Markdown issue-comment file. |
-| `--repo` | Select the GitHub repository in `owner/name` form. |
-| `--label` | Apply one or more labels when creating a new issue. |
+| `--comment`, `--repo` | Select the validated comment and GitHub repository. |
+| `--label` | Apply one or more labels when creating an issue. |
 | `--dry-run` | Print the derived issue/comment action without calling GitHub. |
-| `--post-empty` | Create or post even when `Signal count` is `0`; by default, zero-signal comments are posted only if the issue already exists. |
+| `--post-empty` | Create or post a zero-signal comment even when no matching issue exists. |
+| `--task-id` | Supply the content-addressed task identity required for LLM-agent comments. |
 
 ### `resolve_signal_issue.py`
 
 | Option | Purpose |
 |---|---|
-| `--repo` | Required repository in `owner/name` form. |
-| `--issue` | Issue number or issue URL. When omitted, the oldest eligible open issue is selected. |
-| `--provider` | Select `groq` or `gemini`; default `gemini`. |
-| `--model` | Select the provider model; default `gemini-3.5-flash`. The scheduled Groq fallback uses `openai/gpt-oss-120b`. |
-| `--max-completion-tokens` | Completion-token cap; default `8000`. The scheduled Groq fallback passes `6000`. |
-| `--provider-max-attempts` | Maximum provider-call attempts per resolver run; default `1`. |
-| `--dry-run` | Generate and validate a plan without modifying files or writing to GitHub. |
-| `--branch-prefix` | Branch prefix for accepted-change PRs; default `phase-2/auto-resolve`. |
-| `--attempt-state` | Persistent content-addressed resolver-attempt state; default `data/phase-2/resolver-attempt-state.json`. |
-| `--preflight-only` | Report whether active non-duplicate resolver work should reserve a shared provider-model slot. |
+| `--repo` | Select the required repository in `owner/name` form. |
+| `--issue` | Select an issue number or URL; omission selects the oldest eligible open issue. |
+| `--provider`, `--model` | Select direct Gemini or Groq execution; defaults are Gemini and `gemini-3.5-flash`. |
+| `--max-completion-tokens` | Set the completion cap; default 8,000. The workflow fallback passes 6,000. |
+| `--provider-max-attempts` | Bound provider-call attempts; default one. |
+| `--dry-run` | Generate and validate a real plan without page or GitHub mutation. |
+| `--branch-prefix` | Set the accepted-change branch prefix. |
+| `--attempt-state` | Select persistent content-addressed resolver-attempt state. |
+| `--preflight-only` | Report whether eligible resolver work should reserve a shared slot without a provider call. |
 
-The workflow fallback provider/model is fixed to `groq:openai/gpt-oss-120b`; there is no separate `fallback_model` dispatch input.
+## Production scheduling
 
-## Execution policy
+Use `post` through GitHub Actions. The workflow serializes operational-state writes, performs resolver preflight, reconciles the queue, persists leases through `state_writer.py`, starts one isolated worker per provider with assigned work, and aggregates result artifacts even when an individual worker fails.
 
-### Page-structure execution
+The scheduler:
 
-The deterministic `page-structure-checker` runs when canonical stereotype pages are modified.
+- selects the oldest eligible tasks rather than rotating by time;
+- respects every shared and model-specific quota group;
+- bounds provider work by the execution-time budget and optional per-provider task limit;
+- reserves Gemini `gemini-3.5-flash` and Groq `openai/gpt-oss-120b` for eligible resolver work before signal tasks;
+- never calls a slot blocked by policy or execution configuration;
+- allows one controlled endpoint-availability recheck after cooldown;
+- emits no provider call when no eligible task exists.
 
-This check remains CI-oriented and blocking:
+Provider workers revalidate the lease commit, task identity, and quota eligibility immediately before a call. They emit replayable terminal events instead of directly editing shared state. The aggregator is the only component that completes queue tasks, persists results, publishes issue comments, and refreshes statistics.
 
-- it runs on relevant pull requests;
-- it runs on relevant pushes to `main`;
-- it is manually triggerable;
-- it uploads reports as artifacts;
-- it fails when structural signals are reported;
-- it does not create GitHub issues from CI.
+### Filtered production dispatch
 
-### LLM check-agent execution
+Run at most one queued task per provider while retaining normal production semantics:
 
-The two LLM-based check agents run periodically through the scheduled workflow:
-
-```text
-page-hygiene-checker
-language-style-checker
+```bash
+gh workflow run check-agent-signal-collector.yml --ref main -f mode=post -f max_tasks_per_provider=1 -f execution_budget_seconds=720
 ```
 
-The canonical scheduled workflow is:
+Restrict a production dispatch to one provider by supplying that provider's registered specs:
 
-```text
-.github/workflows/check-agent-signal-collector.yml
+```bash
+gh workflow run check-agent-signal-collector.yml --ref main -f mode=post -f provider_model_specs=groq:openai/gpt-oss-120b,groq:openai/gpt-oss-20b,groq:qwen/qwen3.6-27b -f max_tasks_per_provider=1 -f execution_budget_seconds=720
 ```
 
-Workflow display name:
+Run one exact current page-agent-provider-model task by combining all three queue filters and limiting the provider plan to one task:
 
-```text
-Scheduled check-agent signal collector
+```bash
+gh workflow run check-agent-signal-collector.yml --ref main -f mode=post -f pages=docs/stereotypes/classes/event.md -f agents=page-hygiene-checker -f provider_model_specs=groq:openai/gpt-oss-120b -f max_tasks_per_provider=1 -f execution_budget_seconds=720
 ```
 
-It runs on this schedule:
+Filters reduce the current dispatch only; they do not remove desired tasks from persistent state.
 
-```text
-7,27,47 * * * *
+## Quota behavior
+
+`data/phase-2/quota-state.json` stores the best-known state for 30 shared and model-specific quota groups and 26 runtime slots. Managed signal and resolver calls emit idempotent quota events; the state writer replays those events against the latest branch after a push conflict.
+
+Quota certainty must be read from each field's provenance:
+
+- `provider-reported` comes from response metadata or headers;
+- `locally-counted` is exact for persisted managed events but cannot see unrelated applications or lost out-of-band events;
+- `configured` is an operational limit or initial state;
+- `inferred` is derived from diagnostics;
+- `unknown` is intentionally unknown;
+- `estimated: true`, including `remaining_estimate`, is not provider-confirmed capacity.
+
+The scheduler may call when best-known state says capacity remains, but provider quota failures are authoritative. A quota failure defers the task, updates the affected groups, sets `retry_not_before`, and stops only work sharing the exhausted capacity. It does not trigger immediate retry or a paid fallback.
+
+Inspect a slot without a call:
+
+```bash
+python scripts/phase-2/quota_state.py eligibility --provider openrouter --model google/gemma-4-31b-it:free
 ```
 
-That means it is scheduled every 20 minutes, at minutes 7, 27, and 47 UTC.
+## Result and publication semantics
 
-The workflow is also manually triggerable through `workflow_dispatch`.
+Worker outcomes are `valid`, `validator_rejected`, `provider_failure`, or `not_called`.
 
-Manual dispatch supports:
+- `valid` completes the task after deterministic validation, even when signal count is zero.
+- `validator_rejected` schedules a later retry after the first unchanged rejection and blocks the unchanged identity after the second.
+- `provider_failure` changes task and quota state according to the classified error.
+- `not_called` proves zero provider attempts and may safely return a recovered lease to pending only after aggregation.
 
-- `generate`, `dry-run`, or `post` mode;
-- supported provider-adapter selection; Groq remains selectable manually only when an explicit model is supplied;
-- `first` or `rotate` selection;
-- `hourly` or `daily` rotation seed;
-- comma-separated check-agent slugs;
-- comma-separated `models`;
-- comma- or newline-separated `provider_model_specs`;
-- comma- or newline-separated page lists;
-- explicit `rotation_index`;
-- explicit `max_runs`;
-- explicit `sleep_seconds`;
-- explicit `max_completion_tokens`;
-- explicit `update_model_statistics` toggle.
+Publication is downstream from task completion. A valid result with signals can be completed even if its GitHub issue update must be retried. Durable results live under `data/phase-2/results`; publication state lives under `data/phase-2/publications`.
 
-When `provider_model_specs` is supplied, it overrides the `provider` and `models` inputs.
+Retry publication without another LLM call:
 
-Scheduled provider/model rotation:
-
-```text
-0 cerebras:gpt-oss-120b
-1 sambanova:DeepSeek-V3.1
-2 openrouter:nvidia/nemotron-3-ultra-550b-a55b:free
-3 gemini:gemini-3.1-flash-lite
-4 cerebras:zai-glm-4.7
-5 sambanova:Meta-Llama-3.3-70B-Instruct
-6 openrouter:poolside/laguna-m.1:free
+```bash
+python scripts/phase-2/aggregate_task_results.py retry-publication --repo-root . --repository OWNER/REPOSITORY
 ```
 
-No Groq model is currently part of the active scheduled provider/model rotation. The removed `groq:llama-3.3-70b-versatile` slot is historical/inactive and was not replaced by another Groq model.
+Replay retained worker artifacts without publishing while diagnosing:
 
-The scheduled workflow aligns provider/model rotation buckets with the cron offset.
-
-The cron schedule is:
-
-```text
-7,27,47 * * * *
+```bash
+python scripts/phase-2/aggregate_task_results.py aggregate --repo-root . --artifact-root PATH/TO/WORKER-ARTIFACTS --no-publish
 ```
 
-The provider/model rotation period is 20 minutes, and the workflow subtracts the 7-minute schedule offset before deriving the raw rotation index:
+That aggregate command mutates local task, quota, result, publication, and statistics files. Run it only on a recovery branch, inspect the diff, and commit the audited result. Production uses `state_writer.py` so the same idempotent mutation is reapplied to the latest remote branch after conflicts.
 
-```text
-rotation_period_seconds: 1200
-rotation_schedule_offset_seconds: 420
-rotation_index: (rotation_timestamp - rotation_schedule_offset_seconds) / rotation_period_seconds
+## Automated resolver
+
+The resolver workflow runs at `5 */4 * * *` and selects the oldest eligible open `page-hygiene-checker` or `language-style-checker` signal issue unless a manual issue is supplied.
+
+Production defaults:
+
+| Role | Provider/model | Attempts | Completion cap |
+|---|---|---:|---:|
+| Primary | `gemini:gemini-3.5-flash` | 1 | 8,000 |
+| Fallback | `groq:openai/gpt-oss-120b` | 1 | 6,000 |
+
+Groq fallback runs only for a recognized primary Gemini provider-unavailability failure. An invalid plan, quota block, policy block, authentication/configuration error, or other failure does not trigger it. Primary and fallback calls use the shared quota state. Persisted content-addressed resolver attempts prevent an unchanged terminal attempt from being repeated.
+
+Resolver dry-run still makes a real provider call, generates and validates a plan, and writes local artifacts, but it does not edit the page or write to GitHub:
+
+```bash
+python scripts/phase-2/resolve_signal_issue.py --repo OWNER/REPOSITORY --issue ISSUE_NUMBER --provider groq --model openai/gpt-oss-120b --max-completion-tokens 6000 --provider-max-attempts 1 --dry-run
 ```
 
-This keeps the rotation buckets aligned to the scheduled start minutes `:07`, `:27`, and `:47`. Without the offset, a delayed run near `:20` or `:40` could cross into the next Unix-anchored 20-minute bucket and select the next provider/model slot.
+Preflight checks whether eligible resolver work should reserve a shared slot and makes no provider call:
 
-The workflow emits provider/model rotation diagnostics:
-
-```text
-Rotation timestamp UTC
-Raw provider/model rotation index
-Provider/model rotation specs
-Provider/model slot count
-Provider/model slot index
-Runner rotation index
-Selected provider/model spec
+```bash
+python scripts/phase-2/resolve_signal_issue.py --repo OWNER/REPOSITORY --preflight-only
 ```
 
-Effective scheduled defaults:
+The resolver's exact-replacement validation, deterministic demotion, PR, auto-merge, and issue-closing behavior remains documented in [Automated Resolver](automated-resolver.md).
 
-```text
-mode: post
-selection: rotate
-rotation_seed: hourly
-max_runs: 1
-sleep_seconds: 0
-max_completion_tokens: 3000
-update_model_statistics: true
-agents: page-hygiene-checker,language-style-checker
-provider/model rotation: cerebras:gpt-oss-120b, sambanova:DeepSeek-V3.1, openrouter:nvidia/nemotron-3-ultra-550b-a55b:free, gemini:gemini-3.1-flash-lite, cerebras:zai-glm-4.7, sambanova:Meta-Llama-3.3-70B-Instruct, openrouter:poolside/laguna-m.1:free
-pages: all canonical class and relation stereotype pages, excluding index.md
+## Manual recovery
+
+Manual recovery must preserve evidence and be auditable through a commit or pull request. There is intentionally no general-purpose command that silently resets blocked tasks.
+
+### Expired or ambiguous leases
+
+Before releasing an expired lease, inspect downloaded worker artifacts for a matching terminal event:
+
+1. replay a retained `valid`, `validator_rejected`, `provider_failure`, or `not_called` event through deterministic aggregation;
+2. return a task to pending only when a validated `not_called` event or other durable evidence proves that no provider request was sent;
+3. if no evidence establishes whether a request was sent, keep the task `blocked_ambiguous_attempt` to prevent duplicate quota use;
+4. authorize a replacement call only by an explicit state change that records the evidence reviewed and acknowledges possible duplication.
+
+Use a call-free scheduler plan with retained result artifacts to inspect recovery classification:
+
+```bash
+python scripts/phase-2/task_scheduler.py plan --repo-root . --reconcile --workflow-run-id recovery-review --result-events PATH/TO/RESULT-EVENTS
 ```
 
-The workflow first rotates over provider/model specs and selects exactly one provider/model slot, then delegates page/agent/model selection to `run_check_batch.py` with rotating selection.
+### Rejection block
 
-The scheduled run therefore gradually rotates over page, agent, provider, and model combinations. It does not run the full matrix in one execution, and it does not switch to another provider/model slot if the selected provider/model fails.
+`blocked_repeated_rejection` means two validator rejections occurred for the unchanged identity. Normally, fix the page, prompt, validator, model selection, or request configuration and run reconciliation; the old identity becomes obsolete and the new identity starts pending. If evidence proves that the block itself is erroneous and identity is unchanged, edit only that task's audited state on a recovery branch, reset it to `pending`, validate state, and commit the evidence-backed change.
 
-If a selected LLM output fails validation:
+### Policy or execution-configuration block
 
-- the generated invalid output is saved as `.invalid.md`;
-- `issue_manager.py` is not called for that output;
-- artifacts are still uploaded;
-- the workflow remains nonfatal for that rejection because it passes `--allow-rejected-check-outputs`.
+- For `blocked_provider_policy`, first revalidate that the exact route is free. A failed or inconclusive check cannot be overridden.
+- For `blocked_execution_configuration`, first complete sanitized credential/account or deterministic request validation without recording secret values.
+- If identity is unchanged after successful validation, the exact affected tasks may return to `pending` and the runtime slot may become `eligible`.
+- If a corrected route or request setting changes identity, preserve the old task as `obsolete` and let reconciliation create a new pending identity.
 
-If a selected provider call fails:
+An audited runtime slot-status correction belongs in `data/phase-2/quota-state.json`, not in the registry's initial/default execution status. Record the supporting diagnostic and observation time, update only the affected runtime slot and task records, validate both state files, and commit the recovery change. OpenRouter price metadata is fetched live before every request; there is no durable metadata cache to reset. A subsequent diagnostic refreshes it, and the slot must remain blocked if that live check is unsuccessful or inconclusive.
 
-- transient provider-side availability failures and empty responses are emitted as warnings and remain nonfatal when `--allow-provider-failures` is active;
-- quota, rate-limit, authentication, configuration, request-shape, and unknown provider failures are emitted as errors and remain fatal;
-- issue-manager failures remain fatal;
-- this provider-failure classification is not provider/model fallback.
+Validate every audited recovery before commit:
 
-### Automated resolver execution
-
-The automated resolver runs periodically through:
-
-```text
-.github/workflows/phase-2-signal-resolver.yml
+```bash
+python scripts/phase-2/provider_model_registry.py validate && python scripts/phase-2/task_reconciler.py validate && python scripts/phase-2/quota_state.py validate && python scripts/phase-2/resolver_attempt_state.py validate
 ```
 
-Workflow display name:
+### Temporary unavailability
 
-```text
-Automated signal resolver
+Do not clear cooldowns merely to increase throughput. After `retry_not_before`, the scheduler authorizes exactly one desired task as the slot recheck. The command below is available for an audited manual authorization when the task is known and the persisted slot is eligible for recheck:
+
+```bash
+python scripts/phase-2/quota_state.py authorize-recheck --provider PROVIDER --model MODEL --task-id TASK_ID
 ```
 
-It runs on this schedule:
+It returns `not-authorized` and a nonzero exit code when the invariant is not satisfied.
+
+### Incorrect quota counters
+
+Never reset a counter simply because the provider rejected a call. Correct only a demonstrably wrong local value, preserve the prior file in Git history, record the evidence and observation time, keep provenance honest, validate the file, and submit the smallest state-only commit. A provider-reported limit or quota error remains authoritative.
+
+### Rebuild and rollback
+
+`task_reconciler.py reconcile` deterministically rebuilds desired identities from the registry, canonical pages, agents, prompts, validators, and request configuration while preserving existing historical records. Result events are still required to reconstruct outcomes; do not delete task, result, publication, quota, or resolver-attempt state during recovery.
+
+To stop calls during an incident, disable the collector and resolver schedules or the affected workflow. Preserve all operational state and artifacts. Rollback must not reactivate retired providers or a paid route.
+
+## Model retirement and free-policy recovery
+
+Retire a model through the registry and reconciliation, never by deleting its history. Removed desired tasks become retired; model-run statistics continue to show the slot as inactive/retired. Adding or changing a model creates new task identities. See [Provider Registry](providers.md) for the required sequence.
+
+A runtime free-policy block is not retirement. The slot stays configured so its desired work remains visible, but no calls occur until explicit, successful free-policy revalidation. This distinction prevents a temporary pricing or metadata problem from silently erasing the review obligation.
+
+## Phase 3 allocation extension point
+
+Phase 3 is not implemented by this recalibration. Phase 2 currently receives 100% of approved free capacity. Provider adapters and task identities do not permanently own that capacity: tasks carry `phase: phase-2`, and shared quota policy can later introduce per-phase weights, maximum shares, or reserved minimums above the adapters.
+
+A future Phase 3 queue may therefore reallocate shared quota priorities through configuration without changing Phase 2 page, agent, task-identity, validator, or provider-adapter behavior. This extension point does not authorize private Phase 3 inputs or paid capacity.
+
+## Unchanged CI and repository policy
+
+The deterministic `page-structure-checker` remains CI-oriented and blocking. It runs on relevant pull requests and pushes to `main`, is manually triggerable, uploads reports as artifacts, fails when structural signals are reported, and does not create GitHub issues from CI.
+
+Recommended `main` branch protection remains:
 
 ```text
-5 */4 * * *
-```
-
-That means it is scheduled once every four hours, at minute 5 UTC, for six scheduled attempts per UTC day.
-
-The workflow is also manually triggerable through `workflow_dispatch`.
-
-Effective scheduled defaults:
-
-```text
-primary provider: gemini
-primary model: gemini-3.5-flash
-primary max_completion_tokens: 8000
-fallback provider: groq
-fallback model: openai/gpt-oss-120b
-fallback max_completion_tokens: 6000
-fallback reasoning: low
-provider_max_attempts per resolver call: 1
-issue: oldest eligible open page-hygiene-checker or language-style-checker signal issue
-dry_run: false
-```
-
-Manual dispatch can:
-
-- resolve one explicit issue;
-- select `gemini` or `groq` as the primary provider;
-- select a primary provider model;
-- run in dry-run mode.
-
-The production workflow intentionally has no force-fallback dispatch input. Therefore, a manual workflow dry run reaches Groq only if the primary Gemini invocation genuinely fails with one of the recognized provider-unavailability diagnostics. Use the direct Groq CLI dry-run command above to validate the provider request deterministically. Validate the end-to-end workflow fallback when a genuine qualifying primary failure occurs, or in a temporary test workflow rather than weakening the production fallback trigger.
-
-The scheduled resolver workflow first tries the selected primary provider/model once. With the default scheduled configuration, this means one Gemini `gemini-3.5-flash` call. The fallback is fixed to Groq `openai/gpt-oss-120b`; it is not a manual model override.
-
-If that call fails with provider-unavailability or 503-like diagnostics, the workflow invokes Groq `openai/gpt-oss-120b` once for the same issue. The Groq call uses low reasoning, excludes reasoning output, and has a 6,000-token completion cap.
-
-The workflow does not suppress non-provider-unavailability primary failures. It does not suppress fallback failures. Invalid plans remain genuine resolver failures and do not trigger another provider.
-
-The resolver writes artifacts under:
-
-```text
-.tmp/phase-2/resolver
-```
-
-and uploads them as:
-
-```text
-phase-2-resolver-plan
-```
-
-The primary provider-error artifact is preserved before the Groq fallback starts. The existing attempt-identity, raw-response, parsed-plan, normalization, final-plan, and error artifacts remain available according to the resolver path taken.
-
-Resolver-attempt events are written under `.tmp/phase-2/resolver-attempt-events` and persisted to `data/phase-2/resolver-attempt-state.json` by the same always-running state-writer job that aggregates resolver quota observations. An unchanged terminal attempt is not called again. A current page or active-signal snapshot change creates a new identity.
-
-## Free-model and slow-automation strategy
-
-Phase 2 is designed to work within free or low-cost model quotas.
-
-The intended strategy is:
-
-- keep prompts compact;
-- cap check-agent outputs to a small number of signals;
-- run one selected signal-generation combination per scheduled interval;
-- distribute scheduled signal generation across multiple free or low-cost providers;
-- use deterministic Python whenever possible;
-- spread execution over time;
-- rely on gradual accumulation rather than large one-shot reviews;
-- resolve only one eligible signal issue per automated resolver run;
-- use a cross-provider fallback so temporary Gemini unavailability does not require a second Google model;
-- use a 6,000-token completion cap for the Groq fallback;
-- use low reasoning effort for `gpt-oss-120b`;
-- preserve deterministic normalization and validation for every provider response;
-- fail normally when the fallback provider or fallback plan is unsuccessful.
-
-This supports a slow continuous process: small page/agent/provider/model batches can run over time, allowing the project to accumulate and resolve signals incrementally without weakening validation.
-
-## GitHub Actions and branch protection policy
-
-### Page-structure workflow
-
-The page-structure GitHub Actions workflow is CI-only.
-
-It should be used to block structural regressions, not to create issues.
-
-Recommended branch-protection profile for `main`:
-
-```text
-Branch name pattern: main
-
 [x] Require a pull request before merging
 [x] Require status checks to pass before merging
     [x] Require branches to be up to date before merging
     [x] Check stereotype page structure
 [x] Require conversation resolution before merging
 [x] Require linear history
-[ ] Require signed commits
-[ ] Require deployments to succeed before merging
-[ ] Lock branch
 [x] Do not allow bypassing the above settings
 [ ] Allow force pushes
 [ ] Allow deletions
 ```
 
-`Require linear history` is recommended if the repository intentionally avoids merge commits. The automated resolver uses squash auto-merge and updates branches by rebase, which is compatible with a linear-history policy.
+The resolver requires repository Actions read/write permission, permission for Actions to create pull requests, auto-merge enabled, and squash merging available. Its `PHASE2_AUTOMATION_TOKEN` must be able to push branches, create and update pull requests, enable auto-merge, comment on issues, and close issues.
 
-### Scheduled check-agent workflow
+## Historical operational observations
 
-The scheduled check-agent workflow creates or updates GitHub issues/comments in `post` mode.
+Historical executions produced valid and invalid outputs across Gemini, SambaNova, OpenRouter, and the now-retired provider slots. Observed failure classes included Gemini `503 UNAVAILABLE`, overly long `Location` fragments, invalid redundant top-level resolver decisions, and ambiguous exact-replacement targets.
 
-Provider repository secrets used when the corresponding provider is selected:
+The current design addresses those observed classes through deterministic decision normalization, unchanged exact-one-match validation, Groq cross-provider fallback, content-addressed attempt state, and preserved error artifacts. These observations are historical evidence, not guarantees of future provider behavior; current registry, state, workflows, scripts, and generated artifacts remain authoritative.
 
-```text
-GROQ_API_KEY
-GEMINI_API_KEY
-CEREBRAS_API_KEY
-SAMBANOVA_API_KEY
-OPENROUTER_API_KEY
+## Standard validation
+
+Run the deterministic state, test, compilation, hook, and whitespace checks before committing operational changes:
+
+```bash
+python scripts/phase-2/provider_model_registry.py validate && python scripts/phase-2/task_reconciler.py validate && python scripts/phase-2/quota_state.py validate && python scripts/phase-2/resolver_attempt_state.py validate && python scripts/phase-2/update_model_run_statistics.py --self-test && python -m unittest discover -s scripts/tests -p "test_*.py" && python -m py_compile scripts/phase-2/*.py scripts/phase-2/providers/*.py scripts/tests/test_phase2_*.py && pre-commit run --all-files && git diff --check
 ```
-
-The active scheduled rotation currently uses `GEMINI_API_KEY`, `CEREBRAS_API_KEY`, `SAMBANOVA_API_KEY`, and `OPENROUTER_API_KEY`. `GROQ_API_KEY` is still relevant only if Groq is selected manually or reintroduced in a future rotation.
-
-Branch-write repository secret required for scheduled runs and manual runs with `update_model_statistics: true`:
-
-```text
-PHASE2_AUTOMATION_TOKEN
-```
-
-Required workflow permissions:
-
-```yaml
-permissions:
-  contents: read
-  issues: write
-```
-
-The workflow uploads `.tmp/phase-2` as an artifact even if the check-agent run fails or produces rejected outputs.
-
-The scheduled check-agent workflow also updates `docs/methodology/phases/phase-2/model-run-statistics.md` with cumulative provider/model execution counters. The counters are derived from `run_check_batch.py` check-status fields, not from LLM self-reporting. The update step requires `PHASE2_AUTOMATION_TOKEN`; the workflow validates that secret for scheduled runs and for manual dispatches with `update_model_statistics: true`, then pushes the statistics commit with an authenticated `x-access-token` remote. The workflow-level `contents` permission remains `read`; repository-file persistence depends on the automation token's branch-write access and workflow-level concurrency to reduce overlapping counter updates.
-
-### Automated resolver workflow
-
-The automated resolver workflow may create commits, push branches, open pull requests, enable auto-merge, comment on issues, and close issues.
-
-Required repository secrets for the default scheduled path:
-
-```text
-GEMINI_API_KEY
-CEREBRAS_API_KEY
-PHASE2_AUTOMATION_TOKEN
-```
-
-`GROQ_API_KEY` is required only when Groq is selected manually as the primary resolver provider.
-
-Required workflow permissions:
-
-```yaml
-permissions:
-  contents: write
-  issues: write
-  pull-requests: write
-```
-
-Required repository settings:
-
-```text
-Settings → Actions → General → Workflow permissions:
-[x] Read and write permissions
-[x] Allow GitHub Actions to create and approve pull requests
-```
-
-The resolver workflow checks out the repository and performs GitHub writes with `PHASE2_AUTOMATION_TOKEN` rather than the default `github.token`.
-
-Required pull-request setting:
-
-```text
-Settings → General → Pull Requests:
-[x] Allow auto-merge
-```
-
-Recommended merge methods:
-
-```text
-[x] Allow squash merging
-```
-
-If branch protection requires up-to-date branches, the resolver's `gh pr update-branch --rebase` step should keep resolver branches compatible when no conflicts exist.
-
-## Operational observations
-
-Observed Phase 2 provider behavior has included:
-
-- successful GitHub Actions execution for multiple Gemini, Cerebras, SambaNova, and OpenRouter signal-generation models;
-- valid generated issue-comment structure after adding reduced-thinking configuration;
-- transient Gemini provider failures with `503 UNAVAILABLE`;
-- validation rejections caused by overly long `Location` fragments before the prompt target was tightened from 160 characters to 140 characters;
-- repeated primary `gemini-3.5-flash` resolver unavailability followed by structurally or semantically invalid `gemini-2.5-flash` fallback plans;
-- fallback plans that used the group-level `reject_for_phase_2_automation` value as the top-level `overall_decision`;
-- fallback plans that accepted `current_text` values occurring in more than one page location;
-- safe deterministic rejection of those ambiguous edit targets before any page or GitHub mutation.
-
-The current resolver design addresses those observed classes by:
-
-- deriving the redundant top-level decision from group decisions;
-- retaining the exact-one-match validator unchanged;
-- replacing the same-provider Gemini fallback with a cross-provider Groq `openai/gpt-oss-120b` fallback;
-- using low reasoning, final-only output, and a 6,000-token completion cap for the Groq call;
-- using content-addressed attempt state to prevent unchanged terminal resolver calls from repeating;
-- preserving provider and plan failures as artifacts;
-- continuing to fail normally when the fallback provider or fallback plan is unsuccessful.
-
-The cross-provider fallback directly addresses primary Gemini unavailability. The already-committed deterministic `overall_decision` normalization independently addresses top-level-decision drift. The fallback does not guarantee that a Groq plan will satisfy page-dependent constraints such as unique exact `current_text`; the deterministic validator remains authoritative for those cases.
-
-These observations are not guarantees of future provider behavior. The committed workflows, scripts, prompts, tests, and generated artifacts should be treated as authoritative for current automation behavior.
 
 ---
 
-← Previous: [Signals and Issues](signals-and-issues.md) | [Phase 2 index](index.md) | Next: [Prompts and Status](prompts-and-status.md) →
+← Previous: [Signals and Issues](signals-and-issues.md) | [Phase 2 index](index.md) | Next: [Model Run Statistics](model-run-statistics.md) →

@@ -193,11 +193,11 @@ Required status check: Check stereotype page structure
 | Runner | `scripts/phase-2/run_check_agent.py` |
 | Batch runner | `scripts/phase-2/run_check_batch.py` |
 | Prompt | Shared `check-signal-shared-contract-v1.0.0.md` plus `page-hygiene-checker-v1.1.0.md` |
-| Supported provider adapters | `groq`, `gemini`, `cerebras`, `sambanova`, `openrouter` |
-| Active scheduled providers | `cerebras`, `sambanova`, `openrouter`, `gemini` |
+| Supported provider adapters | `sambanova`, `groq`, `gemini`, `openrouter` |
+| Active scheduled providers | `sambanova`, `groq`, `gemini`, `openrouter` |
 | Output | Structured Markdown signal comment |
 | Applies changes | No |
-| Target execution | Periodic conservative rotating batches |
+| Target execution | Periodic quota-aware content-addressed queue |
 
 The Page Hygiene Checker checks only visible page-hygiene issues in Markdown content that is present.
 
@@ -247,11 +247,11 @@ The active shared contract plus `page-hygiene-checker-v1.1.0` prompt is Markdown
 | Runner | `scripts/phase-2/run_check_agent.py` |
 | Batch runner | `scripts/phase-2/run_check_batch.py` |
 | Prompt | Shared `check-signal-shared-contract-v1.0.0.md` plus `language-style-checker-v1.1.0.md` |
-| Supported provider adapters | `groq`, `gemini`, `cerebras`, `sambanova`, `openrouter` |
-| Active scheduled providers | `cerebras`, `sambanova`, `openrouter`, `gemini` |
+| Supported provider adapters | `sambanova`, `groq`, `gemini`, `openrouter` |
+| Active scheduled providers | `sambanova`, `groq`, `gemini`, `openrouter` |
 | Output | Structured Markdown signal comment |
 | Applies changes | No |
-| Target execution | Periodic conservative rotating batches |
+| Target execution | Periodic quota-aware content-addressed queue |
 
 The Language Style Checker identifies low-risk writing-quality issues in one provided canonical stereotype page.
 

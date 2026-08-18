@@ -248,22 +248,22 @@ Completed:
 - `page-hygiene-checker-v1.1.0` defines the page-hygiene-specific instructions;
 - `language-style-checker-v1.1.0` defines the language-style-specific instructions;
 - `run_check_agent.py` runs the two LLM check agents through an agent-aware contract;
-- `run_check_agent.py` supports Groq, Gemini, Cerebras, SambaNova, and OpenRouter provider adapters;
+- `run_check_agent.py` supports SambaNova, Groq, Gemini, and OpenRouter provider adapters;
 - `run_check_agent.py` validates generated LLM output and writes `.invalid.md` debugging files for invalid output;
 - `run_check_batch.py` supports page × agent × model execution for one selected provider;
-- `run_check_batch.py` supports rotating scheduled selection;
+- the quota-aware scheduler selects content-addressed tasks by eligibility and age;
 - `run_check_batch.py` can keep validation rejections nonfatal when `--allow-rejected-check-outputs` is used;
 - `run_check_batch.py` can keep transient provider-side availability failures nonfatal when `--allow-provider-failures` is used while keeping actionable provider failures fatal;
 - `issue_manager.py` implements page-plus-agent issue routing;
 - `issue_manager.py` implements stable comment identity;
 - `issue_manager.py` updates matching existing comments instead of posting duplicates;
-- `.github/workflows/check-agent-signal-collector.yml` runs scheduled rotating LLM check-agent collection;
-- the scheduled signal-collector workflow grants `contents: read` and `issues: write`;
+- `.github/workflows/check-agent-signal-collector.yml` runs scheduled quota-aware LLM check-agent collection;
+- the scheduled signal-collector workflow grants `contents: write` and `issues: write`;
 - scheduled runs can create or update GitHub issues/comments in `post` mode;
-- scheduled model-run statistics updates require `PHASE2_AUTOMATION_TOKEN` and push `docs/methodology/phases/phase-2/model-run-statistics.md` with that token;
-- scheduled provider/model rotation includes seven active Cerebras, SambaNova, OpenRouter, and Gemini provider/model specs, with no active Groq slot;
-- Gemini uses `gemini-3.1-flash-lite` as the current scheduled signal-generation default;
-- scheduled signal-generation runs use `max_completion_tokens=3000` in the canonical workflow when no manual override is supplied;
+- serialized lease and aggregation state commits require `PHASE2_AUTOMATION_TOKEN`;
+- the configured signal queue contains 26 provider-model slots across SambaNova, Groq, Gemini, and OpenRouter;
+- reconciliation produces 2,028 desired tasks from 39 pages, two LLM agents, and those 26 slots;
+- configured signal-generation requests use the registry's per-slot completion cap, currently 3,000 tokens for all slots;
 - generated output paths are ignored by `.gitignore`;
 - the two archived manual issue-review and resolution prompts remain available for `page-hygiene-checker` and `language-style-checker` issues;
 - the absence of a dedicated `page-structure-checker` closure prompt is documented as intentional;
@@ -294,15 +294,12 @@ Completed:
 
 Pending:
 
-1. validate the Groq fallback against the live GitHub Actions environment and current Groq API;
-2. confirm that `GROQ_API_KEY` is configured for the resolver workflow;
-3. confirm that the 6,000-token completion cap provides sufficient headroom for representative resolver inputs;
-4. monitor whether `gpt-oss-120b` reduces invalid duplicate-target plans while preserving fail-closed validation;
-5. decide whether to keep or remove non-canonical support artifacts such as `providers/mock.py` and `.github/workflows/phase-2-check-agents.yml.bak` if they are still present;
-6. document any observed clean baseline with a dated run artifact rather than an undocumented local claim;
-7. extend provider transient-error markers if future observed SDK diagnostics are not caught by the current marker list;
-8. decide whether source signal issues should remain closed after resolver completion or be closed only after PR merge through a separate `pull_request.closed` workflow;
-9. update adjacent methodology pages if they still describe Phase 2 as excluding all automatic PR creation, issue closure, or auto-merge.
+1. complete full-branch validation and cutover preparation from Stage 9 of the accepted recalibration RFC;
+2. confirm all four provider secrets and `PHASE2_AUTOMATION_TOKEN` in the production workflow environment;
+3. run call-free production plans before enabling queue-managed `post` execution;
+4. validate representative real calls only within approved free capacity;
+5. monitor queue, quota, publication, and resolver-attempt state after cutover;
+6. record any operational recovery through committed state or pull-request history.
 
 Deferred outside Phase 2:
 
@@ -315,35 +312,9 @@ Deferred outside Phase 2:
 - semantic patch planning;
 - local/offline model integration.
 
-## Recommended next implementation steps
+## Recommended next implementation step
 
-### Step 1 — Validate the Groq provider and fallback path
-
-The production workflow intentionally has no force-fallback dispatch input. A normal manual workflow dry run reaches Groq only if the primary Gemini invocation genuinely fails with one of the recognized provider-unavailability diagnostics.
-
-First, use the direct Groq dry-run command documented in [Execution and operations](execution-and-operations.md) against representative resolver issues, including a previously problematic duplicate-target case. This deterministically validates:
-
-- `GROQ_API_KEY` authentication in the environment where the command runs;
-- strict JSON plan output with `openai/gpt-oss-120b`;
-- low reasoning effort support;
-- the 6,000-token completion cap;
-- no GitHub mutations in dry-run mode.
-
-Then validate the end-to-end GitHub Actions fallback when a genuine qualifying Gemini failure occurs, or in a temporary test workflow. Confirm that the primary Gemini provider-error artifact is preserved and that Groq is invoked only after the recognized availability failure. Do not weaken the production fallback trigger solely to force a test run.
-
-### Step 2 — Check free-tier headroom
-
-Inspect the live provider response and rate-limit diagnostics for representative small and large issues. Adjust the fallback completion cap only if observed usage or provider errors justify it.
-
-### Step 3 — Monitor queue progress
-
-Track whether the oldest active eligible issue is resolved or safely rejected by the Groq fallback after primary Gemini unavailability.
-
-The cross-provider fallback does not alter the exact-one-match rule. If the same issue continues to block repeated runs because valid provider responses contain ambiguous edit targets, evaluate that behavior separately rather than weakening validation.
-
-### Step 4 — Decide issue-closure semantics
-
-The current resolver closes the source signal issue after resolver completion. If the project later requires issue closure only after successful PR merge, add a separate workflow triggered by merged resolver PRs.
+Complete Stage 9 full-branch validation and cutover preparation from the [accepted recalibration RFC](recalibration-rfc.md). Use call-free `plan` or `simulate` before any production `post` run, then follow the smoke-test order and rollback rules in the RFC. The command and recovery runbook is in [Execution and operations](execution-and-operations.md).
 
 ## Completion criteria
 
@@ -362,7 +333,7 @@ Phase 2 can be considered complete when:
 - generated outputs remain uncommitted;
 - small batch execution works locally;
 - page-structure CI blocks structural regressions;
-- conservative scheduled LLM execution works with the current seven-slot rotation across Cerebras, SambaNova, OpenRouter, and Gemini;
+- quota-aware scheduled LLM execution operates over all 2,028 desired tasks across the 26 configured SambaNova, Groq, Gemini, and OpenRouter slots;
 - the two manual issue-review and resolution prompts for the LLM-based agents exist and are documented;
 - the absence of a dedicated `page-structure-checker` closure prompt is documented as intentional;
 - the two agent-specific automated resolver prompts exist and are documented;
@@ -378,10 +349,10 @@ Phase 2 can be considered complete when:
 - The two LLM-based agents are `page-hygiene-checker` and `language-style-checker`.
 - The `page-structure-checker` runs after canonical stereotype page modifications and blocks structural regressions in CI.
 - The `page-structure-checker` validates the `Generation and Review Log` table schema.
-- The two LLM-based check agents run periodically through the scheduled rotating workflow.
-- The supported LLM signal-generation provider adapters are `groq`, `gemini`, `cerebras`, `sambanova`, and `openrouter`.
-- The current scheduled Gemini model for Phase 2 check-agent signal generation is `gemini-3.1-flash-lite`.
-- The scheduled provider/model rotation includes seven active provider/model specs across Cerebras, SambaNova, OpenRouter, and Gemini; Groq is retained as provider support but has no active scheduled slot.
+- The two LLM-based check agents run periodically through the quota-aware scheduled workflow.
+- The supported LLM signal-generation provider adapters are `sambanova`, `groq`, `gemini`, and `openrouter`.
+- The content-addressed queue contains 2,028 desired tasks across 39 pages, two LLM agents, and 26 configured provider-model slots.
+- The scheduler selects eligible oldest work within shared and model-specific free-quota constraints rather than rotating by time.
 - Gemini runs use reduced-thinking configuration to improve strict-format output reliability.
 - Issue routing is one GitHub issue per page and check agent.
 - Different providers and models executed by the same agent for the same page create comments in the same issue.

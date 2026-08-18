@@ -14,7 +14,7 @@ Phase 2 has eight goals:
 
 1. implement three lightweight check agents for canonical stereotype pages;
 2. run the deterministic Python check agent on canonical stereotype page modifications;
-3. run the two LLM-based check agents periodically in conservative rotating batches;
+3. run the two LLM-based check agents periodically through a quota-aware content-addressed queue;
 4. produce structured, page-local signals about page structure, page hygiene, formatting, and writing quality;
 5. route check-agent outputs to deterministic GitHub issues scoped by page and check agent;
 6. support manual ChatGPT-assisted signal review and issue resolution for the two LLM-based check agents;
@@ -135,13 +135,13 @@ page-structure-checker
 page-hygiene-checker
 └── LLM-based
 └── runs through the check-agent-aware LLM runner
-└── runs periodically through the rotating scheduled workflow
+└── runs periodically through the quota-aware scheduled workflow
 └── reports page-hygiene signals
 
 language-style-checker
 └── LLM-based
 └── runs through the check-agent-aware LLM runner
-└── runs periodically through the rotating scheduled workflow
+└── runs periodically through the quota-aware scheduled workflow
 └── reports language/style signals
 ```
 
@@ -176,7 +176,9 @@ Check signal: page-hygiene-checker: classes/event
 
 ## Current implementation status
 
-The current implementation includes check execution, output validation, page-plus-agent issue routing, duplicate-control for comments, scheduled LLM collection, Groq, Gemini, Cerebras, SambaNova, and OpenRouter provider support for signal generation, archived manual signal-review prompts for the two LLM-based check agents, automated signal-resolution prompts for those check agents, deterministic patch application, PR creation, branch update by rebase, squash auto-merge enablement, issue closure, and an immediate workflow-level Gemini fallback for automated resolver provider-unavailability failures.
+The current implementation includes check execution, output validation, page-plus-agent issue routing, duplicate-control for comments, content-addressed quota-aware collection through SambaNova, Groq, Gemini, and OpenRouter, archived manual signal-review prompts for the two LLM-based check agents, automated signal-resolution prompts for those check agents, deterministic patch application, PR creation, branch update by rebase, squash auto-merge enablement, issue closure, and a one-shot Groq fallback for recognized primary Gemini resolver unavailability.
+
+Signal collection reconciles 39 canonical pages × 2 LLM check agents × 26 configured provider-model slots into 2,028 desired tasks. The global repository SHA is traceability metadata rather than completion identity, so unrelated commits do not repeat completed work.
 
 There is no current dedicated manual or automated closure prompt for `page-structure-checker`; page-structure issues remain subject to direct maintainer review and normal PR review.
 
@@ -199,14 +201,27 @@ scripts/phase-2/run_check_batch.py
 scripts/phase-2/issue_manager.py
 scripts/phase-2/run_page_structure_batch.py
 scripts/phase-2/resolve_signal_issue.py
+scripts/phase-2/provider_model_registry.py
+scripts/phase-2/task_identity.py
+scripts/phase-2/task_state.py
+scripts/phase-2/task_reconciler.py
+scripts/phase-2/quota_state.py
+scripts/phase-2/task_scheduler.py
+scripts/phase-2/provider_worker.py
+scripts/phase-2/aggregate_task_results.py
+scripts/phase-2/state_writer.py
+scripts/phase-2/free_policy.py
 scripts/phase-2/check_agents/page_structure_checker.py
 scripts/phase-2/providers/__init__.py
 scripts/phase-2/providers/openai_compatible.py
 scripts/phase-2/providers/groq.py
 scripts/phase-2/providers/gemini.py
-scripts/phase-2/providers/cerebras.py
 scripts/phase-2/providers/sambanova.py
 scripts/phase-2/providers/openrouter.py
+config/phase-2/provider-models.json
+data/phase-2/task-state.json
+data/phase-2/quota-state.json
+data/phase-2/resolver-attempt-state.json
 ```
 
 Non-canonical or legacy-support artifacts may also exist:
@@ -235,17 +250,16 @@ The current implementation can:
 - compose `language-style-checker` from the shared signal contract and `prompts/phase-2/language-style-checker-v1.1.0.md`;
 - call Groq models through `scripts/phase-2/providers/groq.py`;
 - call Gemini models through `scripts/phase-2/providers/gemini.py`;
-- call Cerebras models through `scripts/phase-2/providers/cerebras.py`;
 - call SambaNova models through `scripts/phase-2/providers/sambanova.py`;
-- call the allowlisted free OpenRouter models through `scripts/phase-2/providers/openrouter.py`;
+- call registered OpenRouter `:free` models only after live zero-price metadata validation;
 - validate generated LLM signal comments against agent-specific contracts;
 - write valid generated comments to `.tmp/phase-2/`;
 - write invalid generated comments to `.invalid.md` files for debugging;
 - run page × check agent × provider × model collection through the scheduled workflow;
 - run page × check agent × model batches for one selected provider through `run_check_batch.py`;
-- select rotating scheduled combinations over time;
-- rotate scheduled signal generation across the configured seven active provider/model specs;
-- run in `generate`, `dry-run`, or `post` mode;
+- reconcile and schedule the 2,028-task content-addressed queue by eligibility, age, provider capacity, and quota state;
+- isolate provider workers and aggregate replayable terminal events into durable operational state;
+- run the collector in `plan`, `simulate`, `generate`, `dry-run`, or `post` mode;
 - write per-run logs and a batch summary under `.tmp/phase-2/`;
 - derive deterministic page-plus-agent issue titles;
 - create or reuse open GitHub issues;
@@ -262,7 +276,7 @@ The current implementation can:
 - select the oldest eligible open `page-hygiene-checker` or `language-style-checker` signal issue for automated resolution;
 - manually resolve a selected issue through `workflow_dispatch`;
 - keep `gemini-3.5-flash` as the primary Gemini model for automated signal resolution;
-- run `gemini-2.5-flash` once as an immediate fallback resolver model when the primary Gemini resolver call fails with provider-unavailability or 503-like diagnostics;
+- run Groq `openai/gpt-oss-120b` once as the resolver fallback when the primary Gemini call fails with recognized provider-unavailability diagnostics;
 - fail normally when the primary resolver call fails for non-provider-unavailability reasons;
 - fail normally when the fallback resolver model also fails;
 - generate and validate a strict JSON resolution plan;
@@ -284,7 +298,7 @@ These capabilities do not mean every scheduled LLM output is valid. Invalid mode
 
 Transient provider-side availability failures and empty provider responses can remain nonfatal in the canonical scheduled signal-collector workflow when `--allow-provider-failures` is used. Quota, rate-limit, authentication, configuration, request-shape, unknown provider, resolver, and issue-manager failures remain fatal unless the relevant retry or wrapper logic succeeds.
 
-The automated resolver workflow has a different failure-handling policy. It does not suppress primary resolver failures in general. It performs one immediate second Gemini model attempt only when the primary Gemini resolver run fails with provider-unavailability or 503-like diagnostics.
+The automated resolver workflow has a different failure-handling policy. It does not suppress primary resolver failures in general. It performs one Groq fallback attempt only for recognized primary Gemini provider unavailability; invalid plans and other failures do not trigger fallback.
 
 ### Current limitations and operational risks
 
@@ -296,9 +310,9 @@ The current implementation still has these limitations and risks:
 - page-structure signals should be handled through direct maintainer review and normal PR review;
 - `providers/mock.py` is not part of the active `run_check_agent.py` provider set;
 - `issue_manager.py` searches only open issues, so closed issues with matching titles are not reused;
-- stable comment identity includes the commit SHA, so a new commit may produce a new model comment for the same page, agent, provider, model, and prompt;
+- stable task identity is content- and configuration-addressed; unrelated commit SHAs are traceability metadata and do not create new work;
 - provider transient-error and actionable-error detection is marker-based and may need extension if future observed SDK diagnostics are not caught by the current marker lists;
-- scheduled LLM signal-collection runs intentionally collect signals gradually rather than executing the full matrix in one workflow execution;
+- scheduled LLM signal collection uses maximum safely usable free capacity but remains bounded by provider quotas and the workflow execution budget;
 - automated resolver output quality depends on strict JSON compliance by the selected model;
 - accepted resolver edits must be exact local replacements and may fail if `current_text` no longer occurs exactly once;
 - resolver fallback detection is marker-based and currently depends on provider-error artifacts under `.tmp/phase-2/resolver`;
@@ -335,7 +349,6 @@ The provider secrets used when the corresponding provider is selected are:
 ```text
 GROQ_API_KEY
 GEMINI_API_KEY
-CEREBRAS_API_KEY
 SAMBANOVA_API_KEY
 OPENROUTER_API_KEY
 ```
@@ -346,7 +359,6 @@ The provider adapters use:
 |---|---|---|
 | `groq` | requires `GROQ_API_KEY` | `GROQ_API_KEY` |
 | `gemini` | reads `GEMINI_API_KEY` or `GOOGLE_API_KEY` | `GEMINI_API_KEY` |
-| `cerebras` | requires `CEREBRAS_API_KEY`; may use `CEREBRAS_BASE_URL` override | `CEREBRAS_API_KEY` |
 | `sambanova` | requires `SAMBANOVA_API_KEY`; may use `SAMBANOVA_BASE_URL` override | `SAMBANOVA_API_KEY` |
 | `openrouter` | requires `OPENROUTER_API_KEY` | `OPENROUTER_API_KEY` |
 
@@ -372,15 +384,14 @@ The scheduled LLM GitHub Actions workflow depends on:
 - dependencies from `requirements.txt`;
 - `GROQ_API_KEY` when Groq is selected;
 - `GEMINI_API_KEY` when Gemini is selected;
-- `CEREBRAS_API_KEY` when Cerebras is selected;
 - `SAMBANOVA_API_KEY` when SambaNova is selected;
 - `OPENROUTER_API_KEY` when OpenRouter is selected;
 - `GH_TOKEN` backed by the default `github.token` for issue posting;
-- `PHASE2_AUTOMATION_TOKEN` when scheduled runs or `update_model_statistics=true` update the model-run statistics page;
-- `contents: read`;
+- `PHASE2_AUTOMATION_TOKEN` for lease and aggregate state commits;
+- `contents: write`;
 - `issues: write`.
 
-The scheduled signal-collector workflow keeps workflow-level repository contents permission read-only. Model-run statistics branch writes use `PHASE2_AUTOMATION_TOKEN` for the push step.
+The scheduled signal-collector workflow has repository contents write permission and uses `PHASE2_AUTOMATION_TOKEN` for serialized lease and aggregation commits through the state writer.
 
 ### Automated resolver workflow prerequisites
 
