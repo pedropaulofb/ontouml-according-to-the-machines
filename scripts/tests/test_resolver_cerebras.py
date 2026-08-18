@@ -80,6 +80,9 @@ class ResolverProviderTests(unittest.TestCase):
         self.assertIn('if [[ "$provider" != "gemini" ]]; then', workflow)
         self.assertIn("provider_unavailable_issue_number()", workflow)
         self.assertNotIn("Running Cerebras fallback", workflow)
+        self.assertIn("PHASE2_RESOLVER_ATTEMPT_EVENT_DIR", workflow)
+        self.assertIn("--add data/phase-2/resolver-attempt-state.json", workflow)
+        self.assertIn("--resolver-attempt-events", workflow)
 
 
 if __name__ == "__main__":

@@ -15,6 +15,10 @@ from typing import Any, Iterable, Mapping, Sequence
 
 from provider_model_registry import DEFAULT_REGISTRY_PATH, ProviderModelRegistry, load_registry
 from provider_runtime import format_timestamp, parse_timestamp, retry_after_seconds, utc_now
+from resolver_attempt_state import aggregate_events as aggregate_resolver_attempt_events
+from resolver_attempt_state import load_event_files as load_resolver_attempt_event_files
+from resolver_attempt_state import load_state as load_resolver_attempt_state
+from resolver_attempt_state import write_state as write_resolver_attempt_state
 from task_state import load_task_state, write_task_state
 
 SCHEMA_VERSION = 1
@@ -750,6 +754,8 @@ def parse_args(argv: Sequence[str] | None = None) -> argparse.Namespace:
     parser.add_argument("--state", default=str(DEFAULT_STATE_PATH))
     parser.add_argument("--task-state", default="data/phase-2/task-state.json")
     parser.add_argument("--events", default=str(DEFAULT_EVENT_DIRECTORY))
+    parser.add_argument("--resolver-attempt-state")
+    parser.add_argument("--resolver-attempt-events")
     parser.add_argument("--provider")
     parser.add_argument("--model")
     parser.add_argument("--task-id")
@@ -796,6 +802,10 @@ def main(argv: Sequence[str] | None = None) -> int:
             )
             return 0
         if args.command == "aggregate":
+            if bool(args.resolver_attempt_state) != bool(args.resolver_attempt_events):
+                raise QuotaStateError(
+                    "Resolver-attempt aggregation requires both --resolver-attempt-state and --resolver-attempt-events."
+                )
             events = load_event_files(event_directory)
             previously_processed = set(state["processed_event_ids"])
             updated, counts = aggregate_events(state, events, registry)
@@ -806,11 +816,24 @@ def main(argv: Sequence[str] | None = None) -> int:
                 events,
                 ignored_event_ids=previously_processed,
             )
+            resolver_counts = {"added": 0, "ignored": 0}
+            resolver_state_path: Path | None = None
+            updated_resolver_state: dict[str, Any] | None = None
+            if args.resolver_attempt_state and args.resolver_attempt_events:
+                resolver_state_path = _resolve(repo_root, args.resolver_attempt_state)
+                resolver_state = load_resolver_attempt_state(resolver_state_path)
+                updated_resolver_state, resolver_counts = aggregate_resolver_attempt_events(
+                    resolver_state,
+                    load_resolver_attempt_event_files(_resolve(repo_root, args.resolver_attempt_events)),
+                )
             write_state(state_path, updated, registry)
             write_task_state(task_state_path, persistent_tasks)
+            if resolver_state_path is not None and updated_resolver_state is not None:
+                write_resolver_attempt_state(resolver_state_path, updated_resolver_state)
             print(
                 f"Aggregated Phase 2 quota events: added={counts['added']}; ignored={counts['ignored']}; "
-                f"changed_tasks={changed_tasks}."
+                f"changed_tasks={changed_tasks}; resolver_attempts_added={resolver_counts['added']}; "
+                f"resolver_attempts_ignored={resolver_counts['ignored']}."
             )
             return 0
         if not args.provider or not args.model:

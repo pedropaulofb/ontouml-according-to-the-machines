@@ -33,21 +33,20 @@ The automated resolver supports:
 ```text
 groq
 gemini
-cerebras
 ```
 
 The default scheduled resolver path is:
 
 ```text
 primary: gemini:gemini-3.5-flash
-fallback for recognized primary unavailability: cerebras:gpt-oss-120b
+fallback for recognized primary unavailability: groq:openai/gpt-oss-120b
 ```
 
 | Provider | Signal-generation adapter | Resolver implementation | API key |
 |---|---|---|---|
 | `groq` | `scripts/phase-2/providers/groq.py` | `scripts/phase-2/resolve_signal_issue.py` | `GROQ_API_KEY` |
 | `gemini` | `scripts/phase-2/providers/gemini.py` | `scripts/phase-2/resolve_signal_issue.py` | `GEMINI_API_KEY` in GitHub Actions; `GEMINI_API_KEY` or `GOOGLE_API_KEY` locally |
-| `cerebras` | `scripts/phase-2/providers/cerebras.py` | `scripts/phase-2/resolve_signal_issue.py` | `CEREBRAS_API_KEY` |
+| `cerebras` | `scripts/phase-2/providers/cerebras.py` | not supported by the automated resolver | `CEREBRAS_API_KEY` |
 | `sambanova` | `scripts/phase-2/providers/sambanova.py` | not supported by the automated resolver | `SAMBANOVA_API_KEY` |
 | `openrouter` | `scripts/phase-2/providers/openrouter.py` | not supported by the automated resolver | `OPENROUTER_API_KEY` |
 
@@ -70,7 +69,7 @@ Direct `run_check_batch.py` execution requires explicit provider/model selection
 
 The canonical scheduled signal-generation workflow no longer includes `groq:llama-3.3-70b-versatile` and does not add a replacement Groq model. Groq can be used again only if a future explicit model selection is added and validated.
 
-The automated resolver retains direct Groq support for manual execution. Groq is not the configured scheduled fallback.
+The automated resolver uses `groq:openai/gpt-oss-120b` as its fixed scheduled fallback after recognized Gemini provider unavailability. The Groq route uses low reasoning, suppresses reasoning output, caps the plan at 6,000 completion tokens, and remains subject to deterministic plan validation.
 
 ### Gemini provider
 
@@ -125,7 +124,7 @@ The Gemini resolver call uses reduced-thinking configuration:
 
 This setting improves strict-format output reliability but does not replace deterministic validation.
 
-If the primary Gemini resolver call fails with recognized provider-unavailability or 503-like diagnostics, the GitHub Actions workflow invokes the configured Cerebras fallback for the same issue. Invalid Gemini plans remain ordinary plan-validation failures and do not trigger the provider fallback.
+If the primary Gemini resolver call fails with recognized provider-unavailability or 503-like diagnostics, the GitHub Actions workflow invokes the configured Groq fallback for the same issue. Invalid Gemini plans remain ordinary plan-validation failures and do not trigger the provider fallback.
 
 ### Cerebras provider
 
@@ -158,36 +157,7 @@ https://api.cerebras.ai/v1
 
 #### Cerebras automated resolver support
 
-The automated resolver uses the already installed `openai` SDK directly against the Cerebras OpenAI-compatible endpoint. No additional runtime dependency is required. The Cerebras resolver path currently supports only `gpt-oss-120b`, because its low-reasoning request controls are model-specific.
-
-The scheduled fallback configuration is:
-
-```text
-provider: cerebras
-model: gpt-oss-120b
-reasoning_effort: low
-max_completion_tokens: 6000
-temperature: 0
-provider_max_attempts: 1
-response format: JSON object
-```
-
-The fallback requires:
-
-```text
-CEREBRAS_API_KEY
-```
-
-The fallback is activated only when:
-
-1. the selected primary provider is Gemini;
-2. the primary resolver call fails;
-3. a resolver provider-error artifact exists;
-4. that artifact matches configured provider-unavailability or 503-like diagnostics.
-
-The workflow preserves the primary provider error before starting the Cerebras call. Plan parsing, deterministic normalization, exact-edit validation, and all repository mutations continue to use the existing resolver logic.
-
-The workflow fallback model is fixed to `gpt-oss-120b`; it is not exposed as a generic Cerebras-model override. The resolver constructs the OpenAI-compatible client with `max_retries=0`, so `provider_max_attempts: 1` performs one initial Cerebras API request without additional OpenAI SDK retry attempts.
+Cerebras resolver support has been removed. The existing signal-generation adapter file is outside the resolver and has no executable provider-model slot in the current registry. The automated resolver has no Cerebras provider path, fallback, API-key requirement, or workflow secret.
 
 ### SambaNova provider
 
@@ -279,8 +249,8 @@ For resolver runs:
 - `resolve_signal_issue.py` defaults to `--provider-max-attempts 1`;
 - the scheduled resolver workflow also passes `--provider-max-attempts 1`;
 - no resolver provider retry or backoff loop occurs in the scheduled workflow;
-- the default scheduled fallback is one cross-provider Cerebras `gpt-oss-120b` call after recognized primary Gemini provider unavailability;
-- the Cerebras call uses JSON-object response mode, low reasoning effort, and a 6,000-token completion cap;
+- the default scheduled fallback is one cross-provider Groq `openai/gpt-oss-120b` call after recognized primary Gemini provider unavailability;
+- the Groq call uses low reasoning, final-only output, and a 6,000-token completion cap;
 - invalid model plans remain validation failures and do not trigger another provider;
 - non-provider failures remain fatal;
 - fallback failures remain fatal and observable.

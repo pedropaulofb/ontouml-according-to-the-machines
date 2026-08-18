@@ -34,7 +34,7 @@ It does not support `page-structure-checker`.
 
 ### Resolver issue selection
 
-When no issue is supplied manually, the resolver selects the oldest open eligible issue for the supported check agents.
+When no issue is supplied manually, the resolver considers open eligible issues for the supported check agents in oldest-first order. It selects the first issue that has active valid signal comments and no terminal attempt for the same content-addressed resolver identity.
 
 Eligibility requires the issue title to match:
 
@@ -57,6 +57,10 @@ relations/<id>
 ```
 
 Manual workflow dispatch may provide an explicit issue number or issue URL.
+
+An active signal comment must carry a content-addressed task marker whose task is completed and published in `data/phase-2/task-state.json`. The task must target the issue's agent and page, and its agent-scoped content hash must match the current page. This deterministically excludes obsolete, superseded, unpublished, and untracked comments from resolver input.
+
+The compact resolver input contains the issue number, title, agent, reviewed page, active signal provenance and bodies, and the current page content. It does not repeat the issue body, comment authors, timestamps, URLs, or inactive comments.
 
 ### Resolver decision model
 
@@ -128,10 +132,7 @@ The resolver script supports these providers:
 ```text
 groq
 gemini
-cerebras
 ```
-
-For Cerebras, this resolver path supports only `gpt-oss-120b`; its request controls are model-specific.
 
 The resolver script default provider and model remain:
 
@@ -167,11 +168,11 @@ primary provider: gemini
 primary model: gemini-3.5-flash
 primary max_completion_tokens: 8000
 
-fallback provider: cerebras
-fallback model: gpt-oss-120b
+fallback provider: groq
+fallback model: openai/gpt-oss-120b
 fallback max_completion_tokens: 6000
-fallback reasoning_effort: low
-Cerebras SDK transport retries: disabled (max_retries=0)
+fallback reasoning: low
+fallback final output: only the strict JSON plan
 ```
 
 The fallback behavior is implemented in `.github/workflows/phase-2-signal-resolver.yml`, not as a general `resolve_signal_issue.py` command-line option.
@@ -181,7 +182,7 @@ The workflow-level fallback sequence is:
 ```text
 run resolver once with the selected primary provider/model
 → if the run succeeds, exit successfully
-→ if the primary provider is Gemini and its provider-error artifact contains provider-unavailability or 503-like diagnostics, run Cerebras gpt-oss-120b once for the same issue
+→ if the primary provider is Gemini and its provider-error artifact contains provider-unavailability or 503-like diagnostics, run Groq openai/gpt-oss-120b once for the same issue
 → otherwise fail the workflow normally
 ```
 
@@ -218,29 +219,52 @@ to:
 issue-<issue-number>-primary-provider-error.txt
 ```
 
-Then it runs the Cerebras fallback once.
+Then it runs the Groq fallback once.
 
 The fallback does **not** hide non-provider failures:
 
 - if the primary call fails for quota, rate-limit, authentication, configuration, invalid request, output-validation, plan-validation, GitHub, or other non-provider-unavailability reasons, the workflow fails normally;
 - if the primary call fails for an unrecognized provider error that does not match the workflow marker pattern, the workflow fails normally;
-- if the Cerebras fallback model also fails, the workflow fails normally.
+- if the Groq fallback model also fails, the workflow fails normally.
 
-Manual dispatch can override the primary `provider` and `model`. The cross-provider fallback remains fixed to Cerebras `gpt-oss-120b` and is used only when the selected primary provider is `gemini` and the primary failure matches provider-unavailability diagnostics.
+Manual dispatch can override the primary `provider` and `model`. The cross-provider fallback remains fixed to Groq `openai/gpt-oss-120b` and is used only when the selected primary provider is `gemini` and the primary failure matches provider-unavailability diagnostics.
 
-Cerebras resolver calls use the existing OpenAI-compatible dependency and require:
-
-```text
-CEREBRAS_API_KEY
-```
-
-`CEREBRAS_BASE_URL` may optionally override the default endpoint:
+Groq resolver calls require:
 
 ```text
-https://api.cerebras.ai/v1
+GROQ_API_KEY
 ```
 
-The Cerebras request uses low reasoning effort and JSON mode. The existing deterministic parser, normalizers, and plan validator remain authoritative for the resolver contract and page-dependent safety checks.
+Gemini resolver calls require `GEMINI_API_KEY` in GitHub Actions; local execution may use `GEMINI_API_KEY` or `GOOGLE_API_KEY`.
+
+Both routes use the configured low-reasoning policy and suppress provider reasoning from the returned plan. The existing deterministic parser, normalizers, and plan validator remain authoritative for the resolver contract and page-dependent safety checks.
+
+### Resolver attempt identity and persistence
+
+Each provider call has a content-addressed identity containing:
+
+```text
+issue number
+agent
+page content hash
+normalized active-signal snapshot hash
+resolver prompt hash
+resolver validator version
+provider and model
+request configuration hash
+```
+
+Terminal outcomes are emitted under `.tmp/phase-2/resolver-attempt-events` and aggregated idempotently into:
+
+```text
+data/phase-2/resolver-attempt-state.json
+```
+
+Provider failures after a request, invalid plans, deterministic execution failures, and completed attempts block the unchanged identity from another provider call. A pre-call withholding or configuration failure is recorded as `not_called` and does not falsely consume the logical attempt. A page change, active-signal change, prompt change, validator change, provider/model change, or request-configuration change produces a new attempt identity.
+
+If a persisted unchanged Gemini attempt failed for recognized provider unavailability and the Groq identity remains eligible, a later primary run emits the same fallback signal without calling Gemini again. Invalid Gemini plans are terminal validation outcomes and do not invoke Groq.
+
+Resolver provider calls emit the same replayable quota events as signal-generation calls. The workflow's always-running shared state-writer step aggregates quota events, task consequences, and resolver-attempt events against the latest branch state before committing them. Resolver preflight uses those quota observations and attempt records when reserving the Gemini or Groq shared scheduler slot.
 
 ### Resolver accepted-change flow
 
@@ -394,7 +418,7 @@ Manual dispatch inputs:
 | Input | Purpose |
 |---|---|
 | `issue` | Issue number or URL. Empty means oldest eligible open issue. |
-| `provider` | Primary workflow provider: `gemini` or `groq`; default `gemini`. Cerebras is used by the fixed fallback path. |
+| `provider` | Primary workflow provider: `gemini` or `groq`; default `gemini`. Groq is also used by the fixed fallback path. |
 | `model` | Primary provider model; default `gemini-3.5-flash`. |
 | `dry_run` | Generate and validate a resolution plan without GitHub writes. |
 
@@ -412,13 +436,13 @@ The workflow checks out the repository with `secrets.PHASE2_AUTOMATION_TOKEN` an
 The cross-provider fallback additionally requires:
 
 ```text
-CEREBRAS_API_KEY
+GROQ_API_KEY
 ```
 
 Concurrency group:
 
 ```text
-phase-2-automated-signal-resolver
+phase-2-operational-state-write
 ```
 
 with:
@@ -431,6 +455,8 @@ The workflow uploads resolver plan artifacts from:
 
 ```text
 .tmp/phase-2/resolver
+.tmp/phase-2/quota-events
+.tmp/phase-2/resolver-attempt-events
 ```
 
 as:

@@ -179,6 +179,15 @@ class OverallDecisionNormalizationTests(unittest.TestCase):
             output_dir = Path(tmpdir)
             with (
                 mock.patch.object(resolver, "parse_args", return_value=args),
+                mock.patch.object(resolver, "load_resolver_attempt_state", return_value={"attempts": {}}),
+                mock.patch.object(resolver, "load_task_state", return_value={"tasks": {}}),
+                mock.patch.object(
+                    resolver,
+                    "collect_active_signal_comments",
+                    return_value=(
+                        resolver.ActiveSignalComment("1", "task-218", "gemini", "gemini-2.5-flash", "Active signal."),
+                    ),
+                ),
                 mock.patch.object(resolver, "read_issue", return_value=issue),
                 mock.patch.object(
                     resolver,

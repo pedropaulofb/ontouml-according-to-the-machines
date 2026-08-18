@@ -457,7 +457,13 @@ class ResolverAndWorkflowTests(unittest.TestCase):
 
     def preflight(self, quota: dict[str, object], issue=1) -> bool:
         with (
-            mock.patch.object(resolver, "find_oldest_open_signal_issue", return_value=issue),
+            mock.patch.object(resolver, "open_signal_issue_candidates", return_value=[] if issue is None else [issue]),
+            mock.patch.object(resolver, "read_issue", return_value=mock.sentinel.issue),
+            mock.patch.object(resolver, "attempt_context_for_issue", return_value=mock.Mock(identity={})),
+            mock.patch.object(resolver, "attempt_record", return_value=None),
+            mock.patch.object(resolver, "_fallback_remains_eligible", return_value=True),
+            mock.patch.object(resolver, "load_resolver_attempt_state", return_value={"attempts": {}}),
+            mock.patch.object(resolver, "load_task_state", return_value={"tasks": {}}),
             mock.patch.object(resolver, "load_registry", return_value=self.registry),
             mock.patch.object(resolver, "load_quota_state", return_value=quota),
             mock.patch.object(resolver, "load_event_files", return_value=[]),

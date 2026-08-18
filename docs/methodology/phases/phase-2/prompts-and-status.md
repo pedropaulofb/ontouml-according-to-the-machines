@@ -178,16 +178,15 @@ The default scheduled resolver sequence is:
 ```text
 primary: gemini:gemini-3.5-flash
 primary max_completion_tokens: 8000
-fallback after recognized primary provider unavailability: cerebras:gpt-oss-120b
+fallback after recognized primary provider unavailability: groq:openai/gpt-oss-120b
 fallback max_completion_tokens: 6000
-fallback reasoning_effort: low
+fallback reasoning: low
 provider_max_attempts per resolver call: 1
-Cerebras SDK transport retries: disabled (max_retries=0)
 ```
 
 The cross-provider fallback is workflow orchestration, not a third resolver prompt. It targets the same issue and uses the same agent-specific resolver prompt. The fallback invocation re-reads the issue snapshot and the page from the unchanged workflow checkout before building its input.
 
-Cerebras calls request a JSON object. The existing parser, deterministic normalization, plan validator, exact-one-match rule, page-structure check, and GitHub mutation sequence remain unchanged and provider-independent.
+Groq calls suppress reasoning output and return only the strict JSON plan. The existing parser, deterministic normalization, plan validator, exact-one-match rule, page-structure check, and GitHub mutation sequence remain unchanged and provider-independent.
 
 The resolver still fails closed when:
 
@@ -274,8 +273,10 @@ Completed:
 - `.github/workflows/phase-2-signal-resolver.yml` runs scheduled and manual automated signal resolution;
 - the automated resolver schedule is one scheduled attempt every four hours;
 - the automated resolver keeps `gemini-3.5-flash` as the primary resolver model;
-- the automated resolver uses Cerebras `gpt-oss-120b` as a cross-provider fallback only for recognized primary Gemini provider unavailability;
-- the Cerebras fallback uses JSON-object response mode, low reasoning effort, and a 6,000-token completion cap;
+- the automated resolver uses Groq `openai/gpt-oss-120b` as a cross-provider fallback only for recognized primary Gemini provider unavailability;
+- the Groq fallback uses low reasoning, final-only output, and a 6,000-token completion cap;
+- resolver inputs include only active published task-addressed signals for the current page identity;
+- content-addressed resolver-attempt state prevents unchanged terminal attempts from repeatedly calling a provider;
 - the automated resolver selects the oldest eligible open signal issue when no issue is provided;
 - the automated resolver can run in dry-run mode;
 - the automated resolver validates strict JSON plans;
@@ -293,8 +294,8 @@ Completed:
 
 Pending:
 
-1. validate the new Cerebras fallback against the live GitHub Actions environment and current Cerebras API;
-2. confirm that `CEREBRAS_API_KEY` is configured for the resolver workflow;
+1. validate the Groq fallback against the live GitHub Actions environment and current Groq API;
+2. confirm that `GROQ_API_KEY` is configured for the resolver workflow;
 3. confirm that the 6,000-token completion cap provides sufficient headroom for representative resolver inputs;
 4. monitor whether `gpt-oss-120b` reduces invalid duplicate-target plans while preserving fail-closed validation;
 5. decide whether to keep or remove non-canonical support artifacts such as `providers/mock.py` and `.github/workflows/phase-2-check-agents.yml.bak` if they are still present;
@@ -316,19 +317,19 @@ Deferred outside Phase 2:
 
 ## Recommended next implementation steps
 
-### Step 1 — Validate the Cerebras provider and fallback path
+### Step 1 — Validate the Groq provider and fallback path
 
-The production workflow intentionally has no force-fallback dispatch input. A normal manual workflow dry run reaches Cerebras only if the primary Gemini invocation genuinely fails with one of the recognized provider-unavailability diagnostics.
+The production workflow intentionally has no force-fallback dispatch input. A normal manual workflow dry run reaches Groq only if the primary Gemini invocation genuinely fails with one of the recognized provider-unavailability diagnostics.
 
-First, use the direct Cerebras dry-run command documented in [Execution and operations](execution-and-operations.md) against representative resolver issues, including a previously problematic duplicate-target case. This deterministically validates:
+First, use the direct Groq dry-run command documented in [Execution and operations](execution-and-operations.md) against representative resolver issues, including a previously problematic duplicate-target case. This deterministically validates:
 
-- `CEREBRAS_API_KEY` authentication in the environment where the command runs;
-- JSON-object response mode with `gpt-oss-120b`;
+- `GROQ_API_KEY` authentication in the environment where the command runs;
+- strict JSON plan output with `openai/gpt-oss-120b`;
 - low reasoning effort support;
 - the 6,000-token completion cap;
 - no GitHub mutations in dry-run mode.
 
-Then validate the end-to-end GitHub Actions fallback when a genuine qualifying Gemini failure occurs, or in a temporary test workflow. Confirm that the primary Gemini provider-error artifact is preserved and that Cerebras is invoked only after the recognized availability failure. Do not weaken the production fallback trigger solely to force a test run.
+Then validate the end-to-end GitHub Actions fallback when a genuine qualifying Gemini failure occurs, or in a temporary test workflow. Confirm that the primary Gemini provider-error artifact is preserved and that Groq is invoked only after the recognized availability failure. Do not weaken the production fallback trigger solely to force a test run.
 
 ### Step 2 — Check free-tier headroom
 
@@ -336,7 +337,7 @@ Inspect the live provider response and rate-limit diagnostics for representative
 
 ### Step 3 — Monitor queue progress
 
-Track whether the oldest eligible issue is resolved or safely rejected by the Cerebras fallback after primary Gemini unavailability.
+Track whether the oldest active eligible issue is resolved or safely rejected by the Groq fallback after primary Gemini unavailability.
 
 The cross-provider fallback does not alter the exact-one-match rule. If the same issue continues to block repeated runs because valid provider responses contain ambiguous edit targets, evaluate that behavior separately rather than weakening validation.
 
@@ -366,8 +367,8 @@ Phase 2 can be considered complete when:
 - the absence of a dedicated `page-structure-checker` closure prompt is documented as intentional;
 - the two agent-specific automated resolver prompts exist and are documented;
 - the automated resolver can select eligible issues, validate complete plans, safely normalize redundant schema drift, preserve exact edit constraints, apply accepted exact edits, reject unsafe or out-of-scope signals, create PRs, enable squash auto-merge, and close source signal issues;
-- the automated resolver schedule, primary Gemini model, cross-provider Cerebras fallback, completion-token settings, and failure behavior are documented;
-- the repository permissions, branch-protection settings, `PHASE2_AUTOMATION_TOKEN`, `GEMINI_API_KEY`, and `CEREBRAS_API_KEY` allow the automated resolver workflow to complete its intended path.
+- the automated resolver schedule, primary Gemini model, cross-provider Groq fallback, completion-token settings, attempt identity, and failure behavior are documented;
+- the repository permissions, branch-protection settings, `PHASE2_AUTOMATION_TOKEN`, `GEMINI_API_KEY`, and `GROQ_API_KEY` allow the automated resolver workflow to complete its intended path.
 
 ## Generation and review log
 
@@ -392,8 +393,9 @@ Phase 2 can be considered complete when:
 - The active agent-specific automated resolver prompt IDs are `resolve-page-hygiene-signal-issue-v1.2.2` and `resolve-language-style-signal-issue-v1.2.2`.
 - Automated resolver prompts return strict JSON plans and classify non-accepted cases as `reject_for_phase_2_automation`.
 - The automated resolver keeps `gemini-3.5-flash` as the primary resolver model.
-- The automated resolver workflow uses Cerebras `gpt-oss-120b` as a one-shot cross-provider fallback only for recognized primary Gemini provider unavailability.
-- The Cerebras fallback uses JSON-object response mode, low reasoning effort, and a 6,000-token completion cap.
+- The automated resolver workflow uses Groq `openai/gpt-oss-120b` as a one-shot cross-provider fallback only for recognized primary Gemini provider unavailability.
+- The Groq fallback uses low reasoning, final-only output, and a 6,000-token completion cap.
+- Content-addressed resolver-attempt state prevents unchanged terminal attempts from repeatedly calling a provider.
 - The resolver deterministically derives `overall_decision` from signal-group decisions.
 - The exact-one-match rule remains unchanged; ambiguous targets are never selected automatically.
 - The automated resolver schedule is one scheduled attempt every four hours.

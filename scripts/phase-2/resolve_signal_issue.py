@@ -26,12 +26,13 @@ import time
 from dataclasses import dataclass
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import Any, Callable
+from typing import Any, Callable, Mapping
 
 SCRIPT_DIRECTORY = Path(__file__).resolve().parent
 if str(SCRIPT_DIRECTORY) not in sys.path:
     sys.path.insert(0, str(SCRIPT_DIRECTORY))
 
+from issue_manager import parse_comment_identity_marker, strip_existing_comment_identity_marker  # noqa: E402
 from provider_model_registry import (  # noqa: E402
     DEFAULT_REGISTRY_PATH,
     RegistryValidationError,
@@ -48,6 +49,29 @@ from quota_state import (  # noqa: E402
     slot_eligibility,
 )
 from quota_state import load_state as load_quota_state  # noqa: E402
+from reasoning_policy import gemini_thinking_kwargs, groq_request_kwargs  # noqa: E402
+from resolver_attempt_state import (  # noqa: E402
+    BLOCKING_STATUSES as BLOCKING_ATTEMPT_STATUSES,
+)
+from resolver_attempt_state import (  # noqa: E402
+    DEFAULT_STATE_PATH as DEFAULT_RESOLVER_ATTEMPT_STATE_PATH,
+)
+from resolver_attempt_state import (  # noqa: E402
+    active_signal_snapshot,
+    attempt_id_for,
+    attempt_is_blocked,
+    attempt_record,
+    build_attempt_identity,
+    sha256_canonical_json,
+)
+from resolver_attempt_state import (  # noqa: E402
+    load_state as load_resolver_attempt_state,
+)
+from resolver_attempt_state import (  # noqa: E402
+    write_event as write_resolver_attempt_event,
+)
+from task_identity import scope_page_content_for_agent, sha256_text  # noqa: E402
+from task_state import load_task_state  # noqa: E402
 
 SUPPORTED_AGENTS = {
     "page-hygiene-checker": "prompts/phase-2/resolve-page-hygiene-signal-issue-v1.2.2.md",
@@ -92,10 +116,24 @@ JSON_SYSTEM_INSTRUCTION = (
 )
 RESOLVER_PRIMARY_SPEC = ("gemini", "gemini-3.5-flash")
 RESOLVER_FALLBACK_SPEC = ("groq", "openai/gpt-oss-120b")
+RESOLVER_FALLBACK_MAX_COMPLETION_TOKENS = 6000
+RESOLVER_VALIDATOR_VERSION = "resolver-plan-validator-v1.2.2"
+RESOLVER_REQUEST_CONFIG_VERSION = "resolver-request-v1"
+DEFAULT_TASK_STATE_PATH = Path("data/phase-2/task-state.json")
 
 
 class ResolverError(RuntimeError):
     """Raised when automated resolution cannot proceed safely."""
+
+
+class ProviderAttemptError(ResolverError):
+    """A resolver provider failure with stable quota and attempt semantics."""
+
+    def __init__(self, message: str, *, failure_kind: str, request_sent: bool) -> None:
+        super().__init__(f"provider_error_kind={failure_kind}: {message}")
+        self.detail = message
+        self.failure_kind = failure_kind
+        self.request_sent = request_sent
 
 
 @dataclass(frozen=True)
@@ -110,6 +148,38 @@ class IssueSnapshot:
     agent: str
     reviewed_page: str
     comments: list[dict[str, Any]]
+
+
+@dataclass(frozen=True)
+class ActiveSignalComment:
+    """One current task-addressed signal comment supplied to the resolver."""
+
+    comment_id: str
+    task_id: str
+    provider: str
+    model: str
+    body: str
+
+    def as_snapshot(self) -> dict[str, str]:
+        return {
+            "comment_id": self.comment_id,
+            "task_id": self.task_id,
+            "provider": self.provider,
+            "model": self.model,
+            "body": self.body,
+        }
+
+
+@dataclass(frozen=True)
+class ResolverAttemptContext:
+    """Deterministic resolver inputs and their content-addressed attempt identity."""
+
+    issue: IssueSnapshot
+    page_text: str
+    prompt: str
+    active_comments: tuple[ActiveSignalComment, ...]
+    identity: dict[str, Any]
+    attempt_id: str
 
 
 def positive_int(value: str) -> int:
@@ -151,6 +221,11 @@ def parse_args() -> argparse.Namespace:
     )
     parser.add_argument("--branch-prefix", default="phase-2/auto-resolve")
     parser.add_argument(
+        "--attempt-state",
+        default=str(DEFAULT_RESOLVER_ATTEMPT_STATE_PATH),
+        help="Persistent content-addressed resolver-attempt state.",
+    )
+    parser.add_argument(
         "--preflight-only",
         action="store_true",
         help="Report whether eligible resolver work should reserve either shared provider-model slot.",
@@ -182,7 +257,7 @@ def issue_number(value: str) -> int:
     raise ResolverError(f"Could not parse issue number: {value}")
 
 
-def search_oldest_open_issue_for_agent(repo: str, agent: str) -> dict[str, Any] | None:
+def search_open_issues_for_agent(repo: str, agent: str) -> list[dict[str, Any]]:
     query = f'repo:{repo} is:issue is:open in:title "Check signal: {agent}:"'
     raw = run(
         [
@@ -198,35 +273,52 @@ def search_oldest_open_issue_for_agent(repo: str, agent: str) -> dict[str, Any] 
             "-f",
             "order=asc",
             "-f",
-            "per_page=10",
+            "per_page=100",
+            "--paginate",
+            "--slurp",
         ]
     )
     data = json.loads(raw)
-    for item in data.get("items") or []:
-        title = item.get("title") or ""
-        match = ISSUE_TITLE_RE.match(title)
-        if not match or match.group("agent") != agent:
-            continue
-        page_identity = match.group("page")
-        if page_identity.startswith("classes/") or page_identity.startswith("relations/"):
-            return item
-    return None
+    matches: list[dict[str, Any]] = []
+    pages = data if isinstance(data, list) else [data]
+    for page in pages:
+        if not isinstance(page, dict):
+            raise ResolverError("GitHub issue search returned an invalid page.")
+        for item in page.get("items") or []:
+            title = item.get("title") or ""
+            match = ISSUE_TITLE_RE.match(title)
+            if not match or match.group("agent") != agent:
+                continue
+            page_identity = match.group("page")
+            if page_identity.startswith("classes/") or page_identity.startswith("relations/"):
+                matches.append(item)
+    return matches
+
+
+def search_oldest_open_issue_for_agent(repo: str, agent: str) -> dict[str, Any] | None:
+    issues = search_open_issues_for_agent(repo, agent)
+    return min(issues, key=lambda item: str(item.get("created_at") or "")) if issues else None
+
+
+def open_signal_issue_candidates(repo: str) -> list[int]:
+    candidates = [issue for agent in AUTOMATED_ISSUE_AGENTS for issue in search_open_issues_for_agent(repo, agent)]
+    candidates.sort(key=lambda item: (str(item.get("created_at") or ""), int(item.get("number") or 0)))
+    numbers: list[int] = []
+    for candidate in candidates:
+        number = candidate.get("number")
+        if not isinstance(number, int):
+            raise ResolverError(f"Eligible issue candidate has invalid number: {number!r}")
+        if number not in numbers:
+            numbers.append(number)
+    return numbers
 
 
 def find_oldest_open_signal_issue(repo: str) -> int | None:
-    candidates: list[dict[str, Any]] = []
-    for agent in AUTOMATED_ISSUE_AGENTS:
-        issue = search_oldest_open_issue_for_agent(repo, agent)
-        if issue is not None:
-            candidates.append(issue)
+    candidates = open_signal_issue_candidates(repo)
     if not candidates:
         return None
-    oldest = min(candidates, key=lambda item: str(item.get("created_at") or ""))
-    title = oldest.get("title") or ""
-    number = oldest.get("number")
-    if not isinstance(number, int):
-        raise ResolverError(f"Oldest eligible issue has invalid number: {number!r}")
-    print(f"Selected oldest eligible open Phase 2 signal issue #{number}: {title}")
+    number = candidates[0]
+    print(f"Selected oldest eligible open Phase 2 signal issue #{number}.")
     return number
 
 
@@ -277,33 +369,106 @@ def load_text(path: Path) -> str:
     return path.read_text(encoding="utf-8")
 
 
-def build_llm_input(issue: IssueSnapshot, page_text: str) -> str:
-    comment_blocks: list[str] = []
+def collect_active_signal_comments(
+    issue: IssueSnapshot,
+    page_text: str,
+    task_state: Mapping[str, Any],
+) -> tuple[ActiveSignalComment, ...]:
+    """Select only published comments for current, non-obsolete task identities."""
+    scoped_page, _scope_note = scope_page_content_for_agent(agent=issue.agent, page_content=page_text)
+    current_content_sha256 = sha256_text(scoped_page)
+    active: list[ActiveSignalComment] = []
+    seen_comment_ids: set[str] = set()
     for comment in issue.comments:
-        author = comment.get("author") or {}
-        author_login = author.get("login", "") if isinstance(author, dict) else str(author)
-        comment_blocks.append(
-            "\n".join(
-                [
-                    f"COMMENT ID: {comment.get('id', '')}",
-                    f"AUTHOR: {author_login}",
-                    f"CREATED AT: {comment.get('createdAt', '')}",
-                    "BODY:",
-                    comment.get("body") or "",
-                ]
+        body = comment.get("body")
+        if not isinstance(body, str) or not body.strip():
+            continue
+        marker = parse_comment_identity_marker(body)
+        if marker is None or "task_id" not in marker:
+            continue
+        task_id = marker["task_id"]
+        task = task_state.get("tasks", {}).get(task_id)
+        if not isinstance(task, dict) or task.get("status") != "completed":
+            continue
+        publication = task.get("publication")
+        if not isinstance(publication, dict) or publication.get("status") != "published":
+            continue
+        identity = task.get("identity")
+        if not isinstance(identity, dict):
+            continue
+        if any(
+            (
+                marker.get("page") != issue.reviewed_page,
+                marker.get("agent") != issue.agent,
+                identity.get("page") != issue.reviewed_page,
+                identity.get("agent") != issue.agent,
+                identity.get("provider") != marker.get("provider"),
+                identity.get("model") != marker.get("model"),
+                identity.get("content_sha256") != current_content_sha256,
+            )
+        ):
+            continue
+        comment_id = str(comment.get("id") or "").strip()
+        if not comment_id or comment_id in seen_comment_ids:
+            continue
+        visible_body = strip_existing_comment_identity_marker(body).strip()
+        if not visible_body:
+            continue
+        active.append(
+            ActiveSignalComment(
+                comment_id=comment_id,
+                task_id=task_id,
+                provider=str(identity["provider"]),
+                model=str(identity["model"]),
+                body=visible_body,
             )
         )
+        seen_comment_ids.add(comment_id)
+    active.sort(key=lambda item: (item.comment_id, item.task_id))
+    return tuple(active)
+
+
+def build_llm_input(
+    issue: IssueSnapshot,
+    page_text: str,
+    active_comments: tuple[ActiveSignalComment, ...] | None = None,
+) -> str:
+    """Render compact resolver input with only deterministically active signals."""
+    selected_comments = (
+        active_comments
+        if active_comments is not None
+        else tuple(
+            ActiveSignalComment(
+                comment_id=str(comment.get("id") or "unknown"),
+                task_id="legacy-untracked",
+                provider="unknown",
+                model="unknown",
+                body=str(comment.get("body") or ""),
+            )
+            for comment in issue.comments
+            if str(comment.get("body") or "").strip()
+        )
+    )
+    comment_blocks = [
+        "\n".join(
+            [
+                f"COMMENT ID: {comment.comment_id}",
+                f"TASK ID: {comment.task_id}",
+                f"PROVIDER: {comment.provider}",
+                f"MODEL: {comment.model}",
+                "BODY:",
+                comment.body,
+            ]
+        )
+        for comment in selected_comments
+    ]
     comments_text = "\n\n---\n\n".join(comment_blocks)
     return f"""ISSUE NUMBER: {issue.number}
 ISSUE TITLE: {issue.title}
-ISSUE URL: {issue.url}
 AGENT: {issue.agent}
 REVIEWED PAGE: {issue.reviewed_page}
 
-ISSUE BODY:
-{issue.body}
-
-ISSUE COMMENTS:
+ACTIVE VALID SIGNAL COMMENTS:
 {comments_text}
 
 CURRENT REVIEWED PAGE CONTENT:
@@ -311,6 +476,70 @@ CURRENT REVIEWED PAGE CONTENT:
 {page_text}
 ```
 """
+
+
+def resolver_request_configuration(
+    *, provider: str, model: str, max_completion_tokens: int, max_attempts: int
+) -> dict[str, Any]:
+    slot = require_executable_slot(provider, model)
+    if provider == "groq":
+        provider_controls = groq_request_kwargs(slot)
+    elif provider == "gemini":
+        provider_controls = gemini_thinking_kwargs(slot)
+    else:  # pragma: no cover - resolver providers are guarded by argparse and call_provider.
+        raise RegistryValidationError(f"Unsupported resolver request configuration for {provider}:{model}.")
+    return {
+        "request_config_version": RESOLVER_REQUEST_CONFIG_VERSION,
+        "provider": provider,
+        "model": model,
+        "reasoning_policy": slot.reasoning_policy,
+        "output_policy": "strict-json-final-only",
+        "registry_request_config_version": slot.request_config_version,
+        "registry_request_config": dict(slot.request_config),
+        "provider_controls": provider_controls,
+        "max_completion_tokens": max_completion_tokens,
+        "max_attempts": max_attempts,
+    }
+
+
+def build_resolver_attempt_context(
+    *,
+    issue: IssueSnapshot,
+    page_text: str,
+    prompt: str,
+    active_comments: tuple[ActiveSignalComment, ...],
+    provider: str,
+    model: str,
+    max_completion_tokens: int,
+    max_attempts: int,
+) -> ResolverAttemptContext:
+    snapshot = active_signal_snapshot(comment.as_snapshot() for comment in active_comments)
+    identity = build_attempt_identity(
+        issue_number=issue.number,
+        agent=issue.agent,
+        page_content_sha256=sha256_text(page_text),
+        active_signal_snapshot_sha256=sha256_canonical_json(snapshot),
+        resolver_prompt_sha256=sha256_text(prompt),
+        resolver_validator_version=RESOLVER_VALIDATOR_VERSION,
+        provider=provider,
+        model=model,
+        request_config_sha256=sha256_canonical_json(
+            resolver_request_configuration(
+                provider=provider,
+                model=model,
+                max_completion_tokens=max_completion_tokens,
+                max_attempts=max_attempts,
+            )
+        ),
+    )
+    return ResolverAttemptContext(
+        issue=issue,
+        page_text=page_text,
+        prompt=prompt,
+        active_comments=active_comments,
+        identity=identity,
+        attempt_id=attempt_id_for(identity),
+    )
 
 
 def _error_diagnostic(exc: Exception) -> str:
@@ -347,20 +576,27 @@ def call_with_retries(operation_name: str, fn: Callable[[], str], *, max_attempt
             time.sleep(delays[min(attempt_number - 1, len(delays) - 1)])
     if last_exc is None:
         raise ResolverError(f"{operation_name} failed without an exception.")
+    if isinstance(last_exc, ProviderAttemptError):
+        raise ProviderAttemptError(
+            f"{operation_name} failed after {attempt_number} attempt(s): {last_exc.detail}",
+            failure_kind=last_exc.failure_kind,
+            request_sent=last_exc.request_sent,
+        ) from last_exc
     raise ResolverError(f"{operation_name} failed after {attempt_number} attempt(s): {last_exc}") from last_exc
 
 
 def call_groq_json(model: str, review_input: str, max_completion_tokens: int, max_attempts: int) -> str:
     if not os.getenv("GROQ_API_KEY"):
         error = ResolverError("GROQ_API_KEY environment variable is not set.")
-        record_provider_failure(provider="groq", model=model, exc=error, request_sent=False)
-        raise error
+        classification = record_provider_failure(provider="groq", model=model, exc=error, request_sent=False)
+        raise ProviderAttemptError(str(error), failure_kind=classification.kind, request_sent=False) from error
 
     def invoke() -> str:
         from groq import Groq
 
         client = Groq()
-        kwargs = {
+        slot = require_executable_slot("groq", model)
+        kwargs: dict[str, Any] = {
             "model": model,
             "messages": [
                 {"role": "system", "content": JSON_SYSTEM_INSTRUCTION},
@@ -369,6 +605,7 @@ def call_groq_json(model: str, review_input: str, max_completion_tokens: int, ma
             "temperature": 0,
             "max_completion_tokens": max_completion_tokens,
         }
+        kwargs.update(groq_request_kwargs(slot))
         try:
             raw_resource = getattr(client.chat.completions, "with_raw_response", None)
             if raw_resource is None:
@@ -391,8 +628,8 @@ def call_groq_json(model: str, review_input: str, max_completion_tokens: int, ma
             )
             return content
         except Exception as exc:  # noqa: BLE001 - provider SDKs raise heterogeneous exceptions.
-            record_provider_failure(provider="groq", model=model, exc=exc, request_sent=True)
-            raise
+            classification = record_provider_failure(provider="groq", model=model, exc=exc, request_sent=True)
+            raise ProviderAttemptError(str(exc), failure_kind=classification.kind, request_sent=True) from exc
 
     return call_with_retries("Groq resolver call", invoke, max_attempts=max_attempts)
 
@@ -401,26 +638,21 @@ def call_gemini_json(model: str, review_input: str, max_completion_tokens: int, 
     api_key = os.getenv("GOOGLE_API_KEY") or os.getenv("GEMINI_API_KEY")
     if not api_key:
         error = ResolverError("Neither GOOGLE_API_KEY nor GEMINI_API_KEY environment variable is set.")
-        record_provider_failure(provider="gemini", model=model, exc=error, request_sent=False)
-        raise error
+        classification = record_provider_failure(provider="gemini", model=model, exc=error, request_sent=False)
+        raise ProviderAttemptError(str(error), failure_kind=classification.kind, request_sent=False) from error
 
     def invoke() -> str:
         from google import genai
         from google.genai import types
 
-        normalized = model.strip().lower()
-        thinking_config = None
-        if normalized.startswith("gemini-2.5-flash"):
-            thinking_config = types.ThinkingConfig(thinking_budget=0)
-        elif normalized.startswith("gemini-3."):
-            thinking_config = types.ThinkingConfig(thinking_level="low")
+        slot = require_executable_slot("gemini", model)
         config_kwargs: dict[str, Any] = {
             "system_instruction": JSON_SYSTEM_INSTRUCTION,
             "max_output_tokens": max_completion_tokens,
-            "temperature": 0,
+            "thinking_config": types.ThinkingConfig(**gemini_thinking_kwargs(slot)),
         }
-        if thinking_config is not None:
-            config_kwargs["thinking_config"] = thinking_config
+        if "temperature" in slot.request_config:
+            config_kwargs["temperature"] = slot.request_config["temperature"]
         client = genai.Client(api_key=api_key)
         try:
             response = client.models.generate_content(
@@ -436,6 +668,8 @@ def call_gemini_json(model: str, review_input: str, max_completion_tokens: int, 
                     content = getattr(candidate, "content", None)
                     parts = getattr(content, "parts", None) if content is not None else None
                     for part in parts or []:
+                        if getattr(part, "thought", False):
+                            continue
                         part_text = getattr(part, "text", None)
                         if isinstance(part_text, str):
                             parts_text.append(part_text)
@@ -451,8 +685,8 @@ def call_gemini_json(model: str, review_input: str, max_completion_tokens: int, 
             )
             return text
         except Exception as exc:  # noqa: BLE001 - provider SDKs raise heterogeneous exceptions.
-            record_provider_failure(provider="gemini", model=model, exc=exc, request_sent=True)
-            raise
+            classification = record_provider_failure(provider="gemini", model=model, exc=exc, request_sent=True)
+            raise ProviderAttemptError(str(exc), failure_kind=classification.kind, request_sent=True) from exc
 
     return call_with_retries("Gemini resolver call", invoke, max_attempts=max_attempts)
 
@@ -472,27 +706,20 @@ def call_provider(
         require_executable_slot(provider, model)
     except RegistryValidationError as exc:
         raise ResolverError(str(exc)) from exc
-    try:
-        registry = load_registry(DEFAULT_REGISTRY_PATH)
-        quota = load_quota_state(DEFAULT_STATE_PATH, registry)
-        pending_events = load_event_files(Path(os.getenv("PHASE2_QUOTA_EVENT_DIR", str(DEFAULT_EVENT_DIRECTORY))))
-        if pending_events:
-            quota, _ = aggregate_events(quota, pending_events, registry)
-        eligible, reason = slot_eligibility(
-            quota,
-            provider=provider,
-            model=model,
-            task_id=None,
-            resolver_work_pending=False,
-            now=datetime.now(timezone.utc),
-        )
-    except (OSError, QuotaStateError, ValueError) as exc:
-        raise ResolverError(f"Could not evaluate resolver quota eligibility: {exc}") from exc
+    eligible, reason = resolver_slot_eligibility(provider, model)
     if not eligible:
-        failure_marker = (
-            " provider_error_kind=provider_unavailable" if reason in {"slot-cooldown", "slot-recheck-required"} else ""
+        failure_kind = (
+            "provider_unavailable"
+            if reason in {"slot-cooldown", "slot-recheck-required"}
+            else "rate_or_quota_limited"
+            if reason.startswith("quota-group-deferred:")
+            else "execution_configuration_block"
         )
-        raise ResolverError(f"Resolver provider call withheld by quota/runtime guard: {reason}.{failure_marker}")
+        raise ProviderAttemptError(
+            f"Resolver provider call withheld by quota/runtime guard: {reason}.",
+            failure_kind=failure_kind,
+            request_sent=False,
+        )
     if provider == "groq":
         return call_groq_json(model, review_input, max_tokens, max_attempts)
     if provider == "gemini":
@@ -500,40 +727,121 @@ def call_provider(
     raise ResolverError(f"Unsupported provider: {provider}")  # pragma: no cover - guarded above.
 
 
-def eligible_resolver_work_exists(repo: str, *, now: datetime | None = None) -> bool:
-    """Return whether the scheduler must reserve an eligible shared resolver slot."""
-    if find_oldest_open_signal_issue(repo) is None:
-        return False
+def resolver_slot_eligibility(
+    provider: str,
+    model: str,
+    *,
+    now: datetime | None = None,
+) -> tuple[bool, str]:
     try:
         registry = load_registry(DEFAULT_REGISTRY_PATH)
         quota = load_quota_state(DEFAULT_STATE_PATH, registry)
         pending_events = load_event_files(Path(os.getenv("PHASE2_QUOTA_EVENT_DIR", str(DEFAULT_EVENT_DIRECTORY))))
         if pending_events:
             quota, _ = aggregate_events(quota, pending_events, registry)
-        check_at = now or datetime.now(timezone.utc)
+        return slot_eligibility(
+            quota,
+            provider=provider,
+            model=model,
+            task_id=None,
+            resolver_work_pending=False,
+            now=now or datetime.now(timezone.utc),
+        )
+    except (OSError, QuotaStateError, ValueError) as exc:
+        raise ResolverError(f"Could not evaluate resolver quota eligibility: {exc}") from exc
+
+
+def attempt_context_for_issue(
+    *,
+    issue: IssueSnapshot,
+    provider: str,
+    model: str,
+    max_completion_tokens: int,
+    max_attempts: int,
+    task_state: Mapping[str, Any],
+) -> ResolverAttemptContext | None:
+    page_text = load_text(Path(issue.reviewed_page))
+    active_comments = collect_active_signal_comments(issue, page_text, task_state)
+    if not active_comments:
+        return None
+    prompt = load_text(Path(SUPPORTED_AGENTS[issue.agent]))
+    return build_resolver_attempt_context(
+        issue=issue,
+        page_text=page_text,
+        prompt=prompt,
+        active_comments=active_comments,
+        provider=provider,
+        model=model,
+        max_completion_tokens=max_completion_tokens,
+        max_attempts=max_attempts,
+    )
+
+
+def _fallback_remains_eligible(
+    *,
+    context: ResolverAttemptContext,
+    attempt_state: Mapping[str, Any],
+    now: datetime,
+) -> bool:
+    provider, model = RESOLVER_FALLBACK_SPEC
+    fallback_context = build_resolver_attempt_context(
+        issue=context.issue,
+        page_text=context.page_text,
+        prompt=context.prompt,
+        active_comments=context.active_comments,
+        provider=provider,
+        model=model,
+        max_completion_tokens=RESOLVER_FALLBACK_MAX_COMPLETION_TOKENS,
+        max_attempts=1,
+    )
+    if attempt_is_blocked(attempt_state, fallback_context.identity):
+        return False
+    eligible, _reason = resolver_slot_eligibility(provider, model, now=now)
+    return eligible
+
+
+def eligible_resolver_work_exists(repo: str, *, now: datetime | None = None) -> bool:
+    """Return whether active, non-duplicate work should reserve a shared slot."""
+    check_at = now or datetime.now(timezone.utc)
+    try:
+        attempt_state = load_resolver_attempt_state(DEFAULT_RESOLVER_ATTEMPT_STATE_PATH)
+        task_state = load_task_state(DEFAULT_TASK_STATE_PATH)
         primary_provider, primary_model = RESOLVER_PRIMARY_SPEC
-        primary_eligible, primary_reason = slot_eligibility(
-            quota,
-            provider=primary_provider,
-            model=primary_model,
-            task_id=None,
-            resolver_work_pending=False,
-            now=check_at,
-        )
-        if primary_eligible:
-            return True
-        if primary_reason not in {"slot-cooldown", "slot-recheck-required"}:
-            return False
-        fallback_provider, fallback_model = RESOLVER_FALLBACK_SPEC
-        fallback_eligible, _fallback_reason = slot_eligibility(
-            quota,
-            provider=fallback_provider,
-            model=fallback_model,
-            task_id=None,
-            resolver_work_pending=False,
-            now=check_at,
-        )
-        return fallback_eligible
+        for number in open_signal_issue_candidates(repo):
+            issue = read_issue(repo, number)
+            context = attempt_context_for_issue(
+                issue=issue,
+                provider=primary_provider,
+                model=primary_model,
+                max_completion_tokens=8000,
+                max_attempts=1,
+                task_state=task_state,
+            )
+            if context is None:
+                continue
+            primary_record = attempt_record(attempt_state, context.identity)
+            if primary_record and primary_record["status"] in {"plan_invalid", "execution_failure", "completed"}:
+                continue
+            if primary_record and primary_record["status"] == "provider_failure":
+                if primary_record.get("failure_kind") != "provider_unavailable":
+                    continue
+                if _fallback_remains_eligible(
+                    context=context,
+                    attempt_state=attempt_state,
+                    now=check_at,
+                ):
+                    return True
+                continue
+            primary_eligible, primary_reason = resolver_slot_eligibility(primary_provider, primary_model, now=check_at)
+            if primary_eligible:
+                return True
+            if primary_reason in {"slot-cooldown", "slot-recheck-required"} and _fallback_remains_eligible(
+                context=context,
+                attempt_state=attempt_state,
+                now=check_at,
+            ):
+                return True
+        return False
     except (OSError, QuotaStateError, ValueError) as exc:
         raise ResolverError(f"Could not evaluate resolver preflight eligibility: {exc}") from exc
 
@@ -1474,33 +1782,91 @@ def main() -> int:
             pending = eligible_resolver_work_exists(args.repo)
             print(f"resolver_work_pending={str(pending).lower()}")
             return 0
-        if args.issue:
-            number = issue_number(args.issue)
-        else:
-            selected = find_oldest_open_signal_issue(args.repo)
-            if selected is None:
-                print(
-                    "No open eligible Phase 2 signal issue found for "
-                    "page-hygiene-checker or language-style-checker. Nothing to resolve."
-                )
-                return 0
-            number = selected
-        issue = read_issue(args.repo, number)
+        attempt_state_path = Path(getattr(args, "attempt_state", str(DEFAULT_RESOLVER_ATTEMPT_STATE_PATH)))
+        attempt_state = load_resolver_attempt_state(attempt_state_path)
+        task_state = load_task_state(DEFAULT_TASK_STATE_PATH)
+        candidate_numbers = [issue_number(args.issue)] if args.issue else open_signal_issue_candidates(args.repo)
+        context: ResolverAttemptContext | None = None
+        replay_fallback = False
+        for number in candidate_numbers:
+            issue = read_issue(args.repo, number)
+            candidate = attempt_context_for_issue(
+                issue=issue,
+                provider=args.provider,
+                model=args.model,
+                max_completion_tokens=args.max_completion_tokens,
+                max_attempts=args.provider_max_attempts,
+                task_state=task_state,
+            )
+            if candidate is None:
+                continue
+            record = attempt_record(attempt_state, candidate.identity)
+            if record and record["status"] in BLOCKING_ATTEMPT_STATUSES:
+                if (
+                    (args.provider, args.model) == RESOLVER_PRIMARY_SPEC
+                    and record["status"] == "provider_failure"
+                    and record.get("failure_kind") == "provider_unavailable"
+                    and _fallback_remains_eligible(
+                        context=candidate,
+                        attempt_state=attempt_state,
+                        now=datetime.now(timezone.utc),
+                    )
+                ):
+                    context = candidate
+                    replay_fallback = True
+                    break
+                continue
+            context = candidate
+            break
+        if context is None:
+            print("No active, non-duplicate Phase 2 resolver attempt is currently eligible. No provider call was made.")
+            return 0
+        issue = context.issue
         page_path = Path(issue.reviewed_page)
-        page_text = load_text(page_path)
-        prompt = load_text(Path(SUPPORTED_AGENTS[issue.agent]))
+        page_text = context.page_text
+        prompt = context.prompt
         output_dir = resolver_output_dir()
+        write_json_artifact(
+            output_dir,
+            f"issue-{issue.number}-{args.provider}-attempt-identity.json",
+            {"attempt_id": context.attempt_id, "identity": context.identity},
+        )
+        if replay_fallback:
+            message = (
+                "provider_error_kind=provider_unavailable: the unchanged Gemini primary attempt already failed "
+                "for recognized provider unavailability; no duplicate Gemini call was made and the Groq fallback "
+                "remains eligible."
+            )
+            write_text_artifact(output_dir, f"issue-{issue.number}-provider-error.txt", message)
+            raise ResolverError(message)
         try:
             raw = call_provider(
                 args.provider,
                 args.model,
                 prompt,
-                build_llm_input(issue, page_text),
+                build_llm_input(issue, page_text, context.active_comments),
                 args.max_completion_tokens,
                 args.provider_max_attempts,
             )
+        except ProviderAttemptError as exc:
+            write_text_artifact(output_dir, f"issue-{issue.number}-provider-error.txt", str(exc))
+            if not args.dry_run:
+                write_resolver_attempt_event(
+                    identity=context.identity,
+                    status="provider_failure" if exc.request_sent else "not_called",
+                    request_sent=exc.request_sent,
+                    failure_kind=exc.failure_kind,
+                )
+            raise
         except ResolverError as exc:
             write_text_artifact(output_dir, f"issue-{issue.number}-provider-error.txt", str(exc))
+            if not args.dry_run:
+                write_resolver_attempt_event(
+                    identity=context.identity,
+                    status="not_called",
+                    request_sent=False,
+                    failure_kind="resolver_configuration_error",
+                )
             raise
         write_text_artifact(output_dir, f"issue-{issue.number}-raw-response.txt", raw)
         try:
@@ -1542,25 +1908,47 @@ def main() -> int:
             validate_plan(plan, issue, page_text)
         except ResolverError as exc:
             write_text_artifact(output_dir, f"issue-{issue.number}-plan-error.txt", str(exc))
+            if not args.dry_run:
+                write_resolver_attempt_event(
+                    identity=context.identity,
+                    status="plan_invalid",
+                    request_sent=True,
+                    failure_kind="plan_validation_failure",
+                )
             raise
         output_path = output_dir / f"issue-{issue.number}-plan.json"
         output_path.write_text(json.dumps(plan, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
         if args.dry_run:
             print(json.dumps(plan, indent=2, ensure_ascii=False))
             return 0
-        if plan["overall_decision"] == "accepted_changes":
-            updated = apply_edits(page_text, plan)
-            page_path.write_text(updated, encoding="utf-8")
-            run_structure_check(issue.reviewed_page)
-            pr_url = create_pr(args.repo, issue, args.branch_prefix)
-            update_pr_branch(args.repo, pr_url)
-            enable_pr_auto_merge(args.repo, pr_url)
-            comment = plan["issue_comment"].replace("{{PR_URL}}", pr_url)
-            comment_and_close(args.repo, issue, comment, "completed")
-        else:
-            comment_and_close(args.repo, issue, plan["issue_comment"], "not_planned")
+        try:
+            if plan["overall_decision"] == "accepted_changes":
+                updated = apply_edits(page_text, plan)
+                page_path.write_text(updated, encoding="utf-8")
+                run_structure_check(issue.reviewed_page)
+                pr_url = create_pr(args.repo, issue, args.branch_prefix)
+                update_pr_branch(args.repo, pr_url)
+                enable_pr_auto_merge(args.repo, pr_url)
+                comment = plan["issue_comment"].replace("{{PR_URL}}", pr_url)
+                comment_and_close(args.repo, issue, comment, "completed")
+            else:
+                comment_and_close(args.repo, issue, plan["issue_comment"], "not_planned")
+        except ResolverError:
+            write_resolver_attempt_event(
+                identity=context.identity,
+                status="execution_failure",
+                request_sent=True,
+                failure_kind="deterministic_execution_failure",
+            )
+            raise
+        write_resolver_attempt_event(
+            identity=context.identity,
+            status="completed",
+            request_sent=True,
+            failure_kind=None,
+        )
         return 0
-    except ResolverError as exc:
+    except (OSError, ResolverError, ValueError) as exc:
         print(f"error: {exc}", file=sys.stderr)
         return 1
 
