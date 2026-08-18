@@ -62663,7 +62663,11 @@
         "validator_version": "check-signal-schema-v1"
       },
       "last_attempt_at": null,
-      "last_outcome": null,
+      "last_outcome": {
+        "event_id": "01787055509791687515-e392d7e8-0b2d-4888-9133-6ee49982faed",
+        "kind": "provider_unavailable",
+        "observed_at": "2026-08-18T12:18:29Z"
+      },
       "lease": null,
       "publication": {
         "last_attempt_at": null,
@@ -62676,13 +62680,13 @@
         "output_sha256": null,
         "validated_output_path": null
       },
-      "retry_not_before": null,
+      "retry_not_before": "2026-08-18T13:18:29Z",
       "source_metadata": {
         "repository_commit_sha": "ce92069bcdf491a87550eb0b43b275a1ce24555e"
       },
-      "status": "pending",
+      "status": "temporarily_unavailable",
       "task_id": "590a85b75b6033755d4e3b5cf5582baff8ced39246d5d0e98ce20f7013e07cb3",
-      "updated_at": "2026-08-17T00:00:00Z",
+      "updated_at": "2026-08-18T12:18:29Z",
       "validation_rejection_count": 0
     },
     "592b62d7c15d2986e1c58fc7fbe1ff31299b88aa6b1f3ff20c68f43be6ab5e25": {
@@ -168868,7 +168872,11 @@
         "validator_version": "check-signal-schema-v1"
       },
       "last_attempt_at": null,
-      "last_outcome": null,
+      "last_outcome": {
+        "event_id": "01787055514106050822-d7b29216-bbb1-4880-a560-4dae5f162b54",
+        "kind": "provider_unavailable",
+        "observed_at": "2026-08-18T12:18:34Z"
+      },
       "lease": null,
       "publication": {
         "last_attempt_at": null,
@@ -168881,13 +168889,13 @@
         "output_sha256": null,
         "validated_output_path": null
       },
-      "retry_not_before": null,
+      "retry_not_before": "2026-08-18T13:18:34Z",
       "source_metadata": {
         "repository_commit_sha": "ce92069bcdf491a87550eb0b43b275a1ce24555e"
       },
-      "status": "pending",
+      "status": "temporarily_unavailable",
       "task_id": "ed062582c5d931c5107198d08d6b90506b85309d4fc2f243a75dfbf73c39eaa0",
-      "updated_at": "2026-08-17T00:00:00Z",
+      "updated_at": "2026-08-18T12:18:34Z",
       "validation_rejection_count": 0
     },
     "ed070b3b603e2aab4fa3a0bf0d97bfaadd0f7ce1172ccc4fb5b590bb9ee3a291": {
