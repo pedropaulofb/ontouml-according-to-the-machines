@@ -7,7 +7,6 @@ import argparse
 import copy
 import hashlib
 import json
-import subprocess
 import sys
 from datetime import datetime, timedelta
 from fractions import Fraction
@@ -38,6 +37,12 @@ from quota_state import (  # noqa: E402
 )
 from quota_state import (  # noqa: E402
     write_state as write_quota_state,
+)
+from task_identity import sha256_text  # noqa: E402
+from task_reconciler import (  # noqa: E402
+    build_desired_task_identities,
+    current_commit_sha,
+    reconcile_task_state,
 )
 from task_state import load_task_state, validate_task_state, write_task_state  # noqa: E402
 
@@ -455,43 +460,33 @@ def main(argv: Sequence[str] | None = None) -> int:
             return 0
         if not args.workflow_run_id:
             raise SchedulerError(f"{args.command} requires --workflow-run-id.")
-        if args.reconcile:
-            commit_result = subprocess.run(
-                ["git", "rev-parse", "HEAD"],
-                cwd=repo_root,
-                text=True,
-                capture_output=True,
-                check=False,
-            )
-            if commit_result.returncode != 0 or not commit_result.stdout.strip():
-                raise SchedulerError("Could not determine the reconciliation source commit SHA.")
-            reconciled = subprocess.run(
-                [
-                    sys.executable,
-                    str(SCRIPT_DIRECTORY / "task_reconciler.py"),
-                    "reconcile",
-                    "--repo-root",
-                    str(repo_root),
-                    "--commit-sha",
-                    commit_result.stdout.strip(),
-                ],
-                cwd=repo_root,
-                text=True,
-                capture_output=True,
-                check=False,
-            )
-            if reconciled.returncode != 0:
-                raise SchedulerError(reconciled.stderr.strip() or reconciled.stdout.strip() or "Reconciliation failed.")
-            if reconciled.stdout:
-                print(reconciled.stdout, end="")
-        registry = load_registry(_resolve(repo_root, args.registry))
+        registry_path = _resolve(repo_root, args.registry)
         task_state_path = _resolve(repo_root, args.task_state)
         quota_state_path = _resolve(repo_root, args.quota_state)
+        registry = load_registry(registry_path)
         persistent_tasks = load_task_state(task_state_path)
         persistent_quota = load_quota_state(quota_state_path, registry)
+        now = parse_timestamp(args.timestamp) if args.timestamp else utc_now()
+        if args.reconcile:
+            commit_sha = current_commit_sha(repo_root)
+            if not commit_sha:
+                raise SchedulerError("Could not determine the reconciliation source commit SHA.")
+            desired = build_desired_task_identities(repo_root=repo_root, registry=registry)
+            registry_sha256 = sha256_text(registry_path.read_text(encoding="utf-8"))
+            persistent_tasks, counts = reconcile_task_state(
+                existing_state=persistent_tasks,
+                desired_identities=desired,
+                registry_sha256=registry_sha256,
+                configured_specs={(slot.provider, slot.model) for slot in registry.configured_slots},
+                timestamp=format_timestamp(now),
+                source_commit_sha=commit_sha,
+            )
+            print(
+                f"Reconciled Phase 2 task state: desired_tasks={len(desired)}; added={counts['added']}; "
+                f"preserved={counts['preserved']}; obsolete={counts['obsolete']}; retired={counts['retired']}."
+            )
         task_state = persistent_tasks if args.command == "lease" else copy.deepcopy(persistent_tasks)
         quota_state = persistent_quota if args.command == "lease" else copy.deepcopy(persistent_quota)
-        now = parse_timestamp(args.timestamp) if args.timestamp else utc_now()
         recovery = recover_expired_leases(
             task_state,
             load_terminal_events(_resolve(repo_root, args.result_events)),

@@ -135,12 +135,12 @@ jobs:
           page_args=()
           while IFS= read -r page; do
             [[ -n "$page" ]] && page_args+=(--page "$page")
-          done < <(printf '%s' "$PAGES_INPUT" | tr ',' '\n' | sed 's/^[[:space:]]*//;s/[[:space:]]*$//' | sed '/^$/d')
+          done < <(printf '%s\n' "$PAGES_INPUT" | tr ',' '\n' | sed 's/^[[:space:]]*//;s/[[:space:]]*$//' | sed '/^$/d')
 
           agent_args=()
           while IFS= read -r agent; do
             [[ -n "$agent" ]] && agent_args+=(--agent "$agent")
-          done < <(printf '%s' "$AGENTS_INPUT" | tr ',' '\n' | sed 's/^[[:space:]]*//;s/[[:space:]]*$//' | sed '/^$/d')
+          done < <(printf '%s\n' "$AGENTS_INPUT" | tr ',' '\n' | sed 's/^[[:space:]]*//;s/[[:space:]]*$//' | sed '/^$/d')
 
           model_args=()
           spec_args=()
@@ -149,7 +149,7 @@ jobs:
               model_args+=(--model "$model")
               spec_args+=("${PROVIDER_INPUT}:${model}")
             fi
-          done < <(printf '%s' "$MODELS_INPUT" | tr ',' '\n' | sed 's/^[[:space:]]*//;s/[[:space:]]*$//' | sed '/^$/d')
+          done < <(printf '%s\n' "$MODELS_INPUT" | tr ',' '\n' | sed 's/^[[:space:]]*//;s/[[:space:]]*$//' | sed '/^$/d')
           specs="$(IFS=','; printf '%s' "${spec_args[*]}")"
           python scripts/phase-2/provider_model_registry.py validate-specs --specs "$specs"
 

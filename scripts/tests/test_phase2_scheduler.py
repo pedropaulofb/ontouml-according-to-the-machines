@@ -5,11 +5,14 @@ from __future__ import annotations
 import copy
 import hashlib
 import importlib
+import io
 import json
+import shutil
 import subprocess
 import sys
 import tempfile
 import unittest
+from contextlib import redirect_stdout
 from datetime import datetime, timezone
 from pathlib import Path
 from unittest import mock
@@ -24,6 +27,7 @@ quota_state = importlib.import_module("quota_state")
 registry_module = importlib.import_module("provider_model_registry")
 resolver = importlib.import_module("resolve_signal_issue")
 task_scheduler = importlib.import_module("task_scheduler")
+task_reconciler = importlib.import_module("task_reconciler")
 task_state_module = importlib.import_module("task_state")
 
 REGISTRY_PATH = REPO_ROOT / "config" / "phase-2" / "provider-models.json"
@@ -203,6 +207,69 @@ class SchedulerSelectionTests(unittest.TestCase):
         self.assertEqual(record["status"], "pending")
         self.assertIsNone(record["lease"])
         self.assertEqual(len(plans[slot.provider]["assignments"]), 1)
+
+
+class SchedulerCliStateNeutralityTests(unittest.TestCase):
+    def test_nonlease_reconciliation_does_not_write_persistent_state(self) -> None:
+        for command in ("plan", "simulate"):
+            with self.subTest(command=command), tempfile.TemporaryDirectory() as temporary:
+                repo_root = Path(temporary)
+                for relative in (
+                    Path("config/phase-2"),
+                    Path("data/phase-2"),
+                    Path("docs/stereotypes"),
+                    Path("prompts/phase-2"),
+                ):
+                    shutil.copytree(REPO_ROOT / relative, repo_root / relative)
+                subprocess.run(["git", "init", "--quiet"], cwd=repo_root, check=True)
+                subprocess.run(
+                    ["git", "config", "user.email", "phase2-tests@example.invalid"],
+                    cwd=repo_root,
+                    check=True,
+                )
+                subprocess.run(["git", "config", "user.name", "Phase 2 Tests"], cwd=repo_root, check=True)
+                subprocess.run(
+                    ["git", "commit", "--allow-empty", "--quiet", "-m", "test fixture"],
+                    cwd=repo_root,
+                    check=True,
+                )
+
+                registry_path = repo_root / "config/phase-2/provider-models.json"
+                task_state_path = repo_root / "data/phase-2/task-state.json"
+                quota_state_path = repo_root / "data/phase-2/quota-state.json"
+                registry = registry_module.load_registry(registry_path)
+                desired = task_reconciler.build_desired_task_identities(repo_root=repo_root, registry=registry)
+                state = task_state_module.load_task_state(task_state_path)
+                state["tasks"].pop(next(iter(desired)))
+                task_state_module.write_task_state(task_state_path, state)
+                task_before = task_state_path.read_bytes()
+                quota_before = quota_state_path.read_bytes()
+
+                work_plan_root = repo_root / "work-plans"
+                output = io.StringIO()
+                with redirect_stdout(output):
+                    result = task_scheduler.main(
+                        [
+                            command,
+                            "--repo-root",
+                            str(repo_root),
+                            "--workflow-run-id",
+                            f"{command}-workflow",
+                            "--reconcile",
+                            "--timestamp",
+                            TIMESTAMP,
+                            "--max-tasks-per-provider",
+                            "1",
+                            "--work-plan-root",
+                            str(work_plan_root),
+                        ]
+                    )
+
+                self.assertEqual(result, 0)
+                self.assertEqual(task_state_path.read_bytes(), task_before)
+                self.assertEqual(quota_state_path.read_bytes(), quota_before)
+                self.assertIn("state_written=false", output.getvalue())
+                self.assertTrue(any(work_plan_root.glob("*.json")))
 
 
 class LeaseRecoveryTests(unittest.TestCase):

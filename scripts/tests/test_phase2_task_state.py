@@ -153,11 +153,11 @@ class TaskReconciliationTests(unittest.TestCase):
         state = task_state.load_task_state(TASK_STATE_PATH)
         registry_sha = task_identity.sha256_text(REGISTRY_PATH.read_text(encoding="utf-8"))
         task_reconciler.validate_desired_state(state, desired, registry_sha)
-        self.assertEqual(len(state["tasks"]), 4056)
+        self.assertEqual(len(state["tasks"]), 4680)
         self.assertEqual({state["tasks"][task_id]["status"] for task_id in desired}, {"pending"})
         self.assertEqual(
             sum(record["status"] == "obsolete" for record in state["tasks"].values()),
-            2028,
+            2652,
         )
 
     def test_superseded_task_becomes_obsolete(self) -> None:
