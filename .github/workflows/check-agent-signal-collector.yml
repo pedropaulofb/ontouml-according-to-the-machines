@@ -163,6 +163,7 @@ jobs:
             "${model_args[@]}" \
             --mode "$MODE_INPUT" \
             --repo "$GITHUB_REPOSITORY" \
+            --output-root .tmp/phase-2/batch \
             --selection first \
             --sleep-seconds 0 \
             "${completion_args[@]}" \
