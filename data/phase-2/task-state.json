@@ -5754,7 +5754,11 @@
         "validator_version": "check-signal-schema-v1"
       },
       "last_attempt_at": null,
-      "last_outcome": null,
+      "last_outcome": {
+        "event_id": "01787130610172558763-cc3bc32e-bd56-49de-8c0a-0b69664684ac",
+        "kind": "provider_policy_block",
+        "observed_at": "2026-08-19T09:10:10Z"
+      },
       "lease": null,
       "publication": {
         "last_attempt_at": null,
@@ -5771,9 +5775,9 @@
       "source_metadata": {
         "repository_commit_sha": "fbabd7b9cec0efcd68455cdbed589871023b9848"
       },
-      "status": "pending",
+      "status": "blocked_provider_policy",
       "task_id": "06f4f5f47a989d7faece60c22666b810557f71ba2005249e2a59281ad0a073ff",
-      "updated_at": "2026-08-18T08:21:18Z",
+      "updated_at": "2026-08-19T09:10:10Z",
       "validation_rejection_count": 0
     },
     "06f8a02fc8d7bcaea5ae1ec3f0410026eb7caab1b1f6249d01cc91968b768132": {
@@ -18745,7 +18749,11 @@
         "validator_version": "check-signal-schema-v1"
       },
       "last_attempt_at": null,
-      "last_outcome": null,
+      "last_outcome": {
+        "event_id": "01787130612559020222-0ee6c18d-5a63-4b6d-8f31-f4892bf337f1",
+        "kind": "provider_policy_block",
+        "observed_at": "2026-08-19T09:10:12Z"
+      },
       "lease": null,
       "publication": {
         "last_attempt_at": null,
@@ -18762,9 +18770,9 @@
       "source_metadata": {
         "repository_commit_sha": "fbabd7b9cec0efcd68455cdbed589871023b9848"
       },
-      "status": "pending",
+      "status": "blocked_provider_policy",
       "task_id": "19a6981f91b3454ff0a3434f873bb0317fa8ec7326532417f2b001f1124f02db",
-      "updated_at": "2026-08-18T08:21:18Z",
+      "updated_at": "2026-08-19T09:10:12Z",
       "validation_rejection_count": 0
     },
     "19a8eff6120d9d9a079fc39d58f4c714e36e32a48d543414b464775fa968ebf2": {
@@ -55799,7 +55807,11 @@
         "validator_version": "check-signal-schema-v1"
       },
       "last_attempt_at": null,
-      "last_outcome": null,
+      "last_outcome": {
+        "event_id": "01787130608609863147-eff5ee03-0f2b-470f-aca1-bac0cab1c1c2",
+        "kind": "provider_policy_block",
+        "observed_at": "2026-08-19T09:10:08Z"
+      },
       "lease": null,
       "publication": {
         "last_attempt_at": null,
@@ -55816,9 +55828,9 @@
       "source_metadata": {
         "repository_commit_sha": "fbabd7b9cec0efcd68455cdbed589871023b9848"
       },
-      "status": "pending",
+      "status": "blocked_provider_policy",
       "task_id": "4e122e4d902bf3d6ff6052e2fed0a9881613b1f7becdc0721012da13397098af",
-      "updated_at": "2026-08-18T08:21:18Z",
+      "updated_at": "2026-08-19T09:10:08Z",
       "validation_rejection_count": 0
     },
     "4e380c34d000fcbe2d678177a3c535a5e0f8dba9faf06144614892d4998d1ce7": {
@@ -81118,7 +81130,11 @@
         "validator_version": "check-signal-schema-v1"
       },
       "last_attempt_at": null,
-      "last_outcome": null,
+      "last_outcome": {
+        "event_id": "01787130611771368250-3dbbb551-a26b-4272-8c64-76786b556e1b",
+        "kind": "provider_policy_block",
+        "observed_at": "2026-08-19T09:10:11Z"
+      },
       "lease": null,
       "publication": {
         "last_attempt_at": null,
@@ -81135,9 +81151,9 @@
       "source_metadata": {
         "repository_commit_sha": "fbabd7b9cec0efcd68455cdbed589871023b9848"
       },
-      "status": "pending",
+      "status": "blocked_provider_policy",
       "task_id": "6fae2dc1f097192dda414b002da4f4b606ad67132ac95099a018525b50208052",
-      "updated_at": "2026-08-18T08:21:18Z",
+      "updated_at": "2026-08-19T09:10:11Z",
       "validation_rejection_count": 0
     },
     "6fb4c383a62cfd054c68b404eec15e9e6f4dc01ef5b2167860dd3b52bf5edafc": {
@@ -89468,7 +89484,11 @@
         "validator_version": "check-signal-schema-v1"
       },
       "last_attempt_at": null,
-      "last_outcome": null,
+      "last_outcome": {
+        "event_id": "01787130614125815080-400d253d-8408-4b71-9ecc-11cf230b040b",
+        "kind": "provider_policy_block",
+        "observed_at": "2026-08-19T09:10:14Z"
+      },
       "lease": null,
       "publication": {
         "last_attempt_at": null,
@@ -89485,9 +89505,9 @@
       "source_metadata": {
         "repository_commit_sha": "fbabd7b9cec0efcd68455cdbed589871023b9848"
       },
-      "status": "pending",
+      "status": "blocked_provider_policy",
       "task_id": "7c268706e1e3c333be067ca93b1701f95cd811fd2f81ab0f2324a3decc17ac7b",
-      "updated_at": "2026-08-18T08:21:18Z",
+      "updated_at": "2026-08-19T09:10:14Z",
       "validation_rejection_count": 0
     },
     "7c3f8387d298883255f2e2e97c458eefa2dc9b1443420a7a0011b6151831f58a": {
@@ -99101,7 +99121,11 @@
         "validator_version": "check-signal-schema-v1"
       },
       "last_attempt_at": null,
-      "last_outcome": null,
+      "last_outcome": {
+        "event_id": "01787130610977913190-2d238372-15d0-424c-81fc-4d54b7511b95",
+        "kind": "provider_policy_block",
+        "observed_at": "2026-08-19T09:10:10Z"
+      },
       "lease": null,
       "publication": {
         "last_attempt_at": null,
@@ -99118,9 +99142,9 @@
       "source_metadata": {
         "repository_commit_sha": "fbabd7b9cec0efcd68455cdbed589871023b9848"
       },
-      "status": "pending",
+      "status": "blocked_provider_policy",
       "task_id": "897cde05ef9ecf14d2b44fc1dcb939e6b6231d6836fc61042534ad70ecdcaff8",
-      "updated_at": "2026-08-18T08:21:18Z",
+      "updated_at": "2026-08-19T09:10:10Z",
       "validation_rejection_count": 0
     },
     "8988754f41dc4496f73b61d0de0d772d5d3a16855fef544cc8c2b5948f5215e8": {
@@ -121916,7 +121940,11 @@
         "validator_version": "check-signal-schema-v1"
       },
       "last_attempt_at": null,
-      "last_outcome": null,
+      "last_outcome": {
+        "event_id": "01787130607832595855-ece8a6bf-e5eb-400e-812a-8d50e1262a60",
+        "kind": "provider_policy_block",
+        "observed_at": "2026-08-19T09:10:07Z"
+      },
       "lease": null,
       "publication": {
         "last_attempt_at": null,
@@ -121933,9 +121961,9 @@
       "source_metadata": {
         "repository_commit_sha": "fbabd7b9cec0efcd68455cdbed589871023b9848"
       },
-      "status": "pending",
+      "status": "blocked_provider_policy",
       "task_id": "a8b8829adcbdc8e8b608cc7ce9c3f1c04d8e22a2bd41c18acb51d4f2a330762b",
-      "updated_at": "2026-08-18T08:21:18Z",
+      "updated_at": "2026-08-19T09:10:07Z",
       "validation_rejection_count": 0
     },
     "a8ce6a37320b3d5b202831887f1f3b04c91cab92afe5ce96e467cdaf8a5ee595": {
@@ -142313,7 +142341,11 @@
         "validator_version": "check-signal-schema-v1"
       },
       "last_attempt_at": null,
-      "last_outcome": null,
+      "last_outcome": {
+        "event_id": "01787130609393265537-5b643728-89c2-4140-b571-3bf993c722a8",
+        "kind": "provider_policy_block",
+        "observed_at": "2026-08-19T09:10:09Z"
+      },
       "lease": null,
       "publication": {
         "last_attempt_at": null,
@@ -142330,9 +142362,9 @@
       "source_metadata": {
         "repository_commit_sha": "fbabd7b9cec0efcd68455cdbed589871023b9848"
       },
-      "status": "pending",
+      "status": "blocked_provider_policy",
       "task_id": "c55d39ff17778d8cc0af3a18cd7c198fbbe9cee8e68824d6f46b64b0e71ae7bc",
-      "updated_at": "2026-08-18T08:21:18Z",
+      "updated_at": "2026-08-19T09:10:09Z",
       "validation_rejection_count": 0
     },
     "c56242e2f489e39b8b6853807dbc5abab522bc998a3dc54610ab497660a14a66": {
@@ -174297,7 +174329,11 @@
         "validator_version": "check-signal-schema-v1"
       },
       "last_attempt_at": null,
-      "last_outcome": null,
+      "last_outcome": {
+        "event_id": "01787130613347333002-4adf856a-622c-4dc1-9d8c-baef443b7ea0",
+        "kind": "provider_policy_block",
+        "observed_at": "2026-08-19T09:10:13Z"
+      },
       "lease": null,
       "publication": {
         "last_attempt_at": null,
@@ -174314,9 +174350,9 @@
       "source_metadata": {
         "repository_commit_sha": "fbabd7b9cec0efcd68455cdbed589871023b9848"
       },
-      "status": "pending",
+      "status": "blocked_provider_policy",
       "task_id": "f0d8fc559ab54431b797e785b52b51ef9e5e01755873c182fa472ff5effd1fe6",
-      "updated_at": "2026-08-18T08:21:18Z",
+      "updated_at": "2026-08-19T09:10:13Z",
       "validation_rejection_count": 0
     },
     "f0daccff78ca2ff64be6fdd1d3b5ce3da2f99244a19326b21744c3cf09d84657": {
