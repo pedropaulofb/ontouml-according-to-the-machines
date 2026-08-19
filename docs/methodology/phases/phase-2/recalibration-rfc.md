@@ -1169,6 +1169,8 @@ Recovery MUST be explicit and auditable:
 - when a corrected provider–model request configuration changes any task-identity field, the old blocked task MUST become `obsolete` and reconciliation MUST create the corrected identity as `pending`;
 - a task-specific deterministic request failure remains blocked until its relevant content or configuration changes, at which point the old task becomes `obsolete` under the normal identity rules.
 
+For OpenRouter slot 19 (`nvidia/nemotron-3-super-120b-a12b:free`) only, the current Phase 2 runtime uses `blocked_execution_configuration` to record the demonstrated incompatibility of its existing request configuration with the deterministic signal-report contract. This slot-specific runtime block is not lifecycle retirement and does not redefine `blocked_execution_configuration` for other slots. The registry entry remains configured and eligible so explicit compatibility diagnostics can still target the exact slot, while `quota-state.json` blocks ordinary scheduling. Re-enabling ordinary scheduling requires a successful explicit compatibility diagnostic. If recovery changes request configuration, normal task-identity reconciliation applies.
+
 A billing or paid-access diagnostic remains `blocked_provider_policy`; it MUST NOT be reclassified as an execution-configuration problem merely to permit another request.
 
 ---
@@ -2431,6 +2433,7 @@ Document commands or procedures for:
 
 - manually unblocking a rejection-blocked task;
 - resolving a `blocked_execution_configuration` only after sanitized diagnosis and successful credential/request validation, returning the existing task to `pending` only when its identity is unchanged and otherwise marking it `obsolete`;
+- revalidating OpenRouter slot 19 only through an explicit compatibility diagnostic; if recovery changes request configuration, normal task-identity reconciliation applies;
 - resolving `blocked_provider_policy` tasks after successful free-policy revalidation, returning unchanged identities to `pending` and marking identity-changing routes/configurations `obsolete`;
 - resolving a `blocked_ambiguous_attempt` after inspecting provider logs and retained artifacts:
   - replay a recovered result through deterministic aggregation;
@@ -2499,6 +2502,7 @@ Manual intervention MUST be auditable through committed state or PR history.
 - [ ] Second validator rejection blocks the unchanged task.
 - [ ] Provider failure does not count as validator rejection.
 - [ ] Authentication and deterministic invalid-request failures enter `blocked_execution_configuration` rather than an automatic retry state.
+- [ ] OpenRouter slot 19 remains configured and non-retired while its demonstrated Phase 2 output-contract incompatibility is blocked in runtime state, and explicit compatibility diagnostics remain possible.
 - [ ] Identity-preserving execution-configuration recovery may return the existing task to `pending`; identity-changing correction makes the old task `obsolete`.
 
 ### Free policy

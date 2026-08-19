@@ -2706,16 +2706,16 @@
     },
     "openrouter:nvidia/nemotron-3-super-120b-a12b:free": {
       "authorized_recheck_task_id": null,
-      "block_reason": null,
-      "block_scope": null,
-      "last_updated_at": "2026-08-19T09:20:00Z",
-      "last_validation_at": "2026-08-19T09:20:00Z",
-      "last_validation_result": "passed",
+      "block_reason": "output_contract_incompatible",
+      "block_scope": "slot",
+      "last_updated_at": "2026-08-19T16:29:09Z",
+      "last_validation_at": "2026-08-19T16:29:09Z",
+      "last_validation_result": "failed",
       "model": "nvidia/nemotron-3-super-120b-a12b:free",
       "provider": "openrouter",
       "retry_not_before": null,
-      "status": "eligible",
-      "validation_required": false
+      "status": "blocked_execution_configuration",
+      "validation_required": true
     },
     "openrouter:nvidia/nemotron-3-ultra-550b-a55b:free": {
       "authorized_recheck_task_id": null,
