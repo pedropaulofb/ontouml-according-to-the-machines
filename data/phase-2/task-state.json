@@ -117962,7 +117962,11 @@
         "validator_version": "check-signal-schema-v1"
       },
       "last_attempt_at": null,
-      "last_outcome": null,
+      "last_outcome": {
+        "event_id": "01787156896742922644-d38bce54-ce17-4daa-89ef-7825771d357e",
+        "kind": "provider_unavailable",
+        "observed_at": "2026-08-19T16:28:16Z"
+      },
       "lease": null,
       "publication": {
         "last_attempt_at": null,
@@ -117975,13 +117979,13 @@
         "output_sha256": null,
         "validated_output_path": null
       },
-      "retry_not_before": null,
+      "retry_not_before": "2026-08-19T17:28:16Z",
       "source_metadata": {
         "repository_commit_sha": "c8ce658eb483351453afdd507a0889f6bd8f6f37"
       },
-      "status": "pending",
+      "status": "temporarily_unavailable",
       "task_id": "9678799923146999c63b2a703c68d83892b1096ac2c297299064ec04387cb002",
-      "updated_at": "2026-08-19T15:59:42Z",
+      "updated_at": "2026-08-19T16:28:16Z",
       "validation_rejection_count": 0
     },
     "968765dfceac67418812a1c86394878485575ff90740c3847ac0e427265f87a7": {
