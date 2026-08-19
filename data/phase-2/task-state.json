@@ -144643,9 +144643,9 @@
       },
       "last_attempt_at": null,
       "last_outcome": {
-        "event_id": "01787130609393265537-5b643728-89c2-4140-b571-3bf993c722a8",
-        "kind": "provider_policy_block",
-        "observed_at": "2026-08-19T09:10:09Z"
+        "event_id": "01787133547949678725-4c1cebff-1722-4596-9ad5-bdcde02f50d2",
+        "kind": "rate_or_quota_limited",
+        "observed_at": "2026-08-19T09:59:07Z"
       },
       "lease": null,
       "publication": {
@@ -144659,13 +144659,13 @@
         "output_sha256": null,
         "validated_output_path": null
       },
-      "retry_not_before": null,
+      "retry_not_before": "2026-08-19T10:59:07Z",
       "source_metadata": {
         "repository_commit_sha": "fbabd7b9cec0efcd68455cdbed589871023b9848"
       },
-      "status": "pending",
+      "status": "deferred_quota",
       "task_id": "c55d39ff17778d8cc0af3a18cd7c198fbbe9cee8e68824d6f46b64b0e71ae7bc",
-      "updated_at": "2026-08-19T09:20:00Z",
+      "updated_at": "2026-08-19T09:59:07Z",
       "validation_rejection_count": 0
     },
     "c56242e2f489e39b8b6853807dbc5abab522bc998a3dc54610ab497660a14a66": {
