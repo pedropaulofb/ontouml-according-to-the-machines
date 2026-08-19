@@ -371,7 +371,7 @@ class StatisticsTests(AggregationFixture):
         self.assertGreater(known_stats["output_tokens_known_events"], 0)
         self.assertIn("`unknown`", rendered)
 
-    def test_refresh_preserves_historical_cerebras_and_laguna_rows_and_sums_queue(self) -> None:
+    def test_refresh_excludes_pre_recalibration_only_rows_and_sums_queue(self) -> None:
         with tempfile.TemporaryDirectory() as temporary:
             page = Path(temporary) / "statistics.md"
             shutil.copy2(REPO_ROOT / statistics.DEFAULT_STATISTICS_PAGE, page)
@@ -386,9 +386,8 @@ class StatisticsTests(AggregationFixture):
                 timestamp_utc=TIMESTAMP,
             )
             state = statistics.load_state(page)
-            self.assertIn("cerebras:gpt-oss-120b", state["models"])
-            self.assertIn("openrouter:poolside/laguna-m.1:free", state["models"])
-            self.assertEqual(state["models"]["cerebras:gpt-oss-120b"]["configuration_status"], "retired")
+            self.assertNotIn("cerebras:gpt-oss-120b", state["models"])
+            self.assertNotIn("openrouter:poolside/laguna-m.1:free", state["models"])
             queue = state["queue"]
             status_total = sum(value for key, value in queue.items() if key != "desired_task_count")
             self.assertEqual(status_total, len(tasks["tasks"]))
