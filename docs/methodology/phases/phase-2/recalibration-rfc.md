@@ -319,8 +319,8 @@ Slots 15 (`gemini-2.5-pro`) and 17 (`gemini-2.5-flash-lite`) are explicitly reti
 
 | # | Provider | Exact model ID | Lifecycle | Initial reasoning policy |
 |---:|---|---|---|---|
-| 18 | `openrouter` | `nvidia/nemotron-3-ultra-550b-a55b:free` | Free variant | `medium` (lowest supported); exclude reasoning from final output |
-| 19 | `openrouter` | `nvidia/nemotron-3-super-120b-a12b:free` | Free variant | `low` (lowest supported); exclude reasoning from final output |
+| 18 | `openrouter` | `nvidia/nemotron-3-ultra-550b-a55b:free` | Free variant | 512-token reasoning budget; exclude reasoning from final output |
+| 19 | `openrouter` | `nvidia/nemotron-3-super-120b-a12b:free` | Free variant | 512-token reasoning budget; exclude reasoning from final output |
 | 20 | `openrouter` | `google/gemma-4-26b-a4b-it:free` | Free variant | No thinking unless required |
 | 21 | `openrouter` | `google/gemma-4-31b-it:free` | Free variant | No thinking unless required |
 | 22 | `openrouter` | `poolside/laguna-s-2.1:free` | Free variant | Lowest supported; final output only |
@@ -1227,7 +1227,7 @@ They may remain in a compact run-input section for traceability.
 
 ### 23.4 Reasoning
 
-Signal-generation requests MUST request the lowest supported reasoning mode that is expected to preserve output validity.
+Signal-generation requests MUST request the lowest supported reasoning mode that is expected to preserve output validity. When the lowest supported effort mode still exhausts the completion budget before a valid final report and the provider exposes direct reasoning-token allocation, the request MAY instead use a bounded reasoning-token budget.
 
 The implementation MUST:
 

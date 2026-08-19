@@ -116,7 +116,7 @@ class ProviderModelRegistryTests(unittest.TestCase):
         self.assertIsNotNone(replacement)
         self.assertEqual(replacement.lifecycle, "stable")
         self.assertEqual(replacement.request_config["thinking_level"], "low")
-        self.assertEqual(registry.configuration_version, "phase-2-recalibration-v5")
+        self.assertEqual(registry.configuration_version, "phase-2-recalibration-v6")
         self.assertEqual({slot.request_config_version for slot in configured}, {"2"})
 
     def test_duplicate_slot_is_rejected(self) -> None:
@@ -313,7 +313,7 @@ class OpenRouterFreePolicyTests(unittest.TestCase):
                 kwargs["extra_body"],
                 {
                     "provider": {"allow_fallbacks": False},
-                    "reasoning": {"effort": "medium", "exclude": True},
+                    "reasoning": {"max_tokens": 512, "exclude": True},
                 },
             )
             return "report\n"
@@ -407,11 +407,11 @@ class ReasoningRequestTests(unittest.TestCase):
 
         self.assertEqual(
             reasoning_policy.openrouter_extra_body(ultra)["reasoning"],
-            {"effort": "medium", "exclude": True},
+            {"max_tokens": 512, "exclude": True},
         )
         self.assertEqual(
             reasoning_policy.openrouter_extra_body(super_model)["reasoning"],
-            {"effort": "low", "exclude": True},
+            {"max_tokens": 512, "exclude": True},
         )
         self.assertEqual(
             reasoning_policy.openrouter_extra_body(low)["reasoning"],

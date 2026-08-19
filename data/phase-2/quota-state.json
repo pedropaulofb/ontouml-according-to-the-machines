@@ -1,5 +1,5 @@
 {
-  "configuration_version": "phase-2-recalibration-v5",
+  "configuration_version": "phase-2-recalibration-v6",
   "counter_period": {
     "daily_period_start": "2026-08-19",
     "source": "configured"

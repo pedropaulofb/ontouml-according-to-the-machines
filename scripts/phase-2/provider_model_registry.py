@@ -56,6 +56,7 @@ REQUEST_CONFIG_FIELDS = {
         "temperature",
         "max_completion_tokens",
         "reasoning",
+        "reasoning_max_tokens",
         "exclude_reasoning",
         "allow_fallbacks",
         "final_output_only",
@@ -267,7 +268,25 @@ def _parse_slot(raw: Any, expected_number: int) -> ProviderModelSlot:
             raise RegistryValidationError(
                 f"Registry slot {expected_number} OpenRouter request_config.exclude_reasoning must be true."
             )
-        if request_config.get("reasoning") not in {"lowest-supported", "medium", "low", "none", "none-unless-required"}:
+        reasoning = request_config.get("reasoning")
+        reasoning_max_tokens = request_config.get("reasoning_max_tokens")
+        if reasoning is not None and reasoning_max_tokens is not None:
+            raise RegistryValidationError(
+                f"Registry slot {expected_number} OpenRouter request_config must use reasoning or "
+                "reasoning_max_tokens, not both."
+            )
+        if reasoning_max_tokens is not None:
+            if (
+                not isinstance(reasoning_max_tokens, int)
+                or isinstance(reasoning_max_tokens, bool)
+                or reasoning_max_tokens <= 0
+                or reasoning_max_tokens >= raw["max_completion_tokens"]
+            ):
+                raise RegistryValidationError(
+                    f"Registry slot {expected_number} OpenRouter request_config.reasoning_max_tokens must be a "
+                    "positive integer below max_completion_tokens."
+                )
+        elif reasoning not in {"lowest-supported", "medium", "low", "none", "none-unless-required"}:
             raise RegistryValidationError(
                 f"Registry slot {expected_number} OpenRouter request_config.reasoning is unsupported."
             )

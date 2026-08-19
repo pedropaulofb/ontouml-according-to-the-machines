@@ -48,6 +48,19 @@ def gemini_thinking_kwargs(slot: ProviderModelSlot) -> dict[str, Any]:
 def openrouter_extra_body(slot: ProviderModelSlot) -> dict[str, Any]:
     """Return OpenRouter routing and normalized reasoning controls."""
     _require_provider(slot, "openrouter")
+    reasoning_max_tokens = slot.request_config.get("reasoning_max_tokens")
+    if reasoning_max_tokens is not None:
+        if (
+            not isinstance(reasoning_max_tokens, int)
+            or isinstance(reasoning_max_tokens, bool)
+            or reasoning_max_tokens <= 0
+        ):
+            raise RegistryValidationError(f"Unsupported OpenRouter reasoning configuration for {slot.spec}.")
+        return {
+            "provider": {"allow_fallbacks": False},
+            "reasoning": {"max_tokens": reasoning_max_tokens, "exclude": True},
+        }
+
     reasoning = slot.request_config.get("reasoning")
     effort = {
         "lowest-supported": "minimal",
