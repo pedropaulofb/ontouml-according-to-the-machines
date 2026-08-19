@@ -116,7 +116,7 @@ class ProviderModelRegistryTests(unittest.TestCase):
         self.assertIsNotNone(replacement)
         self.assertEqual(replacement.lifecycle, "stable")
         self.assertEqual(replacement.request_config["thinking_level"], "low")
-        self.assertEqual(registry.configuration_version, "phase-2-recalibration-v4")
+        self.assertEqual(registry.configuration_version, "phase-2-recalibration-v5")
         self.assertEqual({slot.request_config_version for slot in configured}, {"2"})
 
     def test_duplicate_slot_is_rejected(self) -> None:
@@ -313,7 +313,7 @@ class OpenRouterFreePolicyTests(unittest.TestCase):
                 kwargs["extra_body"],
                 {
                     "provider": {"allow_fallbacks": False},
-                    "reasoning": {"effort": "minimal", "exclude": True},
+                    "reasoning": {"effort": "medium", "exclude": True},
                 },
             )
             return "report\n"
@@ -400,9 +400,19 @@ class ReasoningRequestTests(unittest.TestCase):
         )
 
     def test_openrouter_uses_normalized_reasoning_and_excludes_trace(self) -> None:
+        ultra = self.slot("openrouter", "nvidia/nemotron-3-ultra-550b-a55b:free")
+        super_model = self.slot("openrouter", "nvidia/nemotron-3-super-120b-a12b:free")
         low = self.slot("openrouter", "openai/gpt-oss-20b:free")
         none = self.slot("openrouter", "nvidia/nemotron-nano-9b-v2:free")
 
+        self.assertEqual(
+            reasoning_policy.openrouter_extra_body(ultra)["reasoning"],
+            {"effort": "medium", "exclude": True},
+        )
+        self.assertEqual(
+            reasoning_policy.openrouter_extra_body(super_model)["reasoning"],
+            {"effort": "low", "exclude": True},
+        )
         self.assertEqual(
             reasoning_policy.openrouter_extra_body(low)["reasoning"],
             {"effort": "low", "exclude": True},

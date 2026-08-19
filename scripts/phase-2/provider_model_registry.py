@@ -267,7 +267,7 @@ def _parse_slot(raw: Any, expected_number: int) -> ProviderModelSlot:
             raise RegistryValidationError(
                 f"Registry slot {expected_number} OpenRouter request_config.exclude_reasoning must be true."
             )
-        if request_config.get("reasoning") not in {"lowest-supported", "low", "none", "none-unless-required"}:
+        if request_config.get("reasoning") not in {"lowest-supported", "medium", "low", "none", "none-unless-required"}:
             raise RegistryValidationError(
                 f"Registry slot {expected_number} OpenRouter request_config.reasoning is unsupported."
             )

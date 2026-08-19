@@ -319,8 +319,8 @@ Slots 15 (`gemini-2.5-pro`) and 17 (`gemini-2.5-flash-lite`) are explicitly reti
 
 | # | Provider | Exact model ID | Lifecycle | Initial reasoning policy |
 |---:|---|---|---|---|
-| 18 | `openrouter` | `nvidia/nemotron-3-ultra-550b-a55b:free` | Free variant | Lowest supported; exclude reasoning from final output |
-| 19 | `openrouter` | `nvidia/nemotron-3-super-120b-a12b:free` | Free variant | Lowest supported; exclude reasoning from final output |
+| 18 | `openrouter` | `nvidia/nemotron-3-ultra-550b-a55b:free` | Free variant | `medium` (lowest supported); exclude reasoning from final output |
+| 19 | `openrouter` | `nvidia/nemotron-3-super-120b-a12b:free` | Free variant | `low` (lowest supported); exclude reasoning from final output |
 | 20 | `openrouter` | `google/gemma-4-26b-a4b-it:free` | Free variant | No thinking unless required |
 | 21 | `openrouter` | `google/gemma-4-31b-it:free` | Free variant | No thinking unless required |
 | 22 | `openrouter` | `poolside/laguna-s-2.1:free` | Free variant | Lowest supported; final output only |

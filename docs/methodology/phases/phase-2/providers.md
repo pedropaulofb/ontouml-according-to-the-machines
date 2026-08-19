@@ -10,7 +10,7 @@ The only authoritative configured-slot list is:
 config/phase-2/provider-models.json
 ```
 
-`scripts/phase-2/provider_model_registry.py` validates that file before provider execution. A slot is the exact combination of provider and model; the same underlying model exposed by two providers is two independent slots. The current registry has configuration version `phase-2-recalibration-v3`, 25 configured slots, and two explicitly retired Gemini slots retained for history.
+`scripts/phase-2/provider_model_registry.py` validates that file before provider execution. A slot is the exact combination of provider and model; the same underlying model exposed by two providers is two independent slots. The current registry has configuration version `phase-2-recalibration-v5`, 25 configured slots, and two explicitly retired Gemini slots retained for history.
 
 The standard signal-generation entry points support four providers:
 
@@ -123,7 +123,7 @@ All adapters require the exact provider-model slot to be executable in the regis
 
 ### OpenRouter
 
-`scripts/phase-2/providers/openrouter.py` uses the shared OpenAI-compatible utility, requires `OPENROUTER_API_KEY`, and calls `https://openrouter.ai/api/v1`. Before constructing the completion request, it applies the live free-price check described above. Registered request configuration disables fallbacks and excludes reasoning output where required.
+`scripts/phase-2/providers/openrouter.py` uses the shared OpenAI-compatible utility, requires `OPENROUTER_API_KEY`, and calls `https://openrouter.ai/api/v1`. Before constructing the completion request, it applies the live free-price check described above. Registered request configuration disables fallbacks and excludes reasoning output where required. Slot 18 explicitly requests `medium` reasoning and slot 19 explicitly requests `low`, the lowest reasoning efforts currently supported by those exact OpenRouter endpoints.
 
 ## Provider retry and failure classification
 

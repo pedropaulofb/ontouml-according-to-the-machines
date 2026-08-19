@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "configuration_version": "phase-2-recalibration-v4",
+  "configuration_version": "phase-2-recalibration-v5",
   "phase": "phase-2",
   "slots": [
     {
@@ -376,14 +376,14 @@
       "agents": ["page-hygiene-checker", "language-style-checker"],
       "quota_groups": ["openrouter-free-account", "openrouter:nvidia/nemotron-3-ultra-550b-a55b:free"],
       "free_policy": "metadata-verified-zero-price",
-      "reasoning_policy": "lowest-supported-exclude",
+      "reasoning_policy": "medium-exclude",
       "output_policy": "final-only",
       "max_completion_tokens": 3000,
       "request_config_version": "2",
       "request_config": {
         "temperature": 0,
         "max_completion_tokens": 3000,
-        "reasoning": "lowest-supported",
+        "reasoning": "medium",
         "exclude_reasoning": true,
         "allow_fallbacks": false,
         "final_output_only": true
@@ -399,14 +399,14 @@
       "agents": ["page-hygiene-checker", "language-style-checker"],
       "quota_groups": ["openrouter-free-account", "openrouter:nvidia/nemotron-3-super-120b-a12b:free"],
       "free_policy": "metadata-verified-zero-price",
-      "reasoning_policy": "lowest-supported-exclude",
+      "reasoning_policy": "low-exclude",
       "output_policy": "final-only",
       "max_completion_tokens": 3000,
       "request_config_version": "2",
       "request_config": {
         "temperature": 0,
         "max_completion_tokens": 3000,
-        "reasoning": "lowest-supported",
+        "reasoning": "low",
         "exclude_reasoning": true,
         "allow_fallbacks": false,
         "final_output_only": true

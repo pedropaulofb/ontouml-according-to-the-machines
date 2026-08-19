@@ -51,6 +51,7 @@ def openrouter_extra_body(slot: ProviderModelSlot) -> dict[str, Any]:
     reasoning = slot.request_config.get("reasoning")
     effort = {
         "lowest-supported": "minimal",
+        "medium": "medium",
         "low": "low",
         "none": "none",
         "none-unless-required": "none",
