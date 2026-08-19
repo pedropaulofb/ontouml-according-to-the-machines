@@ -153,11 +153,11 @@ class TaskReconciliationTests(unittest.TestCase):
         state = task_state.load_task_state(TASK_STATE_PATH)
         registry_sha = task_identity.sha256_text(REGISTRY_PATH.read_text(encoding="utf-8"))
         task_reconciler.validate_desired_state(state, desired, registry_sha)
-        self.assertEqual(len(state["tasks"]), 4758)
+        self.assertEqual(len(state["tasks"]), 4836)
         self.assertEqual(len(desired), 1950)
         self.assertEqual(
             sum(record["status"] == "retired" for record in state["tasks"].values()),
-            360,
+            540,
         )
 
     def test_superseded_task_becomes_obsolete(self) -> None:

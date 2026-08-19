@@ -46,6 +46,7 @@ REMOVED_SPECS = {
     "gemini:gemini-2.5-pro",
     "gemini:gemini-2.5-flash-lite",
     "openrouter:poolside/laguna-m.1:free",
+    "openrouter:inclusionai/ling-3.0-flash:free",
     "groq:llama-3.3-70b-versatile",
 }
 EXPECTED_SPECS = [
@@ -70,10 +71,10 @@ EXPECTED_SPECS = [
     "openrouter:google/gemma-4-31b-it:free",
     "openrouter:poolside/laguna-s-2.1:free",
     "openrouter:poolside/laguna-xs-2.1:free",
-    "openrouter:inclusionai/ling-3.0-flash:free",
     "openrouter:openai/gpt-oss-20b:free",
     "openrouter:nvidia/nemotron-nano-9b-v2:free",
     "gemini:gemini-3.7-flash",
+    "openrouter:nvidia/nemotron-3.5-lightning:free",
 ]
 
 
@@ -115,7 +116,7 @@ class ProviderModelRegistryTests(unittest.TestCase):
         self.assertIsNotNone(replacement)
         self.assertEqual(replacement.lifecycle, "stable")
         self.assertEqual(replacement.request_config["thinking_level"], "low")
-        self.assertEqual(registry.configuration_version, "phase-2-recalibration-v3")
+        self.assertEqual(registry.configuration_version, "phase-2-recalibration-v4")
         self.assertEqual({slot.request_config_version for slot in configured}, {"2"})
 
     def test_duplicate_slot_is_rejected(self) -> None:
@@ -250,6 +251,34 @@ class OpenRouterFreePolicyTests(unittest.TestCase):
         pricing["completion"] = "0.000001"
 
         with self.assertRaisesRegex(free_policy.FreePolicyError, "completion pricing"):
+            free_policy.verify_openrouter_free_model(
+                self.MODEL,
+                "test-key",
+                metadata_loader=lambda _model, _key: metadata,
+            )
+
+    def test_absent_optional_openrouter_prices_are_accepted(self) -> None:
+        metadata = free_metadata(self.MODEL)
+        pricing = metadata["pricing"]
+        assert isinstance(pricing, dict)
+        del pricing["request"]
+
+        self.assertIs(
+            free_policy.verify_openrouter_free_model(
+                self.MODEL,
+                "test-key",
+                metadata_loader=lambda _model, _key: metadata,
+            ),
+            metadata,
+        )
+
+    def test_nonzero_openrouter_request_price_is_rejected(self) -> None:
+        metadata = free_metadata(self.MODEL)
+        pricing = metadata["pricing"]
+        assert isinstance(pricing, dict)
+        pricing["request"] = "0.01"
+
+        with self.assertRaisesRegex(free_policy.FreePolicyError, "request pricing"):
             free_policy.verify_openrouter_free_model(
                 self.MODEL,
                 "test-key",

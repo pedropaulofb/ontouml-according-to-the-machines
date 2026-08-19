@@ -10,8 +10,8 @@ from decimal import Decimal, InvalidOperation
 from typing import Any, Callable
 
 OPENROUTER_MODELS_URL = "https://openrouter.ai/api/v1/models"
-REQUIRED_ZERO_PRICE_FIELDS = ("prompt", "completion", "request")
-OPTIONAL_ZERO_PRICE_FIELDS = ("internal_reasoning",)
+REQUIRED_ZERO_PRICE_FIELDS = ("prompt", "completion")
+OPTIONAL_ZERO_PRICE_FIELDS = ("request", "internal_reasoning")
 POLICY_PRICE_FIELDS = REQUIRED_ZERO_PRICE_FIELDS + OPTIONAL_ZERO_PRICE_FIELDS
 
 

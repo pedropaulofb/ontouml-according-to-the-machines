@@ -325,11 +325,13 @@ Slots 15 (`gemini-2.5-pro`) and 17 (`gemini-2.5-flash-lite`) are explicitly reti
 | 21 | `openrouter` | `google/gemma-4-31b-it:free` | Free variant | No thinking unless required |
 | 22 | `openrouter` | `poolside/laguna-s-2.1:free` | Free variant | Lowest supported; final output only |
 | 23 | `openrouter` | `poolside/laguna-xs-2.1:free` | Free variant | Lowest supported; final output only |
-| 24 | `openrouter` | `inclusionai/ling-3.0-flash:free` | Free variant | Lowest supported; exclude reasoning from final output |
 | 25 | `openrouter` | `openai/gpt-oss-20b:free` | Free variant | `low`; exclude reasoning from final output |
 | 26 | `openrouter` | `nvidia/nemotron-nano-9b-v2:free` | Free variant | Nonreasoning/final-only mode |
+| 28 | `openrouter` | `nvidia/nemotron-3.5-lightning:free` | Free variant | Nonreasoning/final-only mode |
 
 The exact `:free` model ID MUST be sent. The generic `openrouter/free` router MUST NOT be used because it does not preserve stable model identity.
+
+Slot 24 (`inclusionai/ling-3.0-flash:free`) is explicitly retired after its exact free endpoint disappeared from OpenRouter metadata during acceptance testing. Slot 28 (`nvidia/nemotron-3.5-lightning:free`) is its current zero-price replacement.
 
 ### 9.6 Removed slots
 
@@ -341,6 +343,7 @@ cerebras:zai-glm-4.7
 gemini:gemini-2.5-pro
 gemini:gemini-2.5-flash-lite
 openrouter:poolside/laguna-m.1:free
+openrouter:inclusionai/ling-3.0-flash:free
 groq:llama-3.3-70b-versatile
 ```
 
@@ -375,7 +378,7 @@ Before any Phase 2 OpenRouter request—including production, manual, local, bra
 - the exact identifier ends in `:free`;
 - prompt pricing is zero;
 - completion pricing is zero;
-- request pricing is zero;
+- request pricing is zero when the metadata exposes a fixed request-price field;
 - internal reasoning pricing is zero or absent for the selected free route;
 - no paid fallback route is enabled.
 
@@ -2464,6 +2467,7 @@ Manual intervention MUST be auditable through committed state or PR history.
 - [ ] `gemini-3-flash-preview` is configured as a free Preview slot.
 - [ ] `gemini-3.7-flash` is configured as a free Stable slot.
 - [ ] `gemini-2.5-pro` and `gemini-2.5-flash-lite` are retired and non-executable.
+- [ ] `inclusionai/ling-3.0-flash:free` is retired and `nvidia/nemotron-3.5-lightning:free` is configured as its zero-price replacement.
 - [ ] Cerebras is rejected by every standard scheduled, manual, and direct Phase 2 execution entry point.
 - [ ] Laguna M.1 has no active path.
 - [ ] Laguna S 2.1 and XS 2.1 use exact `:free` IDs.
@@ -2780,9 +2784,9 @@ OpenRouter
   google/gemma-4-31b-it:free
   poolside/laguna-s-2.1:free
   poolside/laguna-xs-2.1:free
-  inclusionai/ling-3.0-flash:free
   openai/gpt-oss-20b:free
   nvidia/nemotron-nano-9b-v2:free
+  nvidia/nemotron-3.5-lightning:free
 ```
 
 ---

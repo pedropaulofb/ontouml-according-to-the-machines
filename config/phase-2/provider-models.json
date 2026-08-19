@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "configuration_version": "phase-2-recalibration-v3",
+  "configuration_version": "phase-2-recalibration-v4",
   "phase": "phase-2",
   "slots": [
     {
@@ -508,7 +508,7 @@
       "slot": 24,
       "provider": "openrouter",
       "model": "inclusionai/ling-3.0-flash:free",
-      "configuration_status": "configured",
+      "configuration_status": "retired",
       "execution_status": "eligible",
       "lifecycle": "free-variant",
       "agents": ["page-hygiene-checker", "language-style-checker"],
@@ -591,6 +591,29 @@
         "max_completion_tokens": 3000,
         "thinking_level": "low",
         "tools": [],
+        "final_output_only": true
+      }
+    },
+    {
+      "slot": 28,
+      "provider": "openrouter",
+      "model": "nvidia/nemotron-3.5-lightning:free",
+      "configuration_status": "configured",
+      "execution_status": "eligible",
+      "lifecycle": "free-variant",
+      "agents": ["page-hygiene-checker", "language-style-checker"],
+      "quota_groups": ["openrouter-free-account", "openrouter:nvidia/nemotron-3.5-lightning:free"],
+      "free_policy": "metadata-verified-zero-price",
+      "reasoning_policy": "none",
+      "output_policy": "final-only",
+      "max_completion_tokens": 3000,
+      "request_config_version": "2",
+      "request_config": {
+        "temperature": 0,
+        "max_completion_tokens": 3000,
+        "reasoning": "none",
+        "exclude_reasoning": true,
+        "allow_fallbacks": false,
         "final_output_only": true
       }
     }

@@ -117,7 +117,7 @@ python scripts/phase-2/run_check_batch.py --page docs/stereotypes/classes/event.
 python scripts/phase-2/run_check_batch.py --page docs/stereotypes/classes/event.md --agent language-style-checker --provider gemini --model gemini-3.5-flash --mode dry-run --repo OWNER/REPOSITORY --selection first --max-runs 1 --allow-rejected-check-outputs --allow-provider-failures
 ```
 
-For OpenRouter, the exact model must be registered and end in `:free`; live metadata must prove zero pricing before either diagnostic sends a completion request.
+For OpenRouter, the exact model must be registered and end in `:free`; live metadata must prove zero prompt and completion pricing, and zero pricing for any present request or internal-reasoning fields, before either diagnostic sends a completion request.
 
 ## Operator option reference
 

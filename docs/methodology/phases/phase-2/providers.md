@@ -50,12 +50,14 @@ Each slot below appears once in registry order. Lifecycle, reasoning, request se
 | 21 | `openrouter` | `google/gemma-4-31b-it:free` | free variant | live zero-price metadata required |
 | 22 | `openrouter` | `poolside/laguna-s-2.1:free` | free variant | live zero-price metadata required |
 | 23 | `openrouter` | `poolside/laguna-xs-2.1:free` | free variant | live zero-price metadata required |
-| 24 | `openrouter` | `inclusionai/ling-3.0-flash:free` | free variant | live zero-price metadata required |
 | 25 | `openrouter` | `openai/gpt-oss-20b:free` | free variant | live zero-price metadata required |
 | 26 | `openrouter` | `nvidia/nemotron-nano-9b-v2:free` | free variant | live zero-price metadata required |
 | 27 | `gemini` | `gemini-3.7-flash` | stable | published free Standard tier and confirmed no-charge project |
+| 28 | `openrouter` | `nvidia/nemotron-3.5-lightning:free` | free variant | live zero-price metadata required |
 
 Slots 15 (`gemini-2.5-pro`) and 17 (`gemini-2.5-flash-lite`) are `retired`. Both exact endpoints returned provider model-unavailable responses during acceptance testing. Their task and statistics records remain historical; neither is executable. Google lists [`gemini-3.7-flash`](https://ai.google.dev/gemini-api/docs/models) as a current model and publishes free Standard-tier input and output in its [Gemini API pricing](https://ai.google.dev/gemini-api/docs/pricing), so slot 27 is its feasible free replacement. The provider-suggested `gemini-3.1-pro-preview` replacement is not configured because its Standard tier has no free input or output. `gemini-3.5-flash-lite`, already configured in slot 12, is the active Flash-Lite replacement.
+
+Slot 24 (`inclusionai/ling-3.0-flash:free`) is also `retired`: acceptance diagnostics found that OpenRouter now exposes only its paid variant. Slot 28 (`nvidia/nemotron-3.5-lightning:free`) replaces it with an exact current `:free` endpoint.
 
 Display or validate the executable list without making a provider call:
 
@@ -71,7 +73,7 @@ No Phase 2 path may make a paid LLM request. This includes scheduled, manual, lo
 - SambaNova uses the maintainer-confirmed free account. A billing, credit, or payment-required response blocks the affected capacity.
 - Groq uses free-plan capacity and does not request a paid service tier.
 - Gemini uses a no-charge API project and does not enable paid grounding, paid tools, or billing-backed fallback.
-- OpenRouter requires the exact `:free` identifier. Before every call, including diagnostics, `free_policy.py` fetches current model metadata and fails closed unless request, prompt, completion, and any present internal-reasoning prices are zero. Provider fallbacks are disabled.
+- OpenRouter requires the exact `:free` identifier. Before every call, including diagnostics, `free_policy.py` fetches current model metadata and fails closed unless prompt and completion prices, plus any present request and internal-reasoning prices, are zero. Provider fallbacks are disabled.
 
 Billing or payment diagnostics become `blocked_provider_policy`. Authentication, authorization, and deterministic request-configuration failures become `blocked_execution_configuration`. Neither category receives automatic transient retries. A failed or inconclusive free-policy check never authorizes a call.
 
