@@ -1,0 +1,74 @@
+{
+  "aggregation": {
+    "source_event_sha256": "83a0a636a4ecc0824fc9bca02fbaab135dd5b39b1ba7d1221d9354a91ff56ed1",
+    "transport_filename": "fc3d5c7653383e1333a6a77429c8d474d3b87d68c709f791192eae4764d87563.json"
+  },
+  "attempt_finished_at": "2026-08-20T22:39:45Z",
+  "attempt_id": "fc3d5c7653383e1333a6a77429c8d474d3b87d68c709f791192eae4764d87563",
+  "attempt_started_at": "2026-08-20T22:39:41Z",
+  "event_version": 1,
+  "model": "Meta-Llama-3.3-70B-Instruct",
+  "outcome": "provider_failure",
+  "output_artifact": null,
+  "output_sha256": null,
+  "provider": "sambanova",
+  "provider_attempts": 1,
+  "quota_observations": [
+    {
+      "call_source": "signal",
+      "event_id": "01787265585535621617-f3ca4cb7-a04b-412f-9816-b3dcd4c93d58",
+      "failure": {
+        "diagnostic": "Error code: 429 - {'error': {'code': None, 'message': 'Meta-Llama-3.3-70B-Instruct-8k is currently experiencing high demand. Please try again later!', 'param': None, 'type': ''}, 'request_id': '7e0cf8b6-8c3f-43ab-8942-c6bc49542aea'} None {'code': None, 'message': 'Meta-Llama-3.3-70B-Instruct-8k is currently experiencing high demand. Please try again later!', 'param': None, 'type': ''}",
+        "kind": "rate_or_quota_limited",
+        "quota_group_ids": [
+          "sambanova:Meta-Llama-3.3-70B-Instruct"
+        ],
+        "retry_after_seconds": 3600,
+        "retry_not_before": "2026-08-20T23:39:45Z",
+        "retry_source": "inferred",
+        "retryable_immediately": false,
+        "scope": "quota_group"
+      },
+      "headers": {
+        "connection": "keep-alive",
+        "content-security-policy": "default-src 'none'",
+        "content-type": "application/json; charset=utf-8",
+        "date": "Thu, 20 Aug 2026 22:39:45 GMT",
+        "inference-id": "f70e6969-cb7f-4197-a98d-7f4331126ce6",
+        "permissions-policy": "camera=(), microphone=(), geolocation=()",
+        "referrer-policy": "strict-origin-when-cross-origin",
+        "strict-transport-security": "max-age=31536000; includeSubDomains",
+        "transfer-encoding": "chunked",
+        "x-content-type-options": "nosniff",
+        "x-frame-options": "SAMEORIGIN",
+        "x-request-id": "da3o4ccint6hbslbqipg"
+      },
+      "model": "Meta-Llama-3.3-70B-Instruct",
+      "observed_at": "2026-08-20T22:39:45Z",
+      "outcome": "failure",
+      "provider": "sambanova",
+      "request_sent": true,
+      "schema_version": 1,
+      "task_id": "7626f8c2f2e7d547738f893ffb6adc5cd5560849f054a7f9c486c3d0b6802735",
+      "usage": {
+        "cached_tokens": null,
+        "input_tokens": null,
+        "output_tokens": null,
+        "reasoning_tokens": null,
+        "total_tokens": null
+      }
+    }
+  ],
+  "runner_returncode": 1,
+  "signal_count": 0,
+  "task_id": "7626f8c2f2e7d547738f893ffb6adc5cd5560849f054a7f9c486c3d0b6802735",
+  "usage": {
+    "cached_tokens": null,
+    "input_tokens": null,
+    "output_tokens": null,
+    "reasoning_tokens": null,
+    "total_tokens": null
+  },
+  "worker_id": "sambanova",
+  "workflow_run_id": "32425123106-1"
+}
