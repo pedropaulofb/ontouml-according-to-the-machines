@@ -355,6 +355,32 @@ class ResultAggregationTests(AggregationFixture):
             self.assertEqual(updated["validation_rejection_count"], 2)
             self.assertEqual(updated["status"], "blocked_repeated_rejection")
 
+    def test_validator_rejected_output_preserves_bytes_and_sha256(self) -> None:
+        record = self.leased_task()
+        event = self.event(record, outcome="validator_rejected")
+        content = "validator-rejected output with trailing whitespace   "
+        expected_bytes = content.encode("utf-8")
+        expected_sha256 = hashlib.sha256(expected_bytes).hexdigest()
+
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            self.write_transport(root / "artifacts", event, content=content)
+            tasks, _quota, counts, _events = self.run_aggregate(root, self.state_with(record))
+
+            updated = tasks["tasks"][record["task_id"]]
+            durable_event_path = root / updated["result_record"]["event_path"]
+            durable_event = json.loads(durable_event_path.read_text(encoding="utf-8"))
+            durable_output_path = root / durable_event["output_artifact"]
+            durable_bytes = durable_output_path.read_bytes()
+
+            self.assertEqual(counts["applied"], 1)
+            self.assertTrue(durable_output_path.name.endswith(".invalid.md"))
+            self.assertEqual(durable_bytes, expected_bytes)
+            self.assertTrue(durable_bytes.endswith(b"   "))
+            self.assertEqual(durable_event["output_sha256"], expected_sha256)
+            self.assertEqual(updated["result_record"]["output_sha256"], expected_sha256)
+            self.assertEqual(hashlib.sha256(durable_bytes).hexdigest(), expected_sha256)
+
 
 class StatisticsTests(AggregationFixture):
     def test_token_zero_is_distinct_from_unknown(self) -> None:
