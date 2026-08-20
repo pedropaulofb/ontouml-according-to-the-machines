@@ -1,0 +1,64 @@
+{
+  "aggregation": {
+    "source_event_sha256": "ddb2fcac5321f5c1fc64c8175b115102321fcf627a8316c13dfe4ef5be510e8e",
+    "transport_filename": "1f27089ce77ad86a94538a4bbba0ea0c11d3d267844e34bdf6c412a3447cc178.json"
+  },
+  "attempt_finished_at": "2026-08-20T14:50:10Z",
+  "attempt_id": "1f27089ce77ad86a94538a4bbba0ea0c11d3d267844e34bdf6c412a3447cc178",
+  "attempt_started_at": "2026-08-20T14:50:02Z",
+  "event_version": 1,
+  "model": "google/gemma-4-26b-a4b-it:free",
+  "outcome": "valid",
+  "output_artifact": "data/phase-2/results/6ecf49e3af6b6cde32a8245fe5a6cf2e514bbfbfbbdc26ff4baa93ec467c6160/1f27089ce77ad86a94538a4bbba0ea0c11d3d267844e34bdf6c412a3447cc178.md",
+  "output_sha256": "bc2157a9f43392f4f84557ba75e34a212380b5b97256d56943a12c855686ec5b",
+  "provider": "openrouter",
+  "provider_attempts": 1,
+  "quota_observations": [
+    {
+      "call_source": "signal",
+      "event_id": "01787237410421754692-1b33d166-b5ed-431e-9a26-a1c048e6b40a",
+      "failure": null,
+      "headers": {
+        "access-control-allow-origin": "*",
+        "access-control-expose-headers": "X-Generation-Id,X-Provider-Name,request-id,cf-ray",
+        "cf-ray": "a2e23550cf5553a7-DTW",
+        "connection": "keep-alive",
+        "content-encoding": "gzip",
+        "content-type": "application/json",
+        "date": "Thu, 20 Aug 2026 14:50:05 GMT",
+        "permissions-policy": "payment=(self \"https://checkout.stripe.com\" \"https://connect-js.stripe.com\" \"https://js.stripe.com\" \"https://*.js.stripe.com\" \"https://hooks.stripe.com\")",
+        "referrer-policy": "no-referrer, strict-origin-when-cross-origin",
+        "server": "cloudflare",
+        "transfer-encoding": "chunked",
+        "x-content-type-options": "nosniff",
+        "x-generation-id": "gen-1787237404-7RiZsIfgftpXVFuaQqwX"
+      },
+      "model": "google/gemma-4-26b-a4b-it:free",
+      "observed_at": "2026-08-20T14:50:10Z",
+      "outcome": "success",
+      "provider": "openrouter",
+      "request_sent": true,
+      "schema_version": 1,
+      "task_id": "6ecf49e3af6b6cde32a8245fe5a6cf2e514bbfbfbbdc26ff4baa93ec467c6160",
+      "usage": {
+        "cached_tokens": 0,
+        "input_tokens": 2659,
+        "output_tokens": 262,
+        "reasoning_tokens": 0,
+        "total_tokens": 2921
+      }
+    }
+  ],
+  "runner_returncode": 0,
+  "signal_count": 0,
+  "task_id": "6ecf49e3af6b6cde32a8245fe5a6cf2e514bbfbfbbdc26ff4baa93ec467c6160",
+  "usage": {
+    "cached_tokens": 0,
+    "input_tokens": 2659,
+    "output_tokens": 262,
+    "reasoning_tokens": 0,
+    "total_tokens": 2921
+  },
+  "worker_id": "openrouter",
+  "workflow_run_id": "32382275312-1"
+}
