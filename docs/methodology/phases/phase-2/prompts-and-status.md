@@ -292,14 +292,17 @@ Completed:
 - the automated resolver comments on and closes source signal issues;
 - accepted automated resolver PRs for both `page-hygiene-checker` and `language-style-checker` issues have been merged through the repository workflow.
 
-Pending:
+Post-cutover status:
 
-1. complete full-branch validation and cutover preparation from Stage 9 of the accepted recalibration RFC;
-2. confirm all four provider secrets and `PHASE2_AUTOMATION_TOKEN` in the production workflow environment;
-3. run call-free production plans before enabling queue-managed `post` execution;
-4. validate representative real calls only within approved free capacity;
-5. monitor queue, quota, publication, and resolver-attempt state after cutover;
-6. record any operational recovery through committed state or pull-request history.
+- Stage 9 full-branch validation and cutover preparation completed on 2026-08-20.
+- PR #571 merged the recalibration to `main`.
+- All four signal-generation provider secrets and `PHASE2_AUTOMATION_TOKEN` were exercised by the production collector path.
+- Call-free scheduler planning completed with 1,950 desired tasks and no task-state mutation.
+- A bounded production `post` canary ran at most one task per provider; Gemini, Groq, and SambaNova produced valid zero-signal outputs, while OpenRouter Nemotron Ultra was classified as `provider_unavailable` and deferred without failing the workflow.
+- Aggregation persisted task, quota, publication, and model-run statistics state successfully.
+- Post-cutover validation passed for the provider-model registry, task state, quota state, and resolver-attempt state.
+- Both scheduled Phase 2 workflows are enabled.
+- No operational recovery was required during cutover.
 
 Deferred outside Phase 2:
 
@@ -314,7 +317,7 @@ Deferred outside Phase 2:
 
 ## Recommended next implementation step
 
-Complete Stage 9 full-branch validation and cutover preparation from the [accepted recalibration RFC](recalibration-rfc.md). Use call-free `plan` or `simulate` before any production `post` run, then follow the smoke-test order and rollback rules in the RFC. The command and recovery runbook is in [Execution and operations](execution-and-operations.md).
+No further Phase 2 recalibration implementation step is pending. Continue normal scheduled operation using the queue-managed collector and automated resolver. Future work remains under Deferred outside Phase 2.
 
 ## Completion criteria
 
