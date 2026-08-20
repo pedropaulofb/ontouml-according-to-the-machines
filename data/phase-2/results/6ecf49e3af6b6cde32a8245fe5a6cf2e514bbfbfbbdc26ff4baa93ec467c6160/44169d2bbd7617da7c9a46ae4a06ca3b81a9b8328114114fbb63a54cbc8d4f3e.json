@@ -1,0 +1,73 @@
+{
+  "aggregation": {
+    "source_event_sha256": "62e6f9f0c29a25a6ec85657c9b34e8dc8d289a7fa84f23512badd6323fe7f088",
+    "transport_filename": "44169d2bbd7617da7c9a46ae4a06ca3b81a9b8328114114fbb63a54cbc8d4f3e.json"
+  },
+  "attempt_finished_at": "2026-08-20T10:55:33Z",
+  "attempt_id": "44169d2bbd7617da7c9a46ae4a06ca3b81a9b8328114114fbb63a54cbc8d4f3e",
+  "attempt_started_at": "2026-08-20T10:55:29Z",
+  "event_version": 1,
+  "model": "google/gemma-4-26b-a4b-it:free",
+  "outcome": "provider_failure",
+  "output_artifact": null,
+  "output_sha256": null,
+  "provider": "openrouter",
+  "provider_attempts": 1,
+  "quota_observations": [
+    {
+      "call_source": "signal",
+      "event_id": "01787223333009672022-f0187a83-2ddd-4b50-a292-7fc9baf238d5",
+      "failure": {
+        "diagnostic": "Error code: 429 - {'error': {'message': 'Provider returned error', 'code': 429, 'metadata': {'raw': 'google/gemma-4-26b-a4b-it:free is temporarily rate-limited upstream. Please retry shortly, or add your own key to accumulate your rate limits: https://openrouter.ai/settings/integrations', 'provider_name': 'Google AI Studio', 'is_byok': False, 'provider_error_code': '429', 'limit_source': 'upstream_provider_shared_pool', 'remedy_hint': 'Retry shortly, add your own provider key (https://openrouter.ai/settings/integrations), or route to another provider with provider routing: https://openrouter.ai/docs/features/provider-routing'}}, 'user_id': 'user_3FfL8Rij2LctExJqIM8NYwpEikZ'} 429 {'message': 'Provider returned error', 'code': 429, 'metadata': {'raw': 'google/gemma-4-26b-a4b-it:free is temporarily rate-limited upstream. Please retry shortly, or add your own key to accumulate your rate limits: https://openrouter.ai/settings/integrations', 'provider_name': 'Google AI Studio', 'is_byok': Fa",
+        "kind": "rate_or_quota_limited",
+        "quota_group_ids": [
+          "openrouter-free-account"
+        ],
+        "retry_after_seconds": 3600,
+        "retry_not_before": "2026-08-20T11:55:33Z",
+        "retry_source": "inferred",
+        "retryable_immediately": false,
+        "scope": "quota_group"
+      },
+      "headers": {
+        "access-control-allow-origin": "*",
+        "access-control-expose-headers": "X-Generation-Id,X-Provider-Name,request-id,cf-ray",
+        "cf-ray": "a2e0ddc6e9e7a159-IAD",
+        "connection": "keep-alive",
+        "content-type": "application/json",
+        "date": "Thu, 20 Aug 2026 10:55:33 GMT",
+        "permissions-policy": "payment=(self \"https://checkout.stripe.com\" \"https://connect-js.stripe.com\" \"https://js.stripe.com\" \"https://*.js.stripe.com\" \"https://hooks.stripe.com\")",
+        "referrer-policy": "no-referrer, strict-origin-when-cross-origin",
+        "server": "cloudflare",
+        "transfer-encoding": "chunked",
+        "x-content-type-options": "nosniff"
+      },
+      "model": "google/gemma-4-26b-a4b-it:free",
+      "observed_at": "2026-08-20T10:55:33Z",
+      "outcome": "failure",
+      "provider": "openrouter",
+      "request_sent": true,
+      "schema_version": 1,
+      "task_id": "6ecf49e3af6b6cde32a8245fe5a6cf2e514bbfbfbbdc26ff4baa93ec467c6160",
+      "usage": {
+        "cached_tokens": null,
+        "input_tokens": null,
+        "output_tokens": null,
+        "reasoning_tokens": null,
+        "total_tokens": null
+      }
+    }
+  ],
+  "runner_returncode": 1,
+  "signal_count": 0,
+  "task_id": "6ecf49e3af6b6cde32a8245fe5a6cf2e514bbfbfbbdc26ff4baa93ec467c6160",
+  "usage": {
+    "cached_tokens": null,
+    "input_tokens": null,
+    "output_tokens": null,
+    "reasoning_tokens": null,
+    "total_tokens": null
+  },
+  "worker_id": "openrouter",
+  "workflow_run_id": "32361146887-1"
+}

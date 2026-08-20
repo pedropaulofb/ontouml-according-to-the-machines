@@ -1,0 +1,74 @@
+{
+  "aggregation": {
+    "source_event_sha256": "27ad37f2dc90040ff9987730b1095ad8ffe430f65aba1102150ac936264e2fef",
+    "transport_filename": "33a8222a96e92f88231c122b6a0b2184737f9eb873c9bd8fc2bdb6df02c27fe7.json"
+  },
+  "attempt_finished_at": "2026-08-20T10:55:23Z",
+  "attempt_id": "33a8222a96e92f88231c122b6a0b2184737f9eb873c9bd8fc2bdb6df02c27fe7",
+  "attempt_started_at": "2026-08-20T10:55:18Z",
+  "event_version": 1,
+  "model": "DeepSeek-V3.2",
+  "outcome": "provider_failure",
+  "output_artifact": null,
+  "output_sha256": null,
+  "provider": "sambanova",
+  "provider_attempts": 1,
+  "quota_observations": [
+    {
+      "call_source": "signal",
+      "event_id": "01787223322971956213-557e8c40-90c5-4c4a-b4b3-bfeb059035d8",
+      "failure": {
+        "diagnostic": "Error code: 429 - {'error': {'code': None, 'message': 'DeepSeek-V3.2-16k is currently experiencing high demand. Please try again later!', 'param': None, 'type': ''}, 'request_id': '76976871-8e68-4cb8-970e-d16c49f31398'} None {'code': None, 'message': 'DeepSeek-V3.2-16k is currently experiencing high demand. Please try again later!', 'param': None, 'type': ''}",
+        "kind": "rate_or_quota_limited",
+        "quota_group_ids": [
+          "sambanova:DeepSeek-V3.2"
+        ],
+        "retry_after_seconds": 3600,
+        "retry_not_before": "2026-08-20T11:55:22Z",
+        "retry_source": "inferred",
+        "retryable_immediately": false,
+        "scope": "quota_group"
+      },
+      "headers": {
+        "connection": "keep-alive",
+        "content-security-policy": "default-src 'none'",
+        "content-type": "application/json; charset=utf-8",
+        "date": "Thu, 20 Aug 2026 10:55:22 GMT",
+        "inference-id": "29edb05a-383c-45d4-8ce5-e922b1eb8816",
+        "permissions-policy": "camera=(), microphone=(), geolocation=()",
+        "referrer-policy": "strict-origin-when-cross-origin",
+        "strict-transport-security": "max-age=31536000; includeSubDomains",
+        "transfer-encoding": "chunked",
+        "x-content-type-options": "nosniff",
+        "x-frame-options": "SAMEORIGIN",
+        "x-request-id": "da3dq6kint6hbsl4mo00"
+      },
+      "model": "DeepSeek-V3.2",
+      "observed_at": "2026-08-20T10:55:22Z",
+      "outcome": "failure",
+      "provider": "sambanova",
+      "request_sent": true,
+      "schema_version": 1,
+      "task_id": "06d1b2ed733b6299141dd836f9060a532dce1b71514b138ce66cc8ed322aa4a7",
+      "usage": {
+        "cached_tokens": null,
+        "input_tokens": null,
+        "output_tokens": null,
+        "reasoning_tokens": null,
+        "total_tokens": null
+      }
+    }
+  ],
+  "runner_returncode": 1,
+  "signal_count": 0,
+  "task_id": "06d1b2ed733b6299141dd836f9060a532dce1b71514b138ce66cc8ed322aa4a7",
+  "usage": {
+    "cached_tokens": null,
+    "input_tokens": null,
+    "output_tokens": null,
+    "reasoning_tokens": null,
+    "total_tokens": null
+  },
+  "worker_id": "sambanova",
+  "workflow_run_id": "32361146887-1"
+}
