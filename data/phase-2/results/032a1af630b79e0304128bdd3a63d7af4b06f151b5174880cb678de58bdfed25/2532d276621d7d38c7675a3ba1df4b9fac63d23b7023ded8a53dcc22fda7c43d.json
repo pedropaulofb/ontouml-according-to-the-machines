@@ -1,0 +1,74 @@
+{
+  "aggregation": {
+    "source_event_sha256": "8a57de6bd8aa8cd7513a084b6901e8ae23297f20b5c0d6adb9c74fd0f53e5393",
+    "transport_filename": "2532d276621d7d38c7675a3ba1df4b9fac63d23b7023ded8a53dcc22fda7c43d.json"
+  },
+  "attempt_finished_at": "2026-08-20T21:17:04Z",
+  "attempt_id": "2532d276621d7d38c7675a3ba1df4b9fac63d23b7023ded8a53dcc22fda7c43d",
+  "attempt_started_at": "2026-08-20T21:07:00Z",
+  "event_version": 1,
+  "model": "gpt-oss-120b",
+  "outcome": "provider_failure",
+  "output_artifact": null,
+  "output_sha256": null,
+  "provider": "sambanova",
+  "provider_attempts": 1,
+  "quota_observations": [
+    {
+      "call_source": "signal",
+      "event_id": "01787260624629045808-40d50644-d6f3-46a0-929f-7100e1b5c97a",
+      "failure": {
+        "diagnostic": "Error code: 429 - {'error': {'code': None, 'message': 'gpt-oss-120b-8k is currently experiencing high demand. Please try again later!', 'param': None, 'type': ''}, 'request_id': '43d6446f-ea29-4f7e-978b-6c65d77ae3a5'} None {'code': None, 'message': 'gpt-oss-120b-8k is currently experiencing high demand. Please try again later!', 'param': None, 'type': ''}",
+        "kind": "rate_or_quota_limited",
+        "quota_group_ids": [
+          "sambanova:gpt-oss-120b"
+        ],
+        "retry_after_seconds": 3600,
+        "retry_not_before": "2026-08-20T22:17:04Z",
+        "retry_source": "inferred",
+        "retryable_immediately": false,
+        "scope": "quota_group"
+      },
+      "headers": {
+        "connection": "keep-alive",
+        "content-security-policy": "default-src 'none'",
+        "content-type": "application/json; charset=utf-8",
+        "date": "Thu, 20 Aug 2026 21:17:04 GMT",
+        "inference-id": "16315f63-4ef5-49f7-844b-2ba1948c1a7e",
+        "permissions-policy": "camera=(), microphone=(), geolocation=()",
+        "referrer-policy": "strict-origin-when-cross-origin",
+        "strict-transport-security": "max-age=31536000; includeSubDomains",
+        "transfer-encoding": "chunked",
+        "x-content-type-options": "nosniff",
+        "x-frame-options": "SAMEORIGIN",
+        "x-request-id": "da3mtk4int6hbslaui20"
+      },
+      "model": "gpt-oss-120b",
+      "observed_at": "2026-08-20T21:17:04Z",
+      "outcome": "failure",
+      "provider": "sambanova",
+      "request_sent": true,
+      "schema_version": 1,
+      "task_id": "032a1af630b79e0304128bdd3a63d7af4b06f151b5174880cb678de58bdfed25",
+      "usage": {
+        "cached_tokens": null,
+        "input_tokens": null,
+        "output_tokens": null,
+        "reasoning_tokens": null,
+        "total_tokens": null
+      }
+    }
+  ],
+  "runner_returncode": 1,
+  "signal_count": 0,
+  "task_id": "032a1af630b79e0304128bdd3a63d7af4b06f151b5174880cb678de58bdfed25",
+  "usage": {
+    "cached_tokens": null,
+    "input_tokens": null,
+    "output_tokens": null,
+    "reasoning_tokens": null,
+    "total_tokens": null
+  },
+  "worker_id": "sambanova",
+  "workflow_run_id": "32417568505-1"
+}
