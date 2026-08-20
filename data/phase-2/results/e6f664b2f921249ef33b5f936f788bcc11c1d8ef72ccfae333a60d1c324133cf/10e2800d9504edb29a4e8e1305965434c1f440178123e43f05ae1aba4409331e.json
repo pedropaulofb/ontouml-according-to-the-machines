@@ -1,0 +1,29 @@
+{
+  "aggregation": {
+    "source_event_sha256": "dfcbe99c13fccf411ff31eb88f0db4b627935ef76d3d081b1cf823ffd6dd36f6",
+    "transport_filename": "10e2800d9504edb29a4e8e1305965434c1f440178123e43f05ae1aba4409331e.json"
+  },
+  "attempt_finished_at": "2026-08-20T09:58:10Z",
+  "attempt_id": "10e2800d9504edb29a4e8e1305965434c1f440178123e43f05ae1aba4409331e",
+  "attempt_started_at": "2026-08-20T09:58:10Z",
+  "event_version": 1,
+  "model": "MiniMax-M2.7",
+  "outcome": "not_called",
+  "output_artifact": null,
+  "output_sha256": null,
+  "provider": "sambanova",
+  "provider_attempts": 0,
+  "quota_observations": [],
+  "reason": "provider execution time budget reached",
+  "signal_count": 0,
+  "task_id": "e6f664b2f921249ef33b5f936f788bcc11c1d8ef72ccfae333a60d1c324133cf",
+  "usage": {
+    "cached_tokens": null,
+    "input_tokens": null,
+    "output_tokens": null,
+    "reasoning_tokens": null,
+    "total_tokens": null
+  },
+  "worker_id": "sambanova",
+  "workflow_run_id": "32355469754-1"
+}

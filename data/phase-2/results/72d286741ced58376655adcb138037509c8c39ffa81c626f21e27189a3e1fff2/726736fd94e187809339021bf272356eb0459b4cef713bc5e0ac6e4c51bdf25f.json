@@ -1,0 +1,92 @@
+{
+  "aggregation": {
+    "source_event_sha256": "bcf81037e2bed01415eb6d328f85086269b0c4035834a252ae99e48709aae1d3",
+    "transport_filename": "726736fd94e187809339021bf272356eb0459b4cef713bc5e0ac6e4c51bdf25f.json"
+  },
+  "attempt_finished_at": "2026-08-20T09:46:46Z",
+  "attempt_id": "726736fd94e187809339021bf272356eb0459b4cef713bc5e0ac6e4c51bdf25f",
+  "attempt_started_at": "2026-08-20T09:46:11Z",
+  "event_version": 1,
+  "model": "gemini-3.7-flash",
+  "outcome": "valid",
+  "output_artifact": "data/phase-2/results/72d286741ced58376655adcb138037509c8c39ffa81c626f21e27189a3e1fff2/726736fd94e187809339021bf272356eb0459b4cef713bc5e0ac6e4c51bdf25f.md",
+  "output_sha256": "b3dd889df47bd7c0eed7a41891d38d81ca3e990ac98c7e91bb7c6bc071f1d068",
+  "provider": "gemini",
+  "provider_attempts": 2,
+  "quota_observations": [
+    {
+      "call_source": "signal",
+      "event_id": "01787219189492808632-16d55d6c-988c-4ff6-b204-4f04a6d5d1c7",
+      "failure": {
+        "diagnostic": "503 UNAVAILABLE. {'error': {'code': 503, 'message': 'This model is currently experiencing high demand. Spikes in demand are usually temporary. Please try again later.', 'status': 'UNAVAILABLE'}} 503 UNAVAILABLE",
+        "kind": "provider_unavailable",
+        "quota_group_ids": [],
+        "retry_after_seconds": 3600,
+        "retry_not_before": "2026-08-20T10:46:29Z",
+        "retry_source": "inferred",
+        "retryable_immediately": true,
+        "scope": "slot"
+      },
+      "headers": {
+        "alt-svc": "h3=\":443\"; ma=2592000,h3-29=\":443\"; ma=2592000",
+        "content-encoding": "gzip",
+        "content-type": "application/json; charset=UTF-8",
+        "date": "Thu, 20 Aug 2026 09:46:29 GMT",
+        "server": "scaffolding on HTTPServer2",
+        "server-timing": "gfet4t7; dur=17361",
+        "transfer-encoding": "chunked",
+        "vary": "Origin, X-Origin, Referer",
+        "x-content-type-options": "nosniff",
+        "x-frame-options": "SAMEORIGIN",
+        "x-gemini-service-tier": "standard",
+        "x-xss-protection": "0"
+      },
+      "model": "gemini-3.7-flash",
+      "observed_at": "2026-08-20T09:46:29Z",
+      "outcome": "failure",
+      "provider": "gemini",
+      "request_sent": true,
+      "schema_version": 1,
+      "task_id": "72d286741ced58376655adcb138037509c8c39ffa81c626f21e27189a3e1fff2",
+      "usage": {
+        "cached_tokens": null,
+        "input_tokens": null,
+        "output_tokens": null,
+        "reasoning_tokens": null,
+        "total_tokens": null
+      }
+    },
+    {
+      "call_source": "signal",
+      "event_id": "01787219206466502228-3263c65c-d806-4e24-9987-f6cb907dc80d",
+      "failure": null,
+      "headers": {},
+      "model": "gemini-3.7-flash",
+      "observed_at": "2026-08-20T09:46:46Z",
+      "outcome": "success",
+      "provider": "gemini",
+      "request_sent": true,
+      "schema_version": 1,
+      "task_id": "72d286741ced58376655adcb138037509c8c39ffa81c626f21e27189a3e1fff2",
+      "usage": {
+        "cached_tokens": null,
+        "input_tokens": 2650,
+        "output_tokens": 242,
+        "reasoning_tokens": null,
+        "total_tokens": 2892
+      }
+    }
+  ],
+  "runner_returncode": 0,
+  "signal_count": 0,
+  "task_id": "72d286741ced58376655adcb138037509c8c39ffa81c626f21e27189a3e1fff2",
+  "usage": {
+    "cached_tokens": null,
+    "input_tokens": 2650,
+    "output_tokens": 242,
+    "reasoning_tokens": null,
+    "total_tokens": 2892
+  },
+  "worker_id": "gemini",
+  "workflow_run_id": "32355469754-1"
+}

@@ -1,0 +1,73 @@
+{
+  "aggregation": {
+    "source_event_sha256": "38bb9be044eb21052def113d6fdec330f70a9e625c45ec32e2989ebf440f4eb6",
+    "transport_filename": "80e09bad03db26a8006ea28a519612890b2de23069dfcec0601cbd1a70bab418.json"
+  },
+  "attempt_finished_at": "2026-08-20T09:49:03Z",
+  "attempt_id": "80e09bad03db26a8006ea28a519612890b2de23069dfcec0601cbd1a70bab418",
+  "attempt_started_at": "2026-08-20T09:49:01Z",
+  "event_version": 1,
+  "model": "openai/gpt-oss-120b",
+  "outcome": "valid",
+  "output_artifact": "data/phase-2/results/bbed164d7a95f58285d7bcd280d88a3e821890cfede1786d7f38df6cb401cd7f/80e09bad03db26a8006ea28a519612890b2de23069dfcec0601cbd1a70bab418.md",
+  "output_sha256": "4448d25567c42861dd020fe5ef984b8f784951666ba70a4fce5446f84af764a7",
+  "provider": "groq",
+  "provider_attempts": 1,
+  "quota_observations": [
+    {
+      "call_source": "signal",
+      "event_id": "01787219343269357955-2c6a4765-2318-4f4e-8085-fca181893e23",
+      "failure": null,
+      "headers": {
+        "alt-svc": "h3=\":443\"; ma=86400",
+        "cache-control": "private, max-age=0, no-store, no-cache, must-revalidate",
+        "cf-cache-status": "DYNAMIC",
+        "cf-ray": "a2e07c57a896cf1e-SJC",
+        "connection": "keep-alive",
+        "content-encoding": "gzip",
+        "content-type": "application/json",
+        "date": "Thu, 20 Aug 2026 09:49:03 GMT",
+        "server": "cloudflare",
+        "set-cookie": "__cf_bm=tXwELiH3w9KJ0E5KnvXRQ8EGDPDqJnYo3sstDbrKtvI-1787219342.0267448-1.0.1.1-1iD_lInZiiLjgaf54f5Z_SwBdU61CigFX26C0HpW2jeb9meIWXto.p1sFVcjmD7W9C94CC9wAgGe2Pp.MZqFolMRYwcNgZPMkyI1F78OYWl1ChJrjL2Pp4MQe0Oa3u26; HttpOnly; SameSite=None; Secure; Path=/; Domain=groq.com; Expires=Thu, 20 Aug 2026 10:19:03 GMT",
+        "strict-transport-security": "max-age=15552000",
+        "transfer-encoding": "chunked",
+        "vary": "Origin",
+        "via": "1.1 google",
+        "x-groq-region": "dls",
+        "x-ratelimit-limit-requests": "1000",
+        "x-ratelimit-limit-tokens": "8000",
+        "x-ratelimit-remaining-requests": "994",
+        "x-ratelimit-remaining-tokens": "236",
+        "x-ratelimit-reset-requests": "8m38.4s",
+        "x-ratelimit-reset-tokens": "58.23s",
+        "x-request-id": "req_01m0f95wpxezatkthptm4kgtdq"
+      },
+      "model": "openai/gpt-oss-120b",
+      "observed_at": "2026-08-20T09:49:03Z",
+      "outcome": "success",
+      "provider": "groq",
+      "request_sent": true,
+      "schema_version": 1,
+      "task_id": "bbed164d7a95f58285d7bcd280d88a3e821890cfede1786d7f38df6cb401cd7f",
+      "usage": {
+        "cached_tokens": null,
+        "input_tokens": 2702,
+        "output_tokens": 489,
+        "reasoning_tokens": 276,
+        "total_tokens": 3191
+      }
+    }
+  ],
+  "runner_returncode": 0,
+  "signal_count": 0,
+  "task_id": "bbed164d7a95f58285d7bcd280d88a3e821890cfede1786d7f38df6cb401cd7f",
+  "usage": {
+    "cached_tokens": null,
+    "input_tokens": 2702,
+    "output_tokens": 489,
+    "reasoning_tokens": 276,
+    "total_tokens": 3191
+  },
+  "worker_id": "groq",
+  "workflow_run_id": "32355469754-1"
+}

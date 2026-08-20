@@ -1,0 +1,63 @@
+{
+  "aggregation": {
+    "source_event_sha256": "60555bb20c1e61a73d8a2a7bf647e4b1f564202a6a9f83f41f49869db63f8743",
+    "transport_filename": "79a51ea393d88d1a808d4d09bd294036d9e7ef2bdeb7db477d7f4300a9ba5a3e.json"
+  },
+  "attempt_finished_at": "2026-08-20T09:54:05Z",
+  "attempt_id": "79a51ea393d88d1a808d4d09bd294036d9e7ef2bdeb7db477d7f4300a9ba5a3e",
+  "attempt_started_at": "2026-08-20T09:54:00Z",
+  "event_version": 1,
+  "model": "gemma-4-31B-it",
+  "outcome": "valid",
+  "output_artifact": "data/phase-2/results/c89ee8ee7dc7163c7962acebeb4b7f978b39094b6433301e2591b3c54e69a256/79a51ea393d88d1a808d4d09bd294036d9e7ef2bdeb7db477d7f4300a9ba5a3e.md",
+  "output_sha256": "42d5f20dc2cb7715999290d6c87fe632475c12fa04c099815bfe04ed3b5a9dc8",
+  "provider": "sambanova",
+  "provider_attempts": 1,
+  "quota_observations": [
+    {
+      "call_source": "signal",
+      "event_id": "01787219644857403537-1cc1b209-57be-45a6-9e35-b7b5676052a3",
+      "failure": null,
+      "headers": {
+        "connection": "keep-alive",
+        "content-security-policy": "default-src 'none'",
+        "content-type": "application/json; charset=utf-8",
+        "date": "Thu, 20 Aug 2026 09:54:04 GMT",
+        "inference-id": "ead75e06-28d2-4898-9be5-68271a574bb5",
+        "permissions-policy": "camera=(), microphone=(), geolocation=()",
+        "referrer-policy": "strict-origin-when-cross-origin",
+        "strict-transport-security": "max-age=31536000; includeSubDomains",
+        "transfer-encoding": "chunked",
+        "x-content-type-options": "nosniff",
+        "x-frame-options": "SAMEORIGIN",
+        "x-request-id": "da3ctecint6hbsl47s1g"
+      },
+      "model": "gemma-4-31B-it",
+      "observed_at": "2026-08-20T09:54:04Z",
+      "outcome": "success",
+      "provider": "sambanova",
+      "request_sent": true,
+      "schema_version": 1,
+      "task_id": "c89ee8ee7dc7163c7962acebeb4b7f978b39094b6433301e2591b3c54e69a256",
+      "usage": {
+        "cached_tokens": null,
+        "input_tokens": 3017,
+        "output_tokens": 401,
+        "reasoning_tokens": null,
+        "total_tokens": 3418
+      }
+    }
+  ],
+  "runner_returncode": 0,
+  "signal_count": 1,
+  "task_id": "c89ee8ee7dc7163c7962acebeb4b7f978b39094b6433301e2591b3c54e69a256",
+  "usage": {
+    "cached_tokens": null,
+    "input_tokens": 3017,
+    "output_tokens": 401,
+    "reasoning_tokens": null,
+    "total_tokens": 3418
+  },
+  "worker_id": "sambanova",
+  "workflow_run_id": "32355469754-1"
+}

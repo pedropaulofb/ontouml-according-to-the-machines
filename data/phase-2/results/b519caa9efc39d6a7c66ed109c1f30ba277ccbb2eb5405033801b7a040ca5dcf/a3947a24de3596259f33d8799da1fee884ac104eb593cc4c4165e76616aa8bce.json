@@ -1,0 +1,29 @@
+{
+  "aggregation": {
+    "source_event_sha256": "54cb3cf1d2375dbe54652c6887a866ea2de1c47a62226916eefe0fffb1626227",
+    "transport_filename": "a3947a24de3596259f33d8799da1fee884ac104eb593cc4c4165e76616aa8bce.json"
+  },
+  "attempt_finished_at": "2026-08-20T09:52:58Z",
+  "attempt_id": "a3947a24de3596259f33d8799da1fee884ac104eb593cc4c4165e76616aa8bce",
+  "attempt_started_at": "2026-08-20T09:52:58Z",
+  "event_version": 1,
+  "model": "openai/gpt-oss-120b",
+  "outcome": "not_called",
+  "output_artifact": null,
+  "output_sha256": null,
+  "provider": "groq",
+  "provider_attempts": 0,
+  "quota_observations": [],
+  "reason": "provider stopped after a provider-scoped failure",
+  "signal_count": 0,
+  "task_id": "b519caa9efc39d6a7c66ed109c1f30ba277ccbb2eb5405033801b7a040ca5dcf",
+  "usage": {
+    "cached_tokens": null,
+    "input_tokens": null,
+    "output_tokens": null,
+    "reasoning_tokens": null,
+    "total_tokens": null
+  },
+  "worker_id": "groq",
+  "workflow_run_id": "32355469754-1"
+}

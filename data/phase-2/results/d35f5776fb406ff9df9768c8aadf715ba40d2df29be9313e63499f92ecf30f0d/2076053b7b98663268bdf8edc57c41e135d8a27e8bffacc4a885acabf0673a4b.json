@@ -1,0 +1,71 @@
+{
+  "aggregation": {
+    "source_event_sha256": "d39688ee6cc3538ff6cf21b64eac576eff5e3f33f5e007a7533ac64784d3822c",
+    "transport_filename": "2076053b7b98663268bdf8edc57c41e135d8a27e8bffacc4a885acabf0673a4b.json"
+  },
+  "attempt_finished_at": "2026-08-20T09:47:35Z",
+  "attempt_id": "2076053b7b98663268bdf8edc57c41e135d8a27e8bffacc4a885acabf0673a4b",
+  "attempt_started_at": "2026-08-20T09:46:46Z",
+  "event_version": 1,
+  "model": "openai/gpt-oss-120b",
+  "outcome": "valid",
+  "output_artifact": "data/phase-2/results/d35f5776fb406ff9df9768c8aadf715ba40d2df29be9313e63499f92ecf30f0d/2076053b7b98663268bdf8edc57c41e135d8a27e8bffacc4a885acabf0673a4b.md",
+  "output_sha256": "9d61d60f683f8d73577395ced390c25278638978c586e858d188ec1385e72417",
+  "provider": "groq",
+  "provider_attempts": 1,
+  "quota_observations": [
+    {
+      "call_source": "signal",
+      "event_id": "01787219255047125551-f8c496fa-a32d-496d-b7cb-1af69bc2c028",
+      "failure": null,
+      "headers": {
+        "alt-svc": "h3=\":443\"; ma=86400",
+        "cache-control": "private, max-age=0, no-store, no-cache, must-revalidate",
+        "cf-cache-status": "DYNAMIC",
+        "cf-ray": "a2e07a328bd20dac-SJC",
+        "connection": "keep-alive",
+        "content-encoding": "gzip",
+        "content-type": "application/json",
+        "date": "Thu, 20 Aug 2026 09:47:35 GMT",
+        "server": "cloudflare",
+        "strict-transport-security": "max-age=15552000",
+        "transfer-encoding": "chunked",
+        "vary": "Origin",
+        "x-groq-region": "geg",
+        "x-ratelimit-limit-requests": "1000",
+        "x-ratelimit-limit-tokens": "8000",
+        "x-ratelimit-remaining-requests": "997",
+        "x-ratelimit-remaining-tokens": "32",
+        "x-ratelimit-reset-requests": "4m19.2s",
+        "x-ratelimit-reset-tokens": "59.76s",
+        "x-request-id": "req_01m0f936x4e7qs93z5rmv1vkqa"
+      },
+      "model": "openai/gpt-oss-120b",
+      "observed_at": "2026-08-20T09:47:35Z",
+      "outcome": "success",
+      "provider": "groq",
+      "request_sent": true,
+      "schema_version": 1,
+      "task_id": "d35f5776fb406ff9df9768c8aadf715ba40d2df29be9313e63499f92ecf30f0d",
+      "usage": {
+        "cached_tokens": null,
+        "input_tokens": 3328,
+        "output_tokens": 307,
+        "reasoning_tokens": 82,
+        "total_tokens": 3635
+      }
+    }
+  ],
+  "runner_returncode": 0,
+  "signal_count": 0,
+  "task_id": "d35f5776fb406ff9df9768c8aadf715ba40d2df29be9313e63499f92ecf30f0d",
+  "usage": {
+    "cached_tokens": null,
+    "input_tokens": 3328,
+    "output_tokens": 307,
+    "reasoning_tokens": 82,
+    "total_tokens": 3635
+  },
+  "worker_id": "groq",
+  "workflow_run_id": "32355469754-1"
+}

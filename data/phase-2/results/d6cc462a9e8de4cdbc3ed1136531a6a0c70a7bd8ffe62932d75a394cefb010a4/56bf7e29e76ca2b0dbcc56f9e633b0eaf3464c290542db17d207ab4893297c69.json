@@ -1,0 +1,71 @@
+{
+  "aggregation": {
+    "source_event_sha256": "c4140af0c5474ab492f36650ab49a1950a74f53ad10a8d7c0b81a6b81597eca2",
+    "transport_filename": "56bf7e29e76ca2b0dbcc56f9e633b0eaf3464c290542db17d207ab4893297c69.json"
+  },
+  "attempt_finished_at": "2026-08-20T09:48:11Z",
+  "attempt_id": "56bf7e29e76ca2b0dbcc56f9e633b0eaf3464c290542db17d207ab4893297c69",
+  "attempt_started_at": "2026-08-20T09:47:35Z",
+  "event_version": 1,
+  "model": "qwen/qwen3.6-27b",
+  "outcome": "valid",
+  "output_artifact": "data/phase-2/results/d6cc462a9e8de4cdbc3ed1136531a6a0c70a7bd8ffe62932d75a394cefb010a4/56bf7e29e76ca2b0dbcc56f9e633b0eaf3464c290542db17d207ab4893297c69.md",
+  "output_sha256": "8f0e45c8ce02a9e84c309299cee3bb2d9543693399c6b42afd14cabdd9488c55",
+  "provider": "groq",
+  "provider_attempts": 1,
+  "quota_observations": [
+    {
+      "call_source": "signal",
+      "event_id": "01787219291592811411-21d31f1d-8288-4d99-bed0-1c699283a190",
+      "failure": null,
+      "headers": {
+        "alt-svc": "h3=\":443\"; ma=86400",
+        "cache-control": "private, max-age=0, no-store, no-cache, must-revalidate",
+        "cf-cache-status": "DYNAMIC",
+        "cf-ray": "a2e07b0fcd06cf1e-SJC",
+        "connection": "keep-alive",
+        "content-encoding": "gzip",
+        "content-type": "application/json",
+        "date": "Thu, 20 Aug 2026 09:48:11 GMT",
+        "server": "cloudflare",
+        "strict-transport-security": "max-age=15552000",
+        "transfer-encoding": "chunked",
+        "vary": "Origin",
+        "x-groq-region": "yyc",
+        "x-ratelimit-limit-requests": "1000",
+        "x-ratelimit-limit-tokens": "8000",
+        "x-ratelimit-remaining-requests": "996",
+        "x-ratelimit-remaining-tokens": "33",
+        "x-ratelimit-reset-requests": "5m45.6s",
+        "x-ratelimit-reset-tokens": "59.752s",
+        "x-request-id": "req_01m0f949fxe92848r9t1y7z05m"
+      },
+      "model": "qwen/qwen3.6-27b",
+      "observed_at": "2026-08-20T09:48:11Z",
+      "outcome": "success",
+      "provider": "groq",
+      "request_sent": true,
+      "schema_version": 1,
+      "task_id": "d6cc462a9e8de4cdbc3ed1136531a6a0c70a7bd8ffe62932d75a394cefb010a4",
+      "usage": {
+        "cached_tokens": null,
+        "input_tokens": 2535,
+        "output_tokens": 242,
+        "reasoning_tokens": null,
+        "total_tokens": 2777
+      }
+    }
+  ],
+  "runner_returncode": 0,
+  "signal_count": 0,
+  "task_id": "d6cc462a9e8de4cdbc3ed1136531a6a0c70a7bd8ffe62932d75a394cefb010a4",
+  "usage": {
+    "cached_tokens": null,
+    "input_tokens": 2535,
+    "output_tokens": 242,
+    "reasoning_tokens": null,
+    "total_tokens": 2777
+  },
+  "worker_id": "groq",
+  "workflow_run_id": "32355469754-1"
+}

@@ -1,0 +1,82 @@
+{
+  "aggregation": {
+    "source_event_sha256": "0e6a0a0ac6942b23163662f85a663b5de82e48f449f15cdf4e6ff6c54796d3c7",
+    "transport_filename": "0839553c2badf33fa4cbd9c8fbcd7466853ec24c6c650c93a52b04b5307d7a78.json"
+  },
+  "attempt_finished_at": "2026-08-20T09:52:12Z",
+  "attempt_id": "0839553c2badf33fa4cbd9c8fbcd7466853ec24c6c650c93a52b04b5307d7a78",
+  "attempt_started_at": "2026-08-20T09:52:11Z",
+  "event_version": 1,
+  "model": "openai/gpt-oss-20b",
+  "outcome": "provider_failure",
+  "output_artifact": null,
+  "output_sha256": null,
+  "provider": "groq",
+  "provider_attempts": 1,
+  "quota_observations": [
+    {
+      "call_source": "signal",
+      "event_id": "01787219532429857270-bcb5d51d-e73f-42d3-ae16-a35fded7f1de",
+      "failure": {
+        "diagnostic": "Error code: 413 - {'error': {'message': 'Request too large for model `openai/gpt-oss-20b` in organization `org_01ktk8rfbaetzrgtaw0dmbg6ac` service tier `on_demand` on tokens per minute (TPM): Limit 8000, Requested 8612, please reduce your message size and try again. Need more tokens? Upgrade to Dev Tier today at https://console.groq.com/settings/billing', 'type': 'tokens', 'code': 'rate_limit_exceeded'}} {'error': {'message': 'Request too large for model `openai/gpt-oss-20b` in organization `org_01ktk8rfbaetzrgtaw0dmbg6ac` service tier `on_demand` on tokens per minute (TPM): Limit 8000, Requested 8612, please reduce your message size and try again. Need more tokens? Upgrade to Dev Tier today at https://console.groq.com/settings/billing', 'type': 'tokens', 'code': 'rate_limit_exceeded'}}",
+        "kind": "provider_policy_block",
+        "quota_group_ids": [],
+        "retry_after_seconds": 60,
+        "retry_not_before": "2026-08-20T09:53:12Z",
+        "retry_source": "provider-reported",
+        "retryable_immediately": false,
+        "scope": "provider"
+      },
+      "headers": {
+        "alt-svc": "h3=\":443\"; ma=86400",
+        "cache-control": "private, max-age=0, no-store, no-cache, must-revalidate",
+        "cf-cache-status": "DYNAMIC",
+        "cf-ray": "a2e080fd6b6122a2-SJC",
+        "connection": "keep-alive",
+        "content-length": "384",
+        "content-type": "application/json",
+        "date": "Thu, 20 Aug 2026 09:52:12 GMT",
+        "retry-after": "60",
+        "server": "cloudflare",
+        "set-cookie": "__cf_bm=aE.zUUAnzbUD5SQEBDigk2MSJ3uVckqLwLqbj8v9Sug-1787219532.3825142-1.0.1.1-MrVog46AE2q3QVJfMZhjgH2HSPbWv0mpg9sstVVZeAuzTSnE6O5MSXLQpmsjPBha5Cp5WaIee0oqDceZkoJHUPsQYFsVPQllBmmMDaGP2Zz4_p7rjL6QVxQ8lckNbGzh; HttpOnly; SameSite=None; Secure; Path=/; Domain=groq.com; Expires=Thu, 20 Aug 2026 10:22:12 GMT",
+        "strict-transport-security": "max-age=15552000",
+        "vary": "Origin",
+        "via": "1.1 google",
+        "x-groq-region": "dls",
+        "x-ratelimit-limit-requests": "1000",
+        "x-ratelimit-limit-tokens": "8000",
+        "x-ratelimit-remaining-requests": "989",
+        "x-ratelimit-remaining-tokens": "618",
+        "x-ratelimit-reset-requests": "15m50.4s",
+        "x-ratelimit-reset-tokens": "55.364s",
+        "x-request-id": "req_01m0f9bpkje2krpv6n70385wex"
+      },
+      "model": "openai/gpt-oss-20b",
+      "observed_at": "2026-08-20T09:52:12Z",
+      "outcome": "failure",
+      "provider": "groq",
+      "request_sent": true,
+      "schema_version": 1,
+      "task_id": "bb847dfdc9f94805fd2f7a42a36718007a2fbb52fd964797a6fd898061512d1d",
+      "usage": {
+        "cached_tokens": null,
+        "input_tokens": null,
+        "output_tokens": null,
+        "reasoning_tokens": null,
+        "total_tokens": null
+      }
+    }
+  ],
+  "runner_returncode": 1,
+  "signal_count": 0,
+  "task_id": "bb847dfdc9f94805fd2f7a42a36718007a2fbb52fd964797a6fd898061512d1d",
+  "usage": {
+    "cached_tokens": null,
+    "input_tokens": null,
+    "output_tokens": null,
+    "reasoning_tokens": null,
+    "total_tokens": null
+  },
+  "worker_id": "groq",
+  "workflow_run_id": "32355469754-1"
+}
