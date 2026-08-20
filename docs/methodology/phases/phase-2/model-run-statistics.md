@@ -8,13 +8,13 @@ The tables are updated from deterministic queue state, validated terminal events
 
 The current desired universe is 39 canonical pages × 2 LLM check agents × 25 configured provider-model slots = 1,950 tasks. Historical obsolete and retired identities remain stored, so total records may be higher.
 
-Statistics collection started on: `2026-08-19T20:23:54Z`
+Statistics collection started on: `2026-08-20T08:44:00Z`
 
 Counts shown on this page only include executions recorded since that start time.
 
 Rows retained in the current statistics state but outside the configured, non-retired registry are shown as `inactive`.
 
-Last generated: `2026-08-19T20:23:54Z`
+Last generated: `2026-08-20T08:44:00Z`
 
 ## Queue snapshot
 
@@ -71,34 +71,34 @@ Last generated: `2026-08-19T20:23:54Z`
 
 | Provider | Model | Completed | Desired | Completion | Oldest pending | Last success | Last attempt | Last quota observation |
 |---|---|---:|---:|---:|---|---|---|---|
-| `gemini` | `gemini-2.5-flash` | 0 | 78 | 0.00% | 2d 20h |  |  | `2026-08-19T19:27:30Z` |
+| `gemini` | `gemini-2.5-flash` | 0 | 78 | 0.00% | 3d 8h |  |  | `2026-08-19T19:27:30Z` |
 | `gemini` | `gemini-2.5-flash-lite` | 0 | 0 | 0.00% |  |  |  | `2026-08-19T19:27:30Z` |
 | `gemini` | `gemini-2.5-pro` | 0 | 0 | 0.00% |  |  |  | `2026-08-19T19:27:30Z` |
-| `gemini` | `gemini-3-flash-preview` | 0 | 78 | 0.00% | 2d 20h |  |  | `2026-08-19T19:27:30Z` |
-| `gemini` | `gemini-3.1-flash-lite` | 0 | 78 | 0.00% | 2d 20h |  |  | `2026-08-19T19:27:30Z` |
-| `gemini` | `gemini-3.5-flash` | 0 | 78 | 0.00% | 2d 20h |  |  | `2026-08-19T19:27:30Z` |
-| `gemini` | `gemini-3.5-flash-lite` | 0 | 78 | 0.00% | 2d 20h |  |  | `2026-08-19T19:27:30Z` |
-| `gemini` | `gemini-3.6-flash` | 1 | 78 | 1.28% | 2d 20h |  |  | `2026-08-19T19:27:30Z` |
-| `gemini` | `gemini-3.7-flash` | 0 | 78 | 0.00% | 1d 7h |  |  | `2026-08-19T19:27:30Z` |
-| `groq` | `openai/gpt-oss-120b` | 1 | 78 | 1.28% | 2d 20h |  |  | `2026-08-19T19:27:22Z` |
-| `groq` | `openai/gpt-oss-20b` | 0 | 78 | 0.00% | 2d 20h |  |  | `2026-08-19T19:27:22Z` |
-| `groq` | `qwen/qwen3.6-27b` | 0 | 78 | 0.00% | 2d 20h |  |  | `2026-08-19T19:27:22Z` |
-| `openrouter` | `google/gemma-4-26b-a4b-it:free` | 0 | 78 | 0.00% | 2d 20h |  |  | `2026-08-19T19:27:44Z` |
-| `openrouter` | `google/gemma-4-31b-it:free` | 0 | 78 | 0.00% | 2d 20h |  |  | `2026-08-19T19:27:44Z` |
+| `gemini` | `gemini-3-flash-preview` | 0 | 78 | 0.00% | 3d 8h |  |  | `2026-08-19T19:27:30Z` |
+| `gemini` | `gemini-3.1-flash-lite` | 0 | 78 | 0.00% | 3d 8h |  |  | `2026-08-19T19:27:30Z` |
+| `gemini` | `gemini-3.5-flash` | 0 | 78 | 0.00% | 3d 8h |  |  | `2026-08-19T19:27:30Z` |
+| `gemini` | `gemini-3.5-flash-lite` | 0 | 78 | 0.00% | 3d 8h |  |  | `2026-08-19T19:27:30Z` |
+| `gemini` | `gemini-3.6-flash` | 1 | 78 | 1.28% | 3d 8h |  |  | `2026-08-19T19:27:30Z` |
+| `gemini` | `gemini-3.7-flash` | 0 | 78 | 0.00% | 1d 20h |  |  | `2026-08-19T19:27:30Z` |
+| `groq` | `openai/gpt-oss-120b` | 1 | 78 | 1.28% | 3d 8h |  |  | `2026-08-19T19:27:22Z` |
+| `groq` | `openai/gpt-oss-20b` | 0 | 78 | 0.00% | 3d 8h |  |  | `2026-08-19T19:27:22Z` |
+| `groq` | `qwen/qwen3.6-27b` | 0 | 78 | 0.00% | 3d 8h |  |  | `2026-08-19T19:27:22Z` |
+| `openrouter` | `google/gemma-4-26b-a4b-it:free` | 0 | 78 | 0.00% | 3d 8h |  |  | `2026-08-19T19:27:44Z` |
+| `openrouter` | `google/gemma-4-31b-it:free` | 0 | 78 | 0.00% | 3d 8h |  |  | `2026-08-19T19:27:44Z` |
 | `openrouter` | `inclusionai/ling-3.0-flash:free` | 0 | 0 | 0.00% |  |  |  | `2026-08-19T19:27:44Z` |
-| `openrouter` | `nvidia/nemotron-3-super-120b-a12b:free` | 0 | 78 | 0.00% | 4h |  |  | `2026-08-19T19:27:44Z` |
-| `openrouter` | `nvidia/nemotron-3-ultra-550b-a55b:free` | 0 | 78 | 0.00% | 4h |  |  | `2026-08-19T19:27:44Z` |
-| `openrouter` | `nvidia/nemotron-3.5-lightning:free` | 0 | 78 | 0.00% | 11h |  |  | `2026-08-19T19:27:44Z` |
-| `openrouter` | `nvidia/nemotron-nano-9b-v2:free` | 0 | 78 | 0.00% | 2d 20h |  |  | `2026-08-19T19:27:44Z` |
-| `openrouter` | `openai/gpt-oss-20b:free` | 0 | 78 | 0.00% | 2d 20h |  |  | `2026-08-19T19:27:44Z` |
-| `openrouter` | `poolside/laguna-s-2.1:free` | 0 | 78 | 0.00% | 2d 20h |  |  | `2026-08-19T19:27:44Z` |
-| `openrouter` | `poolside/laguna-xs-2.1:free` | 0 | 78 | 0.00% | 2d 20h |  |  | `2026-08-19T19:27:44Z` |
-| `sambanova` | `DeepSeek-V3.1` | 0 | 78 | 0.00% | 2d 20h |  |  | `2026-08-19T19:27:26Z` |
-| `sambanova` | `DeepSeek-V3.2` | 0 | 78 | 0.00% | 2d 20h |  |  | `2026-08-19T19:27:26Z` |
-| `sambanova` | `Meta-Llama-3.3-70B-Instruct` | 0 | 78 | 0.00% | 2d 20h |  |  | `2026-08-19T19:27:26Z` |
-| `sambanova` | `MiniMax-M2.7` | 1 | 78 | 1.28% | 2d 20h |  |  | `2026-08-19T19:27:26Z` |
-| `sambanova` | `gemma-4-31B-it` | 0 | 78 | 0.00% | 2d 20h |  |  | `2026-08-19T19:27:26Z` |
-| `sambanova` | `gpt-oss-120b` | 0 | 78 | 0.00% | 2d 20h |  |  | `2026-08-19T19:27:26Z` |
+| `openrouter` | `nvidia/nemotron-3-super-120b-a12b:free` | 0 | 78 | 0.00% | 16h |  |  | `2026-08-19T19:27:44Z` |
+| `openrouter` | `nvidia/nemotron-3-ultra-550b-a55b:free` | 0 | 78 | 0.00% | 16h |  |  | `2026-08-19T19:27:44Z` |
+| `openrouter` | `nvidia/nemotron-3.5-lightning:free` | 0 | 78 | 0.00% | 23h |  |  | `2026-08-19T19:27:44Z` |
+| `openrouter` | `nvidia/nemotron-nano-9b-v2:free` | 0 | 78 | 0.00% | 3d 8h |  |  | `2026-08-19T19:27:44Z` |
+| `openrouter` | `openai/gpt-oss-20b:free` | 0 | 78 | 0.00% | 3d 8h |  |  | `2026-08-19T19:27:44Z` |
+| `openrouter` | `poolside/laguna-s-2.1:free` | 0 | 78 | 0.00% | 3d 8h |  |  | `2026-08-19T19:27:44Z` |
+| `openrouter` | `poolside/laguna-xs-2.1:free` | 0 | 78 | 0.00% | 3d 8h |  |  | `2026-08-19T19:27:44Z` |
+| `sambanova` | `DeepSeek-V3.1` | 0 | 78 | 0.00% | 3d 8h |  |  | `2026-08-19T19:27:26Z` |
+| `sambanova` | `DeepSeek-V3.2` | 0 | 78 | 0.00% | 3d 8h |  |  | `2026-08-19T19:27:26Z` |
+| `sambanova` | `Meta-Llama-3.3-70B-Instruct` | 0 | 78 | 0.00% | 3d 8h |  |  | `2026-08-19T19:27:26Z` |
+| `sambanova` | `MiniMax-M2.7` | 1 | 78 | 1.28% | 3d 8h |  |  | `2026-08-19T19:27:26Z` |
+| `sambanova` | `gemma-4-31B-it` | 0 | 78 | 0.00% | 3d 8h |  |  | `2026-08-19T19:27:26Z` |
+| `sambanova` | `gpt-oss-120b` | 0 | 78 | 0.00% | 3d 8h |  |  | `2026-08-19T19:27:26Z` |
 
 ## Token observations
 
@@ -283,8 +283,8 @@ This page does not store secrets, raw prompts, raw completions, or provider resp
       "spec": "openrouter:nvidia/nemotron-3.5-lightning:free"
     }
   ],
-  "collection_start_utc": "2026-08-19T20:23:54Z",
-  "generated_at": "2026-08-19T20:23:54Z",
+  "collection_start_utc": "2026-08-20T08:44:00Z",
+  "generated_at": "2026-08-20T08:44:00Z",
   "models": {
     "gemini:gemini-2.5-flash": {
       "cached_tokens": null,
@@ -311,7 +311,7 @@ This page does not store secrets, raw prompts, raw completions, or provider resp
       "last_success": "",
       "lifecycle_status": "stable",
       "model": "gemini-2.5-flash",
-      "oldest_pending_age_seconds": 246234,
+      "oldest_pending_age_seconds": 290640,
       "output_tokens": null,
       "output_tokens_known_events": 0,
       "policy_blocks": 0,
@@ -458,7 +458,7 @@ This page does not store secrets, raw prompts, raw completions, or provider resp
       "last_success": "",
       "lifecycle_status": "preview",
       "model": "gemini-3-flash-preview",
-      "oldest_pending_age_seconds": 246234,
+      "oldest_pending_age_seconds": 290640,
       "output_tokens": null,
       "output_tokens_known_events": 0,
       "policy_blocks": 0,
@@ -507,7 +507,7 @@ This page does not store secrets, raw prompts, raw completions, or provider resp
       "last_success": "",
       "lifecycle_status": "stable",
       "model": "gemini-3.1-flash-lite",
-      "oldest_pending_age_seconds": 246234,
+      "oldest_pending_age_seconds": 290640,
       "output_tokens": null,
       "output_tokens_known_events": 0,
       "policy_blocks": 0,
@@ -556,7 +556,7 @@ This page does not store secrets, raw prompts, raw completions, or provider resp
       "last_success": "",
       "lifecycle_status": "stable",
       "model": "gemini-3.5-flash",
-      "oldest_pending_age_seconds": 246234,
+      "oldest_pending_age_seconds": 290640,
       "output_tokens": null,
       "output_tokens_known_events": 0,
       "policy_blocks": 0,
@@ -605,7 +605,7 @@ This page does not store secrets, raw prompts, raw completions, or provider resp
       "last_success": "",
       "lifecycle_status": "stable",
       "model": "gemini-3.5-flash-lite",
-      "oldest_pending_age_seconds": 246234,
+      "oldest_pending_age_seconds": 290640,
       "output_tokens": null,
       "output_tokens_known_events": 0,
       "policy_blocks": 0,
@@ -654,7 +654,7 @@ This page does not store secrets, raw prompts, raw completions, or provider resp
       "last_success": "",
       "lifecycle_status": "stable",
       "model": "gemini-3.6-flash",
-      "oldest_pending_age_seconds": 246234,
+      "oldest_pending_age_seconds": 290640,
       "output_tokens": null,
       "output_tokens_known_events": 0,
       "policy_blocks": 0,
@@ -703,7 +703,7 @@ This page does not store secrets, raw prompts, raw completions, or provider resp
       "last_success": "",
       "lifecycle_status": "stable",
       "model": "gemini-3.7-flash",
-      "oldest_pending_age_seconds": 114834,
+      "oldest_pending_age_seconds": 159240,
       "output_tokens": null,
       "output_tokens_known_events": 0,
       "policy_blocks": 0,
@@ -752,7 +752,7 @@ This page does not store secrets, raw prompts, raw completions, or provider resp
       "last_success": "",
       "lifecycle_status": "production",
       "model": "openai/gpt-oss-120b",
-      "oldest_pending_age_seconds": 246234,
+      "oldest_pending_age_seconds": 290640,
       "output_tokens": null,
       "output_tokens_known_events": 0,
       "policy_blocks": 0,
@@ -801,7 +801,7 @@ This page does not store secrets, raw prompts, raw completions, or provider resp
       "last_success": "",
       "lifecycle_status": "production",
       "model": "openai/gpt-oss-20b",
-      "oldest_pending_age_seconds": 246234,
+      "oldest_pending_age_seconds": 290640,
       "output_tokens": null,
       "output_tokens_known_events": 0,
       "policy_blocks": 0,
@@ -850,7 +850,7 @@ This page does not store secrets, raw prompts, raw completions, or provider resp
       "last_success": "",
       "lifecycle_status": "preview",
       "model": "qwen/qwen3.6-27b",
-      "oldest_pending_age_seconds": 246234,
+      "oldest_pending_age_seconds": 290640,
       "output_tokens": null,
       "output_tokens_known_events": 0,
       "policy_blocks": 0,
@@ -899,7 +899,7 @@ This page does not store secrets, raw prompts, raw completions, or provider resp
       "last_success": "",
       "lifecycle_status": "free-variant",
       "model": "google/gemma-4-26b-a4b-it:free",
-      "oldest_pending_age_seconds": 246234,
+      "oldest_pending_age_seconds": 290640,
       "output_tokens": null,
       "output_tokens_known_events": 0,
       "policy_blocks": 0,
@@ -948,7 +948,7 @@ This page does not store secrets, raw prompts, raw completions, or provider resp
       "last_success": "",
       "lifecycle_status": "free-variant",
       "model": "google/gemma-4-31b-it:free",
-      "oldest_pending_age_seconds": 246234,
+      "oldest_pending_age_seconds": 290640,
       "output_tokens": null,
       "output_tokens_known_events": 0,
       "policy_blocks": 0,
@@ -1046,7 +1046,7 @@ This page does not store secrets, raw prompts, raw completions, or provider resp
       "last_success": "",
       "lifecycle_status": "free-variant",
       "model": "nvidia/nemotron-3-super-120b-a12b:free",
-      "oldest_pending_age_seconds": 15852,
+      "oldest_pending_age_seconds": 60258,
       "output_tokens": null,
       "output_tokens_known_events": 0,
       "policy_blocks": 0,
@@ -1095,7 +1095,7 @@ This page does not store secrets, raw prompts, raw completions, or provider resp
       "last_success": "",
       "lifecycle_status": "free-variant",
       "model": "nvidia/nemotron-3-ultra-550b-a55b:free",
-      "oldest_pending_age_seconds": 15852,
+      "oldest_pending_age_seconds": 60258,
       "output_tokens": null,
       "output_tokens_known_events": 0,
       "policy_blocks": 0,
@@ -1144,7 +1144,7 @@ This page does not store secrets, raw prompts, raw completions, or provider resp
       "last_success": "",
       "lifecycle_status": "free-variant",
       "model": "nvidia/nemotron-3.5-lightning:free",
-      "oldest_pending_age_seconds": 39834,
+      "oldest_pending_age_seconds": 84240,
       "output_tokens": null,
       "output_tokens_known_events": 0,
       "policy_blocks": 0,
@@ -1193,7 +1193,7 @@ This page does not store secrets, raw prompts, raw completions, or provider resp
       "last_success": "",
       "lifecycle_status": "free-variant",
       "model": "nvidia/nemotron-nano-9b-v2:free",
-      "oldest_pending_age_seconds": 246234,
+      "oldest_pending_age_seconds": 290640,
       "output_tokens": null,
       "output_tokens_known_events": 0,
       "policy_blocks": 0,
@@ -1242,7 +1242,7 @@ This page does not store secrets, raw prompts, raw completions, or provider resp
       "last_success": "",
       "lifecycle_status": "free-variant",
       "model": "openai/gpt-oss-20b:free",
-      "oldest_pending_age_seconds": 246234,
+      "oldest_pending_age_seconds": 290640,
       "output_tokens": null,
       "output_tokens_known_events": 0,
       "policy_blocks": 0,
@@ -1291,7 +1291,7 @@ This page does not store secrets, raw prompts, raw completions, or provider resp
       "last_success": "",
       "lifecycle_status": "free-variant",
       "model": "poolside/laguna-s-2.1:free",
-      "oldest_pending_age_seconds": 246234,
+      "oldest_pending_age_seconds": 290640,
       "output_tokens": null,
       "output_tokens_known_events": 0,
       "policy_blocks": 0,
@@ -1340,7 +1340,7 @@ This page does not store secrets, raw prompts, raw completions, or provider resp
       "last_success": "",
       "lifecycle_status": "free-variant",
       "model": "poolside/laguna-xs-2.1:free",
-      "oldest_pending_age_seconds": 246234,
+      "oldest_pending_age_seconds": 290640,
       "output_tokens": null,
       "output_tokens_known_events": 0,
       "policy_blocks": 0,
@@ -1389,7 +1389,7 @@ This page does not store secrets, raw prompts, raw completions, or provider resp
       "last_success": "",
       "lifecycle_status": "production",
       "model": "DeepSeek-V3.1",
-      "oldest_pending_age_seconds": 246234,
+      "oldest_pending_age_seconds": 290640,
       "output_tokens": null,
       "output_tokens_known_events": 0,
       "policy_blocks": 0,
@@ -1438,7 +1438,7 @@ This page does not store secrets, raw prompts, raw completions, or provider resp
       "last_success": "",
       "lifecycle_status": "preview",
       "model": "DeepSeek-V3.2",
-      "oldest_pending_age_seconds": 246234,
+      "oldest_pending_age_seconds": 290640,
       "output_tokens": null,
       "output_tokens_known_events": 0,
       "policy_blocks": 0,
@@ -1487,7 +1487,7 @@ This page does not store secrets, raw prompts, raw completions, or provider resp
       "last_success": "",
       "lifecycle_status": "production",
       "model": "Meta-Llama-3.3-70B-Instruct",
-      "oldest_pending_age_seconds": 246234,
+      "oldest_pending_age_seconds": 290640,
       "output_tokens": null,
       "output_tokens_known_events": 0,
       "policy_blocks": 0,
@@ -1536,7 +1536,7 @@ This page does not store secrets, raw prompts, raw completions, or provider resp
       "last_success": "",
       "lifecycle_status": "production",
       "model": "MiniMax-M2.7",
-      "oldest_pending_age_seconds": 246234,
+      "oldest_pending_age_seconds": 290640,
       "output_tokens": null,
       "output_tokens_known_events": 0,
       "policy_blocks": 0,
@@ -1585,7 +1585,7 @@ This page does not store secrets, raw prompts, raw completions, or provider resp
       "last_success": "",
       "lifecycle_status": "preview",
       "model": "gemma-4-31B-it",
-      "oldest_pending_age_seconds": 246234,
+      "oldest_pending_age_seconds": 290640,
       "output_tokens": null,
       "output_tokens_known_events": 0,
       "policy_blocks": 0,
@@ -1634,7 +1634,7 @@ This page does not store secrets, raw prompts, raw completions, or provider resp
       "last_success": "",
       "lifecycle_status": "production",
       "model": "gpt-oss-120b",
-      "oldest_pending_age_seconds": 246234,
+      "oldest_pending_age_seconds": 290640,
       "output_tokens": null,
       "output_tokens_known_events": 0,
       "policy_blocks": 0,
