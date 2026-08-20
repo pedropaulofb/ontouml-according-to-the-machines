@@ -1,0 +1,29 @@
+{
+  "aggregation": {
+    "source_event_sha256": "8f318b9ae33ad906e688282f4f28c35717bf6b2a581f9616f1e8125ac489af56",
+    "transport_filename": "2a446afdd54b6b873fdf07fafa8f4c9aa9a79795908b3fc2ebc0c47e51d533fe.json"
+  },
+  "attempt_finished_at": "2026-08-20T20:05:05Z",
+  "attempt_id": "2a446afdd54b6b873fdf07fafa8f4c9aa9a79795908b3fc2ebc0c47e51d533fe",
+  "attempt_started_at": "2026-08-20T20:05:05Z",
+  "event_version": 1,
+  "model": "poolside/laguna-s-2.1:free",
+  "outcome": "not_called",
+  "output_artifact": null,
+  "output_sha256": null,
+  "provider": "openrouter",
+  "provider_attempts": 0,
+  "quota_observations": [],
+  "reason": "required quota group is exhausted",
+  "signal_count": 0,
+  "task_id": "573f108db2cb79995adce9e769bf3d9c2ebeb08df3a942b481573324101fe060",
+  "usage": {
+    "cached_tokens": null,
+    "input_tokens": null,
+    "output_tokens": null,
+    "reasoning_tokens": null,
+    "total_tokens": null
+  },
+  "worker_id": "openrouter",
+  "workflow_run_id": "32411998705-1"
+}
