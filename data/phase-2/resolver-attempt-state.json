@@ -1,6 +1,30 @@
 {
-  "attempts": {},
-  "last_updated_at": "2026-08-17T00:00:00Z",
-  "processed_event_ids": [],
+  "attempts": {
+    "4fbb54d842c66ee3fd1e3e99376e6bb46bc13f284fa12e7b44aabbde30f4167e": {
+      "attempt_id": "4fbb54d842c66ee3fd1e3e99376e6bb46bc13f284fa12e7b44aabbde30f4167e",
+      "failure_kind": "execution_configuration_block",
+      "first_observed_at": "2026-08-20T12:57:20Z",
+      "identity": {
+        "active_signal_snapshot_sha256": "1654f653075bdca929345ae3d6ca8f8b00290a426019ec9bf689c207ca1bb29d",
+        "agent": "language-style-checker",
+        "identity_version": "resolver-attempt-v1",
+        "issue_number": 552,
+        "model": "gemini-3.5-flash",
+        "page_content_sha256": "1f15dadd98804f89e9ad828135fcfa23651ab2feb531dced8a70d460836d82aa",
+        "provider": "gemini",
+        "request_config_sha256": "36fbc458b5923b456b7a90508601d2126d566e63e67532f4a4dce0d050d1aa23",
+        "resolver_prompt_sha256": "9c2be8b13a251b4db3ac495d6f6397eee32e13d16c25705ade83b40752aaa0c6",
+        "resolver_validator_version": "resolver-plan-validator-v1.2.2"
+      },
+      "last_event_id": "01787230640667959865-ba0709d0-2953-4c6f-9930-d4e21deeccdf",
+      "last_observed_at": "2026-08-20T12:57:20Z",
+      "request_sent": false,
+      "status": "not_called"
+    }
+  },
+  "last_updated_at": "2026-08-20T12:57:20Z",
+  "processed_event_ids": [
+    "01787230640667959865-ba0709d0-2953-4c6f-9930-d4e21deeccdf"
+  ],
   "schema_version": 1
 }
