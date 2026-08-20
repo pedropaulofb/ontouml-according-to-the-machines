@@ -1,292 +1,176 @@
-# Phase 2 — LLM Provider Support
+# Phase 2 — Provider Registry
 
-← Previous: [Automated Signal Resolver](automated-resolver.md) | [Phase 2 index](index.md) | Next: [Signals and Issues](signals-and-issues.md) →
+← Previous: [Automated Resolver](automated-resolver.md) | [Phase 2 index](index.md) | Next: [Signals and Issues](signals-and-issues.md) →
 
-## LLM provider support
+## Authority and scope
 
-The supported provider-adapter set in `run_check_agent.py` for signal generation is:
-
-```text
-groq
-gemini
-cerebras
-sambanova
-openrouter
-```
-
-The current scheduled signal-generation rotation does **not** include Groq. It contains these seven active provider/model slots:
+The only authoritative configured-slot list is:
 
 ```text
-0 cerebras:gpt-oss-120b
-1 sambanova:DeepSeek-V3.1
-2 openrouter:nvidia/nemotron-3-ultra-550b-a55b:free
-3 gemini:gemini-3.1-flash-lite
-4 cerebras:zai-glm-4.7
-5 sambanova:Meta-Llama-3.3-70B-Instruct
-6 openrouter:poolside/laguna-m.1:free
+config/phase-2/provider-models.json
 ```
 
-Groq support code remains available for explicit future or manual use, but no Groq model is currently part of the active scheduled signal-generation rotation.
+`scripts/phase-2/provider_model_registry.py` validates that file before provider execution. A slot is the exact combination of provider and model; the same underlying model exposed by two providers is two independent slots. The current registry has configuration version `phase-2-recalibration-v6`, 25 configured slots, and two explicitly retired Gemini slots retained for history.
 
-The automated resolver supports:
+The standard signal-generation entry points support four providers:
+
+| Provider | Adapter | Required secret | Current configured slots |
+|---|---|---|---:|
+| `sambanova` | `scripts/phase-2/providers/sambanova.py` | `SAMBANOVA_API_KEY` | 6 |
+| `groq` | `scripts/phase-2/providers/groq.py` | `GROQ_API_KEY` | 3 |
+| `gemini` | `scripts/phase-2/providers/gemini.py` | `GEMINI_API_KEY` | 7 |
+| `openrouter` | `scripts/phase-2/providers/openrouter.py` | `OPENROUTER_API_KEY` | 9 |
+
+An unused provider file is not executable support. Cerebras is not registered by the runner, batch runner, scheduler, workflow dispatch, or resolver and has no required workflow secret. Historical Cerebras statistics remain visible only as inactive/retired records.
+
+## Configured provider-model slots
+
+Each slot below appears once in registry order. Lifecycle, reasoning, request settings, free-policy evidence, and quota-group membership are versioned in the registry.
+
+| Slot | Provider | Exact model ID | Lifecycle | Free-policy basis |
+|---:|---|---|---|---|
+| 1 | `sambanova` | `MiniMax-M2.7` | production | confirmed free account |
+| 2 | `sambanova` | `DeepSeek-V3.1` | production | confirmed free account |
+| 3 | `sambanova` | `Meta-Llama-3.3-70B-Instruct` | production | confirmed free account |
+| 4 | `sambanova` | `gpt-oss-120b` | production | confirmed free account |
+| 5 | `sambanova` | `DeepSeek-V3.2` | preview | confirmed free account |
+| 6 | `sambanova` | `gemma-4-31B-it` | preview | confirmed free account |
+| 7 | `groq` | `openai/gpt-oss-120b` | production | confirmed free account |
+| 8 | `groq` | `openai/gpt-oss-20b` | production | confirmed free account |
+| 9 | `groq` | `qwen/qwen3.6-27b` | preview | confirmed free account |
+| 10 | `gemini` | `gemini-3.6-flash` | stable | confirmed no-charge project |
+| 11 | `gemini` | `gemini-3.5-flash` | stable | confirmed no-charge project |
+| 12 | `gemini` | `gemini-3.5-flash-lite` | stable | confirmed no-charge project |
+| 13 | `gemini` | `gemini-3.1-flash-lite` | stable | confirmed no-charge project |
+| 14 | `gemini` | `gemini-3-flash-preview` | preview | confirmed no-charge project |
+| 16 | `gemini` | `gemini-2.5-flash` | stable | confirmed no-charge project |
+| 18 | `openrouter` | `nvidia/nemotron-3-ultra-550b-a55b:free` | free variant | live zero-price metadata required |
+| 19 | `openrouter` | `nvidia/nemotron-3-super-120b-a12b:free` | free variant | live zero-price metadata required |
+| 20 | `openrouter` | `google/gemma-4-26b-a4b-it:free` | free variant | live zero-price metadata required |
+| 21 | `openrouter` | `google/gemma-4-31b-it:free` | free variant | live zero-price metadata required |
+| 22 | `openrouter` | `poolside/laguna-s-2.1:free` | free variant | live zero-price metadata required |
+| 23 | `openrouter` | `poolside/laguna-xs-2.1:free` | free variant | live zero-price metadata required |
+| 25 | `openrouter` | `openai/gpt-oss-20b:free` | free variant | live zero-price metadata required |
+| 26 | `openrouter` | `nvidia/nemotron-nano-9b-v2:free` | free variant | live zero-price metadata required |
+| 27 | `gemini` | `gemini-3.7-flash` | stable | published free Standard tier and confirmed no-charge project |
+| 28 | `openrouter` | `nvidia/nemotron-3.5-lightning:free` | free variant | live zero-price metadata required |
+
+Slots 15 (`gemini-2.5-pro`) and 17 (`gemini-2.5-flash-lite`) are `retired`. Both exact endpoints returned provider model-unavailable responses during acceptance testing. Their task and statistics records remain historical; neither is executable. Google lists [`gemini-3.7-flash`](https://ai.google.dev/gemini-api/docs/models) as a current model and publishes free Standard-tier input and output in its [Gemini API pricing](https://ai.google.dev/gemini-api/docs/pricing), so slot 27 is its feasible free replacement. The provider-suggested `gemini-3.1-pro-preview` replacement is not configured because its Standard tier has no free input or output. `gemini-3.5-flash-lite`, already configured in slot 12, is the active Flash-Lite replacement.
+
+Slot 24 (`inclusionai/ling-3.0-flash:free`) is also `retired`: acceptance diagnostics found that OpenRouter now exposes only its paid variant. Slot 28 (`nvidia/nemotron-3.5-lightning:free`) replaces it with an exact current `:free` endpoint.
+
+Display or validate the executable list without making a provider call:
+
+```bash
+python scripts/phase-2/provider_model_registry.py validate
+python scripts/phase-2/provider_model_registry.py list-specs
+```
+
+## Free-only policy
+
+No Phase 2 path may make a paid LLM request. This includes scheduled, manual, local, branch, `generate`, `dry-run`, signal-generation, resolver-primary, and resolver-fallback calls.
+
+- SambaNova uses the maintainer-confirmed free account. A billing, credit, or payment-required response blocks the affected capacity.
+- Groq uses free-plan capacity and does not request a paid service tier.
+- Gemini uses a no-charge API project and does not enable paid grounding, paid tools, or billing-backed fallback.
+- OpenRouter requires the exact `:free` identifier. Before every call, including diagnostics, `free_policy.py` fetches current model metadata and fails closed unless prompt and completion prices, plus any present request and internal-reasoning prices, are zero. Provider fallbacks are disabled.
+
+Billing or payment diagnostics become `blocked_provider_policy`. Authentication, authorization, and deterministic request-configuration failures become `blocked_execution_configuration`. Neither category receives automatic transient retries. A failed or inconclusive free-policy check never authorizes a call.
+
+## Quota groups and certainty
+
+Every slot belongs to both a shared provider/account/project group and a model-specific group. All required groups must be eligible before the scheduler leases a task. The current state is stored in:
 
 ```text
-groq
-gemini
-cerebras
+data/phase-2/quota-state.json
 ```
 
-The default scheduled resolver path is:
+Quota state is the best-known operational belief, not a guarantee that the next call will succeed. Each observation records its source and whether it is estimated:
 
-```text
-primary: gemini:gemini-3.5-flash
-fallback for recognized primary unavailability: cerebras:gpt-oss-120b
+- provider response headers and provider usage metadata are observations from the provider;
+- repository-managed request and token counters are exact for the events that were successfully persisted, but may omit out-of-band use;
+- configured limits are known configuration, not proof of remaining capacity;
+- `remaining_estimate` is explicitly estimated;
+- `unknown` means the provider has not supplied enough information;
+- a provider quota response such as `429` or `RESOURCE_EXHAUSTED` is authoritative and updates cooldown state.
+
+OpenRouter's shared free-account remaining count is estimated from the configured daily allowance and locally persisted calls because ordinary responses do not reliably expose the remaining free count. The default is the conservative 50-request daily allowance unless the account's actual entitlement is deliberately configured.
+
+Validate or inspect eligibility without a provider call:
+
+```bash
+python scripts/phase-2/quota_state.py validate
+python scripts/phase-2/quota_state.py eligibility --provider groq --model openai/gpt-oss-120b
 ```
 
-| Provider | Signal-generation adapter | Resolver implementation | API key |
-|---|---|---|---|
-| `groq` | `scripts/phase-2/providers/groq.py` | `scripts/phase-2/resolve_signal_issue.py` | `GROQ_API_KEY` |
-| `gemini` | `scripts/phase-2/providers/gemini.py` | `scripts/phase-2/resolve_signal_issue.py` | `GEMINI_API_KEY` in GitHub Actions; `GEMINI_API_KEY` or `GOOGLE_API_KEY` locally |
-| `cerebras` | `scripts/phase-2/providers/cerebras.py` | `scripts/phase-2/resolve_signal_issue.py` | `CEREBRAS_API_KEY` |
-| `sambanova` | `scripts/phase-2/providers/sambanova.py` | not supported by the automated resolver | `SAMBANOVA_API_KEY` |
-| `openrouter` | `scripts/phase-2/providers/openrouter.py` | not supported by the automated resolver | `OPENROUTER_API_KEY` |
+`eligibility` returns a nonzero exit code when the slot is not eligible.
 
-### Groq provider
+## Adapter behavior
 
-Groq was the original provider for Phase 2 LLM check-agent generation.
+All adapters require the exact provider-model slot to be executable in the registry and reject completion caps above the registered value.
 
-The Groq adapter calls the Groq chat-completions API and uses:
+### Groq
 
-```text
-GROQ_API_KEY
+`scripts/phase-2/providers/groq.py` uses the Groq chat-completions SDK and `GROQ_API_KEY`. Registry reasoning policy is converted to provider request arguments, response usage and rate-limit headers are recorded when available, and reasoning output is excluded where configured.
+
+### Gemini
+
+`scripts/phase-2/providers/gemini.py` uses the Google GenAI SDK and `client.models.generate_content(...)`. It reads `GOOGLE_API_KEY` or `GEMINI_API_KEY`; `GEMINI_API_KEY` is the canonical workflow secret. Thinking configuration is derived from the registered model family and reasoning policy, and thought parts are excluded from the final signal comment.
+
+### SambaNova
+
+`scripts/phase-2/providers/sambanova.py` uses the shared OpenAI-compatible utility, requires `SAMBANOVA_API_KEY`, and defaults to `https://api.sambanova.ai/v1`. `SAMBANOVA_BASE_URL` may override that endpoint in local or alternate environments. Provider-specific reasoning settings come from the registered slot.
+
+### OpenRouter
+
+`scripts/phase-2/providers/openrouter.py` uses the shared OpenAI-compatible utility, requires `OPENROUTER_API_KEY`, and calls `https://openrouter.ai/api/v1`. Before constructing the completion request, it applies the live free-price check described above. Registered request configuration disables fallbacks and excludes reasoning output where required. Slots 18 and 19 use a 512-token reasoning budget because effort-only controls still exhausted most of the 3000-token completion cap during diagnostic runs; both exact OpenRouter endpoints expose direct reasoning-token budgeting. Slot 19 remains configured and non-retired, but its runtime slot is `blocked_execution_configuration` after the bounded-reasoning diagnostic still returned analysis-like prose instead of a validator-compliant Phase 2 report. The runtime block stops ordinary queue scheduling while leaving the registry default eligible so an explicit compatibility diagnostic can still target the exact slot. Re-enabling ordinary scheduling requires a successful explicit compatibility diagnostic. If recovery changes request configuration, normal task-identity reconciliation applies.
+
+## Provider retry and failure classification
+
+Signal-generation adapters make one initial request plus at most one retry after 15 seconds for a genuinely transient failure. Recognized transient diagnostics include timeouts, connection failures, overload/capacity messages, and HTTP 500, 502, 503, or 504 responses.
+
+Quota, rate-limit, billing/policy, authentication, authorization, model-not-found, deterministic invalid-request, context-length, and validator failures do not receive this immediate transient retry. Provider retry never selects an alternate provider-model slot. The queue aggregator applies the resulting classified event to task and quota state.
+
+Resolver calls are narrower: `resolve_signal_issue.py` and the workflow default to one provider attempt. The workflow may then make the single Groq fallback described below; invalid plans and nonavailability failures do not receive another provider call.
+
+## Retry and slot lifecycle
+
+Runtime availability is separate from permanent configuration:
+
+- `eligible` slots may be scheduled when all quota groups permit it;
+- `temporarily_unavailable` slots wait until `retry_not_before`, then authorize exactly one recheck task;
+- `blocked_provider_policy` requires successful, explicit free-policy revalidation;
+- `blocked_execution_configuration` requires sanitized diagnosis and successful credential/request validation;
+- a configured slot retains its desired tasks while runtime-blocked;
+- a slot becomes `retired` only through an explicit registry change, verified official removal, or an explicit maintainer decision.
+
+Retirement preserves task and statistics history. If a request-configuration, prompt, page, agent, or model change alters task identity, reconciliation marks the old identity `obsolete` and creates a new pending identity. It must not manually recycle the old identity.
+
+## Resolver providers
+
+The scheduled resolver uses Gemini `gemini-3.5-flash` as primary and Groq `openai/gpt-oss-120b` as its one-shot fallback. Groq is attempted only after a recognized Gemini provider-unavailability failure and only when the same content-addressed resolver attempt remains eligible. Invalid Gemini plans and other failure classes do not trigger the fallback.
+
+Resolver primary and fallback calls emit quota events into the same quota state used by signal scheduling. Eligible resolver work has priority on the two shared slots; when there is no eligible resolver work, their remaining free capacity is available to signal generation. Content-addressed resolver-attempt state prevents unchanged terminal attempts from being called repeatedly.
+
+See [Automated Resolver](automated-resolver.md) for exact plan-validation, edit, PR, and issue behavior.
+
+## Adding or retiring a slot
+
+Provider changes are configuration changes, not ad hoc command-line substitutions:
+
+1. update `config/phase-2/provider-models.json`, preserving deterministic slot order and incrementing the configuration or request-configuration version as appropriate;
+2. for a removal, set `configuration_status` to `retired` or remove it only through the documented migration while preserving history;
+3. validate the registry;
+4. reconcile task state so unchanged desired identities are preserved, superseded identities become obsolete, retired identities become retired, and new identities start pending;
+5. initialize or update quota-state records for new quota groups;
+6. run the complete Phase 2 tests before production use.
+
+```bash
+python scripts/phase-2/provider_model_registry.py validate && python scripts/phase-2/task_reconciler.py reconcile && python scripts/phase-2/task_reconciler.py validate && python scripts/phase-2/quota_state.py validate
 ```
 
-Direct `run_check_batch.py` execution requires explicit provider/model selection:
-
-```text
---provider <provider>
---model <model>
-```
-
-The canonical scheduled signal-generation workflow no longer includes `groq:llama-3.3-70b-versatile` and does not add a replacement Groq model. Groq can be used again only if a future explicit model selection is added and validated.
-
-The automated resolver retains direct Groq support for manual execution. Groq is not the configured scheduled fallback.
-
-### Gemini provider
-
-The Gemini signal-generation adapter is:
-
-```text
-scripts/phase-2/providers/gemini.py
-```
-
-It uses the Google GenAI SDK:
-
-```python
-from google import genai
-from google.genai import types
-```
-
-It calls Gemini through:
-
-```python
-client.models.generate_content(...)
-```
-
-Current scheduled Gemini signal-generation model:
-
-```text
-gemini-3.1-flash-lite
-```
-
-`gemini-2.5-flash` remains supported by provider-level reduced-thinking configuration and may be selected manually, but it is not the current scheduled Gemini signal-generation default or automated resolver fallback.
-
-Signal-generation runs use a workflow default of:
-
-```text
---max-completion-tokens 3000
-```
-
-The automated resolver remains separate. Its scheduled primary invocation uses:
-
-```text
-provider: gemini
-model: gemini-3.5-flash
-max_completion_tokens: 8000
-provider_max_attempts: 1
-```
-
-The Gemini resolver call uses reduced-thinking configuration:
-
-| Model family | Thinking configuration |
-|---|---|
-| `gemini-2.5-flash*` | `types.ThinkingConfig(thinking_budget=0)` |
-| `gemini-3.*` | `types.ThinkingConfig(thinking_level="low")` |
-
-This setting improves strict-format output reliability but does not replace deterministic validation.
-
-If the primary Gemini resolver call fails with recognized provider-unavailability or 503-like diagnostics, the GitHub Actions workflow invokes the configured Cerebras fallback for the same issue. Invalid Gemini plans remain ordinary plan-validation failures and do not trigger the provider fallback.
-
-### Cerebras provider
-
-The Cerebras signal-generation adapter is:
-
-```text
-scripts/phase-2/providers/cerebras.py
-```
-
-It uses the shared OpenAI-compatible provider utility:
-
-```text
-scripts/phase-2/providers/openai_compatible.py
-```
-
-Current scheduled Cerebras signal-generation models:
-
-```text
-gpt-oss-120b
-zai-glm-4.7
-```
-
-The signal-generation adapter requires `CEREBRAS_API_KEY` and defaults to:
-
-```text
-https://api.cerebras.ai/v1
-```
-
-`CEREBRAS_BASE_URL` may override the base URL in local or alternate environments. For `zai-glm-4.7`, the signal-generation adapter sends the documented GLM extra body configuration used by the repository.
-
-#### Cerebras automated resolver support
-
-The automated resolver uses the already installed `openai` SDK directly against the Cerebras OpenAI-compatible endpoint. No additional runtime dependency is required. The Cerebras resolver path currently supports only `gpt-oss-120b`, because its low-reasoning request controls are model-specific.
-
-The scheduled fallback configuration is:
-
-```text
-provider: cerebras
-model: gpt-oss-120b
-reasoning_effort: low
-max_completion_tokens: 6000
-temperature: 0
-provider_max_attempts: 1
-response format: JSON object
-```
-
-The fallback requires:
-
-```text
-CEREBRAS_API_KEY
-```
-
-The fallback is activated only when:
-
-1. the selected primary provider is Gemini;
-2. the primary resolver call fails;
-3. a resolver provider-error artifact exists;
-4. that artifact matches configured provider-unavailability or 503-like diagnostics.
-
-The workflow preserves the primary provider error before starting the Cerebras call. Plan parsing, deterministic normalization, exact-edit validation, and all repository mutations continue to use the existing resolver logic.
-
-The workflow fallback model is fixed to `gpt-oss-120b`; it is not exposed as a generic Cerebras-model override. The resolver constructs the OpenAI-compatible client with `max_retries=0`, so `provider_max_attempts: 1` performs one initial Cerebras API request without additional OpenAI SDK retry attempts.
-
-### SambaNova provider
-
-The SambaNova signal-generation adapter is:
-
-```text
-scripts/phase-2/providers/sambanova.py
-```
-
-It also uses the shared OpenAI-compatible provider utility.
-
-Current scheduled SambaNova signal-generation models:
-
-```text
-DeepSeek-V3.1
-Meta-Llama-3.3-70B-Instruct
-```
-
-The adapter requires `SAMBANOVA_API_KEY` and defaults to:
-
-```text
-https://api.sambanova.ai/v1
-```
-
-`SAMBANOVA_BASE_URL` may override the base URL in local or alternate environments.
-
-SambaNova is not currently supported by the automated resolver.
-
-### OpenRouter provider
-
-The OpenRouter signal-generation adapter is:
-
-```text
-scripts/phase-2/providers/openrouter.py
-```
-
-It also uses the shared OpenAI-compatible provider utility.
-
-Current scheduled OpenRouter signal-generation models:
-
-```text
-nvidia/nemotron-3-ultra-550b-a55b:free
-poolside/laguna-m.1:free
-```
-
-The adapter requires `OPENROUTER_API_KEY` and currently allowlists only these two free OpenRouter model IDs. The scheduled workflow also validates selected OpenRouter models against this allowlist.
-
-OpenRouter is not currently supported by the automated resolver.
-
-### Signal-generation provider retry and failure-classification behavior
-
-The signal-generation providers include provider-level retry handling for transient provider/API failures.
-
-This retry and failure-classification behavior does not select an alternate provider/model slot.
-
-The configured provider retry delay for signal-generation providers is:
-
-```text
-15 seconds
-```
-
-Signal-generation providers make the initial request plus at most one retry for genuinely transient provider-side failures. Quota and rate-limit diagnostics are recognized separately and are not retried.
-
-Current transient detection is marker-based and recognizes diagnostics containing values such as:
-
-```text
-500
-502
-503
-504
-service_unavailable
-temporarily unavailable
-timeout
-too busy
-overloaded
-capacity
-try again later
-unavailable
-```
-
-Validation failures are not provider retries. A structurally invalid model output is treated as a rejected check-agent output or resolver plan-validation failure, not as a transient provider failure.
-
-### Automated resolver provider behavior
-
-The automated resolver uses provider calls differently from scheduled signal generation.
-
-For resolver runs:
-
-- `resolve_signal_issue.py` defaults to `--provider-max-attempts 1`;
-- the scheduled resolver workflow also passes `--provider-max-attempts 1`;
-- no resolver provider retry or backoff loop occurs in the scheduled workflow;
-- the default scheduled fallback is one cross-provider Cerebras `gpt-oss-120b` call after recognized primary Gemini provider unavailability;
-- the Cerebras call uses JSON-object response mode, low reasoning effort, and a 6,000-token completion cap;
-- invalid model plans remain validation failures and do not trigger another provider;
-- non-provider failures remain fatal;
-- fallback failures remain fatal and observable.
-
-This distinction is important: scheduled signal generation may use provider-level transient retry and nonfatal provider-failure classification, while automated signal resolution uses a narrower primary-model/cross-provider-fallback sequence and fails normally outside that sequence.
+OpenRouter additions are not executable unless the exact live metadata proves the route is free at call time.
 
 ---
 
-← Previous: [Automated Signal Resolver](automated-resolver.md) | [Phase 2 index](index.md) | Next: [Signals and Issues](signals-and-issues.md) →
+← Previous: [Automated Resolver](automated-resolver.md) | [Phase 2 index](index.md) | Next: [Signals and Issues](signals-and-issues.md) →

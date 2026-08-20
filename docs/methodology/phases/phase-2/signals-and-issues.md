@@ -181,8 +181,8 @@ Machine-readable signal data is currently agent- and version-dependent.
 Current status:
 
 - `page-structure-checker` emits YAML blocks because its output is generated deterministically by Python;
-- `page-hygiene-checker-v1.0.3` is Markdown-only;
-- `language-style-checker-v1.0.3` is Markdown-only;
+- the shared signal contract plus `page-hygiene-checker-v1.1.0` is Markdown-only;
+- the shared signal contract plus `language-style-checker-v1.1.0` is Markdown-only;
 - automated resolver prompts emit strict JSON resolution plans;
 - resolver plans are written under `.tmp/phase-2/resolver/`;
 - machine-readable signal blocks for LLM-based check-agent comments are deferred to a later prompt version or later tooling.
@@ -221,7 +221,7 @@ docs/stereotypes/relations/material.md -> relations/material
 
 All provider/model outputs for the same page and same check agent are posted to the same open issue.
 
-For example, if `page-hygiene-checker` runs with Cerebras and Gemini on `docs/stereotypes/classes/event.md`, both model reports are comments under:
+For example, if `page-hygiene-checker` runs with Groq and Gemini on `docs/stereotypes/classes/event.md`, both model reports are comments under:
 
 ```text
 Check signal: page-hygiene-checker: classes/event

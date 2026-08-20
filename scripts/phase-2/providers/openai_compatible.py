@@ -2,10 +2,12 @@
 
 from __future__ import annotations
 
+import re
 import time
 from typing import Any
 
 from openai import OpenAI
+from provider_runtime import classify_provider_failure, record_provider_event, record_provider_failure
 
 SYSTEM_MESSAGE = (
     "Return only the GitHub issue comment requested by the prompt. "
@@ -28,6 +30,19 @@ QUOTA_OR_RATE_LIMIT_MARKERS = (
     "tokens per minute",
     "tpm",
     "rpm",
+)
+
+PROVIDER_POLICY_BLOCK_MARKERS = (
+    "402",
+    "billing",
+    "payment required",
+    "payment method",
+    "insufficient credit",
+    "insufficient funds",
+    "purchase",
+    "paygo",
+    "pay-as-you-go",
+    "paid tier",
 )
 
 TRANSIENT_ERROR_MARKERS = (
@@ -88,6 +103,8 @@ def _is_quota_or_rate_limit_error(exc: Exception) -> bool:
 
 def _is_retryable_exception(exc: Exception) -> bool:
     diagnostic = _diagnostic(exc)
+    if any(marker in diagnostic for marker in PROVIDER_POLICY_BLOCK_MARKERS):
+        return False
     if _is_quota_or_rate_limit_error(exc):
         return False
     if any(marker in diagnostic for marker in NON_RETRYABLE_ERROR_MARKERS):
@@ -98,19 +115,21 @@ def _is_retryable_exception(exc: Exception) -> bool:
 def _provider_error_kind(exc: Exception) -> str:
     """Return a stable error category for workflow-level failure handling."""
     diagnostic = _diagnostic(exc)
+    if any(marker in diagnostic for marker in PROVIDER_POLICY_BLOCK_MARKERS):
+        return "provider_policy_block"
     if _is_quota_or_rate_limit_error(exc):
         return "rate_or_quota_limited"
     if "empty response" in diagnostic:
         return "empty_response"
     if "request too large" in diagnostic or "413" in diagnostic or "context length" in diagnostic:
-        return "request_too_large"
+        return "execution_configuration_block"
     if any(
         marker in diagnostic
         for marker in ("invalid api key", "authentication", "unauthorized", "forbidden", "401", "403")
     ):
-        return "auth_or_configuration"
+        return "execution_configuration_block"
     if any(marker in diagnostic for marker in ("400", "404", "422", "invalid request", "bad request", "not found")):
-        return "invalid_request"
+        return "execution_configuration_block"
     if any(marker in diagnostic for marker in TRANSIENT_ERROR_MARKERS):
         return "provider_unavailable"
     return "unknown_provider_error"
@@ -136,6 +155,22 @@ def _extract_content(response: Any) -> str:
         ) from exc
 
     return content if isinstance(content, str) else ""
+
+
+def exclude_reasoning_trace(content: str) -> str:
+    """Remove provider-rendered ``<think>`` blocks from final report text."""
+    cleaned = re.sub(r"<think\b[^>]*>.*?</think>\s*", "", content, flags=re.IGNORECASE | re.DOTALL)
+    return "" if re.search(r"</?think\b", cleaned, flags=re.IGNORECASE) else cleaned
+
+
+def _create_chat_completion(client: OpenAI, kwargs: dict[str, Any]) -> tuple[Any, dict[str, str]]:
+    """Create one completion while retaining response headers when the SDK exposes them."""
+    raw_resource = getattr(client.chat.completions, "with_raw_response", None)
+    if raw_resource is None:
+        return client.chat.completions.create(**kwargs), {}
+    raw_response = raw_resource.create(**kwargs)
+    headers = dict(getattr(raw_response, "headers", {}) or {})
+    return raw_response.parse(), headers
 
 
 def generate_chat_completion(
@@ -182,9 +217,17 @@ def generate_chat_completion(
             if extra_request_kwargs:
                 kwargs.update(extra_request_kwargs)
 
-            response = client.chat.completions.create(**kwargs)
-            content = _extract_content(response)
+            response, headers = _create_chat_completion(client, kwargs)
+            content = exclude_reasoning_trace(_extract_content(response))
             if content.strip():
+                record_provider_event(
+                    provider=provider_label.lower(),
+                    model=model,
+                    outcome="success",
+                    request_sent=True,
+                    response=response,
+                    headers=headers,
+                )
                 return content.strip() + "\n"
 
             last_error = OpenAICompatibleProviderError(
@@ -192,9 +235,18 @@ def generate_chat_completion(
                 f"({_response_diagnostic(response)}; prompt_chars={prompt_chars}; "
                 f"prompt_bytes={prompt_bytes}; max_completion_tokens={max_completion_tokens})."
             )
+            record_provider_failure(
+                provider=provider_label.lower(),
+                model=model,
+                exc=last_error,
+                request_sent=True,
+            )
         except Exception as exc:  # noqa: BLE001 - provider SDKs raise heterogeneous exceptions.
             last_error = exc
-            if not _is_retryable_exception(exc):
+            classification = record_provider_failure(
+                provider=provider_label.lower(), model=model, exc=exc, request_sent=True
+            )
+            if not classification.retryable_immediately:
                 break
 
         if attempt_number == total_attempts:
@@ -205,7 +257,11 @@ def generate_chat_completion(
     if last_error is None:
         raise OpenAICompatibleProviderError(f"{provider_label} API call failed without an exception.")
 
-    kind = _provider_error_kind(last_error)
+    kind = classify_provider_failure(
+        provider=provider_label.lower(),
+        model=model,
+        exc=last_error,
+    ).kind
     raise OpenAICompatibleProviderError(
         f"{provider_label} API call failed after {attempt_number} attempt(s); provider_error_kind={kind}: {last_error}"
     ) from last_error

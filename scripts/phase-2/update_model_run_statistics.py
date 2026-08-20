@@ -17,22 +17,22 @@ import tempfile
 from dataclasses import dataclass
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import Any, Iterable, Sequence
+from typing import Any, Iterable, Mapping, Sequence
+
+SCRIPT_DIRECTORY = Path(__file__).resolve().parent
+if str(SCRIPT_DIRECTORY) not in sys.path:
+    sys.path.insert(0, str(SCRIPT_DIRECTORY))
+
+from provider_model_registry import ProviderModelRegistry, configured_provider_model_specs  # noqa: E402
+from provider_runtime import parse_timestamp  # noqa: E402
 
 DEFAULT_STATISTICS_PAGE = Path("docs/methodology/phases/phase-2/model-run-statistics.md")
 DEFAULT_SUMMARY_PATH = Path(".tmp/phase-2/batch-summary.md")
 STATE_START = "<!-- model-run-statistics-state"
 STATE_END = "-->"
 STATE_SCHEMA_VERSION = 1
-DEFAULT_PROVIDER_MODEL_SPECS = (
-    "cerebras:gpt-oss-120b,"
-    "sambanova:DeepSeek-V3.1,"
-    "openrouter:nvidia/nemotron-3-ultra-550b-a55b:free,"
-    "gemini:gemini-3.1-flash-lite,"
-    "cerebras:zai-glm-4.7,"
-    "sambanova:Meta-Llama-3.3-70B-Instruct,"
-    "openrouter:poolside/laguna-m.1:free"
-)
+QUEUE_STATISTICS_SCHEMA_VERSION = 2
+DEFAULT_PROVIDER_MODEL_SPECS = ",".join(configured_provider_model_specs())
 
 VALID_CHECK_STATUS = "ok"
 INVALID_CHECK_STATUSES = {"failed", "provider_failed", "rejected"}
@@ -220,6 +220,8 @@ def empty_state() -> dict[str, Any]:
         "active_rotation": [],
         "models": {},
         "seen_events": {},
+        "seen_terminal_events": {},
+        "queue": {},
     }
 
 
@@ -277,6 +279,8 @@ def extract_state(page_text: str) -> dict[str, Any]:
     state.setdefault("active_rotation", [])
     state.setdefault("models", {})
     state.setdefault("seen_events", {})
+    state.setdefault("seen_terminal_events", {})
+    state.setdefault("queue", {})
     ensure_collection_start_utc(state)
     return state
 
@@ -322,6 +326,32 @@ def ensure_model_record(state: dict[str, Any], spec: ProviderModelSpec) -> dict[
     record.setdefault("last_overall_status", legacy_last_status)
     for key in ("last_event_name", "last_run_id", "last_run_attempt"):
         record.setdefault(key, "")
+    record.setdefault("configuration_status", "retired")
+    record.setdefault("execution_status", "inactive")
+    record.setdefault("lifecycle_status", "retired")
+    record.setdefault("total_called", record["called"])
+    record.setdefault("total_provider_attempts", record["called"])
+    record.setdefault("valid_outputs", record["valid"])
+    record.setdefault("zero_signal_valid_outputs", 0)
+    record.setdefault("valid_outputs_with_signals", 0)
+    record.setdefault("validator_rejections", record["rejected"])
+    record.setdefault("provider_failures", record["provider_failed"])
+    record.setdefault("quota_deferrals", 0)
+    record.setdefault("policy_blocks", 0)
+    record.setdefault("execution_configuration_blocks", 0)
+    record.setdefault("temporarily_unavailable_events", 0)
+    record.setdefault("runner_failures", record["runner_failed"])
+    for field in ("input_tokens", "output_tokens", "reasoning_tokens", "cached_tokens"):
+        record.setdefault(field, None)
+        record.setdefault(f"{field}_known_events", 0)
+    record.setdefault("current_completed_tasks", 0)
+    record.setdefault("current_desired_tasks", 0)
+    record.setdefault("completion_percentage", 0.0)
+    record.setdefault("oldest_pending_age_seconds", None)
+    record.setdefault("last_success", record["last_run_utc"] if record["valid"] else "")
+    record.setdefault("last_attempt", record["last_run_utc"])
+    record.setdefault("last_quota_observation", "")
+    record.setdefault("provider_attempts_accuracy", "inferred-from-legacy-calls")
     return record
 
 
@@ -413,16 +443,24 @@ def apply_summary_runs(
             continue
 
         record["called"] += 1
+        record["total_called"] += 1
+        record["total_provider_attempts"] += 1
+        record["provider_attempts_accuracy"] = "inferred-from-legacy-calls"
         if counting_status == VALID_CHECK_STATUS:
             record["valid"] += 1
+            record["valid_outputs"] += 1
+            record["last_success"] = timestamp_utc
         else:
             record["invalid"] += 1
             if counting_status == "rejected":
                 record["rejected"] += 1
+                record["validator_rejections"] += 1
             elif counting_status == "provider_failed":
                 record["provider_failed"] += 1
+                record["provider_failures"] += 1
             elif counting_status == "failed":
                 record["runner_failed"] += 1
+                record["runner_failures"] += 1
         record["last_run_utc"] = timestamp_utc
         record["last_check_status"] = summary_run.check_status
         record["last_issue_status"] = summary_run.issue_status
@@ -430,6 +468,7 @@ def apply_summary_runs(
         record["last_event_name"] = event_name
         record["last_run_id"] = run_id
         record["last_run_attempt"] = run_attempt
+        record["last_attempt"] = timestamp_utc
         seen_events[key] = {
             "timestamp_utc": timestamp_utc,
             "provider": summary_run.provider,
@@ -447,6 +486,202 @@ def apply_summary_runs(
     return added, ignored
 
 
+def _terminal_failure_kinds(event: Mapping[str, Any]) -> set[str]:
+    kinds: set[str] = set()
+    for observation in event.get("quota_observations") or []:
+        failure = observation.get("failure") if isinstance(observation, dict) else None
+        if isinstance(failure, dict) and failure.get("kind"):
+            kinds.add(str(failure["kind"]))
+    return kinds
+
+
+def apply_terminal_events(state: dict[str, Any], terminal_events: Iterable[Mapping[str, Any]]) -> tuple[int, int]:
+    """Apply validated queue terminal events without double-counting an attempt."""
+    normalize_existing_models(state)
+    seen = state.setdefault("seen_terminal_events", {})
+    added = 0
+    ignored = 0
+    for event in sorted(
+        terminal_events,
+        key=lambda value: (str(value.get("attempt_finished_at")), str(value.get("attempt_id"))),
+    ):
+        attempt_id = str(event.get("attempt_id") or "")
+        if not attempt_id or attempt_id in seen:
+            ignored += 1
+            continue
+        spec = ProviderModelSpec(provider=str(event["provider"]), model=str(event["model"]))
+        record = ensure_model_record(state, spec)
+        provider_attempts = int(event.get("provider_attempts", 0) or 0)
+        outcome = str(event.get("outcome"))
+        if provider_attempts:
+            record["called"] += 1
+            record["total_called"] += 1
+            record["total_provider_attempts"] += provider_attempts
+            record["provider_attempts_accuracy"] = "mixed-inferred-and-locally-counted"
+        if outcome == "valid":
+            record["valid"] += 1
+            record["valid_outputs"] += 1
+            if int(event.get("signal_count", 0) or 0) == 0:
+                record["zero_signal_valid_outputs"] += 1
+            else:
+                record["valid_outputs_with_signals"] += 1
+            record["last_success"] = str(event["attempt_finished_at"])
+            record["last_check_status"] = "ok"
+        elif outcome == "validator_rejected":
+            record["invalid"] += 1
+            record["rejected"] += 1
+            record["validator_rejections"] += 1
+            record["last_check_status"] = "rejected"
+        elif outcome == "provider_failure":
+            record["invalid"] += 1
+            record["provider_failed"] += 1
+            record["provider_failures"] += 1
+            record["last_check_status"] = "provider_failed"
+
+        failure_kinds = _terminal_failure_kinds(event)
+        record["quota_deferrals"] += int("rate_or_quota_limited" in failure_kinds)
+        record["policy_blocks"] += int("provider_policy_block" in failure_kinds)
+        record["execution_configuration_blocks"] += int("execution_configuration_block" in failure_kinds)
+        record["temporarily_unavailable_events"] += int("provider_unavailable" in failure_kinds)
+        if outcome == "provider_failure" and not failure_kinds:
+            record["runner_failed"] += 1
+            record["runner_failures"] += 1
+
+        usage = event.get("usage") if isinstance(event.get("usage"), dict) else {}
+        for field in ("input_tokens", "output_tokens", "reasoning_tokens", "cached_tokens"):
+            value = usage.get(field)
+            if isinstance(value, int) and not isinstance(value, bool) and value >= 0:
+                record[field] = int(record[field] or 0) + value
+                record[f"{field}_known_events"] += 1
+
+        finished_at = str(event["attempt_finished_at"])
+        record["last_attempt"] = finished_at
+        record["last_run_utc"] = finished_at
+        quota_timestamps = [
+            str(observation.get("observed_at"))
+            for observation in event.get("quota_observations") or []
+            if isinstance(observation, dict) and observation.get("observed_at")
+        ]
+        if quota_timestamps:
+            record["last_quota_observation"] = max(quota_timestamps)
+        seen[attempt_id] = {
+            "provider": spec.provider,
+            "model": spec.model,
+            "outcome": outcome,
+            "attempt_finished_at": finished_at,
+        }
+        added += 1
+    return added, ignored
+
+
+def _queue_status_counts(task_state: Mapping[str, Any]) -> dict[str, int]:
+    labels = {
+        "pending": "pending",
+        "leased": "leased",
+        "completed": "completed",
+        "retry_due": "retry_due",
+        "deferred_quota": "quota_deferred",
+        "temporarily_unavailable": "temporarily_unavailable",
+        "blocked_provider_policy": "policy_blocked",
+        "blocked_execution_configuration": "execution_configuration_blocked",
+        "blocked_repeated_rejection": "rejection_blocked",
+        "blocked_ambiguous_attempt": "ambiguous_attempt_blocked",
+        "retired": "retired",
+        "obsolete": "obsolete",
+    }
+    counts = {label: 0 for label in labels.values()}
+    for task in task_state.get("tasks", {}).values():
+        status = task.get("status")
+        if status in labels:
+            counts[labels[status]] += 1
+    counts["desired_task_count"] = sum(
+        task.get("status") not in {"retired", "obsolete"} for task in task_state.get("tasks", {}).values()
+    )
+    return counts
+
+
+def _last_quota_observation(quota_state: Mapping[str, Any], group_ids: Sequence[str]) -> str:
+    timestamps = [
+        str(quota_state.get("quota_groups", {}).get(group_id, {}).get("last_updated_at") or "")
+        for group_id in group_ids
+    ]
+    return max((value for value in timestamps if value), default="")
+
+
+def refresh_queue_statistics(
+    *,
+    statistics_page: Path,
+    registry: ProviderModelRegistry,
+    task_state: Mapping[str, Any],
+    quota_state: Mapping[str, Any],
+    terminal_events: Iterable[Mapping[str, Any]],
+    timestamp_utc: str,
+) -> None:
+    """Refresh cumulative outcomes and the current queue snapshot in one Markdown artifact."""
+    state = load_state(statistics_page)
+    state["schema_version"] = QUEUE_STATISTICS_SCHEMA_VERSION
+    state["active_rotation"] = [
+        {"provider": slot.provider, "model": slot.model, "spec": slot.spec} for slot in registry.configured_slots
+    ]
+    normalize_existing_models(state)
+    apply_terminal_events(state, terminal_events)
+    snapshot_time = parse_timestamp(timestamp_utc)
+    configured_keys: set[str] = set()
+    schedulable_statuses = {"pending", "leased", "retry_due", "deferred_quota", "temporarily_unavailable"}
+    for slot in registry.slots:
+        spec = ProviderModelSpec(slot.provider, slot.model)
+        configured_keys.add(spec.key)
+        record = ensure_model_record(state, spec)
+        runtime = quota_state.get("runtime_slots", {}).get(slot.spec, {})
+        record["configuration_status"] = slot.configuration_status
+        record["execution_status"] = str(runtime.get("status") or slot.execution_status)
+        record["lifecycle_status"] = slot.lifecycle
+        if int(record.get("called", 0) or 0) == 0:
+            record["provider_attempts_accuracy"] = "locally-counted"
+        relevant = [
+            task
+            for task in task_state.get("tasks", {}).values()
+            if task.get("identity", {}).get("provider") == slot.provider
+            and task.get("identity", {}).get("model") == slot.model
+            and task.get("status") not in {"obsolete", "retired"}
+        ]
+        desired = len(relevant)
+        completed = sum(task.get("status") == "completed" for task in relevant)
+        record["current_desired_tasks"] = desired
+        record["current_completed_tasks"] = completed
+        record["completion_percentage"] = round((completed / desired * 100) if desired else 0.0, 2)
+        pending_created = [
+            str(task.get("created_at"))
+            for task in relevant
+            if task.get("status") in schedulable_statuses and task.get("created_at")
+        ]
+        if pending_created:
+            oldest = min(parse_timestamp(value) for value in pending_created)
+            record["oldest_pending_age_seconds"] = max(0, int((snapshot_time - oldest).total_seconds()))
+        else:
+            record["oldest_pending_age_seconds"] = None
+        quota_observation = _last_quota_observation(quota_state, slot.quota_groups)
+        if quota_observation:
+            record["last_quota_observation"] = max(str(record.get("last_quota_observation") or ""), quota_observation)
+
+    for key, record in state.get("models", {}).items():
+        if key in configured_keys:
+            continue
+        record["configuration_status"] = "retired"
+        record["execution_status"] = "inactive"
+        record["lifecycle_status"] = "retired"
+        record["current_desired_tasks"] = 0
+        record["current_completed_tasks"] = 0
+        record["completion_percentage"] = 0.0
+        record["oldest_pending_age_seconds"] = None
+
+    state["queue"] = _queue_status_counts(task_state)
+    state["generated_at"] = timestamp_utc
+    ensure_collection_start_utc(state)
+    statistics_page.parent.mkdir(parents=True, exist_ok=True)
+    statistics_page.write_text(render_markdown(state), encoding="utf-8")
+
+
 def sorted_model_records(state: dict[str, Any]) -> list[dict[str, Any]]:
     return sorted(
         state.get("models", {}).values(),
@@ -454,7 +689,22 @@ def sorted_model_records(state: dict[str, Any]) -> list[dict[str, Any]]:
     )
 
 
+def _token_display(record: Mapping[str, Any], field: str) -> str:
+    if int(record.get(f"{field}_known_events", 0) or 0) == 0:
+        return "`unknown`"
+    return str(int(record.get(field, 0) or 0))
+
+
+def _age_display(value: Any) -> str:
+    if not isinstance(value, int) or isinstance(value, bool):
+        return ""
+    days, remainder = divmod(value, 86400)
+    hours = remainder // 3600
+    return f"{days}d {hours}h" if days else f"{hours}h"
+
+
 def render_markdown(state: dict[str, Any]) -> str:
+    normalize_existing_models(state)
     generated_at = state.get("generated_at") or "not generated yet"
     collection_start_utc = ensure_collection_start_utc(state) or "not recorded yet"
     active_keys = active_model_keys(state)
@@ -463,23 +713,52 @@ def render_markdown(state: dict[str, Any]) -> str:
         "",
         "← Previous: [Execution and Operations](execution-and-operations.md) | [Phase 2 index](index.md) | Next: [Prompts and Status](prompts-and-status.md) →",
         "",
-        "This page stores cumulative execution statistics for the scheduled Phase 2 check-agent signal collector.",
+        "This page stores cumulative execution statistics and the current queue snapshot for the scheduled Phase 2 check-agent signal collector.",
         "",
-        "The table is updated by GitHub Actions from deterministic Python-side batch statuses. It does not use LLM self-reporting, raw completions, prompts, provider responses, or token-usage estimates.",
+        "The tables are updated from deterministic queue state, validated terminal events, and provider quota observations.",
+        "",
+        "The current desired universe is 39 canonical pages × 2 LLM check agents × 25 configured provider-model slots = 1,950 tasks. Historical obsolete and retired identities remain stored, so total records may be higher.",
         "",
         f"Statistics collection started on: `{collection_start_utc}`",
         "",
         "Counts shown on this page only include executions recorded since that start time.",
         "",
-        "Models not present in the current active rotation remain listed as `inactive` for historical continuity.",
+        "Rows retained in the current statistics state but outside the configured, non-retired registry are shown as `inactive`.",
         "",
         f"Last generated: `{generated_at}`",
         "",
-        "## Cumulative table",
+        "## Queue snapshot",
         "",
-        "| Provider | Model | Status | # called | # valid | # invalid | # rejected | # provider failed | # runner failed | Last check status | Last issue status | Last run UTC |",
-        "|---|---|---|---:|---:|---:|---:|---:|---:|---|---|---|",
+        "| Queue state | Tasks |",
+        "|---|---:|",
     ]
+    queue = state.get("queue", {})
+    for key in (
+        "desired_task_count",
+        "pending",
+        "leased",
+        "completed",
+        "retry_due",
+        "quota_deferred",
+        "temporarily_unavailable",
+        "policy_blocked",
+        "execution_configuration_blocked",
+        "rejection_blocked",
+        "ambiguous_attempt_blocked",
+        "retired",
+        "obsolete",
+    ):
+        lines.append(f"| `{key}` | {int(queue.get(key, 0) or 0)} |")
+
+    lines.extend(
+        [
+            "",
+            "## Provider–model outcomes",
+            "",
+            "| Provider | Model | Status | Configuration | Execution | Lifecycle | Called | Provider attempts | Valid | Zero-signal valid | Valid with signals | Validator rejections | Provider failures | Quota deferrals | Policy blocks | Execution-config blocks | Temporarily unavailable | Runner failures |",
+            "|---|---|---|---|---|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|",
+        ]
+    )
     for record in sorted_model_records(state):
         status = model_record_status(record, active_keys)
         lines.append(
@@ -489,19 +768,21 @@ def render_markdown(state: dict[str, Any]) -> str:
                     f"`{markdown_escape(record.get('provider', ''))}`",
                     f"`{markdown_escape(record.get('model', ''))}`",
                     f"`{status}`",
-                    str(int(record.get("called", 0) or 0)),
-                    str(int(record.get("valid", 0) or 0)),
-                    str(int(record.get("invalid", 0) or 0)),
-                    str(int(record.get("rejected", 0) or 0)),
-                    str(int(record.get("provider_failed", 0) or 0)),
-                    str(int(record.get("runner_failed", 0) or 0)),
-                    f"`{markdown_escape(record.get('last_check_status', ''))}`"
-                    if record.get("last_check_status")
-                    else "",
-                    f"`{markdown_escape(record.get('last_issue_status', ''))}`"
-                    if record.get("last_issue_status")
-                    else "",
-                    f"`{markdown_escape(record.get('last_run_utc', ''))}`" if record.get("last_run_utc") else "",
+                    f"`{markdown_escape(record.get('configuration_status', ''))}`",
+                    f"`{markdown_escape(record.get('execution_status', ''))}`",
+                    f"`{markdown_escape(record.get('lifecycle_status', ''))}`",
+                    str(int(record.get("total_called", 0) or 0)),
+                    str(int(record.get("total_provider_attempts", 0) or 0)),
+                    str(int(record.get("valid_outputs", 0) or 0)),
+                    str(int(record.get("zero_signal_valid_outputs", 0) or 0)),
+                    str(int(record.get("valid_outputs_with_signals", 0) or 0)),
+                    str(int(record.get("validator_rejections", 0) or 0)),
+                    str(int(record.get("provider_failures", 0) or 0)),
+                    str(int(record.get("quota_deferrals", 0) or 0)),
+                    str(int(record.get("policy_blocks", 0) or 0)),
+                    str(int(record.get("execution_configuration_blocks", 0) or 0)),
+                    str(int(record.get("temporarily_unavailable_events", 0) or 0)),
+                    str(int(record.get("runner_failures", 0) or 0)),
                 ]
             )
             + " |"
@@ -510,28 +791,81 @@ def render_markdown(state: dict[str, Any]) -> str:
     lines.extend(
         [
             "",
-            "## Status derivation",
+            "## Current slot progress",
             "",
-            "- `Status` is derived from the hidden `active_rotation` state: models in that list are `active`; previously recorded models outside it are `inactive`.",
-            "- `# called` increments once for each selected provider/model run recorded in `.tmp/phase-2/batch-summary.md` with check status `ok`, `rejected`, `provider_failed`, or `failed`.",
-            "- `# valid` increments only for Python-side check status `ok`.",
-            "- `# invalid` increments for Python-side check status `rejected`, `provider_failed`, or `failed`.",
-            "- `# rejected` counts deterministic check-agent output validation rejections.",
-            "- `# provider failed` counts provider-call failures classified by the batch runner.",
-            "- `# runner failed` counts other fatal check-agent runner failures reported as `failed`.",
-            "- `Last issue status` is recorded separately because issue-manager failures are operational failures, not model-output validation failures.",
+            "| Provider | Model | Completed | Desired | Completion | Oldest pending | Last success | Last attempt | Last quota observation |",
+            "|---|---|---:|---:|---:|---|---|---|---|",
+        ]
+    )
+    for record in sorted_model_records(state):
+        lines.append(
+            "| "
+            + " | ".join(
+                [
+                    f"`{markdown_escape(record.get('provider', ''))}`",
+                    f"`{markdown_escape(record.get('model', ''))}`",
+                    str(int(record.get("current_completed_tasks", 0) or 0)),
+                    str(int(record.get("current_desired_tasks", 0) or 0)),
+                    f"{float(record.get('completion_percentage', 0.0) or 0.0):.2f}%",
+                    _age_display(record.get("oldest_pending_age_seconds")),
+                    f"`{markdown_escape(record.get('last_success', ''))}`" if record.get("last_success") else "",
+                    f"`{markdown_escape(record.get('last_attempt', ''))}`" if record.get("last_attempt") else "",
+                    f"`{markdown_escape(record.get('last_quota_observation', ''))}`"
+                    if record.get("last_quota_observation")
+                    else "",
+                ]
+            )
+            + " |"
+        )
+
+    lines.extend(
+        [
+            "",
+            "## Token observations",
+            "",
+            "| Provider | Model | Input tokens | Output tokens | Reasoning tokens | Cached tokens |",
+            "|---|---|---:|---:|---:|---:|",
+        ]
+    )
+    for record in sorted_model_records(state):
+        lines.append(
+            "| "
+            + " | ".join(
+                [
+                    f"`{markdown_escape(record.get('provider', ''))}`",
+                    f"`{markdown_escape(record.get('model', ''))}`",
+                    _token_display(record, "input_tokens"),
+                    _token_display(record, "output_tokens"),
+                    _token_display(record, "reasoning_tokens"),
+                    _token_display(record, "cached_tokens"),
+                ]
+            )
+            + " |"
+        )
+
+    lines.extend(
+        [
+            "",
+            "## Status derivation and accuracy",
+            "",
+            "- `Status` is derived from the hidden configured-slot snapshot: configured, non-retired models are `active`; any other retained model row is `inactive`.",
+            "- Execution outcome counters include only events recorded in the current statistics epoch.",
+            "- Provider-attempt totals for the current statistics epoch are locally counted from validated terminal events.",
+            "- Queue completion and age fields are derived from `task-state.json`; configuration and lifecycle come from the registry; execution status comes from runtime quota state when present.",
+            "- Token values are provider-reported when available and then locally summed. `unknown` is distinct from a reported value of zero.",
+            "- Quota state is best-known capacity, not a guarantee. Provenance marks observations as provider-reported, locally counted, configured, inferred, or unknown, and `estimated: true` explicitly identifies estimates such as remaining capacity.",
             "",
             "## Storage strategy and limitations",
             "",
-            "The human-readable table above is rendered from hidden JSON state stored in this Markdown file. Keeping the state in the same MkDocs page makes the website page the persistence artifact while avoiding a separate GitHub issue or external store.",
+            "The human-readable tables are rendered from hidden JSON state stored in this Markdown file. Durable task results and publication payloads are stored separately under `data/phase-2/`.",
             "",
-            "The workflow is expected to commit this page back to the repository after scheduled runs. That requires `contents: write` workflow permission and repository settings that allow GitHub Actions to write to the target branch.",
+            "The collector aggregator commits this page with task state, quota state, and durable results after each run that changes repository state.",
             "",
-            "Concurrency is controlled at the workflow level to reduce overlapping scheduled updates. Push conflicts can still occur if a human or another workflow edits the same page at the same time.",
+            "Push conflicts are handled by fetching the latest branch and idempotently reapplying the same validated terminal events before a bounded retry.",
             "",
-            "The hidden state stores processed run-event keys for de-duplication. This prevents accidental double-counting when the updater is run again for the same workflow run, but it means the Markdown file grows over time.",
+            "The hidden state stores legacy batch-event keys and queue attempt IDs for de-duplication. This prevents accidental double-counting but means the Markdown file grows over time.",
             "",
-            "This page intentionally does not store secrets, raw prompts, raw completions, provider response bodies, token usage, prompt size, quotas, or request-limit metrics.",
+            "This page does not store secrets, raw prompts, raw completions, or provider response bodies.",
             "",
             STATE_START,
             json.dumps(state, indent=2, sort_keys=True),
@@ -656,11 +990,18 @@ def run_self_test() -> int:
         assert gemini["last_issue_status"] == "failed"
         assert state["collection_start_utc"] == "2026-06-28T00:00:00Z"
         assert "Statistics collection started on: `2026-06-28T00:00:00Z`" in rendered
-        assert "Models not present in the current active rotation remain listed as `inactive`" in rendered
+        assert (
+            "Rows retained in the current statistics state but outside the configured, non-retired registry are shown as `inactive`"
+            in rendered
+        )
         assert "| `legacy-provider` | `legacy-model` | `inactive` |" in rendered
         assert "openrouter:nvidia/nemotron-3-ultra-550b-a55b:free" in state["models"]
-        assert all(not spec["provider"].lower().startswith("groq") for spec in state["active_rotation"])
-        assert len(state["active_rotation"]) == 7
+        assert len(state["active_rotation"]) == 25
+        assert sum(spec["provider"] == "sambanova" for spec in state["active_rotation"]) == 6
+        assert sum(spec["provider"] == "groq" for spec in state["active_rotation"]) == 3
+        assert sum(spec["provider"] == "gemini" for spec in state["active_rotation"]) == 7
+        assert sum(spec["provider"] == "openrouter" for spec in state["active_rotation"]) == 9
+        assert model_record_status(laguna, active_keys) == "inactive"
     print(
         "Self-test passed: counters increment, duplicate events are ignored, issue-manager failures do not invalidate model output, inactive historical models are retained, collection start is persisted, and OpenRouter colon model IDs are preserved."
     )

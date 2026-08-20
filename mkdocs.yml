@@ -45,6 +45,7 @@ nav:
         - Phase 1: methodology/phases/phase-1.md
         - Phase 2:
           - Overview: methodology/phases/phase-2/index.md
+          - Accepted recalibration RFC: methodology/phases/phase-2/recalibration-rfc.md
           - Scope and architecture: methodology/phases/phase-2/overview.md
           - Check agents: methodology/phases/phase-2/check-agents.md
           - Exact-replacement safety: methodology/phases/phase-2/exact-replacement-safety.md

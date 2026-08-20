@@ -4,6 +4,14 @@ from __future__ import annotations
 
 import os
 
+from provider_model_registry import (
+    RegistryValidationError,
+    require_executable_slot,
+    validate_completion_token_cap,
+)
+from provider_runtime import record_provider_failure
+from reasoning_policy import sambanova_request_kwargs
+
 from providers.openai_compatible import OpenAICompatibleProviderError, generate_chat_completion
 
 
@@ -25,9 +33,17 @@ def generate_review(
     """Generate one Phase 2 page-review issue comment using SambaNova."""
     del provider, review_date, page_path, commit_sha, page_content
 
+    try:
+        configured_slot = require_executable_slot("sambanova", model)
+        validate_completion_token_cap(configured_slot, max_completion_tokens)
+    except RegistryValidationError as exc:
+        raise SambaNovaProviderError(f"provider_error_kind=execution_configuration_block: {exc}") from exc
+
     api_key = os.getenv("SAMBANOVA_API_KEY")
     if not api_key:
-        raise SambaNovaProviderError("SAMBANOVA_API_KEY environment variable is not set.")
+        error = SambaNovaProviderError("SAMBANOVA_API_KEY environment variable is not set.")
+        record_provider_failure(provider="sambanova", model=model, exc=error, request_sent=False)
+        raise error
 
     try:
         return generate_chat_completion(
@@ -37,6 +53,7 @@ def generate_review(
             model=model,
             review_input=review_input,
             max_completion_tokens=max_completion_tokens,
+            extra_request_kwargs=sambanova_request_kwargs(configured_slot),
         )
     except OpenAICompatibleProviderError as exc:
         raise SambaNovaProviderError(str(exc)) from exc

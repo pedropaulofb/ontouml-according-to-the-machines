@@ -18,6 +18,26 @@ from datetime import date
 from pathlib import Path
 from typing import Callable
 
+SCRIPT_DIRECTORY = Path(__file__).resolve().parent
+if str(SCRIPT_DIRECTORY) not in sys.path:
+    sys.path.insert(0, str(SCRIPT_DIRECTORY))
+
+from provider_model_registry import (  # noqa: E402 - direct script execution needs its directory on sys.path.
+    RegistryValidationError,
+    require_executable_slot,
+    validate_completion_token_cap,
+)
+from task_identity import (  # noqa: E402 - direct script execution needs its directory on sys.path.
+    FENCED_BLOCK_PATTERN,
+    LANGUAGE_STYLE_EXCLUDED_SECTIONS,
+    TaskIdentityError,
+    build_review_input,
+    normalize_markdown_section_title,
+)
+from task_identity import (  # noqa: E402 - Ruff separates aliased imports.
+    scope_page_content_for_agent as scope_identity_page_content,
+)
+
 DEFAULT_MAX_COMPLETION_TOKENS = 3000
 NO_SIGNALS_SENTENCE = "None identified within the configured check-agent scope."
 SEMANTIC_PLACEHOLDER_VALUES = {"none", "n/a", "not applicable"}
@@ -51,14 +71,6 @@ LOCATION_LINE_PATTERN = re.compile(
     re.MULTILINE,
 )
 MARKDOWN_HEADING_PATTERN = re.compile(r"^(?P<hashes>#{1,6})\s+(?P<title>.+?)\s*#*\s*$")
-FENCED_BLOCK_PATTERN = re.compile(r"^\s*(```|~~~)")
-
-LANGUAGE_STYLE_EXCLUDED_SECTIONS = {
-    "references",
-    "direct citations",
-    "consulted sources",
-    "generation and review log",
-}
 
 UNRESOLVED_TEMPLATE_PATTERNS = [
     "{provider}",
@@ -140,6 +152,7 @@ class AgentContract:
     """Validation contract for one LLM-based check agent."""
 
     slug: str
+    shared_prompt_path: str
     prompt_path: str
     prompt_id: str
     allowed_categories: set[str]
@@ -149,8 +162,9 @@ class AgentContract:
 AGENT_CONTRACTS: dict[str, AgentContract] = {
     "page-hygiene-checker": AgentContract(
         slug="page-hygiene-checker",
-        prompt_path="prompts/phase-2/page-hygiene-checker-v1.0.3.md",
-        prompt_id="page-hygiene-checker-v1.0.3",
+        shared_prompt_path="prompts/phase-2/check-signal-shared-contract-v1.0.0.md",
+        prompt_path="prompts/phase-2/page-hygiene-checker-v1.1.0.md",
+        prompt_id="page-hygiene-checker-v1.1.0",
         allowed_categories={
             "reference_hygiene",
             "markdown_hygiene",
@@ -166,8 +180,9 @@ AGENT_CONTRACTS: dict[str, AgentContract] = {
     ),
     "language-style-checker": AgentContract(
         slug="language-style-checker",
-        prompt_path="prompts/phase-2/language-style-checker-v1.0.3.md",
-        prompt_id="language-style-checker-v1.0.3",
+        shared_prompt_path="prompts/phase-2/check-signal-shared-contract-v1.0.0.md",
+        prompt_path="prompts/phase-2/language-style-checker-v1.1.0.md",
+        prompt_id="language-style-checker-v1.1.0",
         allowed_categories={
             "grammar",
             "spelling",
@@ -185,7 +200,6 @@ AGENT_CONTRACTS: dict[str, AgentContract] = {
 }
 
 SUPPORTED_PROVIDERS: dict[str, str] = {
-    "cerebras": "providers.cerebras",
     "gemini": "providers.gemini",
     "groq": "providers.groq",
     "openrouter": "providers.openrouter",
@@ -274,6 +288,18 @@ def read_text_file(path: Path, description: str) -> str:
         raise CheckAgentRunnerError(f"{description} is not valid UTF-8: {path}") from exc
 
 
+def load_effective_prompt(*, repo_root: Path, contract: AgentContract, prompt_override: str | None = None) -> str:
+    """Load the shared plus agent contract, or one standalone explicit override."""
+    if prompt_override is not None:
+        prompt_file = resolve_repo_relative_path(repo_root, prompt_override)
+        return read_text_file(prompt_file, "Check-agent prompt override")
+    shared_file = resolve_repo_relative_path(repo_root, contract.shared_prompt_path)
+    agent_file = resolve_repo_relative_path(repo_root, contract.prompt_path)
+    shared_prompt = read_text_file(shared_file, "Shared check-signal contract").strip()
+    agent_prompt = read_text_file(agent_file, "Agent-specific check contract").strip()
+    return f"{shared_prompt}\n\n---\n\n{agent_prompt}\n"
+
+
 def get_commit_sha(repo_root: Path, override: str | None) -> str:
     if override is not None:
         sha = override.strip()
@@ -316,57 +342,6 @@ def validate_agent_slug(agent: str) -> str:
 
 def derive_prompt_id(prompt_path: str) -> str:
     return Path(prompt_path).name.removesuffix(".md")
-
-
-def build_review_input(
-    *,
-    checker_prompt: str,
-    agent: str,
-    provider: str,
-    model: str,
-    prompt_id: str,
-    review_date: str,
-    page_path: str,
-    commit_sha: str,
-    max_completion_tokens: int,
-    page_content: str,
-    input_scope_note: str,
-) -> str:
-    return f"""# Check-agent prompt
-
-{checker_prompt}
-
----
-
-# Deterministic exact-replacement reminder
-
-- A signal may describe one problem that occurs once or multiple times.
-- Include `current_text` and `proposed_text` only for one intended occurrence that is exact and unambiguous in the provided page content; the deterministic wrapper will recheck it against the full reviewed page.
-- Use only the smallest reasonably sufficient contiguous context needed to make that occurrence unique.
-- If one safe pair would be ambiguous, incomplete, or misleading for a repeated problem, keep the valid signal and omit both optional replacement fields.
-
----
-
-# Run input
-
-Agent name: {agent}
-Provider name: {provider}
-Model name: {model}
-Prompt ID: {prompt_id}
-Review date: {review_date}
-Reviewed page path: {page_path}
-Repository commit SHA: {commit_sha}
-Max completion tokens: {max_completion_tokens}
-Input scope: {input_scope_note}
-
----
-
-# Canonical stereotype page Markdown selected for the configured check-agent scope
-
-BEGIN_CANONICAL_STEREOTYPE_PAGE_MARKDOWN
-{page_content}
-END_CANONICAL_STEREOTYPE_PAGE_MARKDOWN
-"""
 
 
 def load_provider(provider_name: str) -> Callable[..., str]:
@@ -452,49 +427,11 @@ def strip_inline_code(value: str) -> str:
     return normalized
 
 
-def normalize_markdown_section_title(section: str) -> str:
-    normalized = section.strip()
-    while normalized.startswith("#"):
-        normalized = normalized[1:].strip()
-    normalized = re.sub(r"\s+#*$", "", normalized).strip()
-    return re.sub(r"\s+", " ", normalized).lower()
-
-
-def remove_markdown_sections(text: str, excluded_sections: set[str]) -> str:
-    kept_lines: list[str] = []
-    skip_until_heading_level: int | None = None
-    in_fenced_block = False
-    for line in text.splitlines():
-        if FENCED_BLOCK_PATTERN.match(line):
-            if skip_until_heading_level is None:
-                kept_lines.append(line)
-            in_fenced_block = not in_fenced_block
-            continue
-        heading_match = None if in_fenced_block else MARKDOWN_HEADING_PATTERN.match(line)
-        if heading_match is not None:
-            heading_level = len(heading_match.group("hashes"))
-            heading_title = normalize_markdown_section_title(heading_match.group("title"))
-            if skip_until_heading_level is not None and heading_level <= skip_until_heading_level:
-                skip_until_heading_level = None
-            if skip_until_heading_level is None and heading_title in excluded_sections:
-                skip_until_heading_level = heading_level
-                continue
-        if skip_until_heading_level is None:
-            kept_lines.append(line)
-    scoped_text = "\n".join(kept_lines).strip()
-    return scoped_text + "\n" if scoped_text else ""
-
-
 def scope_page_content_for_agent(*, contract: AgentContract, page_content: str) -> tuple[str, str]:
-    if contract.slug != "language-style-checker":
-        return page_content, "full canonical stereotype page"
-    scoped_content = remove_markdown_sections(page_content, LANGUAGE_STYLE_EXCLUDED_SECTIONS)
-    if not scoped_content.strip():
-        raise CheckAgentRunnerError("Language-style input scoping removed all page content; refusing to call provider.")
-    return (
-        scoped_content,
-        "reader-facing page content only; excluded References, Direct Citations, Consulted Sources, and Generation and Review Log sections",
-    )
+    try:
+        return scope_identity_page_content(agent=contract.slug, page_content=page_content)
+    except TaskIdentityError as exc:
+        raise CheckAgentRunnerError(f"{exc} Refusing to call provider.") from exc
 
 
 def extract_signal_fields(signal_block: str) -> list[tuple[str, str]]:
@@ -1082,15 +1019,26 @@ def main() -> int:
             raise CheckAgentRunnerError("--max-completion-tokens must be greater than 0.")
         contract = AGENT_CONTRACTS[validate_agent_slug(args.agent)]
         provider = args.provider.strip().lower()
-        prompt_path = args.prompt or contract.prompt_path
-        prompt_id = args.prompt_id or (
-            contract.prompt_id if prompt_path == contract.prompt_path else derive_prompt_id(prompt_path)
-        )
+        model = args.model.strip()
+        try:
+            configured_slot = require_executable_slot(provider, model)
+            validate_completion_token_cap(configured_slot, args.max_completion_tokens)
+        except RegistryValidationError as exc:
+            raise CheckAgentRunnerError(str(exc)) from exc
+        if contract.slug not in configured_slot.agents:
+            raise CheckAgentRunnerError(
+                f"Check agent {contract.slug!r} is not configured for provider-model slot {configured_slot.spec}."
+            )
+        prompt_path = args.prompt
+        prompt_id = args.prompt_id or (contract.prompt_id if prompt_path is None else derive_prompt_id(prompt_path))
         repo_root = get_repo_root()
-        prompt_file = resolve_repo_relative_path(repo_root, prompt_path)
         page_file = resolve_repo_relative_path(repo_root, args.page)
         output_path = resolve_output_path(repo_root, args.output)
-        checker_prompt = read_text_file(prompt_file, "Check-agent prompt")
+        checker_prompt = load_effective_prompt(
+            repo_root=repo_root,
+            contract=contract,
+            prompt_override=prompt_path,
+        )
         page_content = read_text_file(page_file, "Canonical stereotype page")
         scoped_page_content, input_scope_note = scope_page_content_for_agent(
             contract=contract, page_content=page_content
@@ -1102,7 +1050,7 @@ def main() -> int:
             checker_prompt=checker_prompt,
             agent=contract.slug,
             provider=provider,
-            model=args.model,
+            model=model,
             prompt_id=prompt_id,
             review_date=review_date,
             page_path=args.page,
@@ -1115,7 +1063,7 @@ def main() -> int:
             issue_comment = provider_function(
                 review_input=review_input,
                 provider=provider,
-                model=args.model,
+                model=model,
                 review_date=review_date,
                 page_path=args.page,
                 commit_sha=commit_sha,
@@ -1132,7 +1080,7 @@ def main() -> int:
             text=issue_comment,
             contract=contract,
             provider=provider,
-            model=args.model,
+            model=model,
             review_date=review_date,
         )
         for normalization in [*replacement_normalizations, *schema_normalizations]:
@@ -1144,7 +1092,7 @@ def main() -> int:
             text=issue_comment,
             contract=contract,
             provider=provider,
-            model=args.model,
+            model=model,
             prompt_id=prompt_id,
             review_date=review_date,
             page_path=args.page,

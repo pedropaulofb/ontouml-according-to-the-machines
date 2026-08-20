@@ -35,7 +35,7 @@ permissions:
   pull-requests: write
 
 concurrency:
-  group: phase-2-automated-signal-resolver
+  group: phase-2-operational-state-write
   cancel-in-progress: false
 
 jobs:
@@ -68,18 +68,19 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.PHASE2_AUTOMATION_TOKEN }}
           GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
-          CEREBRAS_API_KEY: ${{ secrets.CEREBRAS_API_KEY }}
           ISSUE_INPUT: ${{ github.event.inputs.issue }}
           PROVIDER_INPUT: ${{ github.event.inputs.provider }}
           MODEL_INPUT: ${{ github.event.inputs.model }}
           DRY_RUN_INPUT: ${{ github.event.inputs.dry_run }}
+          PHASE2_QUOTA_EVENT_DIR: .tmp/phase-2/quota-events
+          PHASE2_RESOLVER_ATTEMPT_EVENT_DIR: .tmp/phase-2/resolver-attempt-events
         run: |
           set -euo pipefail
 
           provider="${PROVIDER_INPUT:-gemini}"
           model="${MODEL_INPUT:-gemini-3.5-flash}"
-          fallback_provider="cerebras"
-          fallback_model="gpt-oss-120b"
+          fallback_provider="groq"
+          fallback_model="openai/gpt-oss-120b"
           fallback_max_completion_tokens="6000"
           dry_run="${DRY_RUN_INPUT:-false}"
           issue_label="${ISSUE_INPUT:-oldest eligible open issue}"
@@ -127,7 +128,8 @@ jobs:
               run_args+=(--dry-run)
             fi
 
-            python scripts/phase-2/resolve_signal_issue.py "${run_args[@]}" --provider-max-attempts 1
+            PHASE2_CALL_SOURCE="resolver-${run_label}" \
+              python scripts/phase-2/resolve_signal_issue.py "${run_args[@]}" --provider-max-attempts 1
           }
 
           provider_unavailable_issue_number() {
@@ -192,7 +194,7 @@ jobs:
             exit "$primary_exit_code"
           fi
 
-          echo "::warning::Primary Gemini resolver model failed with provider unavailability for issue #${fallback_issue}. Running Cerebras fallback once: ${fallback_model}"
+          echo "::warning::Primary Gemini resolver model failed with provider unavailability for issue #${fallback_issue}. Running Groq fallback once: ${fallback_model}"
           preserve_primary_provider_error_artifacts
 
           if run_resolver "$fallback_provider" "$fallback_model" "${ISSUE_INPUT:-$fallback_issue}" "fallback" "$fallback_max_completion_tokens"; then
@@ -204,10 +206,49 @@ jobs:
             exit "$fallback_exit_code"
           fi
 
+      - name: Persist resolver quota state
+        if: always()
+        env:
+          PHASE2_AUTOMATION_TOKEN: ${{ secrets.PHASE2_AUTOMATION_TOKEN }}
+          PHASE2_QUOTA_EVENT_DIR: .tmp/phase-2/quota-events
+          PHASE2_RESOLVER_ATTEMPT_EVENT_DIR: .tmp/phase-2/resolver-attempt-events
+        run: |
+          set -euo pipefail
+
+          if ! compgen -G "${PHASE2_QUOTA_EVENT_DIR}/*.json" > /dev/null \
+            && ! compgen -G "${PHASE2_RESOLVER_ATTEMPT_EVENT_DIR}/*.json" > /dev/null; then
+            echo "No resolver quota or attempt events found; operational state is unchanged."
+            exit 0
+          fi
+          if [[ -z "${PHASE2_AUTOMATION_TOKEN:-}" ]]; then
+            echo "::error::Missing required repository secret: PHASE2_AUTOMATION_TOKEN"
+            exit 1
+          fi
+          echo "::add-mask::${PHASE2_AUTOMATION_TOKEN}"
+
+          source_root="$PWD"
+          export PHASE2_PUSH_URL="https://x-access-token:${PHASE2_AUTOMATION_TOKEN}@github.com/${GITHUB_REPOSITORY}.git"
+          python scripts/phase-2/state_writer.py \
+            --repo-root "$source_root" \
+            --branch "$GITHUB_REF_NAME" \
+            --commit-message "chore(phase-2): update resolver quota state" \
+            --add data/phase-2/quota-state.json \
+            --add data/phase-2/task-state.json \
+            --add data/phase-2/resolver-attempt-state.json \
+            -- \
+            python "{worktree}/scripts/phase-2/quota_state.py" aggregate \
+            --repo-root "{worktree}" \
+            --events "${source_root}/${PHASE2_QUOTA_EVENT_DIR}" \
+            --resolver-attempt-state data/phase-2/resolver-attempt-state.json \
+            --resolver-attempt-events "${source_root}/${PHASE2_RESOLVER_ATTEMPT_EVENT_DIR}"
+
       - name: Upload resolver plan
         if: always()
         uses: actions/upload-artifact@v7
         with:
           name: phase-2-resolver-plan
-          path: .tmp/phase-2/resolver
+          path: |
+            .tmp/phase-2/resolver
+            .tmp/phase-2/quota-events
+            .tmp/phase-2/resolver-attempt-events
           if-no-files-found: ignore

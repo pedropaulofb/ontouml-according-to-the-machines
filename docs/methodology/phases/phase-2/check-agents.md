@@ -192,12 +192,12 @@ Required status check: Check stereotype page structure
 | Implementation status | Implemented in the active check-agent-aware LLM runner and scheduled workflow |
 | Runner | `scripts/phase-2/run_check_agent.py` |
 | Batch runner | `scripts/phase-2/run_check_batch.py` |
-| Prompt | `prompts/phase-2/page-hygiene-checker-v1.0.3.md` |
-| Supported provider adapters | `groq`, `gemini`, `cerebras`, `sambanova`, `openrouter` |
-| Active scheduled providers | `cerebras`, `sambanova`, `openrouter`, `gemini` |
+| Prompt | Shared `check-signal-shared-contract-v1.0.0.md` plus `page-hygiene-checker-v1.1.0.md` |
+| Supported provider adapters | `sambanova`, `groq`, `gemini`, `openrouter` |
+| Active scheduled providers | `sambanova`, `groq`, `gemini`, `openrouter` |
 | Output | Structured Markdown signal comment |
 | Applies changes | No |
-| Target execution | Periodic conservative rotating batches |
+| Target execution | Periodic quota-aware content-addressed queue |
 
 The Page Hygiene Checker checks only visible page-hygiene issues in Markdown content that is present.
 
@@ -231,7 +231,7 @@ It must not:
 - recommend conceptual rewrites;
 - recommend repository actions or workflow changes.
 
-The active `page-hygiene-checker-v1.0.3` prompt is Markdown-only. It emits one GitHub issue comment and does not emit YAML, JSON, or a separate machine-readable artifact.
+The active shared contract plus `page-hygiene-checker-v1.1.0` prompt is Markdown-only. It emits one GitHub issue comment and does not emit YAML, JSON, or a separate machine-readable artifact.
 
 `run_check_agent.py` validates the output against the configured page-hygiene contract. Invalid model output is written as `.invalid.md` and is not posted.
 
@@ -246,12 +246,12 @@ The active `page-hygiene-checker-v1.0.3` prompt is Markdown-only. It emits one G
 | Implementation status | Implemented in the active check-agent-aware LLM runner and scheduled workflow |
 | Runner | `scripts/phase-2/run_check_agent.py` |
 | Batch runner | `scripts/phase-2/run_check_batch.py` |
-| Prompt | `prompts/phase-2/language-style-checker-v1.0.3.md` |
-| Supported provider adapters | `groq`, `gemini`, `cerebras`, `sambanova`, `openrouter` |
-| Active scheduled providers | `cerebras`, `sambanova`, `openrouter`, `gemini` |
+| Prompt | Shared `check-signal-shared-contract-v1.0.0.md` plus `language-style-checker-v1.1.0.md` |
+| Supported provider adapters | `sambanova`, `groq`, `gemini`, `openrouter` |
+| Active scheduled providers | `sambanova`, `groq`, `gemini`, `openrouter` |
 | Output | Structured Markdown signal comment |
 | Applies changes | No |
-| Target execution | Periodic conservative rotating batches |
+| Target execution | Periodic quota-aware content-addressed queue |
 
 The Language Style Checker identifies low-risk writing-quality issues in one provided canonical stereotype page.
 
@@ -320,7 +320,7 @@ When included, `current_text` and `proposed_text` must be emitted together, wrap
 
 It must not include `current_text` or `proposed_text` for issues inside protected content.
 
-The active `language-style-checker-v1.0.3` prompt is Markdown-only. It emits one GitHub issue comment and does not emit YAML, JSON, or a separate machine-readable artifact.
+The active shared contract plus `language-style-checker-v1.1.0` prompt is Markdown-only. It emits one GitHub issue comment and does not emit YAML, JSON, or a separate machine-readable artifact.
 
 `run_check_agent.py` validates the output against the configured language-style contract. Invalid model output is written as `.invalid.md` and is not posted.
 

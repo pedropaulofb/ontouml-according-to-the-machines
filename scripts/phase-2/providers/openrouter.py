@@ -4,19 +4,20 @@ from __future__ import annotations
 
 import os
 
+from free_policy import FreePolicyError, verify_openrouter_free_model
+from provider_model_registry import (
+    RegistryValidationError,
+    require_executable_slot,
+    validate_completion_token_cap,
+)
+from provider_runtime import record_provider_failure
+from reasoning_policy import openrouter_extra_body
+
 from providers.openai_compatible import OpenAICompatibleProviderError, generate_chat_completion
 
 
 class OpenRouterProviderError(RuntimeError):
     """Raised when the OpenRouter provider cannot complete a review."""
-
-
-ALLOWED_OPENROUTER_MODELS = frozenset(
-    {
-        "nvidia/nemotron-3-ultra-550b-a55b:free",
-        "poolside/laguna-m.1:free",
-    }
-)
 
 
 def generate_review(
@@ -33,15 +34,23 @@ def generate_review(
     """Generate one Phase 2 page-review issue comment using OpenRouter."""
     del provider, review_date, page_path, commit_sha, page_content
 
+    try:
+        configured_slot = require_executable_slot("openrouter", model)
+        validate_completion_token_cap(configured_slot, max_completion_tokens)
+    except RegistryValidationError as exc:
+        raise OpenRouterProviderError(f"provider_error_kind=execution_configuration_block: {exc}") from exc
+
     api_key = os.getenv("OPENROUTER_API_KEY")
     if not api_key:
-        raise OpenRouterProviderError("OPENROUTER_API_KEY environment variable is not set.")
+        error = OpenRouterProviderError("OPENROUTER_API_KEY environment variable is not set.")
+        record_provider_failure(provider="openrouter", model=model, exc=error, request_sent=False)
+        raise error
 
-    if model not in ALLOWED_OPENROUTER_MODELS:
-        allowed_models = ", ".join(sorted(ALLOWED_OPENROUTER_MODELS))
-        raise OpenRouterProviderError(
-            f"Unsupported OpenRouter model: {model}. Allowed OpenRouter models: {allowed_models}."
-        )
+    try:
+        verify_openrouter_free_model(model, api_key)
+    except FreePolicyError as exc:
+        record_provider_failure(provider="openrouter", model=model, exc=exc, request_sent=False)
+        raise OpenRouterProviderError(str(exc)) from exc
 
     try:
         return generate_chat_completion(
@@ -51,6 +60,7 @@ def generate_review(
             model=model,
             review_input=review_input,
             max_completion_tokens=max_completion_tokens,
+            extra_body=openrouter_extra_body(configured_slot),
         )
     except OpenAICompatibleProviderError as exc:
         raise OpenRouterProviderError(str(exc)) from exc
