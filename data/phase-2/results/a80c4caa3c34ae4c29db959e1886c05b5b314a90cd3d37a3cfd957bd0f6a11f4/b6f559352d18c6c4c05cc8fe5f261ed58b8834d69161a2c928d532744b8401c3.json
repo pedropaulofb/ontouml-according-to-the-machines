@@ -1,0 +1,74 @@
+{
+  "aggregation": {
+    "source_event_sha256": "66bc965be0d5d3e23e003595ec02b9a44783b88a9cfecf5af10bf884335099c1",
+    "transport_filename": "b6f559352d18c6c4c05cc8fe5f261ed58b8834d69161a2c928d532744b8401c3.json"
+  },
+  "attempt_finished_at": "2026-08-20T10:14:47Z",
+  "attempt_id": "b6f559352d18c6c4c05cc8fe5f261ed58b8834d69161a2c928d532744b8401c3",
+  "attempt_started_at": "2026-08-20T10:14:42Z",
+  "event_version": 1,
+  "model": "MiniMax-M2.7",
+  "outcome": "provider_failure",
+  "output_artifact": null,
+  "output_sha256": null,
+  "provider": "sambanova",
+  "provider_attempts": 1,
+  "quota_observations": [
+    {
+      "call_source": "signal",
+      "event_id": "01787220887141204887-3e43dac4-4793-4bc4-a44f-218d5c3d7f55",
+      "failure": {
+        "diagnostic": "Error code: 429 - {'error': {'code': None, 'message': 'MiniMax-M2.7-32k is currently experiencing high demand. Please try again later!', 'param': None, 'type': ''}, 'request_id': 'b4275f17-9553-4151-9389-f265128d06af'} None {'code': None, 'message': 'MiniMax-M2.7-32k is currently experiencing high demand. Please try again later!', 'param': None, 'type': ''}",
+        "kind": "rate_or_quota_limited",
+        "quota_group_ids": [
+          "sambanova:MiniMax-M2.7"
+        ],
+        "retry_after_seconds": 3600,
+        "retry_not_before": "2026-08-20T11:14:47Z",
+        "retry_source": "inferred",
+        "retryable_immediately": false,
+        "scope": "quota_group"
+      },
+      "headers": {
+        "connection": "keep-alive",
+        "content-security-policy": "default-src 'none'",
+        "content-type": "application/json; charset=utf-8",
+        "date": "Thu, 20 Aug 2026 10:14:47 GMT",
+        "inference-id": "b5660428-08e1-4bd9-863b-44451d22162f",
+        "permissions-policy": "camera=(), microphone=(), geolocation=()",
+        "referrer-policy": "strict-origin-when-cross-origin",
+        "strict-transport-security": "max-age=31536000; includeSubDomains",
+        "transfer-encoding": "chunked",
+        "x-content-type-options": "nosniff",
+        "x-frame-options": "SAMEORIGIN",
+        "x-request-id": "da3d75hgldmns37t4o10"
+      },
+      "model": "MiniMax-M2.7",
+      "observed_at": "2026-08-20T10:14:47Z",
+      "outcome": "failure",
+      "provider": "sambanova",
+      "request_sent": true,
+      "schema_version": 1,
+      "task_id": "a80c4caa3c34ae4c29db959e1886c05b5b314a90cd3d37a3cfd957bd0f6a11f4",
+      "usage": {
+        "cached_tokens": null,
+        "input_tokens": null,
+        "output_tokens": null,
+        "reasoning_tokens": null,
+        "total_tokens": null
+      }
+    }
+  ],
+  "runner_returncode": 1,
+  "signal_count": 0,
+  "task_id": "a80c4caa3c34ae4c29db959e1886c05b5b314a90cd3d37a3cfd957bd0f6a11f4",
+  "usage": {
+    "cached_tokens": null,
+    "input_tokens": null,
+    "output_tokens": null,
+    "reasoning_tokens": null,
+    "total_tokens": null
+  },
+  "worker_id": "sambanova",
+  "workflow_run_id": "32357860121-1"
+}
