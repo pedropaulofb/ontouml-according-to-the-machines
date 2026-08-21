@@ -1,0 +1,29 @@
+{
+  "aggregation": {
+    "source_event_sha256": "1ac56054fc96c3e380ba3a6289e6e3c03cb0d225872a1b1c90bd6b768c5c869f",
+    "transport_filename": "bf0a123fe0117e38e8a2c623a92155fc10de54900365a30c0e6eb0502d20459a.json"
+  },
+  "attempt_finished_at": "2026-08-21T06:06:35Z",
+  "attempt_id": "bf0a123fe0117e38e8a2c623a92155fc10de54900365a30c0e6eb0502d20459a",
+  "attempt_started_at": "2026-08-21T06:06:35Z",
+  "event_version": 1,
+  "model": "DeepSeek-V3.1",
+  "outcome": "not_called",
+  "output_artifact": null,
+  "output_sha256": null,
+  "provider": "sambanova",
+  "provider_attempts": 0,
+  "quota_observations": [],
+  "reason": "required quota group is exhausted",
+  "signal_count": 0,
+  "task_id": "cd4558a9a973e6416f0d181b356a6c1851b8fe714f051111aba13e41319bb63e",
+  "usage": {
+    "cached_tokens": null,
+    "input_tokens": null,
+    "output_tokens": null,
+    "reasoning_tokens": null,
+    "total_tokens": null
+  },
+  "worker_id": "sambanova",
+  "workflow_run_id": "32452985683-1"
+}
