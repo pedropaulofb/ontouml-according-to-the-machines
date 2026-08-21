@@ -3270,10 +3270,10 @@
   },
   "runtime_slots": {
     "gemini:gemini-2.5-flash": {
-      "authorized_recheck_task_id": null,
+      "authorized_recheck_task_id": "03e3ee74d177d1f37cc8bdb79f6e380f4617b9fafa8fd0db77cd0a4c442bbc81",
       "block_reason": "provider_unavailable",
       "block_scope": "slot",
-      "last_updated_at": "2026-08-21T14:00:56Z",
+      "last_updated_at": "2026-08-21T15:17:39Z",
       "last_validation_at": null,
       "last_validation_result": null,
       "model": "gemini-2.5-flash",
@@ -3348,10 +3348,10 @@
       "validation_required": false
     },
     "gemini:gemini-3.7-flash": {
-      "authorized_recheck_task_id": null,
+      "authorized_recheck_task_id": "4ca4423a23ea27ffd75a2b24d18580ac1593bed61786900e2ea344360a025e21",
       "block_reason": "provider_unavailable",
       "block_scope": "slot",
-      "last_updated_at": "2026-08-21T13:56:55Z",
+      "last_updated_at": "2026-08-21T15:17:39Z",
       "last_validation_at": null,
       "last_validation_result": null,
       "model": "gemini-3.7-flash",
