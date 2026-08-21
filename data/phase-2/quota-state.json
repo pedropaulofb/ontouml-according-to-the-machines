@@ -3484,10 +3484,10 @@
       "validation_required": false
     },
     "gemini:gemini-3.7-flash": {
-      "authorized_recheck_task_id": null,
+      "authorized_recheck_task_id": "429aa8ec1032bdd1fad0714b24c30191d2e956d0718946b9b32c5500348785d8",
       "block_reason": "provider_unavailable",
       "block_scope": "slot",
-      "last_updated_at": "2026-08-21T20:04:47Z",
+      "last_updated_at": "2026-08-21T21:34:15Z",
       "last_validation_at": null,
       "last_validation_result": null,
       "model": "gemini-3.7-flash",
