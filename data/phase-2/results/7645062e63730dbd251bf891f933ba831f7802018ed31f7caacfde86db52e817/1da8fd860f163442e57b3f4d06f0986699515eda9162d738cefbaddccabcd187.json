@@ -1,0 +1,92 @@
+{
+  "aggregation": {
+    "source_event_sha256": "696afb5d8cba739c353db3c84d7cb17916400eba86fc95357afdd93e80119901",
+    "transport_filename": "1da8fd860f163442e57b3f4d06f0986699515eda9162d738cefbaddccabcd187.json"
+  },
+  "attempt_finished_at": "2026-08-21T13:58:19Z",
+  "attempt_id": "1da8fd860f163442e57b3f4d06f0986699515eda9162d738cefbaddccabcd187",
+  "attempt_started_at": "2026-08-21T13:57:24Z",
+  "event_version": 1,
+  "model": "gemini-3.1-flash-lite",
+  "outcome": "valid",
+  "output_artifact": "data/phase-2/results/7645062e63730dbd251bf891f933ba831f7802018ed31f7caacfde86db52e817/1da8fd860f163442e57b3f4d06f0986699515eda9162d738cefbaddccabcd187.md",
+  "output_sha256": "57c21ddf873b734c74c68b8b89b6d64fd61f5812949da32bc22ea67f4e0ccbce",
+  "provider": "gemini",
+  "provider_attempts": 2,
+  "quota_observations": [
+    {
+      "call_source": "signal",
+      "event_id": "01787320682072243271-c664efca-18d1-4166-b54d-e29646c0d1fe",
+      "failure": {
+        "diagnostic": "503 UNAVAILABLE. {'error': {'code': 503, 'message': 'This model is currently experiencing high demand. Spikes in demand are usually temporary. Please try again later.', 'status': 'UNAVAILABLE'}} 503 UNAVAILABLE",
+        "kind": "provider_unavailable",
+        "quota_group_ids": [],
+        "retry_after_seconds": 3600,
+        "retry_not_before": "2026-08-21T14:58:02Z",
+        "retry_source": "inferred",
+        "retryable_immediately": true,
+        "scope": "slot"
+      },
+      "headers": {
+        "alt-svc": "h3=\":443\"; ma=2592000,h3-29=\":443\"; ma=2592000",
+        "content-encoding": "gzip",
+        "content-type": "application/json; charset=UTF-8",
+        "date": "Fri, 21 Aug 2026 13:58:02 GMT",
+        "server": "scaffolding on HTTPServer2",
+        "server-timing": "gfet4t7; dur=36151",
+        "transfer-encoding": "chunked",
+        "vary": "Origin, X-Origin, Referer",
+        "x-content-type-options": "nosniff",
+        "x-frame-options": "SAMEORIGIN",
+        "x-gemini-service-tier": "standard",
+        "x-xss-protection": "0"
+      },
+      "model": "gemini-3.1-flash-lite",
+      "observed_at": "2026-08-21T13:58:02Z",
+      "outcome": "failure",
+      "provider": "gemini",
+      "request_sent": true,
+      "schema_version": 1,
+      "task_id": "7645062e63730dbd251bf891f933ba831f7802018ed31f7caacfde86db52e817",
+      "usage": {
+        "cached_tokens": null,
+        "input_tokens": null,
+        "output_tokens": null,
+        "reasoning_tokens": null,
+        "total_tokens": null
+      }
+    },
+    {
+      "call_source": "signal",
+      "event_id": "01787320699536477193-57bcaec6-b4e2-4fb5-a711-a3d7d2091813",
+      "failure": null,
+      "headers": {},
+      "model": "gemini-3.1-flash-lite",
+      "observed_at": "2026-08-21T13:58:19Z",
+      "outcome": "success",
+      "provider": "gemini",
+      "request_sent": true,
+      "schema_version": 1,
+      "task_id": "7645062e63730dbd251bf891f933ba831f7802018ed31f7caacfde86db52e817",
+      "usage": {
+        "cached_tokens": null,
+        "input_tokens": 2872,
+        "output_tokens": 503,
+        "reasoning_tokens": null,
+        "total_tokens": 3375
+      }
+    }
+  ],
+  "runner_returncode": 0,
+  "signal_count": 2,
+  "task_id": "7645062e63730dbd251bf891f933ba831f7802018ed31f7caacfde86db52e817",
+  "usage": {
+    "cached_tokens": null,
+    "input_tokens": 2872,
+    "output_tokens": 503,
+    "reasoning_tokens": null,
+    "total_tokens": 3375
+  },
+  "worker_id": "gemini",
+  "workflow_run_id": "32489325700-1"
+}

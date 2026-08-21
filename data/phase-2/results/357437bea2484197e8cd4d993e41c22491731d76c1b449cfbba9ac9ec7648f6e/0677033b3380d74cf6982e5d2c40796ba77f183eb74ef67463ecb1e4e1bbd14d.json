@@ -1,0 +1,73 @@
+{
+  "aggregation": {
+    "source_event_sha256": "2238ec4c9f695ca59d1050e1c919e040a23838341915ee42ee4f94e7dadfd883",
+    "transport_filename": "0677033b3380d74cf6982e5d2c40796ba77f183eb74ef67463ecb1e4e1bbd14d.json"
+  },
+  "attempt_finished_at": "2026-08-21T13:56:00Z",
+  "attempt_id": "0677033b3380d74cf6982e5d2c40796ba77f183eb74ef67463ecb1e4e1bbd14d",
+  "attempt_started_at": "2026-08-21T13:55:59Z",
+  "event_version": 1,
+  "model": "qwen/qwen3.6-27b",
+  "outcome": "valid",
+  "output_artifact": "data/phase-2/results/357437bea2484197e8cd4d993e41c22491731d76c1b449cfbba9ac9ec7648f6e/0677033b3380d74cf6982e5d2c40796ba77f183eb74ef67463ecb1e4e1bbd14d.md",
+  "output_sha256": "f8132178e4ad19c46db23c4cab1c8f60bf5b9235129638da31428801e1d010d2",
+  "provider": "groq",
+  "provider_attempts": 1,
+  "quota_observations": [
+    {
+      "call_source": "signal",
+      "event_id": "01787320560615804223-940939c3-e9ef-4346-9f5d-2ec10c1f3bfb",
+      "failure": null,
+      "headers": {
+        "alt-svc": "h3=\":443\"; ma=86400",
+        "cache-control": "private, max-age=0, no-store, no-cache, must-revalidate",
+        "cf-cache-status": "DYNAMIC",
+        "cf-ray": "a2ea237a9efc1b51-SJC",
+        "connection": "keep-alive",
+        "content-encoding": "gzip",
+        "content-type": "application/json",
+        "date": "Fri, 21 Aug 2026 13:56:00 GMT",
+        "server": "cloudflare",
+        "set-cookie": "__cf_bm=sWqHzIC3bFXZg9GhNop8V5ACCpOlQzXakb9_efD2QYw-1787320559.7730258-1.0.1.1-f7B5BxAGzBz2ea_b_3xfUtFCuil7lmUhz0EiwxaGndNxQ9Mzdcc7MFsogoBFrn0RdTPURo6FznV5vhKy_bsoOQk.kUP_nbC4gpFK7EibgLqiSD76qbDpbJjpMrvO7vey; HttpOnly; SameSite=None; Secure; Path=/; Domain=groq.com; Expires=Fri, 21 Aug 2026 14:26:00 GMT",
+        "strict-transport-security": "max-age=15552000",
+        "transfer-encoding": "chunked",
+        "vary": "Origin",
+        "via": "1.1 google",
+        "x-groq-region": "dls",
+        "x-ratelimit-limit-requests": "1000",
+        "x-ratelimit-limit-tokens": "8000",
+        "x-ratelimit-remaining-requests": "999",
+        "x-ratelimit-remaining-tokens": "2124",
+        "x-ratelimit-reset-requests": "1m26.4s",
+        "x-ratelimit-reset-tokens": "44.07s",
+        "x-request-id": "req_01m0j9pt5geh1annatkke69xa6"
+      },
+      "model": "qwen/qwen3.6-27b",
+      "observed_at": "2026-08-21T13:56:00Z",
+      "outcome": "success",
+      "provider": "groq",
+      "request_sent": true,
+      "schema_version": 1,
+      "task_id": "357437bea2484197e8cd4d993e41c22491731d76c1b449cfbba9ac9ec7648f6e",
+      "usage": {
+        "cached_tokens": null,
+        "input_tokens": 2876,
+        "output_tokens": 243,
+        "reasoning_tokens": null,
+        "total_tokens": 3119
+      }
+    }
+  ],
+  "runner_returncode": 0,
+  "signal_count": 0,
+  "task_id": "357437bea2484197e8cd4d993e41c22491731d76c1b449cfbba9ac9ec7648f6e",
+  "usage": {
+    "cached_tokens": null,
+    "input_tokens": 2876,
+    "output_tokens": 243,
+    "reasoning_tokens": null,
+    "total_tokens": 3119
+  },
+  "worker_id": "groq",
+  "workflow_run_id": "32489325700-1"
+}

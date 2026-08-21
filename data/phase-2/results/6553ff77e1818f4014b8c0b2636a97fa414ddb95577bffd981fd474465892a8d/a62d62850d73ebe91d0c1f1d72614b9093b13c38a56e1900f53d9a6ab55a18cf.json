@@ -1,0 +1,29 @@
+{
+  "aggregation": {
+    "source_event_sha256": "d957a94d717b46107f8a07dcae730d96e6c7f32583d8cd92df6238a0695fa5bd",
+    "transport_filename": "a62d62850d73ebe91d0c1f1d72614b9093b13c38a56e1900f53d9a6ab55a18cf.json"
+  },
+  "attempt_finished_at": "2026-08-21T13:56:01Z",
+  "attempt_id": "a62d62850d73ebe91d0c1f1d72614b9093b13c38a56e1900f53d9a6ab55a18cf",
+  "attempt_started_at": "2026-08-21T13:56:01Z",
+  "event_version": 1,
+  "model": "qwen/qwen3.6-27b",
+  "outcome": "not_called",
+  "output_artifact": null,
+  "output_sha256": null,
+  "provider": "groq",
+  "provider_attempts": 0,
+  "quota_observations": [],
+  "reason": "model stopped after an availability or policy failure",
+  "signal_count": 0,
+  "task_id": "6553ff77e1818f4014b8c0b2636a97fa414ddb95577bffd981fd474465892a8d",
+  "usage": {
+    "cached_tokens": null,
+    "input_tokens": null,
+    "output_tokens": null,
+    "reasoning_tokens": null,
+    "total_tokens": null
+  },
+  "worker_id": "groq",
+  "workflow_run_id": "32489325700-1"
+}

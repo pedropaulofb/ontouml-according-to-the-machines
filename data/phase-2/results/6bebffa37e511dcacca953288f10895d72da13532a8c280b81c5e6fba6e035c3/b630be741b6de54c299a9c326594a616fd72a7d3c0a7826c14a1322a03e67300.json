@@ -1,0 +1,82 @@
+{
+  "aggregation": {
+    "source_event_sha256": "4103dd02f5b52e614251dd0902d04e852dbfdbb7a0248c7f7cb715eb7da28317",
+    "transport_filename": "b630be741b6de54c299a9c326594a616fd72a7d3c0a7826c14a1322a03e67300.json"
+  },
+  "attempt_finished_at": "2026-08-21T13:56:01Z",
+  "attempt_id": "b630be741b6de54c299a9c326594a616fd72a7d3c0a7826c14a1322a03e67300",
+  "attempt_started_at": "2026-08-21T13:56:00Z",
+  "event_version": 1,
+  "model": "qwen/qwen3.6-27b",
+  "outcome": "provider_failure",
+  "output_artifact": null,
+  "output_sha256": null,
+  "provider": "groq",
+  "provider_attempts": 1,
+  "quota_observations": [
+    {
+      "call_source": "signal",
+      "event_id": "01787320561137043304-2eb9e86e-f1f0-44b1-9e96-0daef48c56be",
+      "failure": {
+        "diagnostic": "Error code: 413 - {'error': {'message': 'Request too large for model `qwen/qwen3.6-27b` in organization `org_01ktk8rfbaetzrgtaw0dmbg6ac` service tier `on_demand` on tokens per minute (TPM): Limit 8000, Requested 9545, please reduce your message size and try again. Need more tokens? Upgrade to Dev Tier today at https://console.groq.com/settings/billing', 'type': 'tokens', 'code': 'rate_limit_exceeded'}} {'error': {'message': 'Request too large for model `qwen/qwen3.6-27b` in organization `org_01ktk8rfbaetzrgtaw0dmbg6ac` service tier `on_demand` on tokens per minute (TPM): Limit 8000, Requested 9545, please reduce your message size and try again. Need more tokens? Upgrade to Dev Tier today at https://console.groq.com/settings/billing', 'type': 'tokens', 'code': 'rate_limit_exceeded'}}",
+        "kind": "execution_configuration_block",
+        "quota_group_ids": [],
+        "retry_after_seconds": 57,
+        "retry_not_before": "2026-08-21T13:56:58Z",
+        "retry_source": "provider-reported",
+        "retryable_immediately": false,
+        "scope": "slot"
+      },
+      "headers": {
+        "alt-svc": "h3=\":443\"; ma=86400",
+        "cache-control": "private, max-age=0, no-store, no-cache, must-revalidate",
+        "cf-cache-status": "DYNAMIC",
+        "cf-ray": "a2ea2382b88916fb-SJC",
+        "connection": "keep-alive",
+        "content-length": "382",
+        "content-type": "application/json",
+        "date": "Fri, 21 Aug 2026 13:56:01 GMT",
+        "retry-after": "57",
+        "server": "cloudflare",
+        "set-cookie": "__cf_bm=DULryO.OZrh_cDQPbpLATqVDVmnAJgOB5puJvQlv8Vk-1787320561.0725403-1.0.1.1-MeR2bLt8ErQa21ZiAyuHlmQGMRELcGStWvD_qVoIIHsWfQ9e_HDFzUDGYTetxoBpldJgxJUJw7HAfGIIOyOvovovbOpbC8mCrNdXBMqP.HKXuH3FwDUvZxv2EAyd0ajI; HttpOnly; SameSite=None; Secure; Path=/; Domain=groq.com; Expires=Fri, 21 Aug 2026 14:26:01 GMT",
+        "strict-transport-security": "max-age=15552000",
+        "vary": "Origin",
+        "via": "1.1 google",
+        "x-groq-region": "dls",
+        "x-ratelimit-limit-requests": "1000",
+        "x-ratelimit-limit-tokens": "8000",
+        "x-ratelimit-remaining-requests": "999",
+        "x-ratelimit-remaining-tokens": "2054",
+        "x-ratelimit-reset-requests": "1m26.4s",
+        "x-ratelimit-reset-tokens": "44.595s",
+        "x-request-id": "req_01m0j9pve9ebnaveem4aw8zd21"
+      },
+      "model": "qwen/qwen3.6-27b",
+      "observed_at": "2026-08-21T13:56:01Z",
+      "outcome": "failure",
+      "provider": "groq",
+      "request_sent": true,
+      "schema_version": 1,
+      "task_id": "6bebffa37e511dcacca953288f10895d72da13532a8c280b81c5e6fba6e035c3",
+      "usage": {
+        "cached_tokens": null,
+        "input_tokens": null,
+        "output_tokens": null,
+        "reasoning_tokens": null,
+        "total_tokens": null
+      }
+    }
+  ],
+  "runner_returncode": 1,
+  "signal_count": 0,
+  "task_id": "6bebffa37e511dcacca953288f10895d72da13532a8c280b81c5e6fba6e035c3",
+  "usage": {
+    "cached_tokens": null,
+    "input_tokens": null,
+    "output_tokens": null,
+    "reasoning_tokens": null,
+    "total_tokens": null
+  },
+  "worker_id": "groq",
+  "workflow_run_id": "32489325700-1"
+}
