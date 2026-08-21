@@ -1,0 +1,65 @@
+{
+  "aggregation": {
+    "source_event_sha256": "c9042223847e1346603f4bcf5257fbb73d51647b137782810cb51b1b07877dec",
+    "transport_filename": "ba5d9f897435b48d50522eed6d9de23bef3b0db731f3c13129a51d096082f7e0.json"
+  },
+  "attempt_finished_at": "2026-08-21T18:54:05Z",
+  "attempt_id": "ba5d9f897435b48d50522eed6d9de23bef3b0db731f3c13129a51d096082f7e0",
+  "attempt_started_at": "2026-08-21T18:53:32Z",
+  "event_version": 1,
+  "model": "openai/gpt-oss-20b:free",
+  "outcome": "valid",
+  "output_artifact": "data/phase-2/results/0c79d10d911ff7ab84cd8397d70b3a900e12ccf09070e29e6fd339f34d5f6506/ba5d9f897435b48d50522eed6d9de23bef3b0db731f3c13129a51d096082f7e0.md",
+  "output_sha256": "0ec82986817b79b43bfaeff5be691dd5ed18f8382f14e9a3056e372b615630d8",
+  "provider": "openrouter",
+  "provider_attempts": 1,
+  "quota_observations": [
+    {
+      "call_source": "signal",
+      "event_id": "01787338445018654075-bfb0f786-0d69-4d82-9347-c7e497f997f2",
+      "failure": null,
+      "headers": {
+        "access-control-allow-origin": "*",
+        "access-control-expose-headers": "X-Generation-Id,X-Provider-Name,request-id,cf-ray",
+        "cf-ray": "a2ebd75f1ed928b3-MSP",
+        "connection": "keep-alive",
+        "content-encoding": "gzip",
+        "content-type": "application/json",
+        "date": "Fri, 21 Aug 2026 18:53:39 GMT",
+        "permissions-policy": "payment=(self \"https://checkout.stripe.com\" \"https://connect-js.stripe.com\" \"https://js.stripe.com\" \"https://*.js.stripe.com\" \"https://hooks.stripe.com\")",
+        "referrer-policy": "no-referrer, strict-origin-when-cross-origin",
+        "server": "cloudflare",
+        "set-cookie": "__cf_bm=FijHOnzs0JswuuEt0APWN_FFBU041e9ZpNeSZhH_AWE-1787338413.9404266-1.0.1.1-XlDOu1Kg3sUOx7PTuBif3bSQco8QYg97fwtt1DSO3a4.JdvX835MxsECKg1nN.KO.rE1Rahvv56BiQmrzaWy06nuIkINEC3gEZ6liLDKf6CUt3pi5xQaFPYMKS7MQulO; HttpOnly; SameSite=None; Secure; Path=/; Domain=openrouter.ai; Expires=Fri, 21 Aug 2026 19:23:39 GMT",
+        "transfer-encoding": "chunked",
+        "x-content-type-options": "nosniff",
+        "x-generation-id": "gen-1787338413-6JJPVg5ilmiGRYMVOYkm"
+      },
+      "model": "openai/gpt-oss-20b:free",
+      "observed_at": "2026-08-21T18:54:05Z",
+      "outcome": "success",
+      "provider": "openrouter",
+      "request_sent": true,
+      "schema_version": 1,
+      "task_id": "0c79d10d911ff7ab84cd8397d70b3a900e12ccf09070e29e6fd339f34d5f6506",
+      "usage": {
+        "cached_tokens": 0,
+        "input_tokens": 2523,
+        "output_tokens": 902,
+        "reasoning_tokens": 283,
+        "total_tokens": 3425
+      }
+    }
+  ],
+  "runner_returncode": 0,
+  "signal_count": 3,
+  "task_id": "0c79d10d911ff7ab84cd8397d70b3a900e12ccf09070e29e6fd339f34d5f6506",
+  "usage": {
+    "cached_tokens": 0,
+    "input_tokens": 2523,
+    "output_tokens": 902,
+    "reasoning_tokens": 283,
+    "total_tokens": 3425
+  },
+  "worker_id": "openrouter",
+  "workflow_run_id": "32515404189-1"
+}

@@ -1,0 +1,65 @@
+{
+  "aggregation": {
+    "source_event_sha256": "74dd68032174e2417d7b65a23ab322dad7d451ad6784662d0fa70fe9fd511095",
+    "transport_filename": "2cd41be49b5d902882342deaac127c3c522d2cdb144a6a793eac246ce35cfeaf.json"
+  },
+  "attempt_finished_at": "2026-08-21T18:53:32Z",
+  "attempt_id": "2cd41be49b5d902882342deaac127c3c522d2cdb144a6a793eac246ce35cfeaf",
+  "attempt_started_at": "2026-08-21T18:53:19Z",
+  "event_version": 1,
+  "model": "poolside/laguna-xs-2.1:free",
+  "outcome": "valid",
+  "output_artifact": "data/phase-2/results/a74d1d61b0b8ad9923d9d8a85c9895346ec03a143a258cdb7d21ab888cf260c7/2cd41be49b5d902882342deaac127c3c522d2cdb144a6a793eac246ce35cfeaf.md",
+  "output_sha256": "d7ec7186d00d5e53da4e751346e7c7d83be3a60b30f6f8176827b6b7496baf3f",
+  "provider": "openrouter",
+  "provider_attempts": 1,
+  "quota_observations": [
+    {
+      "call_source": "signal",
+      "event_id": "01787338412463535366-f4908117-57fc-433d-b764-f130093df62c",
+      "failure": null,
+      "headers": {
+        "access-control-allow-origin": "*",
+        "access-control-expose-headers": "X-Generation-Id,X-Provider-Name,request-id,cf-ray",
+        "cf-ray": "a2ebd70b0b2180ba-ORD",
+        "connection": "keep-alive",
+        "content-encoding": "gzip",
+        "content-type": "application/json",
+        "date": "Fri, 21 Aug 2026 18:53:20 GMT",
+        "permissions-policy": "payment=(self \"https://checkout.stripe.com\" \"https://connect-js.stripe.com\" \"https://js.stripe.com\" \"https://*.js.stripe.com\" \"https://hooks.stripe.com\")",
+        "referrer-policy": "no-referrer, strict-origin-when-cross-origin",
+        "server": "cloudflare",
+        "set-cookie": "__cf_bm=C7l4MUf6v7LqVfaAjQfCNS9kSkczBED4kA.aiy09uZc-1787338400.4850447-1.0.1.1-B_gmPRwe5XCYP4CfvtRYeCR39kQ8YNF6CDH5PUBpGe0kfcxH8OGQ3sYeLtFVe55H5EUEy55hwyuy7MTcxxjDsvR5oVch.vpOGw2RNGPYELPM0_YGyrcKWueF027jDvqK; HttpOnly; SameSite=None; Secure; Path=/; Domain=openrouter.ai; Expires=Fri, 21 Aug 2026 19:23:20 GMT",
+        "transfer-encoding": "chunked",
+        "x-content-type-options": "nosniff",
+        "x-generation-id": "gen-1787338400-rERourtnFFotK8MCFwLN"
+      },
+      "model": "poolside/laguna-xs-2.1:free",
+      "observed_at": "2026-08-21T18:53:32Z",
+      "outcome": "success",
+      "provider": "openrouter",
+      "request_sent": true,
+      "schema_version": 1,
+      "task_id": "a74d1d61b0b8ad9923d9d8a85c9895346ec03a143a258cdb7d21ab888cf260c7",
+      "usage": {
+        "cached_tokens": 0,
+        "input_tokens": 2537,
+        "output_tokens": 233,
+        "reasoning_tokens": 0,
+        "total_tokens": 2770
+      }
+    }
+  ],
+  "runner_returncode": 0,
+  "signal_count": 0,
+  "task_id": "a74d1d61b0b8ad9923d9d8a85c9895346ec03a143a258cdb7d21ab888cf260c7",
+  "usage": {
+    "cached_tokens": 0,
+    "input_tokens": 2537,
+    "output_tokens": 233,
+    "reasoning_tokens": 0,
+    "total_tokens": 2770
+  },
+  "worker_id": "openrouter",
+  "workflow_run_id": "32515404189-1"
+}
