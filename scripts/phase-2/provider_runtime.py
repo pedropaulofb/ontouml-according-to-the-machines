@@ -94,6 +94,20 @@ NOT_FOUND_MARKERS = (
     "http 404",
     "error code: 404",
 )
+STRONG_QUOTA_MARKERS = (
+    "provider_error_kind=rate_or_quota_limited",
+    "429",
+    "rate_limit",
+    "rate limit",
+    "resource_exhausted",
+    "quota exceeded",
+    "too many requests",
+    "requests per day",
+    "requests per minute",
+    "tokens per minute",
+    "tpm",
+    "rpm",
+)
 QUOTA_MARKERS = (
     "provider_error_kind=rate_or_quota_limited",
     "429",
@@ -276,10 +290,10 @@ def classify_provider_failure(
     headers = exception_headers(exc)
     parsed_retry_after = retry_after_seconds(headers, diagnostic, now=observed_at)
 
-    if any(marker in normalized for marker in PROVIDER_POLICY_MARKERS):
-        scope = "provider" if any(marker in normalized for marker in PROVIDER_WIDE_POLICY_MARKERS) else "slot"
-        kind, groups, immediate, default_cooldown = "provider_policy_block", (), False, None
-    elif any(marker in normalized for marker in AUTHENTICATION_MARKERS):
+    # Prefer concrete HTTP/request/quota evidence over incidental provider-policy
+    # wording such as billing or upgrade links embedded in otherwise actionable
+    # provider diagnostics.
+    if any(marker in normalized for marker in AUTHENTICATION_MARKERS):
         kind, scope, groups, immediate, default_cooldown = (
             "execution_configuration_block",
             "provider",
@@ -303,6 +317,17 @@ def classify_provider_failure(
             False,
             None,
         )
+    elif any(marker in normalized for marker in STRONG_QUOTA_MARKERS):
+        kind, scope, groups, immediate, default_cooldown = (
+            "rate_or_quota_limited",
+            "quota_group",
+            quota_groups_for_failure(provider, model, diagnostic),
+            False,
+            DEFAULT_QUOTA_COOLDOWN_SECONDS,
+        )
+    elif any(marker in normalized for marker in PROVIDER_POLICY_MARKERS):
+        scope = "provider" if any(marker in normalized for marker in PROVIDER_WIDE_POLICY_MARKERS) else "slot"
+        kind, groups, immediate, default_cooldown = "provider_policy_block", (), False, None
     elif any(marker in normalized for marker in QUOTA_MARKERS):
         kind, scope, groups, immediate, default_cooldown = (
             "rate_or_quota_limited",

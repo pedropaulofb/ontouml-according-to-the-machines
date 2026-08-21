@@ -62,6 +62,34 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
 
+      - name: Repair legacy provider runtime blocks
+        if: ${{ github.event_name != 'workflow_dispatch' || github.event.inputs.dry_run != 'true' }}
+        env:
+          PHASE2_AUTOMATION_TOKEN: ${{ secrets.PHASE2_AUTOMATION_TOKEN }}
+        run: |
+          set -euo pipefail
+
+          if [[ -z "${PHASE2_AUTOMATION_TOKEN:-}" ]]; then
+            echo "::error::Missing required repository secret: PHASE2_AUTOMATION_TOKEN"
+            exit 1
+          fi
+          echo "::add-mask::${PHASE2_AUTOMATION_TOKEN}"
+
+          source_root="$PWD"
+          export PHASE2_PUSH_URL="https://x-access-token:${PHASE2_AUTOMATION_TOKEN}@github.com/${GITHUB_REPOSITORY}.git"
+          python scripts/phase-2/state_writer.py \
+            --repo-root "$source_root" \
+            --branch "$GITHUB_REF_NAME" \
+            --commit-message "chore(phase-2): repair legacy provider runtime blocks" \
+            --add data/phase-2/quota-state.json \
+            --add data/phase-2/task-state.json \
+            --export "data/phase-2/quota-state.json=${source_root}/data/phase-2/quota-state.json" \
+            --export "data/phase-2/task-state.json=${source_root}/data/phase-2/task-state.json" \
+            -- \
+            python "{worktree}/scripts/phase-2/repair_legacy_provider_blocks.py" \
+            --state "{worktree}/data/phase-2/quota-state.json" \
+            --task-state "{worktree}/data/phase-2/task-state.json"
+
       - name: Resolve signal issue
         env:
           GH_TOKEN: ${{ secrets.PHASE2_AUTOMATION_TOKEN }}
@@ -173,6 +201,22 @@ jobs:
           }
 
           rm -rf .tmp/phase-2/resolver
+
+          if [[ "$GITHUB_EVENT_NAME" == "schedule" ]]; then
+            preflight_args=(
+              --repo "${{ github.repository }}"
+              --preflight-only
+            )
+            if [[ -n "${ISSUE_INPUT:-}" ]]; then
+              preflight_args+=(--issue "${ISSUE_INPUT}")
+            fi
+            preflight_output="$(python scripts/phase-2/resolve_signal_issue.py "${preflight_args[@]}")"
+            printf '%s\n' "$preflight_output"
+            if grep -q "pending=false" <<<"$preflight_output"; then
+              echo "::notice::Scheduled resolver deferred: no eligible resolver work under current quota/runtime state."
+              exit 0
+            fi
+          fi
 
           if run_resolver "$provider" "$model" "${ISSUE_INPUT:-}" "primary" "8000"; then
             echo "::notice::Primary resolver attempt succeeded: provider=${provider}; model=${model}; fallback_used=false"
