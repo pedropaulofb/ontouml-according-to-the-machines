@@ -7473,7 +7473,7 @@
       "last_outcome": {
         "attempt_id": "ecf472d69da4427292f37850e57d56a5d83fa436688fe82d82977baef0bc95cb",
         "finished_at": "2026-08-20T09:52:40Z",
-        "kind": "provider_policy_block",
+        "kind": "rate_or_quota_limited",
         "provider_attempts": 1
       },
       "lease": null,
@@ -7492,7 +7492,7 @@
       "source_metadata": {
         "repository_commit_sha": "ce92069bcdf491a87550eb0b43b275a1ce24555e"
       },
-      "status": "blocked_provider_policy",
+      "status": "deferred_quota",
       "task_id": "088ef7d25755196e92cde50522e43064df9c2084dfad6cd29535269114664b51",
       "updated_at": "2026-08-20T09:52:40Z",
       "validation_rejection_count": 0
@@ -151265,7 +151265,7 @@
       "last_outcome": {
         "attempt_id": "0839553c2badf33fa4cbd9c8fbcd7466853ec24c6c650c93a52b04b5307d7a78",
         "finished_at": "2026-08-20T09:52:12Z",
-        "kind": "provider_policy_block",
+        "kind": "execution_configuration_block",
         "provider_attempts": 1
       },
       "lease": null,
@@ -151284,7 +151284,7 @@
       "source_metadata": {
         "repository_commit_sha": "ce92069bcdf491a87550eb0b43b275a1ce24555e"
       },
-      "status": "blocked_provider_policy",
+      "status": "blocked_execution_configuration",
       "task_id": "bb847dfdc9f94805fd2f7a42a36718007a2fbb52fd964797a6fd898061512d1d",
       "updated_at": "2026-08-20T09:52:12Z",
       "validation_rejection_count": 0
