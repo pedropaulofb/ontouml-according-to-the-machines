@@ -1,0 +1,65 @@
+{
+  "aggregation": {
+    "source_event_sha256": "b7857030aaeb8d2c93258f9eef618363d9c901b47722386b833881038aa9facc",
+    "transport_filename": "03145af8743beed3ce0a2010a2122c5fefa6eda503610da24b10888aa1b8afb7.json"
+  },
+  "attempt_finished_at": "2026-08-21T20:00:03Z",
+  "attempt_id": "03145af8743beed3ce0a2010a2122c5fefa6eda503610da24b10888aa1b8afb7",
+  "attempt_started_at": "2026-08-21T19:59:13Z",
+  "event_version": 1,
+  "model": "nvidia/nemotron-nano-9b-v2:free",
+  "outcome": "validator_rejected",
+  "output_artifact": "data/phase-2/results/a6637e747a732e87faca2bb879a2cb37e8200c8388eeb25b899a78ad438a8691/03145af8743beed3ce0a2010a2122c5fefa6eda503610da24b10888aa1b8afb7.invalid.md",
+  "output_sha256": "adc935d311b798872aa49dc17332e9b79ce14e0b105eecea0af4ae93a91d9249",
+  "provider": "openrouter",
+  "provider_attempts": 1,
+  "quota_observations": [
+    {
+      "call_source": "signal",
+      "event_id": "01787342402814198690-e35dc07b-58b1-41fd-a6af-4e0859fc7553",
+      "failure": null,
+      "headers": {
+        "access-control-allow-origin": "*",
+        "access-control-expose-headers": "X-Generation-Id,X-Provider-Name,request-id,cf-ray",
+        "cf-ray": "a2ec3793adf12b78-LAX",
+        "connection": "keep-alive",
+        "content-encoding": "gzip",
+        "content-type": "application/json",
+        "date": "Fri, 21 Aug 2026 19:59:14 GMT",
+        "permissions-policy": "payment=(self \"https://checkout.stripe.com\" \"https://connect-js.stripe.com\" \"https://js.stripe.com\" \"https://*.js.stripe.com\" \"https://hooks.stripe.com\")",
+        "referrer-policy": "no-referrer, strict-origin-when-cross-origin",
+        "server": "cloudflare",
+        "set-cookie": "__cf_bm=qVHxMv7O5CLR74LtHN7NBxsXSeNLu5O05dKn5P8Spfo-1787342354.5109553-1.0.1.1-30d9qBN3qHnMC40SjekNtAaS4_HA_HyHfYt0Vl.tiJLkd9Wfaao5ewlcizbe14t5B3Q5TmRbkVssdRI9VBzWeH70BO7Ov6UFAeP3cNECw3ePSjCCfg5zlnbd8fAUafFn; HttpOnly; SameSite=None; Secure; Path=/; Domain=openrouter.ai; Expires=Fri, 21 Aug 2026 20:29:14 GMT",
+        "transfer-encoding": "chunked",
+        "x-content-type-options": "nosniff",
+        "x-generation-id": "gen-1787342354-rgGll9g9Td8k3CeuoGeM"
+      },
+      "model": "nvidia/nemotron-nano-9b-v2:free",
+      "observed_at": "2026-08-21T20:00:02Z",
+      "outcome": "success",
+      "provider": "openrouter",
+      "request_sent": true,
+      "schema_version": 1,
+      "task_id": "a6637e747a732e87faca2bb879a2cb37e8200c8388eeb25b899a78ad438a8691",
+      "usage": {
+        "cached_tokens": 0,
+        "input_tokens": 2609,
+        "output_tokens": 2117,
+        "reasoning_tokens": 1762,
+        "total_tokens": 4726
+      }
+    }
+  ],
+  "runner_returncode": 1,
+  "signal_count": 0,
+  "task_id": "a6637e747a732e87faca2bb879a2cb37e8200c8388eeb25b899a78ad438a8691",
+  "usage": {
+    "cached_tokens": 0,
+    "input_tokens": 2609,
+    "output_tokens": 2117,
+    "reasoning_tokens": 1762,
+    "total_tokens": 4726
+  },
+  "worker_id": "openrouter",
+  "workflow_run_id": "32521145406-1"
+}
