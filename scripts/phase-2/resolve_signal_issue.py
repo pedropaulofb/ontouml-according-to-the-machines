@@ -1670,6 +1670,28 @@ def create_pr(repo: str, issue: IssueSnapshot, branch_prefix: str) -> str:
         ]
     )
     run(["git", "push", "--force-with-lease", "origin", branch])
+    existing_pr_url = run(
+        [
+            "gh",
+            "pr",
+            "list",
+            "--repo",
+            repo,
+            "--head",
+            branch,
+            "--base",
+            "main",
+            "--state",
+            "open",
+            "--json",
+            "url",
+            "--jq",
+            ".[0].url",
+        ]
+    ).strip()
+    if existing_pr_url:
+        return existing_pr_url
+
     title = f"Resolve Phase 2 {issue.agent} signals for issue #{issue.number}"
     body = (
         f"Automated Phase 2 resolver PR for {issue.url}.\n\n"

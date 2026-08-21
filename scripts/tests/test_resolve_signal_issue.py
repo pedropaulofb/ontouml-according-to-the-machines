@@ -225,5 +225,66 @@ class OverallDecisionNormalizationTests(unittest.TestCase):
             self.assertFalse((output_dir / "issue-218-plan-error.txt").exists())
 
 
+class PullRequestReuseTests(unittest.TestCase):
+    def test_create_pr_reuses_existing_open_pr_for_deterministic_branch(self) -> None:
+        issue = resolver.IssueSnapshot(
+            number=552,
+            title="Check signal: language-style-checker: classes/phase-mixin",
+            body="",
+            state="OPEN",
+            url="https://github.com/example/repository/issues/552",
+            agent="language-style-checker",
+            reviewed_page="docs/stereotypes/classes/phase-mixin.md",
+            comments=[],
+        )
+        pr_url = "https://github.com/example/repository/pull/562"
+
+        with mock.patch.object(
+            resolver,
+            "run",
+            side_effect=[
+                "",
+                "",
+                f"{issue.reviewed_page}\n",
+                "",
+                "",
+                f"{pr_url}\n",
+            ],
+        ) as mocked_run:
+            result = resolver.create_pr(
+                "example/repository",
+                issue,
+                "phase-2/auto-resolve",
+            )
+
+        self.assertEqual(result, pr_url)
+        mocked_run.assert_has_calls(
+            [
+                mock.call(
+                    [
+                        "gh",
+                        "pr",
+                        "list",
+                        "--repo",
+                        "example/repository",
+                        "--head",
+                        "phase-2/auto-resolve-issue-552",
+                        "--base",
+                        "main",
+                        "--state",
+                        "open",
+                        "--json",
+                        "url",
+                        "--jq",
+                        ".[0].url",
+                    ]
+                )
+            ]
+        )
+        self.assertFalse(
+            any(call.args and call.args[0][:3] == ["gh", "pr", "create"] for call in mocked_run.call_args_list)
+        )
+
+
 if __name__ == "__main__":
     unittest.main()
