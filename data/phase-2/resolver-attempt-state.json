@@ -2,7 +2,7 @@
   "attempts": {
     "4fbb54d842c66ee3fd1e3e99376e6bb46bc13f284fa12e7b44aabbde30f4167e": {
       "attempt_id": "4fbb54d842c66ee3fd1e3e99376e6bb46bc13f284fa12e7b44aabbde30f4167e",
-      "failure_kind": "execution_configuration_block",
+      "failure_kind": "deterministic_execution_failure",
       "first_observed_at": "2026-08-20T12:57:20Z",
       "identity": {
         "active_signal_snapshot_sha256": "1654f653075bdca929345ae3d6ca8f8b00290a426019ec9bf689c207ca1bb29d",
@@ -16,13 +16,13 @@
         "resolver_prompt_sha256": "9c2be8b13a251b4db3ac495d6f6397eee32e13d16c25705ade83b40752aaa0c6",
         "resolver_validator_version": "resolver-plan-validator-v1.2.2"
       },
-      "last_event_id": "01787316971580669682-a9fb552c-7a38-47a3-bd70-5f3e6ff3f736",
-      "last_observed_at": "2026-08-21T12:56:11Z",
-      "request_sent": false,
-      "status": "not_called"
+      "last_event_id": "01787318543310483565-bb99fd06-c766-46c2-a7db-b1bf27417076",
+      "last_observed_at": "2026-08-21T13:22:23Z",
+      "request_sent": true,
+      "status": "execution_failure"
     }
   },
-  "last_updated_at": "2026-08-21T12:56:11Z",
+  "last_updated_at": "2026-08-21T13:22:23Z",
   "processed_event_ids": [
     "01787230640667959865-ba0709d0-2953-4c6f-9930-d4e21deeccdf",
     "01787243962617734894-0d4c925d-a269-4b44-88d4-3f141f935eb2",
@@ -30,7 +30,8 @@
     "01787276281198238225-128ba4dd-4d8a-43be-8d0b-2ec01185fe0e",
     "01787287391442321827-870db02b-add5-4de8-97ac-790066caf284",
     "01787301983544260169-321d60da-ae90-44bb-9f52-db70a421b344",
-    "01787316971580669682-a9fb552c-7a38-47a3-bd70-5f3e6ff3f736"
+    "01787316971580669682-a9fb552c-7a38-47a3-bd70-5f3e6ff3f736",
+    "01787318543310483565-bb99fd06-c766-46c2-a7db-b1bf27417076"
   ],
   "schema_version": 1
 }
