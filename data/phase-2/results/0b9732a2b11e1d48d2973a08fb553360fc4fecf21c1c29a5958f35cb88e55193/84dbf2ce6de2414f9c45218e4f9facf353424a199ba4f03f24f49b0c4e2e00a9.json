@@ -1,0 +1,29 @@
+{
+  "aggregation": {
+    "source_event_sha256": "85abea4f60da67ab69917d637e336e386402b4ee398cd734f7885a9b9060167f",
+    "transport_filename": "84dbf2ce6de2414f9c45218e4f9facf353424a199ba4f03f24f49b0c4e2e00a9.json"
+  },
+  "attempt_finished_at": "2026-08-22T20:35:19Z",
+  "attempt_id": "84dbf2ce6de2414f9c45218e4f9facf353424a199ba4f03f24f49b0c4e2e00a9",
+  "attempt_started_at": "2026-08-22T20:35:19Z",
+  "event_version": 1,
+  "model": "nvidia/nemotron-nano-9b-v2:free",
+  "outcome": "not_called",
+  "output_artifact": null,
+  "output_sha256": null,
+  "provider": "openrouter",
+  "provider_attempts": 0,
+  "quota_observations": [],
+  "reason": "required quota group is exhausted",
+  "signal_count": 0,
+  "task_id": "0b9732a2b11e1d48d2973a08fb553360fc4fecf21c1c29a5958f35cb88e55193",
+  "usage": {
+    "cached_tokens": null,
+    "input_tokens": null,
+    "output_tokens": null,
+    "reasoning_tokens": null,
+    "total_tokens": null
+  },
+  "worker_id": "openrouter",
+  "workflow_run_id": "32597042532-1"
+}
