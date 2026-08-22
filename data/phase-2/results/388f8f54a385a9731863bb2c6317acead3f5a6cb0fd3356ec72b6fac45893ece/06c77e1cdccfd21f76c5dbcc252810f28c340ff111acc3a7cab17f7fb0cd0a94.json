@@ -1,0 +1,29 @@
+{
+  "aggregation": {
+    "source_event_sha256": "1480cd8ee7037a01db08958561e09b175051d9553c52f3b0edefb5166956bc55",
+    "transport_filename": "06c77e1cdccfd21f76c5dbcc252810f28c340ff111acc3a7cab17f7fb0cd0a94.json"
+  },
+  "attempt_finished_at": "2026-08-22T12:57:41Z",
+  "attempt_id": "06c77e1cdccfd21f76c5dbcc252810f28c340ff111acc3a7cab17f7fb0cd0a94",
+  "attempt_started_at": "2026-08-22T12:57:41Z",
+  "event_version": 1,
+  "model": "gemini-3.7-flash",
+  "outcome": "not_called",
+  "output_artifact": null,
+  "output_sha256": null,
+  "provider": "gemini",
+  "provider_attempts": 0,
+  "quota_observations": [],
+  "reason": "model stopped after an availability or policy failure",
+  "signal_count": 0,
+  "task_id": "388f8f54a385a9731863bb2c6317acead3f5a6cb0fd3356ec72b6fac45893ece",
+  "usage": {
+    "cached_tokens": null,
+    "input_tokens": null,
+    "output_tokens": null,
+    "reasoning_tokens": null,
+    "total_tokens": null
+  },
+  "worker_id": "gemini",
+  "workflow_run_id": "32574330965-1"
+}
