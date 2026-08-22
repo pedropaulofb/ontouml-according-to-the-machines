@@ -14,7 +14,7 @@ Counts shown on this page only include executions recorded since that start time
 
 Rows retained in the current statistics state but outside the configured, non-retired registry are shown as `inactive`.
 
-Last generated: `2026-08-22T22:34:20Z`
+Last generated: `2026-08-22T23:00:46Z`
 
 ## Queue snapshot
 
@@ -46,7 +46,7 @@ Last generated: `2026-08-22T22:34:20Z`
 | `gemini` | `gemini-3.5-flash` | `active` | `configured` | `eligible` | `stable` | 21 | 21 | 20 | 14 | 6 | 0 | 1 | 0 | 1 | 0 | 0 | 0 |
 | `gemini` | `gemini-3.5-flash-lite` | `active` | `configured` | `eligible` | `stable` | 81 | 81 | 77 | 25 | 52 | 4 | 0 | 0 | 0 | 0 | 0 | 0 |
 | `gemini` | `gemini-3.6-flash` | `active` | `configured` | `eligible` | `stable` | 106 | 107 | 75 | 59 | 16 | 6 | 25 | 25 | 0 | 0 | 1 | 0 |
-| `gemini` | `gemini-3.7-flash` | `active` | `configured` | `eligible` | `stable` | 50 | 71 | 29 | 23 | 6 | 1 | 20 | 12 | 0 | 0 | 21 | 0 |
+| `gemini` | `gemini-3.7-flash` | `active` | `configured` | `eligible` | `stable` | 51 | 72 | 29 | 23 | 6 | 1 | 21 | 13 | 0 | 0 | 21 | 0 |
 | `groq` | `openai/gpt-oss-120b` | `active` | `configured` | `eligible` | `production` | 13 | 13 | 12 | 7 | 5 | 0 | 1 | 0 | 1 | 0 | 0 | 0 |
 | `groq` | `openai/gpt-oss-20b` | `active` | `configured` | `blocked_execution_configuration` | `production` | 12 | 12 | 9 | 6 | 3 | 2 | 1 | 0 | 1 | 0 | 0 | 0 |
 | `groq` | `qwen/qwen3.6-27b` | `active` | `configured` | `blocked_execution_configuration` | `preview` | 14 | 14 | 13 | 13 | 0 | 0 | 1 | 0 | 0 | 1 | 0 | 0 |
@@ -60,45 +60,45 @@ Last generated: `2026-08-22T22:34:20Z`
 | `openrouter` | `openai/gpt-oss-20b:free` | `active` | `configured` | `eligible` | `free-variant` | 1 | 1 | 1 | 0 | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | `openrouter` | `poolside/laguna-s-2.1:free` | `active` | `configured` | `eligible` | `free-variant` | 1 | 1 | 1 | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | `openrouter` | `poolside/laguna-xs-2.1:free` | `active` | `configured` | `eligible` | `free-variant` | 1 | 1 | 1 | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
-| `sambanova` | `DeepSeek-V3.1` | `active` | `configured` | `eligible` | `production` | 44 | 44 | 0 | 0 | 0 | 0 | 44 | 44 | 0 | 0 | 0 | 0 |
-| `sambanova` | `DeepSeek-V3.2` | `active` | `configured` | `eligible` | `preview` | 44 | 44 | 0 | 0 | 0 | 0 | 44 | 44 | 0 | 0 | 0 | 0 |
-| `sambanova` | `Meta-Llama-3.3-70B-Instruct` | `active` | `configured` | `eligible` | `production` | 43 | 43 | 0 | 0 | 0 | 0 | 43 | 43 | 0 | 0 | 0 | 0 |
+| `sambanova` | `DeepSeek-V3.1` | `active` | `configured` | `eligible` | `production` | 45 | 45 | 0 | 0 | 0 | 0 | 45 | 45 | 0 | 0 | 0 | 0 |
+| `sambanova` | `DeepSeek-V3.2` | `active` | `configured` | `eligible` | `preview` | 45 | 45 | 0 | 0 | 0 | 0 | 45 | 45 | 0 | 0 | 0 | 0 |
+| `sambanova` | `Meta-Llama-3.3-70B-Instruct` | `active` | `configured` | `eligible` | `production` | 44 | 44 | 0 | 0 | 0 | 0 | 44 | 44 | 0 | 0 | 0 | 0 |
 | `sambanova` | `MiniMax-M2.7` | `active` | `configured` | `eligible` | `production` | 141 | 141 | 20 | 11 | 9 | 120 | 1 | 1 | 0 | 0 | 0 | 0 |
 | `sambanova` | `gemma-4-31B-it` | `active` | `configured` | `eligible` | `preview` | 82 | 82 | 74 | 25 | 49 | 8 | 0 | 0 | 0 | 0 | 0 | 0 |
-| `sambanova` | `gpt-oss-120b` | `active` | `configured` | `eligible` | `production` | 44 | 44 | 0 | 0 | 0 | 0 | 44 | 44 | 0 | 0 | 0 | 0 |
+| `sambanova` | `gpt-oss-120b` | `active` | `configured` | `eligible` | `production` | 45 | 45 | 0 | 0 | 0 | 0 | 45 | 45 | 0 | 0 | 0 | 0 |
 
 ## Current slot progress
 
 | Provider | Model | Completed | Desired | Completion | Oldest pending | Last success | Last attempt | Last quota observation |
 |---|---|---:|---:|---:|---|---|---|---|
-| `gemini` | `gemini-2.5-flash` | 65 | 78 | 83.33% |  | `2026-08-22T19:58:25Z` | `2026-08-22T19:58:25Z` | `2026-08-22T22:33:50Z` |
-| `gemini` | `gemini-2.5-flash-lite` | 0 | 0 | 0.00% |  |  |  | `2026-08-22T22:33:50Z` |
-| `gemini` | `gemini-2.5-pro` | 0 | 0 | 0.00% |  |  |  | `2026-08-22T22:33:50Z` |
-| `gemini` | `gemini-3-flash-preview` | 77 | 78 | 98.72% |  | `2026-08-22T08:42:08Z` | `2026-08-22T08:42:08Z` | `2026-08-22T22:33:50Z` |
-| `gemini` | `gemini-3.1-flash-lite` | 76 | 78 | 97.44% |  | `2026-08-21T15:57:26Z` | `2026-08-21T15:57:26Z` | `2026-08-22T22:33:50Z` |
-| `gemini` | `gemini-3.5-flash` | 20 | 78 | 25.64% | 5d 22h | `2026-08-20T09:52:19Z` | `2026-08-20T09:52:43Z` | `2026-08-22T22:33:50Z` |
-| `gemini` | `gemini-3.5-flash-lite` | 77 | 78 | 98.72% |  | `2026-08-21T16:00:22Z` | `2026-08-21T16:00:22Z` | `2026-08-22T22:33:50Z` |
-| `gemini` | `gemini-3.6-flash` | 76 | 78 | 97.44% |  | `2026-08-22T10:01:31Z` | `2026-08-22T10:01:31Z` | `2026-08-22T22:33:50Z` |
-| `gemini` | `gemini-3.7-flash` | 29 | 78 | 37.18% | 4d 10h | `2026-08-22T20:34:56Z` | `2026-08-22T22:33:50Z` | `2026-08-22T22:33:50Z` |
-| `groq` | `openai/gpt-oss-120b` | 13 | 78 | 16.67% | 5d 22h | `2026-08-20T09:52:10Z` | `2026-08-20T09:52:58Z` | `2026-08-21T13:56:01Z` |
-| `groq` | `openai/gpt-oss-20b` | 9 | 78 | 11.54% | 5d 22h | `2026-08-20T09:52:07Z` | `2026-08-20T09:52:58Z` | `2026-08-21T13:56:01Z` |
-| `groq` | `qwen/qwen3.6-27b` | 13 | 78 | 16.67% | 5d 22h | `2026-08-21T13:56:00Z` | `2026-08-21T13:56:01Z` | `2026-08-21T13:56:01Z` |
-| `openrouter` | `google/gemma-4-26b-a4b-it:free` | 1 | 78 | 1.28% | 5d 22h | `2026-08-20T14:50:10Z` | `2026-08-22T21:59:31Z` | `2026-08-22T21:59:30Z` |
-| `openrouter` | `google/gemma-4-31b-it:free` | 1 | 78 | 1.28% | 5d 22h | `2026-08-21T18:53:12Z` | `2026-08-22T21:59:31Z` | `2026-08-22T21:59:30Z` |
+| `gemini` | `gemini-2.5-flash` | 65 | 78 | 83.33% |  | `2026-08-22T19:58:25Z` | `2026-08-22T19:58:25Z` | `2026-08-22T23:00:07Z` |
+| `gemini` | `gemini-2.5-flash-lite` | 0 | 0 | 0.00% |  |  |  | `2026-08-22T23:00:07Z` |
+| `gemini` | `gemini-2.5-pro` | 0 | 0 | 0.00% |  |  |  | `2026-08-22T23:00:07Z` |
+| `gemini` | `gemini-3-flash-preview` | 77 | 78 | 98.72% |  | `2026-08-22T08:42:08Z` | `2026-08-22T08:42:08Z` | `2026-08-22T23:00:07Z` |
+| `gemini` | `gemini-3.1-flash-lite` | 76 | 78 | 97.44% |  | `2026-08-21T15:57:26Z` | `2026-08-21T15:57:26Z` | `2026-08-22T23:00:07Z` |
+| `gemini` | `gemini-3.5-flash` | 20 | 78 | 25.64% | 5d 23h | `2026-08-20T09:52:19Z` | `2026-08-20T09:52:43Z` | `2026-08-22T23:00:07Z` |
+| `gemini` | `gemini-3.5-flash-lite` | 77 | 78 | 98.72% |  | `2026-08-21T16:00:22Z` | `2026-08-21T16:00:22Z` | `2026-08-22T23:00:07Z` |
+| `gemini` | `gemini-3.6-flash` | 76 | 78 | 97.44% |  | `2026-08-22T10:01:31Z` | `2026-08-22T10:01:31Z` | `2026-08-22T23:00:07Z` |
+| `gemini` | `gemini-3.7-flash` | 29 | 78 | 37.18% | 4d 10h | `2026-08-22T20:34:56Z` | `2026-08-22T23:00:07Z` | `2026-08-22T23:00:07Z` |
+| `groq` | `openai/gpt-oss-120b` | 13 | 78 | 16.67% | 5d 23h | `2026-08-20T09:52:10Z` | `2026-08-20T09:52:58Z` | `2026-08-21T13:56:01Z` |
+| `groq` | `openai/gpt-oss-20b` | 9 | 78 | 11.54% | 5d 23h | `2026-08-20T09:52:07Z` | `2026-08-20T09:52:58Z` | `2026-08-21T13:56:01Z` |
+| `groq` | `qwen/qwen3.6-27b` | 13 | 78 | 16.67% | 5d 23h | `2026-08-21T13:56:00Z` | `2026-08-21T13:56:01Z` | `2026-08-21T13:56:01Z` |
+| `openrouter` | `google/gemma-4-26b-a4b-it:free` | 1 | 78 | 1.28% | 5d 23h | `2026-08-20T14:50:10Z` | `2026-08-22T21:59:31Z` | `2026-08-22T21:59:30Z` |
+| `openrouter` | `google/gemma-4-31b-it:free` | 1 | 78 | 1.28% | 5d 23h | `2026-08-21T18:53:12Z` | `2026-08-22T21:59:31Z` | `2026-08-22T21:59:30Z` |
 | `openrouter` | `inclusionai/ling-3.0-flash:free` | 0 | 0 | 0.00% |  |  |  | `2026-08-22T21:59:30Z` |
-| `openrouter` | `nvidia/nemotron-3-super-120b-a12b:free` | 0 | 78 | 0.00% | 3d 6h |  |  | `2026-08-22T21:59:30Z` |
-| `openrouter` | `nvidia/nemotron-3-ultra-550b-a55b:free` | 0 | 78 | 0.00% | 3d 6h |  | `2026-08-22T21:59:27Z` | `2026-08-22T21:59:30Z` |
+| `openrouter` | `nvidia/nemotron-3-super-120b-a12b:free` | 0 | 78 | 0.00% | 3d 7h |  |  | `2026-08-22T21:59:30Z` |
+| `openrouter` | `nvidia/nemotron-3-ultra-550b-a55b:free` | 0 | 78 | 0.00% | 3d 7h |  | `2026-08-22T21:59:27Z` | `2026-08-22T21:59:30Z` |
 | `openrouter` | `nvidia/nemotron-3.5-lightning:free` | 1 | 78 | 1.28% | 3d 13h | `2026-08-21T18:54:59Z` | `2026-08-22T21:59:31Z` | `2026-08-22T21:59:30Z` |
-| `openrouter` | `nvidia/nemotron-nano-9b-v2:free` | 1 | 78 | 1.28% | 5d 22h | `2026-08-22T00:03:06Z` | `2026-08-22T21:59:31Z` | `2026-08-22T21:59:30Z` |
-| `openrouter` | `openai/gpt-oss-20b:free` | 1 | 78 | 1.28% | 5d 22h | `2026-08-21T18:54:05Z` | `2026-08-22T21:59:31Z` | `2026-08-22T21:59:30Z` |
-| `openrouter` | `poolside/laguna-s-2.1:free` | 1 | 78 | 1.28% | 5d 22h | `2026-08-21T18:53:19Z` | `2026-08-22T21:59:31Z` | `2026-08-22T21:59:30Z` |
-| `openrouter` | `poolside/laguna-xs-2.1:free` | 1 | 78 | 1.28% | 5d 22h | `2026-08-21T18:53:32Z` | `2026-08-22T21:59:31Z` | `2026-08-22T21:59:30Z` |
-| `sambanova` | `DeepSeek-V3.1` | 0 | 78 | 0.00% | 5d 22h |  | `2026-08-22T21:59:13Z` | `2026-08-22T21:59:13Z` |
-| `sambanova` | `DeepSeek-V3.2` | 0 | 78 | 0.00% | 5d 22h |  | `2026-08-22T21:59:13Z` | `2026-08-22T21:59:13Z` |
-| `sambanova` | `Meta-Llama-3.3-70B-Instruct` | 0 | 78 | 0.00% | 5d 22h |  | `2026-08-22T21:59:13Z` | `2026-08-22T21:59:13Z` |
-| `sambanova` | `MiniMax-M2.7` | 21 | 78 | 26.92% |  | `2026-08-20T13:08:24Z` | `2026-08-20T13:09:00Z` | `2026-08-22T21:59:13Z` |
-| `sambanova` | `gemma-4-31B-it` | 74 | 78 | 94.87% |  | `2026-08-20T10:16:04Z` | `2026-08-20T11:38:01Z` | `2026-08-22T21:59:13Z` |
-| `sambanova` | `gpt-oss-120b` | 0 | 78 | 0.00% | 5d 22h |  | `2026-08-22T21:59:13Z` | `2026-08-22T21:59:13Z` |
+| `openrouter` | `nvidia/nemotron-nano-9b-v2:free` | 1 | 78 | 1.28% | 5d 23h | `2026-08-22T00:03:06Z` | `2026-08-22T21:59:31Z` | `2026-08-22T21:59:30Z` |
+| `openrouter` | `openai/gpt-oss-20b:free` | 1 | 78 | 1.28% | 5d 23h | `2026-08-21T18:54:05Z` | `2026-08-22T21:59:31Z` | `2026-08-22T21:59:30Z` |
+| `openrouter` | `poolside/laguna-s-2.1:free` | 1 | 78 | 1.28% | 5d 23h | `2026-08-21T18:53:19Z` | `2026-08-22T21:59:31Z` | `2026-08-22T21:59:30Z` |
+| `openrouter` | `poolside/laguna-xs-2.1:free` | 1 | 78 | 1.28% | 5d 23h | `2026-08-21T18:53:32Z` | `2026-08-22T21:59:31Z` | `2026-08-22T21:59:30Z` |
+| `sambanova` | `DeepSeek-V3.1` | 0 | 78 | 0.00% | 5d 23h |  | `2026-08-22T23:00:10Z` | `2026-08-22T23:00:09Z` |
+| `sambanova` | `DeepSeek-V3.2` | 0 | 78 | 0.00% | 5d 23h |  | `2026-08-22T23:00:10Z` | `2026-08-22T23:00:09Z` |
+| `sambanova` | `Meta-Llama-3.3-70B-Instruct` | 0 | 78 | 0.00% | 5d 23h |  | `2026-08-22T23:00:10Z` | `2026-08-22T23:00:09Z` |
+| `sambanova` | `MiniMax-M2.7` | 21 | 78 | 26.92% |  | `2026-08-20T13:08:24Z` | `2026-08-20T13:09:00Z` | `2026-08-22T23:00:09Z` |
+| `sambanova` | `gemma-4-31B-it` | 74 | 78 | 94.87% |  | `2026-08-20T10:16:04Z` | `2026-08-20T11:38:01Z` | `2026-08-22T23:00:09Z` |
+| `sambanova` | `gpt-oss-120b` | 0 | 78 | 0.00% | 5d 23h |  | `2026-08-22T23:00:10Z` | `2026-08-22T23:00:09Z` |
 
 ## Token observations
 
@@ -284,7 +284,7 @@ This page does not store secrets, raw prompts, raw completions, or provider resp
     }
   ],
   "collection_start_utc": "2026-08-20T08:44:00Z",
-  "generated_at": "2026-08-22T22:34:20Z",
+  "generated_at": "2026-08-22T23:00:46Z",
   "models": {
     "gemini:gemini-2.5-flash": {
       "cached_tokens": 63266,
@@ -304,7 +304,7 @@ This page does not store secrets, raw prompts, raw completions, or provider resp
       "last_event_name": "",
       "last_issue_status": "",
       "last_overall_status": "",
-      "last_quota_observation": "2026-08-22T22:33:50Z",
+      "last_quota_observation": "2026-08-22T23:00:07Z",
       "last_run_attempt": "",
       "last_run_id": "",
       "last_run_utc": "2026-08-22T19:58:25Z",
@@ -353,7 +353,7 @@ This page does not store secrets, raw prompts, raw completions, or provider resp
       "last_event_name": "",
       "last_issue_status": "",
       "last_overall_status": "",
-      "last_quota_observation": "2026-08-22T22:33:50Z",
+      "last_quota_observation": "2026-08-22T23:00:07Z",
       "last_run_attempt": "",
       "last_run_id": "",
       "last_run_utc": "",
@@ -402,7 +402,7 @@ This page does not store secrets, raw prompts, raw completions, or provider resp
       "last_event_name": "",
       "last_issue_status": "",
       "last_overall_status": "",
-      "last_quota_observation": "2026-08-22T22:33:50Z",
+      "last_quota_observation": "2026-08-22T23:00:07Z",
       "last_run_attempt": "",
       "last_run_id": "",
       "last_run_utc": "",
@@ -451,7 +451,7 @@ This page does not store secrets, raw prompts, raw completions, or provider resp
       "last_event_name": "",
       "last_issue_status": "",
       "last_overall_status": "",
-      "last_quota_observation": "2026-08-22T22:33:50Z",
+      "last_quota_observation": "2026-08-22T23:00:07Z",
       "last_run_attempt": "",
       "last_run_id": "",
       "last_run_utc": "2026-08-22T08:42:08Z",
@@ -500,7 +500,7 @@ This page does not store secrets, raw prompts, raw completions, or provider resp
       "last_event_name": "",
       "last_issue_status": "",
       "last_overall_status": "",
-      "last_quota_observation": "2026-08-22T22:33:50Z",
+      "last_quota_observation": "2026-08-22T23:00:07Z",
       "last_run_attempt": "",
       "last_run_id": "",
       "last_run_utc": "2026-08-21T15:57:26Z",
@@ -549,14 +549,14 @@ This page does not store secrets, raw prompts, raw completions, or provider resp
       "last_event_name": "",
       "last_issue_status": "",
       "last_overall_status": "",
-      "last_quota_observation": "2026-08-22T22:33:50Z",
+      "last_quota_observation": "2026-08-22T23:00:07Z",
       "last_run_attempt": "",
       "last_run_id": "",
       "last_run_utc": "2026-08-20T09:52:43Z",
       "last_success": "2026-08-20T09:52:19Z",
       "lifecycle_status": "stable",
       "model": "gemini-3.5-flash",
-      "oldest_pending_age_seconds": 513260,
+      "oldest_pending_age_seconds": 514846,
       "output_tokens": 5851,
       "output_tokens_known_events": 20,
       "policy_blocks": 1,
@@ -598,7 +598,7 @@ This page does not store secrets, raw prompts, raw completions, or provider resp
       "last_event_name": "",
       "last_issue_status": "",
       "last_overall_status": "",
-      "last_quota_observation": "2026-08-22T22:33:50Z",
+      "last_quota_observation": "2026-08-22T23:00:07Z",
       "last_run_attempt": "",
       "last_run_id": "",
       "last_run_utc": "2026-08-21T16:00:22Z",
@@ -647,7 +647,7 @@ This page does not store secrets, raw prompts, raw completions, or provider resp
       "last_event_name": "",
       "last_issue_status": "",
       "last_overall_status": "",
-      "last_quota_observation": "2026-08-22T22:33:50Z",
+      "last_quota_observation": "2026-08-22T23:00:07Z",
       "last_run_attempt": "",
       "last_run_id": "",
       "last_run_utc": "2026-08-22T10:01:31Z",
@@ -681,7 +681,7 @@ This page does not store secrets, raw prompts, raw completions, or provider resp
     "gemini:gemini-3.7-flash": {
       "cached_tokens": null,
       "cached_tokens_known_events": 0,
-      "called": 50,
+      "called": 51,
       "completion_percentage": 37.18,
       "configuration_status": "configured",
       "current_completed_tasks": 29,
@@ -690,28 +690,28 @@ This page does not store secrets, raw prompts, raw completions, or provider resp
       "execution_status": "eligible",
       "input_tokens": 114345,
       "input_tokens_known_events": 30,
-      "invalid": 21,
-      "last_attempt": "2026-08-22T22:33:50Z",
+      "invalid": 22,
+      "last_attempt": "2026-08-22T23:00:07Z",
       "last_check_status": "provider_failed",
       "last_event_name": "",
       "last_issue_status": "",
       "last_overall_status": "",
-      "last_quota_observation": "2026-08-22T22:33:50Z",
+      "last_quota_observation": "2026-08-22T23:00:07Z",
       "last_run_attempt": "",
       "last_run_id": "",
-      "last_run_utc": "2026-08-22T22:33:50Z",
+      "last_run_utc": "2026-08-22T23:00:07Z",
       "last_success": "2026-08-22T20:34:56Z",
       "lifecycle_status": "stable",
       "model": "gemini-3.7-flash",
-      "oldest_pending_age_seconds": 381860,
+      "oldest_pending_age_seconds": 383446,
       "output_tokens": 9214,
       "output_tokens_known_events": 30,
       "policy_blocks": 0,
       "provider": "gemini",
       "provider_attempts_accuracy": "mixed-inferred-and-locally-counted",
-      "provider_failed": 20,
-      "provider_failures": 20,
-      "quota_deferrals": 12,
+      "provider_failed": 21,
+      "provider_failures": 21,
+      "quota_deferrals": 13,
       "reasoning_tokens": 313,
       "reasoning_tokens_known_events": 1,
       "rejected": 1,
@@ -719,8 +719,8 @@ This page does not store secrets, raw prompts, raw completions, or provider resp
       "runner_failures": 0,
       "spec": "gemini:gemini-3.7-flash",
       "temporarily_unavailable_events": 21,
-      "total_called": 50,
-      "total_provider_attempts": 71,
+      "total_called": 51,
+      "total_provider_attempts": 72,
       "valid": 29,
       "valid_outputs": 29,
       "valid_outputs_with_signals": 6,
@@ -752,7 +752,7 @@ This page does not store secrets, raw prompts, raw completions, or provider resp
       "last_success": "2026-08-20T09:52:10Z",
       "lifecycle_status": "production",
       "model": "openai/gpt-oss-120b",
-      "oldest_pending_age_seconds": 513260,
+      "oldest_pending_age_seconds": 514846,
       "output_tokens": 8300,
       "output_tokens_known_events": 12,
       "policy_blocks": 1,
@@ -801,7 +801,7 @@ This page does not store secrets, raw prompts, raw completions, or provider resp
       "last_success": "2026-08-20T09:52:07Z",
       "lifecycle_status": "production",
       "model": "openai/gpt-oss-20b",
-      "oldest_pending_age_seconds": 513260,
+      "oldest_pending_age_seconds": 514846,
       "output_tokens": 8451,
       "output_tokens_known_events": 11,
       "policy_blocks": 1,
@@ -850,7 +850,7 @@ This page does not store secrets, raw prompts, raw completions, or provider resp
       "last_success": "2026-08-21T13:56:00Z",
       "lifecycle_status": "preview",
       "model": "qwen/qwen3.6-27b",
-      "oldest_pending_age_seconds": 513260,
+      "oldest_pending_age_seconds": 514846,
       "output_tokens": 3206,
       "output_tokens_known_events": 13,
       "policy_blocks": 0,
@@ -899,7 +899,7 @@ This page does not store secrets, raw prompts, raw completions, or provider resp
       "last_success": "2026-08-20T14:50:10Z",
       "lifecycle_status": "free-variant",
       "model": "google/gemma-4-26b-a4b-it:free",
-      "oldest_pending_age_seconds": 513260,
+      "oldest_pending_age_seconds": 514846,
       "output_tokens": 262,
       "output_tokens_known_events": 1,
       "policy_blocks": 0,
@@ -948,7 +948,7 @@ This page does not store secrets, raw prompts, raw completions, or provider resp
       "last_success": "2026-08-21T18:53:12Z",
       "lifecycle_status": "free-variant",
       "model": "google/gemma-4-31b-it:free",
-      "oldest_pending_age_seconds": 513260,
+      "oldest_pending_age_seconds": 514846,
       "output_tokens": 375,
       "output_tokens_known_events": 1,
       "policy_blocks": 0,
@@ -1046,7 +1046,7 @@ This page does not store secrets, raw prompts, raw completions, or provider resp
       "last_success": "",
       "lifecycle_status": "free-variant",
       "model": "nvidia/nemotron-3-super-120b-a12b:free",
-      "oldest_pending_age_seconds": 282878,
+      "oldest_pending_age_seconds": 284464,
       "output_tokens": null,
       "output_tokens_known_events": 0,
       "policy_blocks": 0,
@@ -1095,7 +1095,7 @@ This page does not store secrets, raw prompts, raw completions, or provider resp
       "last_success": "",
       "lifecycle_status": "free-variant",
       "model": "nvidia/nemotron-3-ultra-550b-a55b:free",
-      "oldest_pending_age_seconds": 282878,
+      "oldest_pending_age_seconds": 284464,
       "output_tokens": null,
       "output_tokens_known_events": 0,
       "policy_blocks": 0,
@@ -1144,7 +1144,7 @@ This page does not store secrets, raw prompts, raw completions, or provider resp
       "last_success": "2026-08-21T18:54:59Z",
       "lifecycle_status": "free-variant",
       "model": "nvidia/nemotron-3.5-lightning:free",
-      "oldest_pending_age_seconds": 306860,
+      "oldest_pending_age_seconds": 308446,
       "output_tokens": 234,
       "output_tokens_known_events": 1,
       "policy_blocks": 0,
@@ -1193,7 +1193,7 @@ This page does not store secrets, raw prompts, raw completions, or provider resp
       "last_success": "2026-08-22T00:03:06Z",
       "lifecycle_status": "free-variant",
       "model": "nvidia/nemotron-nano-9b-v2:free",
-      "oldest_pending_age_seconds": 513260,
+      "oldest_pending_age_seconds": 514846,
       "output_tokens": 9914,
       "output_tokens_known_events": 4,
       "policy_blocks": 0,
@@ -1242,7 +1242,7 @@ This page does not store secrets, raw prompts, raw completions, or provider resp
       "last_success": "2026-08-21T18:54:05Z",
       "lifecycle_status": "free-variant",
       "model": "openai/gpt-oss-20b:free",
-      "oldest_pending_age_seconds": 513260,
+      "oldest_pending_age_seconds": 514846,
       "output_tokens": 902,
       "output_tokens_known_events": 1,
       "policy_blocks": 0,
@@ -1291,7 +1291,7 @@ This page does not store secrets, raw prompts, raw completions, or provider resp
       "last_success": "2026-08-21T18:53:19Z",
       "lifecycle_status": "free-variant",
       "model": "poolside/laguna-s-2.1:free",
-      "oldest_pending_age_seconds": 513260,
+      "oldest_pending_age_seconds": 514846,
       "output_tokens": 233,
       "output_tokens_known_events": 1,
       "policy_blocks": 0,
@@ -1340,7 +1340,7 @@ This page does not store secrets, raw prompts, raw completions, or provider resp
       "last_success": "2026-08-21T18:53:32Z",
       "lifecycle_status": "free-variant",
       "model": "poolside/laguna-xs-2.1:free",
-      "oldest_pending_age_seconds": 513260,
+      "oldest_pending_age_seconds": 514846,
       "output_tokens": 233,
       "output_tokens_known_events": 1,
       "policy_blocks": 0,
@@ -1367,7 +1367,7 @@ This page does not store secrets, raw prompts, raw completions, or provider resp
     "sambanova:DeepSeek-V3.1": {
       "cached_tokens": null,
       "cached_tokens_known_events": 0,
-      "called": 44,
+      "called": 45,
       "completion_percentage": 0.0,
       "configuration_status": "configured",
       "current_completed_tasks": 0,
@@ -1376,28 +1376,28 @@ This page does not store secrets, raw prompts, raw completions, or provider resp
       "execution_status": "eligible",
       "input_tokens": null,
       "input_tokens_known_events": 0,
-      "invalid": 44,
-      "last_attempt": "2026-08-22T21:59:13Z",
+      "invalid": 45,
+      "last_attempt": "2026-08-22T23:00:10Z",
       "last_check_status": "provider_failed",
       "last_event_name": "",
       "last_issue_status": "",
       "last_overall_status": "",
-      "last_quota_observation": "2026-08-22T21:59:13Z",
+      "last_quota_observation": "2026-08-22T23:00:09Z",
       "last_run_attempt": "",
       "last_run_id": "",
-      "last_run_utc": "2026-08-22T21:59:13Z",
+      "last_run_utc": "2026-08-22T23:00:10Z",
       "last_success": "",
       "lifecycle_status": "production",
       "model": "DeepSeek-V3.1",
-      "oldest_pending_age_seconds": 513260,
+      "oldest_pending_age_seconds": 514846,
       "output_tokens": null,
       "output_tokens_known_events": 0,
       "policy_blocks": 0,
       "provider": "sambanova",
       "provider_attempts_accuracy": "mixed-inferred-and-locally-counted",
-      "provider_failed": 44,
-      "provider_failures": 44,
-      "quota_deferrals": 44,
+      "provider_failed": 45,
+      "provider_failures": 45,
+      "quota_deferrals": 45,
       "reasoning_tokens": null,
       "reasoning_tokens_known_events": 0,
       "rejected": 0,
@@ -1405,8 +1405,8 @@ This page does not store secrets, raw prompts, raw completions, or provider resp
       "runner_failures": 0,
       "spec": "sambanova:DeepSeek-V3.1",
       "temporarily_unavailable_events": 0,
-      "total_called": 44,
-      "total_provider_attempts": 44,
+      "total_called": 45,
+      "total_provider_attempts": 45,
       "valid": 0,
       "valid_outputs": 0,
       "valid_outputs_with_signals": 0,
@@ -1416,6 +1416,55 @@ This page does not store secrets, raw prompts, raw completions, or provider resp
     "sambanova:DeepSeek-V3.2": {
       "cached_tokens": null,
       "cached_tokens_known_events": 0,
+      "called": 45,
+      "completion_percentage": 0.0,
+      "configuration_status": "configured",
+      "current_completed_tasks": 0,
+      "current_desired_tasks": 78,
+      "execution_configuration_blocks": 0,
+      "execution_status": "eligible",
+      "input_tokens": null,
+      "input_tokens_known_events": 0,
+      "invalid": 45,
+      "last_attempt": "2026-08-22T23:00:10Z",
+      "last_check_status": "provider_failed",
+      "last_event_name": "",
+      "last_issue_status": "",
+      "last_overall_status": "",
+      "last_quota_observation": "2026-08-22T23:00:09Z",
+      "last_run_attempt": "",
+      "last_run_id": "",
+      "last_run_utc": "2026-08-22T23:00:10Z",
+      "last_success": "",
+      "lifecycle_status": "preview",
+      "model": "DeepSeek-V3.2",
+      "oldest_pending_age_seconds": 514846,
+      "output_tokens": null,
+      "output_tokens_known_events": 0,
+      "policy_blocks": 0,
+      "provider": "sambanova",
+      "provider_attempts_accuracy": "mixed-inferred-and-locally-counted",
+      "provider_failed": 45,
+      "provider_failures": 45,
+      "quota_deferrals": 45,
+      "reasoning_tokens": null,
+      "reasoning_tokens_known_events": 0,
+      "rejected": 0,
+      "runner_failed": 0,
+      "runner_failures": 0,
+      "spec": "sambanova:DeepSeek-V3.2",
+      "temporarily_unavailable_events": 0,
+      "total_called": 45,
+      "total_provider_attempts": 45,
+      "valid": 0,
+      "valid_outputs": 0,
+      "valid_outputs_with_signals": 0,
+      "validator_rejections": 0,
+      "zero_signal_valid_outputs": 0
+    },
+    "sambanova:Meta-Llama-3.3-70B-Instruct": {
+      "cached_tokens": null,
+      "cached_tokens_known_events": 0,
       "called": 44,
       "completion_percentage": 0.0,
       "configuration_status": "configured",
@@ -1426,19 +1475,19 @@ This page does not store secrets, raw prompts, raw completions, or provider resp
       "input_tokens": null,
       "input_tokens_known_events": 0,
       "invalid": 44,
-      "last_attempt": "2026-08-22T21:59:13Z",
+      "last_attempt": "2026-08-22T23:00:10Z",
       "last_check_status": "provider_failed",
       "last_event_name": "",
       "last_issue_status": "",
       "last_overall_status": "",
-      "last_quota_observation": "2026-08-22T21:59:13Z",
+      "last_quota_observation": "2026-08-22T23:00:09Z",
       "last_run_attempt": "",
       "last_run_id": "",
-      "last_run_utc": "2026-08-22T21:59:13Z",
+      "last_run_utc": "2026-08-22T23:00:10Z",
       "last_success": "",
-      "lifecycle_status": "preview",
-      "model": "DeepSeek-V3.2",
-      "oldest_pending_age_seconds": 513260,
+      "lifecycle_status": "production",
+      "model": "Meta-Llama-3.3-70B-Instruct",
+      "oldest_pending_age_seconds": 514846,
       "output_tokens": null,
       "output_tokens_known_events": 0,
       "policy_blocks": 0,
@@ -1452,59 +1501,10 @@ This page does not store secrets, raw prompts, raw completions, or provider resp
       "rejected": 0,
       "runner_failed": 0,
       "runner_failures": 0,
-      "spec": "sambanova:DeepSeek-V3.2",
+      "spec": "sambanova:Meta-Llama-3.3-70B-Instruct",
       "temporarily_unavailable_events": 0,
       "total_called": 44,
       "total_provider_attempts": 44,
-      "valid": 0,
-      "valid_outputs": 0,
-      "valid_outputs_with_signals": 0,
-      "validator_rejections": 0,
-      "zero_signal_valid_outputs": 0
-    },
-    "sambanova:Meta-Llama-3.3-70B-Instruct": {
-      "cached_tokens": null,
-      "cached_tokens_known_events": 0,
-      "called": 43,
-      "completion_percentage": 0.0,
-      "configuration_status": "configured",
-      "current_completed_tasks": 0,
-      "current_desired_tasks": 78,
-      "execution_configuration_blocks": 0,
-      "execution_status": "eligible",
-      "input_tokens": null,
-      "input_tokens_known_events": 0,
-      "invalid": 43,
-      "last_attempt": "2026-08-22T21:59:13Z",
-      "last_check_status": "provider_failed",
-      "last_event_name": "",
-      "last_issue_status": "",
-      "last_overall_status": "",
-      "last_quota_observation": "2026-08-22T21:59:13Z",
-      "last_run_attempt": "",
-      "last_run_id": "",
-      "last_run_utc": "2026-08-22T21:59:13Z",
-      "last_success": "",
-      "lifecycle_status": "production",
-      "model": "Meta-Llama-3.3-70B-Instruct",
-      "oldest_pending_age_seconds": 513260,
-      "output_tokens": null,
-      "output_tokens_known_events": 0,
-      "policy_blocks": 0,
-      "provider": "sambanova",
-      "provider_attempts_accuracy": "mixed-inferred-and-locally-counted",
-      "provider_failed": 43,
-      "provider_failures": 43,
-      "quota_deferrals": 43,
-      "reasoning_tokens": null,
-      "reasoning_tokens_known_events": 0,
-      "rejected": 0,
-      "runner_failed": 0,
-      "runner_failures": 0,
-      "spec": "sambanova:Meta-Llama-3.3-70B-Instruct",
-      "temporarily_unavailable_events": 0,
-      "total_called": 43,
-      "total_provider_attempts": 43,
       "valid": 0,
       "valid_outputs": 0,
       "valid_outputs_with_signals": 0,
@@ -1529,7 +1529,7 @@ This page does not store secrets, raw prompts, raw completions, or provider resp
       "last_event_name": "",
       "last_issue_status": "",
       "last_overall_status": "",
-      "last_quota_observation": "2026-08-22T21:59:13Z",
+      "last_quota_observation": "2026-08-22T23:00:09Z",
       "last_run_attempt": "",
       "last_run_id": "",
       "last_run_utc": "2026-08-20T13:09:00Z",
@@ -1578,7 +1578,7 @@ This page does not store secrets, raw prompts, raw completions, or provider resp
       "last_event_name": "",
       "last_issue_status": "",
       "last_overall_status": "",
-      "last_quota_observation": "2026-08-22T21:59:13Z",
+      "last_quota_observation": "2026-08-22T23:00:09Z",
       "last_run_attempt": "",
       "last_run_id": "",
       "last_run_utc": "2026-08-20T11:38:01Z",
@@ -1612,7 +1612,7 @@ This page does not store secrets, raw prompts, raw completions, or provider resp
     "sambanova:gpt-oss-120b": {
       "cached_tokens": null,
       "cached_tokens_known_events": 0,
-      "called": 44,
+      "called": 45,
       "completion_percentage": 0.0,
       "configuration_status": "configured",
       "current_completed_tasks": 0,
@@ -1621,28 +1621,28 @@ This page does not store secrets, raw prompts, raw completions, or provider resp
       "execution_status": "eligible",
       "input_tokens": null,
       "input_tokens_known_events": 0,
-      "invalid": 44,
-      "last_attempt": "2026-08-22T21:59:13Z",
+      "invalid": 45,
+      "last_attempt": "2026-08-22T23:00:10Z",
       "last_check_status": "provider_failed",
       "last_event_name": "",
       "last_issue_status": "",
       "last_overall_status": "",
-      "last_quota_observation": "2026-08-22T21:59:13Z",
+      "last_quota_observation": "2026-08-22T23:00:09Z",
       "last_run_attempt": "",
       "last_run_id": "",
-      "last_run_utc": "2026-08-22T21:59:13Z",
+      "last_run_utc": "2026-08-22T23:00:10Z",
       "last_success": "",
       "lifecycle_status": "production",
       "model": "gpt-oss-120b",
-      "oldest_pending_age_seconds": 513260,
+      "oldest_pending_age_seconds": 514846,
       "output_tokens": null,
       "output_tokens_known_events": 0,
       "policy_blocks": 0,
       "provider": "sambanova",
       "provider_attempts_accuracy": "mixed-inferred-and-locally-counted",
-      "provider_failed": 44,
-      "provider_failures": 44,
-      "quota_deferrals": 44,
+      "provider_failed": 45,
+      "provider_failures": 45,
+      "quota_deferrals": 45,
       "reasoning_tokens": null,
       "reasoning_tokens_known_events": 0,
       "rejected": 0,
@@ -1650,8 +1650,8 @@ This page does not store secrets, raw prompts, raw completions, or provider resp
       "runner_failures": 0,
       "spec": "sambanova:gpt-oss-120b",
       "temporarily_unavailable_events": 0,
-      "total_called": 44,
-      "total_provider_attempts": 44,
+      "total_called": 45,
+      "total_provider_attempts": 45,
       "valid": 0,
       "valid_outputs": 0,
       "valid_outputs_with_signals": 0,
@@ -1785,6 +1785,12 @@ This page does not store secrets, raw prompts, raw completions, or provider resp
       "outcome": "not_called",
       "provider": "sambanova"
     },
+    "0024ffb8abcf3230174d6d499a0908fa7a031c1dee727ee53607fde95d7092d3": {
+      "attempt_finished_at": "2026-08-22T23:00:10Z",
+      "model": "DeepSeek-V3.1",
+      "outcome": "not_called",
+      "provider": "sambanova"
+    },
     "0026950cca9b14cb62380fbb79cb4ec97c41c9741bd97a08be13b0ebf31b7c39": {
       "attempt_finished_at": "2026-08-21T18:52:17Z",
       "model": "gemini-2.5-flash",
@@ -1862,6 +1868,12 @@ This page does not store secrets, raw prompts, raw completions, or provider resp
       "model": "gemini-3.7-flash",
       "outcome": "not_called",
       "provider": "gemini"
+    },
+    "00444b05f34aefb43117cf338434b5bd8dd19ac27a88f72a597626a1e1d60f12": {
+      "attempt_finished_at": "2026-08-22T23:00:10Z",
+      "model": "Meta-Llama-3.3-70B-Instruct",
+      "outcome": "not_called",
+      "provider": "sambanova"
     },
     "0046c28454f797a80e7ea86057190523d402ff092b80ec97af2f072e88710d1f": {
       "attempt_finished_at": "2026-08-21T18:51:56Z",
@@ -2636,6 +2648,12 @@ This page does not store secrets, raw prompts, raw completions, or provider resp
       "model": "gemini-3-flash-preview",
       "outcome": "valid",
       "provider": "gemini"
+    },
+    "01a2dcf77d62ff9b6fe2e81f61d9ae0611d6fc11877b2267f8020198e2fee005": {
+      "attempt_finished_at": "2026-08-22T23:00:10Z",
+      "model": "Meta-Llama-3.3-70B-Instruct",
+      "outcome": "not_called",
+      "provider": "sambanova"
     },
     "01a40490787de8d1b18619597615360c879da19725d91c51bce66e85904ab218": {
       "attempt_finished_at": "2026-08-20T18:56:07Z",
@@ -3423,8 +3441,20 @@ This page does not store secrets, raw prompts, raw completions, or provider resp
       "outcome": "not_called",
       "provider": "openrouter"
     },
+    "034c5e76f84e425a375257474335e85b1d88168c303d9adf71a85f89624ce0c3": {
+      "attempt_finished_at": "2026-08-22T23:00:07Z",
+      "model": "gemini-3.7-flash",
+      "outcome": "not_called",
+      "provider": "gemini"
+    },
     "034d0795e974f0fe80083a913d499329202ef873a38dc45419279b77bd0c0078": {
       "attempt_finished_at": "2026-08-20T11:15:23Z",
+      "model": "gpt-oss-120b",
+      "outcome": "not_called",
+      "provider": "sambanova"
+    },
+    "03538fac89a9274a820e1208b546a313489ef191f8f7bd9c4a5f417ff4cfbb48": {
+      "attempt_finished_at": "2026-08-22T23:00:10Z",
       "model": "gpt-oss-120b",
       "outcome": "not_called",
       "provider": "sambanova"
@@ -3731,6 +3761,12 @@ This page does not store secrets, raw prompts, raw completions, or provider resp
     },
     "03d991f396154c8fbd78dbc1d473dca67237379424448dd59223ff194da4a2ba": {
       "attempt_finished_at": "2026-08-21T14:48:12Z",
+      "model": "DeepSeek-V3.2",
+      "outcome": "not_called",
+      "provider": "sambanova"
+    },
+    "03dc05183d351704246ab5001eb2cc9a7a0f7a4dbbaed2372f3f157ace8c82d2": {
+      "attempt_finished_at": "2026-08-22T23:00:10Z",
       "model": "DeepSeek-V3.2",
       "outcome": "not_called",
       "provider": "sambanova"
@@ -4359,6 +4395,12 @@ This page does not store secrets, raw prompts, raw completions, or provider resp
       "outcome": "not_called",
       "provider": "sambanova"
     },
+    "04de3a19fd3c8f73ed8be1ecd74aae198b84204443be5bb632bac4a381db5224": {
+      "attempt_finished_at": "2026-08-22T23:00:10Z",
+      "model": "Meta-Llama-3.3-70B-Instruct",
+      "outcome": "not_called",
+      "provider": "sambanova"
+    },
     "04e21b18aaa12e0487eba0ba50d0f49018703f48bd547a515405662fd8d47b90": {
       "attempt_finished_at": "2026-08-20T22:39:45Z",
       "model": "gpt-oss-120b",
@@ -4719,6 +4761,12 @@ This page does not store secrets, raw prompts, raw completions, or provider resp
       "outcome": "not_called",
       "provider": "gemini"
     },
+    "056c94eddba71a27f6940edfafeb3b303ae52d22d1a9b52e1af82f266994448e": {
+      "attempt_finished_at": "2026-08-22T23:00:10Z",
+      "model": "DeepSeek-V3.2",
+      "outcome": "not_called",
+      "provider": "sambanova"
+    },
     "05724f966613c0a4b0f24d450de147287a6df29340818825ff85c83f0364309f": {
       "attempt_finished_at": "2026-08-21T06:06:35Z",
       "model": "gpt-oss-120b",
@@ -4793,6 +4841,12 @@ This page does not store secrets, raw prompts, raw completions, or provider resp
     },
     "059d76e398246a98eed2aa46c2ef54d1e4865d709f7027eef534122ad339b79c": {
       "attempt_finished_at": "2026-08-21T03:13:20Z",
+      "model": "Meta-Llama-3.3-70B-Instruct",
+      "outcome": "not_called",
+      "provider": "sambanova"
+    },
+    "059deab0b5678e8167a7d0a259981849b85cc97333dfb0f02ab70b0326f73e78": {
+      "attempt_finished_at": "2026-08-22T23:00:10Z",
       "model": "Meta-Llama-3.3-70B-Instruct",
       "outcome": "not_called",
       "provider": "sambanova"
@@ -5535,6 +5589,12 @@ This page does not store secrets, raw prompts, raw completions, or provider resp
       "outcome": "not_called",
       "provider": "gemini"
     },
+    "07024d300ffe574ee39c608ce63fa2fcc90d2695234ba2eddd6b244821673c14": {
+      "attempt_finished_at": "2026-08-22T23:00:10Z",
+      "model": "gpt-oss-120b",
+      "outcome": "not_called",
+      "provider": "sambanova"
+    },
     "0703a3d093c400b666592fd4932d1df0b8b689ebb10dfbd8cbe6b37bb0fe0032": {
       "attempt_finished_at": "2026-08-20T20:04:54Z",
       "model": "DeepSeek-V3.2",
@@ -5774,6 +5834,12 @@ This page does not store secrets, raw prompts, raw completions, or provider resp
       "model": "gemini-3-flash-preview",
       "outcome": "not_called",
       "provider": "gemini"
+    },
+    "0774251f167c94fcf2ab703699c1f2c017d09d3064f97ea07e57145a55e40186": {
+      "attempt_finished_at": "2026-08-22T23:00:10Z",
+      "model": "DeepSeek-V3.1",
+      "outcome": "not_called",
+      "provider": "sambanova"
     },
     "0774848fc5c111a3517f4edafd5d96dba115ae00bcfd1609f3687ceb70bbf6d2": {
       "attempt_finished_at": "2026-08-20T09:52:58Z",
@@ -6723,6 +6789,12 @@ This page does not store secrets, raw prompts, raw completions, or provider resp
       "outcome": "not_called",
       "provider": "sambanova"
     },
+    "094b6662cbb2307f4849d0235157a5ec0c121fb56f9dcbcc0ac1c00c7625b5c6": {
+      "attempt_finished_at": "2026-08-22T23:00:10Z",
+      "model": "DeepSeek-V3.2",
+      "outcome": "not_called",
+      "provider": "sambanova"
+    },
     "094d38dfb4e30ec2108d6a179ed0a1e7580fadfbed07addad7fae12014c031a4": {
       "attempt_finished_at": "2026-08-22T13:39:58Z",
       "model": "gpt-oss-120b",
@@ -7227,6 +7299,12 @@ This page does not store secrets, raw prompts, raw completions, or provider resp
       "outcome": "not_called",
       "provider": "sambanova"
     },
+    "0a42632fc9e1176cb31393295a9234161883d55ef38284b5436d251122d9cccc": {
+      "attempt_finished_at": "2026-08-22T23:00:10Z",
+      "model": "Meta-Llama-3.3-70B-Instruct",
+      "outcome": "not_called",
+      "provider": "sambanova"
+    },
     "0a42ecc1954662e77ce7eb182f977e0ffc636b7e968e2c5c2d0a2760604fa7c5": {
       "attempt_finished_at": "2026-08-20T18:56:07Z",
       "model": "DeepSeek-V3.2",
@@ -7527,6 +7605,12 @@ This page does not store secrets, raw prompts, raw completions, or provider resp
       "outcome": "not_called",
       "provider": "sambanova"
     },
+    "0b233a2c6be9ab824626a5d254821556906574a793dc2bd6eb8a53f53cfb6ea8": {
+      "attempt_finished_at": "2026-08-22T23:00:10Z",
+      "model": "gpt-oss-120b",
+      "outcome": "not_called",
+      "provider": "sambanova"
+    },
     "0b24d679cd4f334ca3b75ada4540b278f1c575c3abc3de6eb1eda2406744810b": {
       "attempt_finished_at": "2026-08-22T01:46:53Z",
       "model": "google/gemma-4-31b-it:free",
@@ -7560,6 +7644,12 @@ This page does not store secrets, raw prompts, raw completions, or provider resp
     "0b3d8d75c99cfcf2410e085eaea8f21928283527a21d6838a1d76f5398b9d835": {
       "attempt_finished_at": "2026-08-21T09:49:16Z",
       "model": "DeepSeek-V3.1",
+      "outcome": "not_called",
+      "provider": "sambanova"
+    },
+    "0b3dfaa2bb119dcb5b8baccafa4fe9ed4042d5cf768c663fda6b86b474277562": {
+      "attempt_finished_at": "2026-08-22T23:00:10Z",
+      "model": "DeepSeek-V3.2",
       "outcome": "not_called",
       "provider": "sambanova"
     },
@@ -7821,6 +7911,12 @@ This page does not store secrets, raw prompts, raw completions, or provider resp
       "outcome": "valid",
       "provider": "gemini"
     },
+    "0bd537868890a8f5ca3dd29d40226b71888b069f7331cf47457845e479f67bf4": {
+      "attempt_finished_at": "2026-08-22T23:00:10Z",
+      "model": "DeepSeek-V3.1",
+      "outcome": "not_called",
+      "provider": "sambanova"
+    },
     "0bd68e0025cf9050cc568e5e553a8a49aad662984066fa7b54a1c0365639ee80": {
       "attempt_finished_at": "2026-08-22T08:44:04Z",
       "model": "gemini-2.5-flash",
@@ -8064,6 +8160,12 @@ This page does not store secrets, raw prompts, raw completions, or provider resp
     "0c5c53a2b556178b4286f10dd56c7e5ca8cd3d6e3ebf9be006e897c1d3cc84c7": {
       "attempt_finished_at": "2026-08-22T08:02:20Z",
       "model": "DeepSeek-V3.2",
+      "outcome": "not_called",
+      "provider": "sambanova"
+    },
+    "0c5e790fbe1eae2a8be972b49387dacf89eda0aff7b52caa9043c3c89da3cee1": {
+      "attempt_finished_at": "2026-08-22T23:00:10Z",
+      "model": "DeepSeek-V3.1",
       "outcome": "not_called",
       "provider": "sambanova"
     },
@@ -8883,6 +8985,12 @@ This page does not store secrets, raw prompts, raw completions, or provider resp
       "outcome": "not_called",
       "provider": "gemini"
     },
+    "0e18be8b834f9391682e6da16ccfa74a22e5b13491fcc1e575119561ca08194f": {
+      "attempt_finished_at": "2026-08-22T23:00:10Z",
+      "model": "DeepSeek-V3.2",
+      "outcome": "not_called",
+      "provider": "sambanova"
+    },
     "0e1b6c0e8a23bde23d2fd671266502bcec464977a7e26f2e8aa8704d7e052160": {
       "attempt_finished_at": "2026-08-21T21:02:56Z",
       "model": "DeepSeek-V3.1",
@@ -8904,6 +9012,12 @@ This page does not store secrets, raw prompts, raw completions, or provider resp
     "0e2be87aba07d500539bb7043f8ddc61358156b1c70ba3c8d0183dcddf20ba7c": {
       "attempt_finished_at": "2026-08-20T20:04:54Z",
       "model": "DeepSeek-V3.1",
+      "outcome": "not_called",
+      "provider": "sambanova"
+    },
+    "0e2d3d2097dd218a19c8b32c527adf7ef7106b99f80bfc843c4dae9361f8e160": {
+      "attempt_finished_at": "2026-08-22T23:00:10Z",
+      "model": "Meta-Llama-3.3-70B-Instruct",
       "outcome": "not_called",
       "provider": "sambanova"
     },
@@ -9021,6 +9135,12 @@ This page does not store secrets, raw prompts, raw completions, or provider resp
       "outcome": "not_called",
       "provider": "sambanova"
     },
+    "0e693694bc75a46f304cf19594bf2cf1227889b28a102a4966ff2750afa31f3a": {
+      "attempt_finished_at": "2026-08-22T23:00:10Z",
+      "model": "Meta-Llama-3.3-70B-Instruct",
+      "outcome": "not_called",
+      "provider": "sambanova"
+    },
     "0e6b580c5b7a47175ad1ca1072ae2e5ea851bf9eba7c5c48b7797ba951c778fb": {
       "attempt_finished_at": "2026-08-21T04:52:21Z",
       "model": "DeepSeek-V3.1",
@@ -9104,6 +9224,12 @@ This page does not store secrets, raw prompts, raw completions, or provider resp
       "model": "gemini-2.5-flash",
       "outcome": "not_called",
       "provider": "gemini"
+    },
+    "0e84b0d139ecbc96373c9ec459cd29c2cff28dd17fa35a1a438e53edbab11c53": {
+      "attempt_finished_at": "2026-08-22T23:00:10Z",
+      "model": "DeepSeek-V3.1",
+      "outcome": "not_called",
+      "provider": "sambanova"
     },
     "0e86d73ec0ff65d0c5b035fe29c533775355ea98f0c7efc611eee7be59c64541": {
       "attempt_finished_at": "2026-08-20T21:17:04Z",
@@ -9303,6 +9429,12 @@ This page does not store secrets, raw prompts, raw completions, or provider resp
       "outcome": "not_called",
       "provider": "sambanova"
     },
+    "0ef41bf37db64f0b8fcff4ea89e73d2ceab3d68de994ae6b47f2c51def569437": {
+      "attempt_finished_at": "2026-08-22T23:00:07Z",
+      "model": "gemini-3.7-flash",
+      "outcome": "not_called",
+      "provider": "gemini"
+    },
     "0ef5ca066106b241c4d7a1d34043d946ce69e3860b4bc0fd8d7a49830b880bef": {
       "attempt_finished_at": "2026-08-21T09:49:16Z",
       "model": "DeepSeek-V3.2",
@@ -9441,6 +9573,12 @@ This page does not store secrets, raw prompts, raw completions, or provider resp
       "outcome": "not_called",
       "provider": "gemini"
     },
+    "0f379fe13978cbd288d294163043cb647121b393f00faf1ea21f7f8d26e6fa01": {
+      "attempt_finished_at": "2026-08-22T23:00:07Z",
+      "model": "gemini-3.7-flash",
+      "outcome": "not_called",
+      "provider": "gemini"
+    },
     "0f3984bcd1a4df6423746855d1c6e73622135dac8913f557fdacd23685d5fad2": {
       "attempt_finished_at": "2026-08-20T21:17:04Z",
       "model": "DeepSeek-V3.1",
@@ -9518,6 +9656,18 @@ This page does not store secrets, raw prompts, raw completions, or provider resp
       "model": "google/gemma-4-31b-it:free",
       "outcome": "not_called",
       "provider": "openrouter"
+    },
+    "0f6e36a2e88e997438c70042da3f864c0ad1a6f38404b589e3ab391754cecce6": {
+      "attempt_finished_at": "2026-08-22T23:00:10Z",
+      "model": "gpt-oss-120b",
+      "outcome": "not_called",
+      "provider": "sambanova"
+    },
+    "0f74f9ef91ba2363f38837372179fb3d51f7e988ab8957aa631abd2bfc57a028": {
+      "attempt_finished_at": "2026-08-22T23:00:10Z",
+      "model": "gpt-oss-120b",
+      "outcome": "not_called",
+      "provider": "sambanova"
     },
     "0f75b7b8294608654a22a8c3e1c2929ad87b0c261b45987c3b86d7e0c516dc0b": {
       "attempt_finished_at": "2026-08-20T22:39:45Z",
@@ -9794,6 +9944,12 @@ This page does not store secrets, raw prompts, raw completions, or provider resp
       "model": "DeepSeek-V3.1",
       "outcome": "not_called",
       "provider": "sambanova"
+    },
+    "0fec9dfdea781c9ff6627c19b57d7bab23f3e5f8af3c217c367bc73db40773c2": {
+      "attempt_finished_at": "2026-08-22T23:00:07Z",
+      "model": "gemini-3.7-flash",
+      "outcome": "not_called",
+      "provider": "gemini"
     },
     "0ff00198c59fbc005e51f0a9a1ce1707b69ecbd56c7bddec10ddc61173c682d0": {
       "attempt_finished_at": "2026-08-20T22:40:00Z",
@@ -10497,6 +10653,12 @@ This page does not store secrets, raw prompts, raw completions, or provider resp
       "outcome": "not_called",
       "provider": "openrouter"
     },
+    "114b517158aa6a718b91a83ce32d78d0345dc1621fa02a15835a637ac632505c": {
+      "attempt_finished_at": "2026-08-22T23:00:10Z",
+      "model": "DeepSeek-V3.2",
+      "outcome": "not_called",
+      "provider": "sambanova"
+    },
     "114d2bdff6869152153c922c40060e50177c70707b555c8800f43ac34abfad38": {
       "attempt_finished_at": "2026-08-21T01:53:50Z",
       "model": "Meta-Llama-3.3-70B-Instruct",
@@ -10947,6 +11109,12 @@ This page does not store secrets, raw prompts, raw completions, or provider resp
       "outcome": "not_called",
       "provider": "sambanova"
     },
+    "122a44467f99cc01bea4ea86de9e4be9d62f6fc35fc263e6ba327be1dca32c95": {
+      "attempt_finished_at": "2026-08-22T23:00:10Z",
+      "model": "Meta-Llama-3.3-70B-Instruct",
+      "outcome": "not_called",
+      "provider": "sambanova"
+    },
     "122c534c1e2f8d66b5de4edcd300c796e7602f83d3858c6be868c3eaa607f3b4": {
       "attempt_finished_at": "2026-08-22T05:50:42Z",
       "model": "DeepSeek-V3.1",
@@ -11121,6 +11289,12 @@ This page does not store secrets, raw prompts, raw completions, or provider resp
       "outcome": "not_called",
       "provider": "sambanova"
     },
+    "12868639fff4fec1c040e1d03f4826b785751844cb098aee71d4bdefb72f987b": {
+      "attempt_finished_at": "2026-08-22T23:00:07Z",
+      "model": "gemini-3.7-flash",
+      "outcome": "not_called",
+      "provider": "gemini"
+    },
     "1288b04ffa4cd910c062db8fc7a946ffbdeb55b9093e8f8814226f4edc43a626": {
       "attempt_finished_at": "2026-08-21T04:52:21Z",
       "model": "gpt-oss-120b",
@@ -11205,6 +11379,12 @@ This page does not store secrets, raw prompts, raw completions, or provider resp
       "outcome": "not_called",
       "provider": "openrouter"
     },
+    "12acb4fcc49e9a4633d5212d8843aec29ed760ae3de894cf84f24f0415572628": {
+      "attempt_finished_at": "2026-08-22T23:00:10Z",
+      "model": "gpt-oss-120b",
+      "outcome": "not_called",
+      "provider": "sambanova"
+    },
     "12ae4348c27576c51a839ae6980c907ccb9aa35c7853b5b6bb54636f10ea69d9": {
       "attempt_finished_at": "2026-08-22T05:50:42Z",
       "model": "DeepSeek-V3.2",
@@ -11246,6 +11426,12 @@ This page does not store secrets, raw prompts, raw completions, or provider resp
       "model": "poolside/laguna-s-2.1:free",
       "outcome": "not_called",
       "provider": "openrouter"
+    },
+    "12bdc540d0920c06bc331a8248b74b34a83ea03510ff5ce9d1fea115343e7e9a": {
+      "attempt_finished_at": "2026-08-22T23:00:07Z",
+      "model": "gemini-3.7-flash",
+      "outcome": "not_called",
+      "provider": "gemini"
     },
     "12bed7022bd95497e3a726fb916492e1f7623e547e8b864fab8a68ccf6ab62db": {
       "attempt_finished_at": "2026-08-21T03:13:20Z",
@@ -11364,6 +11550,12 @@ This page does not store secrets, raw prompts, raw completions, or provider resp
     "13103af41d8edc831c9e88623b90c93496d831b5f65440bb0d3acf171807f34a": {
       "attempt_finished_at": "2026-08-21T19:59:00Z",
       "model": "DeepSeek-V3.1",
+      "outcome": "not_called",
+      "provider": "sambanova"
+    },
+    "13141f28269364606a57da0a0cd98d8f6130b79798452832a4c0cb681ccd1132": {
+      "attempt_finished_at": "2026-08-22T23:00:10Z",
+      "model": "DeepSeek-V3.2",
       "outcome": "not_called",
       "provider": "sambanova"
     },
@@ -11523,6 +11715,12 @@ This page does not store secrets, raw prompts, raw completions, or provider resp
       "outcome": "not_called",
       "provider": "gemini"
     },
+    "13778cb9c90ac91e6da958734362983901fc04d903372b71020fa103d7ab8986": {
+      "attempt_finished_at": "2026-08-22T23:00:10Z",
+      "model": "Meta-Llama-3.3-70B-Instruct",
+      "outcome": "not_called",
+      "provider": "sambanova"
+    },
     "13791e13ee66ecf81b34f72190b0cda3e485a4fd64bbab0da88501ea3c684aca": {
       "attempt_finished_at": "2026-08-21T20:00:06Z",
       "model": "nvidia/nemotron-nano-9b-v2:free",
@@ -11559,6 +11757,12 @@ This page does not store secrets, raw prompts, raw completions, or provider resp
       "outcome": "not_called",
       "provider": "sambanova"
     },
+    "138941d0101f2d488e8882803263fd75ad4ec1b20084ebacbbe0f06a0748d715": {
+      "attempt_finished_at": "2026-08-22T23:00:10Z",
+      "model": "gpt-oss-120b",
+      "outcome": "not_called",
+      "provider": "sambanova"
+    },
     "1389fdc4c43a2c53075555fc43c5479638e859b2a129ca24824581f32ab8be2a": {
       "attempt_finished_at": "2026-08-21T01:53:50Z",
       "model": "gpt-oss-120b",
@@ -11582,6 +11786,12 @@ This page does not store secrets, raw prompts, raw completions, or provider resp
       "model": "gemini-3.5-flash-lite",
       "outcome": "not_called",
       "provider": "gemini"
+    },
+    "139f12c6169b6cbacf6eb3c9c65246795a758fecefbfab7db2b79b846e0822bf": {
+      "attempt_finished_at": "2026-08-22T23:00:10Z",
+      "model": "gpt-oss-120b",
+      "outcome": "not_called",
+      "provider": "sambanova"
     },
     "13a346c923cfb440dbe26719bdafe87c9fcd733b5e4105c52833ee0637fe4b4d": {
       "attempt_finished_at": "2026-08-20T09:46:46Z",
@@ -11648,6 +11858,12 @@ This page does not store secrets, raw prompts, raw completions, or provider resp
       "model": "gemini-3.1-flash-lite",
       "outcome": "not_called",
       "provider": "gemini"
+    },
+    "13c8dcb3615e9098d74b8808938c6f956f3e5d616e35b6052674c7fcfcb59bb1": {
+      "attempt_finished_at": "2026-08-22T23:00:10Z",
+      "model": "DeepSeek-V3.1",
+      "outcome": "not_called",
+      "provider": "sambanova"
     },
     "13dae54b5bb205dcc93f409affbd132e31c84650885a8a1e209d1686b14b3bdf": {
       "attempt_finished_at": "2026-08-22T19:07:08Z",
@@ -12153,6 +12369,12 @@ This page does not store secrets, raw prompts, raw completions, or provider resp
       "outcome": "not_called",
       "provider": "gemini"
     },
+    "14eca7d73b14640e300ab572f6d97b449da663e87a6401477344f337423043fb": {
+      "attempt_finished_at": "2026-08-22T23:00:10Z",
+      "model": "Meta-Llama-3.3-70B-Instruct",
+      "outcome": "not_called",
+      "provider": "sambanova"
+    },
     "14ed1e42e65464f86635fa00bc83244a1c7a507ca6c71e73abbd66fa4889e163": {
       "attempt_finished_at": "2026-08-22T16:36:17Z",
       "model": "DeepSeek-V3.1",
@@ -12239,6 +12461,12 @@ This page does not store secrets, raw prompts, raw completions, or provider resp
     },
     "15156326651d1917c40e16f0f6123474e253ceb4abc4349b07775f2d89510536": {
       "attempt_finished_at": "2026-08-20T14:49:30Z",
+      "model": "gpt-oss-120b",
+      "outcome": "not_called",
+      "provider": "sambanova"
+    },
+    "151ccd4098cd48490c141d954bd4e6bf341f3e97964e16d785049415b05466c1": {
+      "attempt_finished_at": "2026-08-22T23:00:10Z",
       "model": "gpt-oss-120b",
       "outcome": "not_called",
       "provider": "sambanova"
@@ -12759,6 +12987,12 @@ This page does not store secrets, raw prompts, raw completions, or provider resp
       "outcome": "not_called",
       "provider": "sambanova"
     },
+    "1620ac139be74d06509dba5de4b380a8ac68fb5d7f75c99ba846eba0c6efac16": {
+      "attempt_finished_at": "2026-08-22T23:00:07Z",
+      "model": "gemini-3.7-flash",
+      "outcome": "not_called",
+      "provider": "gemini"
+    },
     "1620ca679f08b2d927573a620f53e1cbb6aa13b138f30c1e30376e01a699f1b0": {
       "attempt_finished_at": "2026-08-21T14:48:12Z",
       "model": "DeepSeek-V3.2",
@@ -13023,6 +13257,12 @@ This page does not store secrets, raw prompts, raw completions, or provider resp
       "outcome": "not_called",
       "provider": "gemini"
     },
+    "16885606e12a2a9e67be4623214e59518cdd27ac9056120fd7c9900b100fbeb9": {
+      "attempt_finished_at": "2026-08-22T23:00:10Z",
+      "model": "DeepSeek-V3.2",
+      "outcome": "not_called",
+      "provider": "sambanova"
+    },
     "1689bc6a7a5f20d7aea320aea7dc7d5d8cce2e0020a727d46381725b6dfde2cc": {
       "attempt_finished_at": "2026-08-21T20:00:06Z",
       "model": "google/gemma-4-26b-a4b-it:free",
@@ -13215,6 +13455,12 @@ This page does not store secrets, raw prompts, raw completions, or provider resp
       "outcome": "not_called",
       "provider": "sambanova"
     },
+    "16f824984b0923b93a3020f3c502bf29d23c464aaa515054f01f174d10222aba": {
+      "attempt_finished_at": "2026-08-22T23:00:10Z",
+      "model": "gpt-oss-120b",
+      "outcome": "not_called",
+      "provider": "sambanova"
+    },
     "16f8cabac9756e25c9486f876e2b9fa920e8fd68bc87ba99009372f341a8cf8c": {
       "attempt_finished_at": "2026-08-22T04:52:17Z",
       "model": "gemini-2.5-flash",
@@ -13359,6 +13605,12 @@ This page does not store secrets, raw prompts, raw completions, or provider resp
       "outcome": "not_called",
       "provider": "sambanova"
     },
+    "174afb721d05443fae3ef0e47de4c843d14be76d0dcf4d5cdb3acaa43f18568c": {
+      "attempt_finished_at": "2026-08-22T23:00:10Z",
+      "model": "DeepSeek-V3.1",
+      "outcome": "not_called",
+      "provider": "sambanova"
+    },
     "174e55590f1fc718119fde32119fa0e853143f40c47941fe2fc67c05d81b3cd6": {
       "attempt_finished_at": "2026-08-20T20:04:54Z",
       "model": "DeepSeek-V3.1",
@@ -13368,6 +13620,12 @@ This page does not store secrets, raw prompts, raw completions, or provider resp
     "174e98cc038d4b39241ca66237829c97bfc596fbd39d770274701bc7c3d76bf1": {
       "attempt_finished_at": "2026-08-21T06:06:35Z",
       "model": "gpt-oss-120b",
+      "outcome": "not_called",
+      "provider": "sambanova"
+    },
+    "175222b1932ca68917be3a0b89f33ea094d81ef9c30e19c9742e502504361e4c": {
+      "attempt_finished_at": "2026-08-22T23:00:10Z",
+      "model": "DeepSeek-V3.1",
       "outcome": "not_called",
       "provider": "sambanova"
     },
@@ -13394,6 +13652,12 @@ This page does not store secrets, raw prompts, raw completions, or provider resp
       "model": "gemini-3.7-flash",
       "outcome": "not_called",
       "provider": "gemini"
+    },
+    "175920b342e0f943b5f0555af31455f62b4e7461cc77ee5988def1c5765d9c5a": {
+      "attempt_finished_at": "2026-08-22T23:00:10Z",
+      "model": "DeepSeek-V3.1",
+      "outcome": "not_called",
+      "provider": "sambanova"
     },
     "17617b8b8f075a4ba00e22c064d2e8e5e2c718db0f1366a43d8d0d9d34d3356b": {
       "attempt_finished_at": "2026-08-21T18:51:56Z",
@@ -13964,6 +14228,12 @@ This page does not store secrets, raw prompts, raw completions, or provider resp
       "model": "gemini-3.7-flash",
       "outcome": "not_called",
       "provider": "gemini"
+    },
+    "188b8911ea13224b0a2123f6af314f621bd757fc5e3fc9f736714593fb0b12dd": {
+      "attempt_finished_at": "2026-08-22T23:00:10Z",
+      "model": "Meta-Llama-3.3-70B-Instruct",
+      "outcome": "not_called",
+      "provider": "sambanova"
     },
     "188d3354a960d0e244a04e7ec7580cfc4179762a6aa42c4710d86a0b5a595d07": {
       "attempt_finished_at": "2026-08-21T03:13:20Z",
@@ -14649,6 +14919,12 @@ This page does not store secrets, raw prompts, raw completions, or provider resp
       "outcome": "not_called",
       "provider": "sambanova"
     },
+    "19c8f5776d250789dfc752978d2c6de5370cfcf4c3f4ce38bed6f0c75cd6552f": {
+      "attempt_finished_at": "2026-08-22T23:00:10Z",
+      "model": "DeepSeek-V3.1",
+      "outcome": "not_called",
+      "provider": "sambanova"
+    },
     "19ccbd77f408b83d909bb31c18ac521541aeab8d2e49e704c9f2a8c5ab351a96": {
       "attempt_finished_at": "2026-08-22T15:58:43Z",
       "model": "gemini-2.5-flash",
@@ -15003,6 +15279,12 @@ This page does not store secrets, raw prompts, raw completions, or provider resp
       "outcome": "not_called",
       "provider": "sambanova"
     },
+    "1a6c0fabf0747642399d3b231b2225c525d23a2481b38fcda2644202b0a10dac": {
+      "attempt_finished_at": "2026-08-22T23:00:10Z",
+      "model": "DeepSeek-V3.1",
+      "outcome": "not_called",
+      "provider": "sambanova"
+    },
     "1a6c951465c0c4a1798c4dfe96eefa61c6885785bb63c3394f5c11eb81736a60": {
       "attempt_finished_at": "2026-08-22T04:46:36Z",
       "model": "DeepSeek-V3.1",
@@ -15120,6 +15402,12 @@ This page does not store secrets, raw prompts, raw completions, or provider resp
     "1a9a53710ba356436e6f768d60ef7b9fffbe478bed8e673d751df0d7404bfe74": {
       "attempt_finished_at": "2026-08-21T07:54:40Z",
       "model": "Meta-Llama-3.3-70B-Instruct",
+      "outcome": "not_called",
+      "provider": "sambanova"
+    },
+    "1a9d1f1492497f6a628561eed3511d1e6844671ba7c909c46b163fb83613704d": {
+      "attempt_finished_at": "2026-08-22T23:00:10Z",
+      "model": "gpt-oss-120b",
       "outcome": "not_called",
       "provider": "sambanova"
     },
@@ -16167,6 +16455,12 @@ This page does not store secrets, raw prompts, raw completions, or provider resp
       "outcome": "not_called",
       "provider": "gemini"
     },
+    "1cb91e5964f1d8f44e0cf252335e80b1de5f258801f940979aec41061d31451d": {
+      "attempt_finished_at": "2026-08-22T23:00:10Z",
+      "model": "Meta-Llama-3.3-70B-Instruct",
+      "outcome": "not_called",
+      "provider": "sambanova"
+    },
     "1cba4f5c1e23890611ce1365d0951db53cf582d7711f19eebdd085de0465c5c9": {
       "attempt_finished_at": "2026-08-20T09:49:44Z",
       "model": "qwen/qwen3.6-27b",
@@ -16377,6 +16671,12 @@ This page does not store secrets, raw prompts, raw completions, or provider resp
       "outcome": "not_called",
       "provider": "sambanova"
     },
+    "1d0fddf16e10eb4269e00da0a45493ee0c053bbb9ca995262349750b0bafdd75": {
+      "attempt_finished_at": "2026-08-22T23:00:10Z",
+      "model": "DeepSeek-V3.2",
+      "outcome": "not_called",
+      "provider": "sambanova"
+    },
     "1d1015369e0a67dde16f8124178e91faf60ddace2b86859cc859555dab91a738": {
       "attempt_finished_at": "2026-08-20T13:07:36Z",
       "model": "gpt-oss-120b",
@@ -16530,6 +16830,12 @@ This page does not store secrets, raw prompts, raw completions, or provider resp
     "1d778ec020bd4a37a888b9a57c8fc587fba5ae5f6e46a8db18e03f99e6f67f79": {
       "attempt_finished_at": "2026-08-20T18:56:07Z",
       "model": "DeepSeek-V3.1",
+      "outcome": "not_called",
+      "provider": "sambanova"
+    },
+    "1d7c026d33c42442f727f0eafaf4abd4ff6e8bb3bb9b14fb2026ad783ed5ae09": {
+      "attempt_finished_at": "2026-08-22T23:00:10Z",
+      "model": "DeepSeek-V3.2",
       "outcome": "not_called",
       "provider": "sambanova"
     },
@@ -16710,6 +17016,12 @@ This page does not store secrets, raw prompts, raw completions, or provider resp
     "1df05b91b6019cf24e4569909d28be74f7db720973ed2ec2fce082e15b7aa008": {
       "attempt_finished_at": "2026-08-20T22:39:45Z",
       "model": "DeepSeek-V3.2",
+      "outcome": "not_called",
+      "provider": "sambanova"
+    },
+    "1df12185a466ed10ea7395552097c2ef6ac65961cd12ecfb71ff5436faeed462": {
+      "attempt_finished_at": "2026-08-22T23:00:10Z",
+      "model": "gpt-oss-120b",
       "outcome": "not_called",
       "provider": "sambanova"
     },
@@ -17025,6 +17337,12 @@ This page does not store secrets, raw prompts, raw completions, or provider resp
       "outcome": "not_called",
       "provider": "sambanova"
     },
+    "1eb827a129a974f8f26caca0db2cd9ea6caa7c567e03bfb018b276b0baf8a4a6": {
+      "attempt_finished_at": "2026-08-22T23:00:10Z",
+      "model": "gpt-oss-120b",
+      "outcome": "not_called",
+      "provider": "sambanova"
+    },
     "1ec3f9e3c0ad3ab1a215918903f8c390bb01529977e620ce7521658003a89510": {
       "attempt_finished_at": "2026-08-20T09:46:12Z",
       "model": "DeepSeek-V3.1",
@@ -17325,8 +17643,20 @@ This page does not store secrets, raw prompts, raw completions, or provider resp
       "outcome": "not_called",
       "provider": "openrouter"
     },
+    "1f54335af2f48a797457f0f0a2fb7cc014b681120edbd9d1792a8b49a91602f8": {
+      "attempt_finished_at": "2026-08-22T23:00:10Z",
+      "model": "DeepSeek-V3.1",
+      "outcome": "not_called",
+      "provider": "sambanova"
+    },
     "1f548aa5e47314f039ee077c73ffc5ce8292a8cf4881f657f31ebc4b0334711b": {
       "attempt_finished_at": "2026-08-21T13:07:00Z",
+      "model": "gpt-oss-120b",
+      "outcome": "not_called",
+      "provider": "sambanova"
+    },
+    "1f5a3a5befc1a695ddccaaea0876d4cfdeb447a8f9bd607100ff6cc32dfc4319": {
+      "attempt_finished_at": "2026-08-22T23:00:10Z",
       "model": "gpt-oss-120b",
       "outcome": "not_called",
       "provider": "sambanova"
@@ -17595,6 +17925,12 @@ This page does not store secrets, raw prompts, raw completions, or provider resp
       "outcome": "not_called",
       "provider": "sambanova"
     },
+    "1fd79706b17db53a5e116e533b85954370292ad1ac7ad62c6406367bf9acc574": {
+      "attempt_finished_at": "2026-08-22T23:00:10Z",
+      "model": "Meta-Llama-3.3-70B-Instruct",
+      "outcome": "not_called",
+      "provider": "sambanova"
+    },
     "1fd7bfaf855f0a74e3e59e2f4f48f690d78653d745da9b29f2d012da155f0b9f": {
       "attempt_finished_at": "2026-08-22T00:00:44Z",
       "model": "Meta-Llama-3.3-70B-Instruct",
@@ -17847,6 +18183,12 @@ This page does not store secrets, raw prompts, raw completions, or provider resp
       "outcome": "not_called",
       "provider": "sambanova"
     },
+    "20487083d746cf527ca876f8761777ccf5c4efda27d0bf7dba90853849509029": {
+      "attempt_finished_at": "2026-08-22T23:00:07Z",
+      "model": "gemini-3.7-flash",
+      "outcome": "provider_failure",
+      "provider": "gemini"
+    },
     "204a1d2a2bf9b4d31b27915d0c824f429504f565cd8ede25abd03802a00bc354": {
       "attempt_finished_at": "2026-08-20T20:05:05Z",
       "model": "google/gemma-4-26b-a4b-it:free",
@@ -18002,6 +18344,12 @@ This page does not store secrets, raw prompts, raw completions, or provider resp
       "model": "DeepSeek-V3.1",
       "outcome": "not_called",
       "provider": "sambanova"
+    },
+    "208f718b1c3cb5e70c2ae11689b875af5b12cdb29b2b0f1fbeb5251cf781cc3b": {
+      "attempt_finished_at": "2026-08-22T23:00:07Z",
+      "model": "gemini-3.7-flash",
+      "outcome": "not_called",
+      "provider": "gemini"
     },
     "20934f5282803d08b47eb54739ca321812a5af94da86fe79d19c27f58130018f": {
       "attempt_finished_at": "2026-08-22T00:00:44Z",
@@ -18275,6 +18623,12 @@ This page does not store secrets, raw prompts, raw completions, or provider resp
     },
     "214a62ff29e77d2788db8ff15db29133e5a2be92fbe6dd6ebdb89d4582f1373c": {
       "attempt_finished_at": "2026-08-21T22:36:22Z",
+      "model": "Meta-Llama-3.3-70B-Instruct",
+      "outcome": "not_called",
+      "provider": "sambanova"
+    },
+    "214dfbea66d2e9f83598e6095f098592813fbb5f8ff1b092c5e98752babd4db2": {
+      "attempt_finished_at": "2026-08-22T23:00:10Z",
       "model": "Meta-Llama-3.3-70B-Instruct",
       "outcome": "not_called",
       "provider": "sambanova"
@@ -19389,6 +19743,12 @@ This page does not store secrets, raw prompts, raw completions, or provider resp
       "outcome": "not_called",
       "provider": "sambanova"
     },
+    "237d11916193c70f06f5c8dbb5d83192d6b0f3f5c88b3d888e893d4efaf8e1c0": {
+      "attempt_finished_at": "2026-08-22T23:00:10Z",
+      "model": "Meta-Llama-3.3-70B-Instruct",
+      "outcome": "not_called",
+      "provider": "sambanova"
+    },
     "237d598f9fe514f4568a816f52d69aa5bc984950699b5e4aa3372f26c6442a20": {
       "attempt_finished_at": "2026-08-21T03:13:19Z",
       "model": "Meta-Llama-3.3-70B-Instruct",
@@ -19398,6 +19758,12 @@ This page does not store secrets, raw prompts, raw completions, or provider resp
     "237df89a53e074378a796c45a4401c4458dd18e6eed86812c429ac2d394411c7": {
       "attempt_finished_at": "2026-08-21T09:49:16Z",
       "model": "Meta-Llama-3.3-70B-Instruct",
+      "outcome": "not_called",
+      "provider": "sambanova"
+    },
+    "2382d6834ea0f0b1c41cc52bd1c15db06b4fa5428829fba2b2be67fdf802cc37": {
+      "attempt_finished_at": "2026-08-22T23:00:10Z",
+      "model": "DeepSeek-V3.2",
       "outcome": "not_called",
       "provider": "sambanova"
     },
@@ -19418,6 +19784,12 @@ This page does not store secrets, raw prompts, raw completions, or provider resp
       "model": "qwen/qwen3.6-27b",
       "outcome": "not_called",
       "provider": "groq"
+    },
+    "2391119a468b0fe227d487d05495a5ea4adda287b9f9f3d544466d0c7117e331": {
+      "attempt_finished_at": "2026-08-22T23:00:10Z",
+      "model": "Meta-Llama-3.3-70B-Instruct",
+      "outcome": "not_called",
+      "provider": "sambanova"
     },
     "2392a8bc4a2553c526266026bf12ad1710c288890a34f0ea069ba2def2d66fd9": {
       "attempt_finished_at": "2026-08-21T15:57:06Z",
@@ -19574,6 +19946,12 @@ This page does not store secrets, raw prompts, raw completions, or provider resp
       "model": "gemini-3.7-flash",
       "outcome": "not_called",
       "provider": "gemini"
+    },
+    "23f2eb78f5c6f3feb5b1332449e0ccb1f9cf9cbce6a17891ba2c4e19f4d9a413": {
+      "attempt_finished_at": "2026-08-22T23:00:10Z",
+      "model": "gpt-oss-120b",
+      "outcome": "not_called",
+      "provider": "sambanova"
     },
     "23f9abb81d1b06656c9ea9f385945a0148bd8356f38393992822403172c9a344": {
       "attempt_finished_at": "2026-08-21T14:48:12Z",
@@ -20475,6 +20853,12 @@ This page does not store secrets, raw prompts, raw completions, or provider resp
       "outcome": "not_called",
       "provider": "sambanova"
     },
+    "261204de014d184291c7d48e6ace9683b1c7400bed7148c67421afa1777fa94f": {
+      "attempt_finished_at": "2026-08-22T23:00:10Z",
+      "model": "gpt-oss-120b",
+      "outcome": "not_called",
+      "provider": "sambanova"
+    },
     "261381ee79f49b72aa62d323d065af6fcb3fe3cba72e21ff6dfd95aa446dac80": {
       "attempt_finished_at": "2026-08-20T21:17:04Z",
       "model": "gpt-oss-120b",
@@ -20553,6 +20937,12 @@ This page does not store secrets, raw prompts, raw completions, or provider resp
       "outcome": "not_called",
       "provider": "gemini"
     },
+    "265a064ae438cfcc24404f55db8f6e98b46b0edb633fb1cce309400af054630b": {
+      "attempt_finished_at": "2026-08-22T23:00:07Z",
+      "model": "gemini-3.7-flash",
+      "outcome": "not_called",
+      "provider": "gemini"
+    },
     "265c1edf954c21834c592be99e083290b318aff081fed4557e25174ef5e40b59": {
       "attempt_finished_at": "2026-08-20T17:40:21Z",
       "model": "DeepSeek-V3.2",
@@ -20598,6 +20988,12 @@ This page does not store secrets, raw prompts, raw completions, or provider resp
     "26730225065331d1a8eecd736b9ed4cbafe2a763494674e4f8bbab58658bdfae": {
       "attempt_finished_at": "2026-08-21T22:36:34Z",
       "model": "gemini-3.6-flash",
+      "outcome": "not_called",
+      "provider": "gemini"
+    },
+    "267da04b05efcb438aabca95567262a1bc76a7477e9ec865e1e88cf410b307e7": {
+      "attempt_finished_at": "2026-08-22T23:00:07Z",
+      "model": "gemini-3.7-flash",
       "outcome": "not_called",
       "provider": "gemini"
     },
@@ -21387,6 +21783,12 @@ This page does not store secrets, raw prompts, raw completions, or provider resp
       "outcome": "not_called",
       "provider": "gemini"
     },
+    "28564c47f748658eb5a9e4ced53dedf189bb7d117cba75de557ec490b446a24d": {
+      "attempt_finished_at": "2026-08-22T23:00:10Z",
+      "model": "DeepSeek-V3.1",
+      "outcome": "not_called",
+      "provider": "sambanova"
+    },
     "28580848f1b4797ad47af8a014d10cf028d8acc39459052b545180c7ef7f1b91": {
       "attempt_finished_at": "2026-08-21T00:01:37Z",
       "model": "Meta-Llama-3.3-70B-Instruct",
@@ -21426,6 +21828,12 @@ This page does not store secrets, raw prompts, raw completions, or provider resp
     "286b3604cc8c2412011eb6b3f0e6d58a1767174282b89ebf90af200d0f641576": {
       "attempt_finished_at": "2026-08-21T00:01:37Z",
       "model": "DeepSeek-V3.1",
+      "outcome": "not_called",
+      "provider": "sambanova"
+    },
+    "286b58c9e94a4098d4fa5d9b9f6f964b33244e4d6792b2a9ce07020dec9fd202": {
+      "attempt_finished_at": "2026-08-22T23:00:10Z",
+      "model": "gpt-oss-120b",
       "outcome": "not_called",
       "provider": "sambanova"
     },
@@ -22545,6 +22953,12 @@ This page does not store secrets, raw prompts, raw completions, or provider resp
       "outcome": "not_called",
       "provider": "sambanova"
     },
+    "2a582e6fb763b0c8431a6123b0788c198c2bccb10dee4409873a6a8d91e0fa85": {
+      "attempt_finished_at": "2026-08-22T23:00:10Z",
+      "model": "DeepSeek-V3.2",
+      "outcome": "not_called",
+      "provider": "sambanova"
+    },
     "2a61d796a88f3765f169754e1ef1efa993d43ddcd013a45b58df3f59d1cc0ba5": {
       "attempt_finished_at": "2026-08-22T10:35:13Z",
       "model": "DeepSeek-V3.1",
@@ -23655,6 +24069,12 @@ This page does not store secrets, raw prompts, raw completions, or provider resp
       "outcome": "not_called",
       "provider": "sambanova"
     },
+    "2c996af04ca7e18c4b8b0d400baa2ca7a3e259352fa536fc3932c31518421c4c": {
+      "attempt_finished_at": "2026-08-22T23:00:09Z",
+      "model": "DeepSeek-V3.2",
+      "outcome": "provider_failure",
+      "provider": "sambanova"
+    },
     "2c9dba549719bc3f17fa31e893fd9d519ca2df62f1f6670fa0a2554458caaacf": {
       "attempt_finished_at": "2026-08-22T20:35:01Z",
       "model": "gpt-oss-120b",
@@ -23676,6 +24096,12 @@ This page does not store secrets, raw prompts, raw completions, or provider resp
     "2cad55ee7d8aaab19815da2cb37448f68c645ef31c721d6d04b8f2c541fd6700": {
       "attempt_finished_at": "2026-08-21T04:52:21Z",
       "model": "Meta-Llama-3.3-70B-Instruct",
+      "outcome": "not_called",
+      "provider": "sambanova"
+    },
+    "2cb5e200a0e3539a58bfd5b3ba5644839d05fbb3fb1e836e650397ccd64e711d": {
+      "attempt_finished_at": "2026-08-22T23:00:10Z",
+      "model": "DeepSeek-V3.1",
       "outcome": "not_called",
       "provider": "sambanova"
     },
@@ -24411,6 +24837,12 @@ This page does not store secrets, raw prompts, raw completions, or provider resp
       "outcome": "not_called",
       "provider": "sambanova"
     },
+    "2e2fe8c2af58b2159a1a4f9b36565c0729324f60467099526e4428cfa437c561": {
+      "attempt_finished_at": "2026-08-22T23:00:10Z",
+      "model": "Meta-Llama-3.3-70B-Instruct",
+      "outcome": "not_called",
+      "provider": "sambanova"
+    },
     "2e34b6a03a18701f634c7ccbc7fc0f1cc756f171b1fafb2186a3d5ab1c48a54b": {
       "attempt_finished_at": "2026-08-22T01:46:42Z",
       "model": "DeepSeek-V3.1",
@@ -24536,6 +24968,12 @@ This page does not store secrets, raw prompts, raw completions, or provider resp
       "model": "gemini-3.7-flash",
       "outcome": "not_called",
       "provider": "gemini"
+    },
+    "2e7208b4b5e62b4a2f46fb03590cc825ffa2692b4f95efd53a5409223ce635d4": {
+      "attempt_finished_at": "2026-08-22T23:00:10Z",
+      "model": "DeepSeek-V3.2",
+      "outcome": "not_called",
+      "provider": "sambanova"
     },
     "2e782c903871fa5755eb3e2de4cc01d6fff9df10874d1710a0f6b740df1f74ba": {
       "attempt_finished_at": "2026-08-22T08:43:55Z",
@@ -25083,6 +25521,12 @@ This page does not store secrets, raw prompts, raw completions, or provider resp
       "outcome": "not_called",
       "provider": "sambanova"
     },
+    "2f76952c7f3d1e665b6dd7fd391bc67631e617e0f5f01594f5d41e34c6c9a854": {
+      "attempt_finished_at": "2026-08-22T23:00:10Z",
+      "model": "DeepSeek-V3.2",
+      "outcome": "not_called",
+      "provider": "sambanova"
+    },
     "2f76e741928ac481abe740d9ce4fc72a854f2299398fae8044e5ee24d6817537": {
       "attempt_finished_at": "2026-08-22T12:57:41Z",
       "model": "gemini-3.7-flash",
@@ -25401,6 +25845,12 @@ This page does not store secrets, raw prompts, raw completions, or provider resp
       "outcome": "not_called",
       "provider": "openrouter"
     },
+    "305d66111328df82d56eb039530da1f416379b09ef18895179f0f7e2cb478c39": {
+      "attempt_finished_at": "2026-08-22T23:00:10Z",
+      "model": "DeepSeek-V3.1",
+      "outcome": "not_called",
+      "provider": "sambanova"
+    },
     "3060216393cde1b1a602436f5398a30443efb119165ca038fd38a6fe59722868": {
       "attempt_finished_at": "2026-08-20T21:17:04Z",
       "model": "Meta-Llama-3.3-70B-Instruct",
@@ -25447,6 +25897,12 @@ This page does not store secrets, raw prompts, raw completions, or provider resp
       "attempt_finished_at": "2026-08-21T13:07:00Z",
       "model": "Meta-Llama-3.3-70B-Instruct",
       "outcome": "provider_failure",
+      "provider": "sambanova"
+    },
+    "3075c6ea32d120cbc962861e53599bc967049e6401b2a99d8f56834c8d5eb9ad": {
+      "attempt_finished_at": "2026-08-22T23:00:10Z",
+      "model": "DeepSeek-V3.1",
+      "outcome": "not_called",
       "provider": "sambanova"
     },
     "3077bfeb4d9eb524a76deabe7f42deab7cbd0555ab5bd10744e25136428fed83": {
@@ -27069,6 +27525,12 @@ This page does not store secrets, raw prompts, raw completions, or provider resp
       "outcome": "not_called",
       "provider": "gemini"
     },
+    "33de8ebdd5580db1b2fcd015abf148ba8079f558f80f8b07d4070357f9d51170": {
+      "attempt_finished_at": "2026-08-22T23:00:10Z",
+      "model": "DeepSeek-V3.1",
+      "outcome": "not_called",
+      "provider": "sambanova"
+    },
     "33e4421c4a31d875ce57aaa0ae843e6d4fa3a51ff613c48a298537d3e5b55e6f": {
       "attempt_finished_at": "2026-08-22T00:00:44Z",
       "model": "DeepSeek-V3.1",
@@ -27699,6 +28161,12 @@ This page does not store secrets, raw prompts, raw completions, or provider resp
       "outcome": "not_called",
       "provider": "gemini"
     },
+    "355104e817989473c0a38ad6e9f7e5da79332f089a4190afede53660df2c5bf1": {
+      "attempt_finished_at": "2026-08-22T23:00:10Z",
+      "model": "Meta-Llama-3.3-70B-Instruct",
+      "outcome": "not_called",
+      "provider": "sambanova"
+    },
     "3551fc77112a6c880fc7ce302f16defde06f063ff24215c6cfd7346e3ff8dac5": {
       "attempt_finished_at": "2026-08-21T13:07:15Z",
       "model": "nvidia/nemotron-3.5-lightning:free",
@@ -27801,6 +28269,12 @@ This page does not store secrets, raw prompts, raw completions, or provider resp
       "outcome": "not_called",
       "provider": "groq"
     },
+    "359415158596eda7e97117c69765df1252d33ed81d33e8e4219d55e26df8334f": {
+      "attempt_finished_at": "2026-08-22T23:00:10Z",
+      "model": "DeepSeek-V3.2",
+      "outcome": "not_called",
+      "provider": "sambanova"
+    },
     "3594ade5a4a1c8174ad892ada3799c62f76b12e6e465762655e7bf2b80c36f47": {
       "attempt_finished_at": "2026-08-20T09:46:46Z",
       "model": "gemini-3.7-flash",
@@ -27848,6 +28322,12 @@ This page does not store secrets, raw prompts, raw completions, or provider resp
       "model": "gpt-oss-120b",
       "outcome": "not_called",
       "provider": "sambanova"
+    },
+    "35bf31debcd8c1cab804d2096998c6d3051f48912715ef9a4ae25d8ca1d8efe1": {
+      "attempt_finished_at": "2026-08-22T23:00:07Z",
+      "model": "gemini-3.7-flash",
+      "outcome": "not_called",
+      "provider": "gemini"
     },
     "35c00cc73a7dfdb54dc9e4ccbbd9f52e8f364cacaeeae62c2f0868eb00b37376": {
       "attempt_finished_at": "2026-08-22T22:33:50Z",
@@ -28002,6 +28482,12 @@ This page does not store secrets, raw prompts, raw completions, or provider resp
     "360ce0069277c950d4ece3abf75c0717d41e82bacbf54e932aea9ba88a26278c": {
       "attempt_finished_at": "2026-08-22T00:00:44Z",
       "model": "DeepSeek-V3.1",
+      "outcome": "not_called",
+      "provider": "sambanova"
+    },
+    "3612dc0eb95de9874578f70d2d68653e15192c44cb1bd7bb3b6ccf88e5230b2f": {
+      "attempt_finished_at": "2026-08-22T23:00:10Z",
+      "model": "gpt-oss-120b",
       "outcome": "not_called",
       "provider": "sambanova"
     },
@@ -28407,6 +28893,12 @@ This page does not store secrets, raw prompts, raw completions, or provider resp
       "outcome": "not_called",
       "provider": "sambanova"
     },
+    "36f1eb400151b2532cebe0bde68a653a0be18a81e90e60f75bb37c5ac1258b53": {
+      "attempt_finished_at": "2026-08-22T23:00:10Z",
+      "model": "Meta-Llama-3.3-70B-Instruct",
+      "outcome": "not_called",
+      "provider": "sambanova"
+    },
     "36f4fe56d98535dc9c16268e26f271bb07e73a12dcc864b92e22b015dcf50d92": {
       "attempt_finished_at": "2026-08-21T17:15:01Z",
       "model": "DeepSeek-V3.1",
@@ -28448,6 +28940,12 @@ This page does not store secrets, raw prompts, raw completions, or provider resp
       "model": "openai/gpt-oss-20b:free",
       "outcome": "not_called",
       "provider": "openrouter"
+    },
+    "3714f78e8fbd5bc577ba87ec955890abc8f14c089ad21ef4ecbe3beadfacf367": {
+      "attempt_finished_at": "2026-08-22T23:00:10Z",
+      "model": "gpt-oss-120b",
+      "outcome": "not_called",
+      "provider": "sambanova"
     },
     "371695430a5761bdd67fdb739b464eff1149bcb4e22b4a815b32e9fe78f6558d": {
       "attempt_finished_at": "2026-08-22T05:50:48Z",
@@ -28743,6 +29241,12 @@ This page does not store secrets, raw prompts, raw completions, or provider resp
       "outcome": "not_called",
       "provider": "sambanova"
     },
+    "37b6054f004cd5243d40fb681ba75231e3255ba8926613587dc5598b5d1650bc": {
+      "attempt_finished_at": "2026-08-22T23:00:10Z",
+      "model": "Meta-Llama-3.3-70B-Instruct",
+      "outcome": "not_called",
+      "provider": "sambanova"
+    },
     "37b7b2c127a6f35c4ba6564cb33152b05f6a8933e3dbba792303f11c19636809": {
       "attempt_finished_at": "2026-08-21T21:05:16Z",
       "model": "nvidia/nemotron-nano-9b-v2:free",
@@ -28800,6 +29304,12 @@ This page does not store secrets, raw prompts, raw completions, or provider resp
     "37d61b33e46af7a920171fbdf951c3d8005d2cc3d003676d4886819881d7bc9c": {
       "attempt_finished_at": "2026-08-22T03:27:21Z",
       "model": "gpt-oss-120b",
+      "outcome": "not_called",
+      "provider": "sambanova"
+    },
+    "37d93118f961beaf53775c7923debac89544a767b01643212bf284c567537e40": {
+      "attempt_finished_at": "2026-08-22T23:00:10Z",
+      "model": "DeepSeek-V3.2",
       "outcome": "not_called",
       "provider": "sambanova"
     },
@@ -29157,6 +29667,12 @@ This page does not store secrets, raw prompts, raw completions, or provider resp
       "outcome": "not_called",
       "provider": "gemini"
     },
+    "38ba56f5943403b67dd2405d8872e2665199759690cd2b7217c5fcbc67ab8b0d": {
+      "attempt_finished_at": "2026-08-22T23:00:10Z",
+      "model": "gpt-oss-120b",
+      "outcome": "not_called",
+      "provider": "sambanova"
+    },
     "38c0d58b18cdf8b657acf77ae63a24839043b332ef2a88b31c6a560e74b8f5f7": {
       "attempt_finished_at": "2026-08-22T18:44:47Z",
       "model": "gemini-3.7-flash",
@@ -29444,6 +29960,12 @@ This page does not store secrets, raw prompts, raw completions, or provider resp
       "model": "nvidia/nemotron-nano-9b-v2:free",
       "outcome": "not_called",
       "provider": "openrouter"
+    },
+    "393ef6fc9ab6c673f4fc17ebea0df0ebd9f76c0ac5a9d7aea04b94a6aea1557b": {
+      "attempt_finished_at": "2026-08-22T23:00:10Z",
+      "model": "gpt-oss-120b",
+      "outcome": "not_called",
+      "provider": "sambanova"
     },
     "39413d7d275609e27c4b5f9500acaf8f5a88c8d7f2925986e3d442ee9ce83b5e": {
       "attempt_finished_at": "2026-08-22T11:59:24Z",
@@ -29991,6 +30513,12 @@ This page does not store secrets, raw prompts, raw completions, or provider resp
       "outcome": "not_called",
       "provider": "openrouter"
     },
+    "3a356530216406c6f130549d01a244bf2f66ed5b712cd95d5a2a83ebea3e3d75": {
+      "attempt_finished_at": "2026-08-22T23:00:10Z",
+      "model": "Meta-Llama-3.3-70B-Instruct",
+      "outcome": "not_called",
+      "provider": "sambanova"
+    },
     "3a35b7e46bceee2fcbf2b62f4d8f2d939ace7126e69bf9b9b1b58e22048cbd88": {
       "attempt_finished_at": "2026-08-21T17:15:05Z",
       "model": "gemini-3.6-flash",
@@ -30198,6 +30726,12 @@ This page does not store secrets, raw prompts, raw completions, or provider resp
     "3aafdc79da4f6310d18a0384b35a931fb3148ba878125e90f2f56c2cf770bbf6": {
       "attempt_finished_at": "2026-08-21T04:52:21Z",
       "model": "Meta-Llama-3.3-70B-Instruct",
+      "outcome": "not_called",
+      "provider": "sambanova"
+    },
+    "3ab1b0ff056d14077e9c53ea77ff2b9b3ce898b5d52f78b6b82eb1e3392cb0c3": {
+      "attempt_finished_at": "2026-08-22T23:00:10Z",
+      "model": "gpt-oss-120b",
       "outcome": "not_called",
       "provider": "sambanova"
     },
@@ -30759,6 +31293,12 @@ This page does not store secrets, raw prompts, raw completions, or provider resp
       "outcome": "not_called",
       "provider": "sambanova"
     },
+    "3bbe3d2fdbbfaab5310bcabd6b3f1709b51a3bc8749fb9b3dd6c11cfd950e3f0": {
+      "attempt_finished_at": "2026-08-22T23:00:10Z",
+      "model": "DeepSeek-V3.1",
+      "outcome": "not_called",
+      "provider": "sambanova"
+    },
     "3bbf9227e47a41dcf1bd7f332ca93403071cae7b081849ff7142449f149773e8": {
       "attempt_finished_at": "2026-08-22T17:59:20Z",
       "model": "gemini-3.7-flash",
@@ -30980,6 +31520,12 @@ This page does not store secrets, raw prompts, raw completions, or provider resp
       "model": "gemini-3.5-flash-lite",
       "outcome": "not_called",
       "provider": "gemini"
+    },
+    "3c25bdfa753a7964c9892465eaa6c7983d3213ce8c6a9df0973d037b7ffd3105": {
+      "attempt_finished_at": "2026-08-22T23:00:10Z",
+      "model": "gpt-oss-120b",
+      "outcome": "not_called",
+      "provider": "sambanova"
     },
     "3c2a8a844486a3f16f034ee8ce94d44269ed41c98fd3b3e2f4fd6c4b12a1a283": {
       "attempt_finished_at": "2026-08-20T13:07:36Z",
@@ -31239,6 +31785,12 @@ This page does not store secrets, raw prompts, raw completions, or provider resp
       "outcome": "not_called",
       "provider": "sambanova"
     },
+    "3cbf53cf86c3a3443075f761a739e127e0e24e0ef861782b527899d5d1a3f6e8": {
+      "attempt_finished_at": "2026-08-22T23:00:10Z",
+      "model": "Meta-Llama-3.3-70B-Instruct",
+      "outcome": "not_called",
+      "provider": "sambanova"
+    },
     "3cc5fc181cff1f84b7e9cc3dc3b13ca14e082156a71ca657d97e6efd1ae0aa5a": {
       "attempt_finished_at": "2026-08-20T09:52:43Z",
       "model": "gemini-3.6-flash",
@@ -31344,6 +31896,12 @@ This page does not store secrets, raw prompts, raw completions, or provider resp
     "3d101476d720a490c4dc64f5e3516f923d6c1e00dae0706bfaeefb761d84d76c": {
       "attempt_finished_at": "2026-08-21T20:06:59Z",
       "model": "gemini-3.6-flash",
+      "outcome": "not_called",
+      "provider": "gemini"
+    },
+    "3d11164c2cdfd107da8a35c23eec1bac8a00bcb2a8d9085565c3a595d85f99bf": {
+      "attempt_finished_at": "2026-08-22T23:00:07Z",
+      "model": "gemini-3.7-flash",
       "outcome": "not_called",
       "provider": "gemini"
     },
@@ -31580,6 +32138,12 @@ This page does not store secrets, raw prompts, raw completions, or provider resp
       "model": "gemini-3.7-flash",
       "outcome": "not_called",
       "provider": "gemini"
+    },
+    "3dbb6498f30edb3f0f18cfb165630141e21ac4eb56046e53d138a1e2ab7da38d": {
+      "attempt_finished_at": "2026-08-22T23:00:10Z",
+      "model": "gpt-oss-120b",
+      "outcome": "not_called",
+      "provider": "sambanova"
     },
     "3dbdb8764717ea28f869aa0397ee0c30e73dea514e4db3563ecc49e8238450de": {
       "attempt_finished_at": "2026-08-22T09:05:39Z",
@@ -31868,6 +32432,12 @@ This page does not store secrets, raw prompts, raw completions, or provider resp
       "model": "gemini-2.5-flash",
       "outcome": "not_called",
       "provider": "gemini"
+    },
+    "3e564fc0b28458a20beb9746efa855a80034bb168c3faecf4e57c0227358bb12": {
+      "attempt_finished_at": "2026-08-22T23:00:10Z",
+      "model": "Meta-Llama-3.3-70B-Instruct",
+      "outcome": "not_called",
+      "provider": "sambanova"
     },
     "3e56edc6cf0436d13cd0427a792cd29b68fa173d0a6b36ddb09243c23807e0ff": {
       "attempt_finished_at": "2026-08-22T21:59:13Z",
@@ -32271,6 +32841,12 @@ This page does not store secrets, raw prompts, raw completions, or provider resp
       "outcome": "not_called",
       "provider": "sambanova"
     },
+    "3f24d6064bbee45c07e130f0fa43174c94f2db8741880a22173d01b1270c1523": {
+      "attempt_finished_at": "2026-08-22T23:00:10Z",
+      "model": "DeepSeek-V3.2",
+      "outcome": "not_called",
+      "provider": "sambanova"
+    },
     "3f29180997161ffebd64d3755f52210b3b0bf678963c6e84ffa0125ce75cd7f3": {
       "attempt_finished_at": "2026-08-20T22:39:45Z",
       "model": "Meta-Llama-3.3-70B-Instruct",
@@ -32282,6 +32858,12 @@ This page does not store secrets, raw prompts, raw completions, or provider resp
       "model": "poolside/laguna-xs-2.1:free",
       "outcome": "not_called",
       "provider": "openrouter"
+    },
+    "3f2ea668be964f434840fd6b3492b01e770e7b093527f834b82cad08133b5cd1": {
+      "attempt_finished_at": "2026-08-22T23:00:07Z",
+      "model": "gemini-3.7-flash",
+      "outcome": "not_called",
+      "provider": "gemini"
     },
     "3f2ffc0f8c0e6d1d8d6849f95c1d60a1f6e2a5ffce78b8ddc2285c42719fa779": {
       "attempt_finished_at": "2026-08-21T13:58:19Z",
@@ -32541,6 +33123,12 @@ This page does not store secrets, raw prompts, raw completions, or provider resp
       "outcome": "valid",
       "provider": "sambanova"
     },
+    "3fa0475b051b5807a2ed9c55334d4768fc5ca4d72447e7e03711c04ddf07f87e": {
+      "attempt_finished_at": "2026-08-22T23:00:10Z",
+      "model": "Meta-Llama-3.3-70B-Instruct",
+      "outcome": "not_called",
+      "provider": "sambanova"
+    },
     "3fa50d4ec0efd802672240f27ce604010afd8ac92941cfc90175af0ee77fcff5": {
       "attempt_finished_at": "2026-08-21T13:56:01Z",
       "model": "qwen/qwen3.6-27b",
@@ -32757,6 +33345,12 @@ This page does not store secrets, raw prompts, raw completions, or provider resp
       "outcome": "not_called",
       "provider": "sambanova"
     },
+    "4019795f4b89c902eac38eb09b11d67a3594919f13f8bf896233049cf07985a1": {
+      "attempt_finished_at": "2026-08-22T23:00:07Z",
+      "model": "gemini-3.7-flash",
+      "outcome": "not_called",
+      "provider": "gemini"
+    },
     "40215182f15cd3062c24fb831eb28da9e3af357f86f28f6a4562500a6b4a5023": {
       "attempt_finished_at": "2026-08-20T17:41:00Z",
       "model": "openai/gpt-oss-20b:free",
@@ -32855,6 +33449,12 @@ This page does not store secrets, raw prompts, raw completions, or provider resp
     },
     "4056065bb00fa3cb8452bb822bf3c4a07cf0ad002b16a2dedecfd4ea249715ec": {
       "attempt_finished_at": "2026-08-21T19:58:59Z",
+      "model": "DeepSeek-V3.2",
+      "outcome": "not_called",
+      "provider": "sambanova"
+    },
+    "405d4e46164fd3676d0cbc32cf99159c80b4de7a1a6d3a436eaab8327529f780": {
+      "attempt_finished_at": "2026-08-22T23:00:10Z",
       "model": "DeepSeek-V3.2",
       "outcome": "not_called",
       "provider": "sambanova"
@@ -33441,6 +34041,12 @@ This page does not store secrets, raw prompts, raw completions, or provider resp
       "outcome": "not_called",
       "provider": "openrouter"
     },
+    "41856b76da8809d7dfb19fa78e10522f14ee9855258689de3ef8d836dc5e5ea2": {
+      "attempt_finished_at": "2026-08-22T23:00:10Z",
+      "model": "gpt-oss-120b",
+      "outcome": "not_called",
+      "provider": "sambanova"
+    },
     "418a4564ead29b13aad15a3337aa3c0ed31249a1bef0a0cc644d86c5cdb762cf": {
       "attempt_finished_at": "2026-08-22T19:06:47Z",
       "model": "DeepSeek-V3.1",
@@ -33567,6 +34173,12 @@ This page does not store secrets, raw prompts, raw completions, or provider resp
       "outcome": "not_called",
       "provider": "openrouter"
     },
+    "41d5cccfff239e50c5d9e6f5e919269c1451f0166e2742359ec7195cbae5843b": {
+      "attempt_finished_at": "2026-08-22T23:00:10Z",
+      "model": "gpt-oss-120b",
+      "outcome": "not_called",
+      "provider": "sambanova"
+    },
     "41d73eee7393f3efca3a0bee5d2ceb37816d37cbc177c677a137a55fee2f4b52": {
       "attempt_finished_at": "2026-08-20T09:48:16Z",
       "model": "openai/gpt-oss-120b",
@@ -33600,6 +34212,12 @@ This page does not store secrets, raw prompts, raw completions, or provider resp
     "41eacfd538a15a41361b4de37bc03799c91be525fc21ed9d59a5760435626ce4": {
       "attempt_finished_at": "2026-08-22T13:39:58Z",
       "model": "DeepSeek-V3.1",
+      "outcome": "not_called",
+      "provider": "sambanova"
+    },
+    "41f7408f399c986a2aa09accd8128651f265c1771c356b3ba02946fcb6de665f": {
+      "attempt_finished_at": "2026-08-22T23:00:10Z",
+      "model": "gpt-oss-120b",
       "outcome": "not_called",
       "provider": "sambanova"
     },
@@ -33879,6 +34497,12 @@ This page does not store secrets, raw prompts, raw completions, or provider resp
       "outcome": "not_called",
       "provider": "sambanova"
     },
+    "427a9629ac4e029debe30cab8c8775f4119654222e091793b7bb8ddecd45fc3b": {
+      "attempt_finished_at": "2026-08-22T23:00:10Z",
+      "model": "DeepSeek-V3.1",
+      "outcome": "not_called",
+      "provider": "sambanova"
+    },
     "428074388d7cec1f5d5d6d34af654c9884d91f399df84d117763207fe3bb85ea": {
       "attempt_finished_at": "2026-08-20T09:52:58Z",
       "model": "openai/gpt-oss-20b",
@@ -34055,6 +34679,12 @@ This page does not store secrets, raw prompts, raw completions, or provider resp
     },
     "42ce6f58fd0fe4f173db826d8ec01321160c90307715ce90c46a80fcf12156b5": {
       "attempt_finished_at": "2026-08-20T17:40:21Z",
+      "model": "DeepSeek-V3.1",
+      "outcome": "not_called",
+      "provider": "sambanova"
+    },
+    "42d47ba236c1accc486ca6bd12b4a1165dfeec6fcb8732562731b70eaba464af": {
+      "attempt_finished_at": "2026-08-22T23:00:10Z",
       "model": "DeepSeek-V3.1",
       "outcome": "not_called",
       "provider": "sambanova"
@@ -34869,6 +35499,12 @@ This page does not store secrets, raw prompts, raw completions, or provider resp
       "outcome": "not_called",
       "provider": "sambanova"
     },
+    "4498d840aa6ace050f579e27a0c8de8ff80de1f7e830e31f8722fc5d08330031": {
+      "attempt_finished_at": "2026-08-22T23:00:10Z",
+      "model": "DeepSeek-V3.2",
+      "outcome": "not_called",
+      "provider": "sambanova"
+    },
     "4498ffe4d3da61154a4ad5dce1f673866b71ea342edc111e8fd5598607539b5b": {
       "attempt_finished_at": "2026-08-21T01:53:50Z",
       "model": "DeepSeek-V3.1",
@@ -34973,6 +35609,12 @@ This page does not store secrets, raw prompts, raw completions, or provider resp
     },
     "44d2f474938c284dbbec7bfcefe8004c9caa05315a29b13e57d125dd9b2627d0": {
       "attempt_finished_at": "2026-08-21T11:04:58Z",
+      "model": "DeepSeek-V3.1",
+      "outcome": "not_called",
+      "provider": "sambanova"
+    },
+    "44d4011f46beddb1470ae6db017bc90041e7b6f667de6f7ab255829232ae1c11": {
+      "attempt_finished_at": "2026-08-22T23:00:10Z",
       "model": "DeepSeek-V3.1",
       "outcome": "not_called",
       "provider": "sambanova"
@@ -35382,6 +36024,12 @@ This page does not store secrets, raw prompts, raw completions, or provider resp
     "4569abfb48cb68b1e9b2df1fe8f066588f2a06c416c85e44a3a769a8efec6d1a": {
       "attempt_finished_at": "2026-08-20T16:15:24Z",
       "model": "DeepSeek-V3.2",
+      "outcome": "not_called",
+      "provider": "sambanova"
+    },
+    "456a1f01df373499519ff4bfe54765c4fd59e37fc184104831e7f46c70dcf2bd": {
+      "attempt_finished_at": "2026-08-22T23:00:10Z",
+      "model": "gpt-oss-120b",
       "outcome": "not_called",
       "provider": "sambanova"
     },
@@ -36039,6 +36687,12 @@ This page does not store secrets, raw prompts, raw completions, or provider resp
       "outcome": "not_called",
       "provider": "sambanova"
     },
+    "46fe3ab54d3a20107fc3c9fc84166d16fb1b9caf1024ce77fb550f914d3fba77": {
+      "attempt_finished_at": "2026-08-22T23:00:10Z",
+      "model": "gpt-oss-120b",
+      "outcome": "not_called",
+      "provider": "sambanova"
+    },
     "4702fb89d5618470e939c2d72c692635fc4f1d5734aa736c3e991c0a23370a47": {
       "attempt_finished_at": "2026-08-22T00:00:44Z",
       "model": "Meta-Llama-3.3-70B-Instruct",
@@ -36255,6 +36909,12 @@ This page does not store secrets, raw prompts, raw completions, or provider resp
       "outcome": "not_called",
       "provider": "sambanova"
     },
+    "477b761bb1d1200ac73852631cc53108da10486ec8b4e6543330c4eeca8bcb31": {
+      "attempt_finished_at": "2026-08-22T23:00:10Z",
+      "model": "Meta-Llama-3.3-70B-Instruct",
+      "outcome": "not_called",
+      "provider": "sambanova"
+    },
     "47814537109d897facff209b723572f20f3ca25731d050db2113c1260b885dae": {
       "attempt_finished_at": "2026-08-21T22:36:22Z",
       "model": "DeepSeek-V3.2",
@@ -36330,6 +36990,12 @@ This page does not store secrets, raw prompts, raw completions, or provider resp
     "47a7288ca0c8146af855b10de5bbf0582d8fc4ab2e6c67a6e077945a1676f187": {
       "attempt_finished_at": "2026-08-21T06:06:35Z",
       "model": "DeepSeek-V3.1",
+      "outcome": "not_called",
+      "provider": "sambanova"
+    },
+    "47accf653b38cf9df960442cbf7eec5d35318d8311eb2ee138f837ceb8b93b0d": {
+      "attempt_finished_at": "2026-08-22T23:00:10Z",
+      "model": "gpt-oss-120b",
       "outcome": "not_called",
       "provider": "sambanova"
     },
@@ -36468,6 +37134,12 @@ This page does not store secrets, raw prompts, raw completions, or provider resp
     "47e72dd7bd33f9266803c12110c8f68dcb945d1bf04412be82385c3a516b1d9d": {
       "attempt_finished_at": "2026-08-20T18:56:07Z",
       "model": "gpt-oss-120b",
+      "outcome": "not_called",
+      "provider": "sambanova"
+    },
+    "47eb269faf2363d5194740be78f000464afcf81dc2b5c522a1095ee2567f6687": {
+      "attempt_finished_at": "2026-08-22T23:00:10Z",
+      "model": "Meta-Llama-3.3-70B-Instruct",
       "outcome": "not_called",
       "provider": "sambanova"
     },
@@ -36663,6 +37335,12 @@ This page does not store secrets, raw prompts, raw completions, or provider resp
       "outcome": "not_called",
       "provider": "sambanova"
     },
+    "48568fdcf1766baa3b7b62a225516bbdd7e18ba38a3adef6cc9ad3009004bf79": {
+      "attempt_finished_at": "2026-08-22T23:00:10Z",
+      "model": "gpt-oss-120b",
+      "outcome": "not_called",
+      "provider": "sambanova"
+    },
     "4858ecee7cd630684937703aba5e50c06eca8c7c583261b2f587b6faa028dabd": {
       "attempt_finished_at": "2026-08-21T22:36:34Z",
       "model": "gemini-3.6-flash",
@@ -36674,6 +37352,12 @@ This page does not store secrets, raw prompts, raw completions, or provider resp
       "model": "poolside/laguna-s-2.1:free",
       "outcome": "not_called",
       "provider": "openrouter"
+    },
+    "485b2ae5912f2fb656f1276f56200ea70d6ffcbaa0d42eeac6c85fd16d699a6a": {
+      "attempt_finished_at": "2026-08-22T23:00:10Z",
+      "model": "gpt-oss-120b",
+      "outcome": "not_called",
+      "provider": "sambanova"
     },
     "485c5eec0b0f23c4c949e4ddfc1d67395b690fbe42f0acddb278a4e7757b57dc": {
       "attempt_finished_at": "2026-08-21T22:36:22Z",
@@ -36930,6 +37614,12 @@ This page does not store secrets, raw prompts, raw completions, or provider resp
     "48f37f64143bf7a908140ca3f22119e27b3c8bca43f1d5ee3e4b6069bd097308": {
       "attempt_finished_at": "2026-08-22T04:46:36Z",
       "model": "DeepSeek-V3.1",
+      "outcome": "not_called",
+      "provider": "sambanova"
+    },
+    "48f6f2593870e01355cae912b6fbadb8ed18da72f23275edbabd0c9e2b70a78f": {
+      "attempt_finished_at": "2026-08-22T23:00:10Z",
+      "model": "gpt-oss-120b",
       "outcome": "not_called",
       "provider": "sambanova"
     },
@@ -37455,6 +38145,12 @@ This page does not store secrets, raw prompts, raw completions, or provider resp
       "outcome": "not_called",
       "provider": "sambanova"
     },
+    "4a05ab7ec4c5418f07506b8acb653cb1e3d93b89b9ce97cf1093fa58b58f40ec": {
+      "attempt_finished_at": "2026-08-22T23:00:10Z",
+      "model": "DeepSeek-V3.1",
+      "outcome": "not_called",
+      "provider": "sambanova"
+    },
     "4a07321267f1950bd61c0a87fc2b8fe081c4910fed31cf50986c08ca8de0c4f8": {
       "attempt_finished_at": "2026-08-21T20:06:59Z",
       "model": "gemini-3.6-flash",
@@ -37824,6 +38520,12 @@ This page does not store secrets, raw prompts, raw completions, or provider resp
     "4a946bfa0d389492362dfd7250d94bfa7b7295e69fda8c9d4facb8c9587b7d0b": {
       "attempt_finished_at": "2026-08-21T00:01:37Z",
       "model": "DeepSeek-V3.1",
+      "outcome": "not_called",
+      "provider": "sambanova"
+    },
+    "4a983bc6ecda72b0be40f06db31b788959d4cbe50e17450716e857c92f8f4bb4": {
+      "attempt_finished_at": "2026-08-22T23:00:10Z",
+      "model": "Meta-Llama-3.3-70B-Instruct",
       "outcome": "not_called",
       "provider": "sambanova"
     },
@@ -39513,6 +40215,12 @@ This page does not store secrets, raw prompts, raw completions, or provider resp
       "outcome": "not_called",
       "provider": "sambanova"
     },
+    "4dfb54896ab8d50c2314e98e36ee7b2d97b32a057e1543b8376c0591a9130e74": {
+      "attempt_finished_at": "2026-08-22T23:00:10Z",
+      "model": "gpt-oss-120b",
+      "outcome": "not_called",
+      "provider": "sambanova"
+    },
     "4dfc8e753367177bf2f31e9e5e853116e1af5b27d870fc4c4157a7ca3157fd0c": {
       "attempt_finished_at": "2026-08-21T14:48:12Z",
       "model": "gpt-oss-120b",
@@ -39947,6 +40655,12 @@ This page does not store secrets, raw prompts, raw completions, or provider resp
     },
     "4ecac68a7d9fd0762155027d58f25e30461feda11add729a080a67ae4acdbae6": {
       "attempt_finished_at": "2026-08-20T18:56:07Z",
+      "model": "DeepSeek-V3.1",
+      "outcome": "not_called",
+      "provider": "sambanova"
+    },
+    "4ecea76e1e5b7c773eaaa66d1931996d07c8a0c910bb3c1ae8a38cc433af3093": {
+      "attempt_finished_at": "2026-08-22T23:00:10Z",
       "model": "DeepSeek-V3.1",
       "outcome": "not_called",
       "provider": "sambanova"
@@ -40821,6 +41535,12 @@ This page does not store secrets, raw prompts, raw completions, or provider resp
       "outcome": "not_called",
       "provider": "sambanova"
     },
+    "50a23aea9aa58a0b21e19d01bb1f71bf944002481d4405684c461e5ec43126da": {
+      "attempt_finished_at": "2026-08-22T23:00:10Z",
+      "model": "DeepSeek-V3.2",
+      "outcome": "not_called",
+      "provider": "sambanova"
+    },
     "50a25ec407b9ec7c570d8e8321d5ffa7da5c57a6137d5cfe99fd9d04e4e2b6b0": {
       "attempt_finished_at": "2026-08-20T18:56:07Z",
       "model": "DeepSeek-V3.2",
@@ -41235,6 +41955,12 @@ This page does not store secrets, raw prompts, raw completions, or provider resp
       "outcome": "not_called",
       "provider": "sambanova"
     },
+    "5167fe07f3fb172fad3004eaa7e611f77c8c4c6dd3718b4578a12b6a2433aea8": {
+      "attempt_finished_at": "2026-08-22T23:00:10Z",
+      "model": "DeepSeek-V3.1",
+      "outcome": "not_called",
+      "provider": "sambanova"
+    },
     "51708d646bf681c5ffc01230d82bb36c9110587caa41aa62d479c3446a52e7ec": {
       "attempt_finished_at": "2026-08-21T00:01:48Z",
       "model": "nvidia/nemotron-nano-9b-v2:free",
@@ -41577,11 +42303,23 @@ This page does not store secrets, raw prompts, raw completions, or provider resp
       "outcome": "not_called",
       "provider": "openrouter"
     },
+    "52214ad2dcd08bb04038858c859905ba246c2d5ebb712711689fbe8149e4f25f": {
+      "attempt_finished_at": "2026-08-22T23:00:10Z",
+      "model": "Meta-Llama-3.3-70B-Instruct",
+      "outcome": "not_called",
+      "provider": "sambanova"
+    },
     "52222992866f361d62788f84e5b7e91b8803fe780a9c8a1749e7b4ae738d1569": {
       "attempt_finished_at": "2026-08-22T20:35:01Z",
       "model": "DeepSeek-V3.2",
       "outcome": "not_called",
       "provider": "sambanova"
+    },
+    "52229252bcbafa18c112f922b5000df04af8b13ae38f94cd086cf7bd0962334c": {
+      "attempt_finished_at": "2026-08-22T23:00:07Z",
+      "model": "gemini-3.7-flash",
+      "outcome": "not_called",
+      "provider": "gemini"
     },
     "5223727d282e32b0d36ae42f8f43ea944e79347e6227e9c5be56a2cbb3ad07bd": {
       "attempt_finished_at": "2026-08-20T09:46:12Z",
@@ -42187,6 +42925,12 @@ This page does not store secrets, raw prompts, raw completions, or provider resp
       "attempt_finished_at": "2026-08-20T13:09:00Z",
       "model": "MiniMax-M2.7",
       "outcome": "validator_rejected",
+      "provider": "sambanova"
+    },
+    "538af4a1c52841baf111a1e0a6afd82734c3aabd14173796e7fdc9eae3e01c33": {
+      "attempt_finished_at": "2026-08-22T23:00:10Z",
+      "model": "DeepSeek-V3.2",
+      "outcome": "not_called",
       "provider": "sambanova"
     },
     "538b3bc54ede57a997d44225bf0263245425ba422e2b5fa2224cec95758fdb77": {
@@ -43341,6 +44085,12 @@ This page does not store secrets, raw prompts, raw completions, or provider resp
       "outcome": "not_called",
       "provider": "sambanova"
     },
+    "55c91df49ca930b3a557f64d414849b1f3bfdd70c021576c44bdb261dc93a191": {
+      "attempt_finished_at": "2026-08-22T23:00:10Z",
+      "model": "Meta-Llama-3.3-70B-Instruct",
+      "outcome": "not_called",
+      "provider": "sambanova"
+    },
     "55d004ca904f4379fc9d31e88af5a78961ca0024a96f451b1255a348373d1d05": {
       "attempt_finished_at": "2026-08-22T15:00:38Z",
       "model": "Meta-Llama-3.3-70B-Instruct",
@@ -43440,6 +44190,12 @@ This page does not store secrets, raw prompts, raw completions, or provider resp
     "5603e25b9f67eb1b2d162efbe8238d8878359039f3201530121748ffef53da92": {
       "attempt_finished_at": "2026-08-21T21:02:56Z",
       "model": "Meta-Llama-3.3-70B-Instruct",
+      "outcome": "not_called",
+      "provider": "sambanova"
+    },
+    "560489a4acb756c5361763e43d9384c232607977ff403a0a98b122ceb59b86b0": {
+      "attempt_finished_at": "2026-08-22T23:00:10Z",
+      "model": "DeepSeek-V3.2",
       "outcome": "not_called",
       "provider": "sambanova"
     },
@@ -43566,6 +44322,12 @@ This page does not store secrets, raw prompts, raw completions, or provider resp
     "56334678da12f614ebb0704678c157c5c11759d580de37c3a6325169906c05d5": {
       "attempt_finished_at": "2026-08-20T13:07:36Z",
       "model": "gpt-oss-120b",
+      "outcome": "not_called",
+      "provider": "sambanova"
+    },
+    "563459848135896781654fe1ce1be54cf42ecccb18bc22eae68dad46dc7606b1": {
+      "attempt_finished_at": "2026-08-22T23:00:10Z",
+      "model": "DeepSeek-V3.2",
       "outcome": "not_called",
       "provider": "sambanova"
     },
@@ -44121,6 +44883,12 @@ This page does not store secrets, raw prompts, raw completions, or provider resp
       "outcome": "not_called",
       "provider": "sambanova"
     },
+    "574c190f60cf5adba6cb409f0a60d4695932c4f2d1aafcf60655174c5aa7f056": {
+      "attempt_finished_at": "2026-08-22T23:00:10Z",
+      "model": "DeepSeek-V3.2",
+      "outcome": "not_called",
+      "provider": "sambanova"
+    },
     "57516ec2101c046e57030ff63b6a7c9a325a6caed7954183f7f1078246918b5a": {
       "attempt_finished_at": "2026-08-20T21:17:04Z",
       "model": "DeepSeek-V3.1",
@@ -44223,6 +44991,12 @@ This page does not store secrets, raw prompts, raw completions, or provider resp
       "outcome": "not_called",
       "provider": "sambanova"
     },
+    "578f0d69a249852375d79dd2079f61aa3a6c033caec53dee745ff8f7d545338d": {
+      "attempt_finished_at": "2026-08-22T23:00:10Z",
+      "model": "DeepSeek-V3.2",
+      "outcome": "not_called",
+      "provider": "sambanova"
+    },
     "5795c33a7b9de031a489d1fd4eb2459450a398fd80b52db9217b50990d263784": {
       "attempt_finished_at": "2026-08-22T04:06:46Z",
       "model": "gemini-3.7-flash",
@@ -44256,6 +45030,12 @@ This page does not store secrets, raw prompts, raw completions, or provider resp
     "579f0e028a41a241dbec8f4ee9e3de9d0b6e66c3dac369171b2f80da245fcdc0": {
       "attempt_finished_at": "2026-08-22T17:59:20Z",
       "model": "DeepSeek-V3.1",
+      "outcome": "not_called",
+      "provider": "sambanova"
+    },
+    "579fcc4af27aceab4d0cb6ae7b8a4d6781e17204d01372bab72ac72c9562577d": {
+      "attempt_finished_at": "2026-08-22T23:00:10Z",
+      "model": "DeepSeek-V3.2",
       "outcome": "not_called",
       "provider": "sambanova"
     },
@@ -44607,6 +45387,12 @@ This page does not store secrets, raw prompts, raw completions, or provider resp
       "outcome": "not_called",
       "provider": "sambanova"
     },
+    "586acd8be94ce169e77e6a36c24094e9e054e600ea78507940e8c68ac04cb178": {
+      "attempt_finished_at": "2026-08-22T23:00:07Z",
+      "model": "gemini-3.7-flash",
+      "outcome": "not_called",
+      "provider": "gemini"
+    },
     "586c3bb915669cff92433c16baa6f97da3d74d3d83ef74e997eaf75b0bbe89fd": {
       "attempt_finished_at": "2026-08-21T21:35:06Z",
       "model": "gemini-3.6-flash",
@@ -44886,6 +45672,12 @@ This page does not store secrets, raw prompts, raw completions, or provider resp
     "5918056c864219036466da0c6fa09f61878d3dfc9b3ea380618e321072fbbf41": {
       "attempt_finished_at": "2026-08-20T13:07:36Z",
       "model": "DeepSeek-V3.1",
+      "outcome": "not_called",
+      "provider": "sambanova"
+    },
+    "591f77b3968f4952df75604b9a76b46d557599c0e1dd7dfd42801efd2a9a897b": {
+      "attempt_finished_at": "2026-08-22T23:00:10Z",
+      "model": "Meta-Llama-3.3-70B-Instruct",
       "outcome": "not_called",
       "provider": "sambanova"
     },
@@ -45278,6 +46070,12 @@ This page does not store secrets, raw prompts, raw completions, or provider resp
       "model": "gemini-2.5-flash",
       "outcome": "valid",
       "provider": "gemini"
+    },
+    "59ed71c8529d2caba53e960bebada799439fd91168243ddcbe16253b31783406": {
+      "attempt_finished_at": "2026-08-22T23:00:10Z",
+      "model": "DeepSeek-V3.2",
+      "outcome": "not_called",
+      "provider": "sambanova"
     },
     "59f04e9c402af084afc3fd827f85c7657265d1e50b8ace2952410b747a9d4cfe": {
       "attempt_finished_at": "2026-08-21T19:34:27Z",
@@ -45843,6 +46641,12 @@ This page does not store secrets, raw prompts, raw completions, or provider resp
       "outcome": "not_called",
       "provider": "openrouter"
     },
+    "5b7f6ec67a935c1e2c188ddd82a1937670e72be521268a94a30d2f8911505cda": {
+      "attempt_finished_at": "2026-08-22T23:00:10Z",
+      "model": "DeepSeek-V3.1",
+      "outcome": "not_called",
+      "provider": "sambanova"
+    },
     "5b88d3699ab71f87ecdccb63019660361cf62eca0e2f24a66d24277ed96d9658": {
       "attempt_finished_at": "2026-08-20T09:52:58Z",
       "model": "qwen/qwen3.6-27b",
@@ -45986,6 +46790,12 @@ This page does not store secrets, raw prompts, raw completions, or provider resp
       "model": "gemini-3.7-flash",
       "outcome": "not_called",
       "provider": "gemini"
+    },
+    "5bd14afe80394a2224ae9853ea81513b54bd84e2d91d1a2b760430b3a0fd205e": {
+      "attempt_finished_at": "2026-08-22T23:00:10Z",
+      "model": "DeepSeek-V3.1",
+      "outcome": "not_called",
+      "provider": "sambanova"
     },
     "5bd1d39dec6657c21b0ba7960cfad0c51d68907efacb3d9e9e2d931c936d68b1": {
       "attempt_finished_at": "2026-08-22T19:06:47Z",
@@ -46611,6 +47421,12 @@ This page does not store secrets, raw prompts, raw completions, or provider resp
       "outcome": "not_called",
       "provider": "sambanova"
     },
+    "5cf0dd98a6e45a933b09658eaa567fdc27c8a58f921a40ad548498929608650a": {
+      "attempt_finished_at": "2026-08-22T23:00:10Z",
+      "model": "gpt-oss-120b",
+      "outcome": "not_called",
+      "provider": "sambanova"
+    },
     "5cf4775fb0097ef51b25facc579826c02f51824c78b021dc79bb8964f14b15db": {
       "attempt_finished_at": "2026-08-20T22:39:45Z",
       "model": "gpt-oss-120b",
@@ -46841,6 +47657,12 @@ This page does not store secrets, raw prompts, raw completions, or provider resp
     },
     "5d5a801aa14cdf738bb449d9c5cef2debbeeb6299544b8d9e1e4cc1f70a5b0b6": {
       "attempt_finished_at": "2026-08-21T01:53:50Z",
+      "model": "Meta-Llama-3.3-70B-Instruct",
+      "outcome": "not_called",
+      "provider": "sambanova"
+    },
+    "5d5aae620a55f6e54474d28ba3adb2e3041caabd9ad8b93546e0886a32a76447": {
+      "attempt_finished_at": "2026-08-22T23:00:10Z",
       "model": "Meta-Llama-3.3-70B-Instruct",
       "outcome": "not_called",
       "provider": "sambanova"
@@ -47661,6 +48483,12 @@ This page does not store secrets, raw prompts, raw completions, or provider resp
       "outcome": "not_called",
       "provider": "sambanova"
     },
+    "5ee4185c72e5ff7f4917bb4227b8ffd8d923de1b6a0cfed6bd48607d78c02ebe": {
+      "attempt_finished_at": "2026-08-22T23:00:07Z",
+      "model": "gemini-3.7-flash",
+      "outcome": "not_called",
+      "provider": "gemini"
+    },
     "5ee4d6e4de60c83773d67732a3e1bd577bffb8d07a513beb3197e5671d20109b": {
       "attempt_finished_at": "2026-08-21T18:51:56Z",
       "model": "Meta-Llama-3.3-70B-Instruct",
@@ -48048,6 +48876,12 @@ This page does not store secrets, raw prompts, raw completions, or provider resp
     "5fd2f6f1ac317ececd082e4a2805a0ed22cb2d96b6d84f7d52c6226a6950ca9a": {
       "attempt_finished_at": "2026-08-22T19:06:47Z",
       "model": "Meta-Llama-3.3-70B-Instruct",
+      "outcome": "not_called",
+      "provider": "sambanova"
+    },
+    "5fd4874f6d0494a84c2892fb39cc003cfc374cc3475e8584b9e4c95695f1bdad": {
+      "attempt_finished_at": "2026-08-22T23:00:10Z",
+      "model": "DeepSeek-V3.2",
       "outcome": "not_called",
       "provider": "sambanova"
     },
@@ -48459,6 +49293,12 @@ This page does not store secrets, raw prompts, raw completions, or provider resp
       "outcome": "not_called",
       "provider": "sambanova"
     },
+    "60a644c7f1b6e1583fdb3d2c8b5f7540612c800405e2a68cf499107aaf987a0d": {
+      "attempt_finished_at": "2026-08-22T23:00:10Z",
+      "model": "DeepSeek-V3.1",
+      "outcome": "not_called",
+      "provider": "sambanova"
+    },
     "60aeae34ccb243c9e4510e679fd96560cfa5e1ff9d7fcaee97ba30cbd50aba01": {
       "attempt_finished_at": "2026-08-22T05:50:42Z",
       "model": "DeepSeek-V3.1",
@@ -48551,6 +49391,12 @@ This page does not store secrets, raw prompts, raw completions, or provider resp
     },
     "60dac0008970c22b22913d6482e821cac5a1f32df6dc2c101f75c57fa02d63db": {
       "attempt_finished_at": "2026-08-22T04:46:36Z",
+      "model": "DeepSeek-V3.2",
+      "outcome": "not_called",
+      "provider": "sambanova"
+    },
+    "60ddef4b1aa857252e476e510779d5683572c73447ba9b98b03e79a73203ebf2": {
+      "attempt_finished_at": "2026-08-22T23:00:10Z",
       "model": "DeepSeek-V3.2",
       "outcome": "not_called",
       "provider": "sambanova"
@@ -48783,6 +49629,12 @@ This page does not store secrets, raw prompts, raw completions, or provider resp
       "outcome": "not_called",
       "provider": "openrouter"
     },
+    "614755eaeec7f9cf8b2efd99c49589d383c0fef5550d94b3939c3ce858ea1137": {
+      "attempt_finished_at": "2026-08-22T23:00:10Z",
+      "model": "gpt-oss-120b",
+      "outcome": "not_called",
+      "provider": "sambanova"
+    },
     "61483c5463ac0a29fd3989ceb41bdd7697419b18be09ead06739ed6f69f2c3a6": {
       "attempt_finished_at": "2026-08-21T06:06:35Z",
       "model": "gpt-oss-120b",
@@ -48860,6 +49712,12 @@ This page does not store secrets, raw prompts, raw completions, or provider resp
       "model": "nvidia/nemotron-nano-9b-v2:free",
       "outcome": "not_called",
       "provider": "openrouter"
+    },
+    "61696acd9d01004bf677d729ea476730efd3307875b01a9b4dc46d1c9fbd5ead": {
+      "attempt_finished_at": "2026-08-22T23:00:10Z",
+      "model": "gpt-oss-120b",
+      "outcome": "not_called",
+      "provider": "sambanova"
     },
     "616ce2e7c906c0aaa4eace2dbf79e0b105197416bb0704adbd0c6fde5973116a": {
       "attempt_finished_at": "2026-08-22T21:59:13Z",
@@ -49575,6 +50433,12 @@ This page does not store secrets, raw prompts, raw completions, or provider resp
       "outcome": "not_called",
       "provider": "sambanova"
     },
+    "62f4ae3a5a6f237bb9febd8fb47363c207d1c7316aa3aa6c764456620789bd5f": {
+      "attempt_finished_at": "2026-08-22T23:00:10Z",
+      "model": "Meta-Llama-3.3-70B-Instruct",
+      "outcome": "not_called",
+      "provider": "sambanova"
+    },
     "62f5f681521faffc025e598bd9a6a04ae51306dac6345d021629a5ef760fadee": {
       "attempt_finished_at": "2026-08-21T21:02:56Z",
       "model": "Meta-Llama-3.3-70B-Instruct",
@@ -49703,6 +50567,12 @@ This page does not store secrets, raw prompts, raw completions, or provider resp
     },
     "6326ff7d178a022b4ee22fbfe893363c1c5c489164e58873535ff66285d2b673": {
       "attempt_finished_at": "2026-08-22T13:45:22Z",
+      "model": "gemini-3.7-flash",
+      "outcome": "not_called",
+      "provider": "gemini"
+    },
+    "632846a92673236892fb5521ef55a806c452e3a87621aa81462c142d3cc41f73": {
+      "attempt_finished_at": "2026-08-22T23:00:07Z",
       "model": "gemini-3.7-flash",
       "outcome": "not_called",
       "provider": "gemini"
@@ -50139,6 +51009,12 @@ This page does not store secrets, raw prompts, raw completions, or provider resp
       "outcome": "not_called",
       "provider": "openrouter"
     },
+    "64157f36b8b9b0d88482b27fdd0e2b0fcb4d947e243b0c32b2bb230d1e308822": {
+      "attempt_finished_at": "2026-08-22T23:00:10Z",
+      "model": "DeepSeek-V3.2",
+      "outcome": "not_called",
+      "provider": "sambanova"
+    },
     "64166419855a003e37247b8b05f11827fbb7c4bed383e0873425775d4b0e8481": {
       "attempt_finished_at": "2026-08-21T22:02:43Z",
       "model": "gemini-3.7-flash",
@@ -50184,6 +51060,12 @@ This page does not store secrets, raw prompts, raw completions, or provider resp
     "642edd0f2f2199df18cd30536beaa021d95a5656fe46a6974d6054cfbd0b0683": {
       "attempt_finished_at": "2026-08-22T16:36:17Z",
       "model": "gpt-oss-120b",
+      "outcome": "not_called",
+      "provider": "sambanova"
+    },
+    "642f79df81fc4bf3a73b1b1399fad962bec4a7fb21075120f38084386ac82c63": {
+      "attempt_finished_at": "2026-08-22T23:00:10Z",
+      "model": "DeepSeek-V3.2",
       "outcome": "not_called",
       "provider": "sambanova"
     },
@@ -50967,6 +51849,12 @@ This page does not store secrets, raw prompts, raw completions, or provider resp
       "outcome": "not_called",
       "provider": "openrouter"
     },
+    "65eedc3d084ca4e447688d4740992c084d14390ec31b13d5eabd14b303230ef8": {
+      "attempt_finished_at": "2026-08-22T23:00:10Z",
+      "model": "DeepSeek-V3.1",
+      "outcome": "not_called",
+      "provider": "sambanova"
+    },
     "65f3543ad2830c39f4106b361c313d74e2d6733e59eaffb529b0feb7fe7b8e9d": {
       "attempt_finished_at": "2026-08-21T04:52:21Z",
       "model": "DeepSeek-V3.2",
@@ -51138,6 +52026,12 @@ This page does not store secrets, raw prompts, raw completions, or provider resp
     "663e3babecc09f15954061b81f2273141185d30870e57a83297193ecd58cb5b8": {
       "attempt_finished_at": "2026-08-22T06:56:00Z",
       "model": "DeepSeek-V3.2",
+      "outcome": "not_called",
+      "provider": "sambanova"
+    },
+    "663fc2bcc950c51f9ca3471403c36e9b13ae37ba539a67a7420e9b3e22d85733": {
+      "attempt_finished_at": "2026-08-22T23:00:10Z",
+      "model": "gpt-oss-120b",
       "outcome": "not_called",
       "provider": "sambanova"
     },
@@ -51377,6 +52271,12 @@ This page does not store secrets, raw prompts, raw completions, or provider resp
     },
     "66ff2bba40220dfcb87bb7dccf1f636e60c5198112f3a6589e1167f4ce380017": {
       "attempt_finished_at": "2026-08-20T20:04:54Z",
+      "model": "DeepSeek-V3.2",
+      "outcome": "not_called",
+      "provider": "sambanova"
+    },
+    "6702fd6885f66221d97c49d3614e2b715fdff09a8c55495b4556a36e5902e5f9": {
+      "attempt_finished_at": "2026-08-22T23:00:10Z",
       "model": "DeepSeek-V3.2",
       "outcome": "not_called",
       "provider": "sambanova"
@@ -51711,6 +52611,12 @@ This page does not store secrets, raw prompts, raw completions, or provider resp
       "outcome": "not_called",
       "provider": "sambanova"
     },
+    "67c17cc115efeab2f9acfa0cc641f618458254bb35a263b355ad81f9de0a7ac6": {
+      "attempt_finished_at": "2026-08-22T23:00:09Z",
+      "model": "DeepSeek-V3.1",
+      "outcome": "provider_failure",
+      "provider": "sambanova"
+    },
     "67c3e44a68316d0ae851c731edd18dc9bc1f6f4bd6cd15ce8e9de47a70372ffe": {
       "attempt_finished_at": "2026-08-22T04:47:43Z",
       "model": "gemini-3-flash-preview",
@@ -51789,6 +52695,12 @@ This page does not store secrets, raw prompts, raw completions, or provider resp
       "outcome": "not_called",
       "provider": "sambanova"
     },
+    "67dc0a75121443abb074674f164cdb225efb11b8d78c0bbf939530a9889c0bf5": {
+      "attempt_finished_at": "2026-08-22T23:00:10Z",
+      "model": "Meta-Llama-3.3-70B-Instruct",
+      "outcome": "not_called",
+      "provider": "sambanova"
+    },
     "67e3aceac7677527cfcdc9a8dc86e82c6efaa53ad2cd0a3a8e44031d233ce8d0": {
       "attempt_finished_at": "2026-08-20T14:49:30Z",
       "model": "DeepSeek-V3.2",
@@ -51830,6 +52742,12 @@ This page does not store secrets, raw prompts, raw completions, or provider resp
       "model": "DeepSeek-V3.2",
       "outcome": "not_called",
       "provider": "sambanova"
+    },
+    "67f7c7d511029e0d07921084c44a6ea2991840886854666847d38c5f314a69bd": {
+      "attempt_finished_at": "2026-08-22T23:00:07Z",
+      "model": "gemini-3.7-flash",
+      "outcome": "not_called",
+      "provider": "gemini"
     },
     "67f7e846d574dc5285470b68ea32350ce3b3e4bad9f0ad22665b3f465fdfb22c": {
       "attempt_finished_at": "2026-08-20T09:52:43Z",
@@ -51920,6 +52838,12 @@ This page does not store secrets, raw prompts, raw completions, or provider resp
       "model": "gemini-3.7-flash",
       "outcome": "not_called",
       "provider": "gemini"
+    },
+    "682f1d313816296298de449d2c4b92c9ac25e3a834cbc6f3204246db48d7be50": {
+      "attempt_finished_at": "2026-08-22T23:00:10Z",
+      "model": "gpt-oss-120b",
+      "outcome": "not_called",
+      "provider": "sambanova"
     },
     "682f3bcae87249072b14bff3dd5fdaab9b29cf7f59e962278a61e580f3fd2245": {
       "attempt_finished_at": "2026-08-21T09:49:16Z",
@@ -52869,6 +53793,12 @@ This page does not store secrets, raw prompts, raw completions, or provider resp
       "outcome": "not_called",
       "provider": "sambanova"
     },
+    "69e9a7a39f9c35a88e1764293a429207b3d0127233fd4db3535831ec29d9d393": {
+      "attempt_finished_at": "2026-08-22T23:00:10Z",
+      "model": "DeepSeek-V3.2",
+      "outcome": "not_called",
+      "provider": "sambanova"
+    },
     "69ec584c305189b9ef6cdf629e02211a939077ee2e5fa95aef0484d2c122764a": {
       "attempt_finished_at": "2026-08-22T04:46:36Z",
       "model": "gpt-oss-120b",
@@ -53673,6 +54603,12 @@ This page does not store secrets, raw prompts, raw completions, or provider resp
       "outcome": "not_called",
       "provider": "sambanova"
     },
+    "6b74c6628cf5e30edde2442c67801b63d6b3927dee83fde05154157efb4a75ee": {
+      "attempt_finished_at": "2026-08-22T23:00:10Z",
+      "model": "DeepSeek-V3.2",
+      "outcome": "not_called",
+      "provider": "sambanova"
+    },
     "6b7b55bd2d10767fdfa3854a79a7d5ebac9f2a4c9d4d38c13297e10898b247b2": {
       "attempt_finished_at": "2026-08-20T22:39:45Z",
       "model": "DeepSeek-V3.1",
@@ -53753,6 +54689,12 @@ This page does not store secrets, raw prompts, raw completions, or provider resp
     },
     "6ba3faef38f5289c5d550285edc565e0b1b1400374387bdd642c6dc4c728105a": {
       "attempt_finished_at": "2026-08-21T21:02:56Z",
+      "model": "gpt-oss-120b",
+      "outcome": "not_called",
+      "provider": "sambanova"
+    },
+    "6ba69a068b2f793444b839d2e606ef4adee78254d0b9a10336a15e52a5b8df8e": {
+      "attempt_finished_at": "2026-08-22T23:00:10Z",
       "model": "gpt-oss-120b",
       "outcome": "not_called",
       "provider": "sambanova"
@@ -54837,6 +55779,12 @@ This page does not store secrets, raw prompts, raw completions, or provider resp
       "outcome": "not_called",
       "provider": "sambanova"
     },
+    "6dbf8996022914b60cd049f7aef1ce45df390e44f1228bcc279cb4064921d88d": {
+      "attempt_finished_at": "2026-08-22T23:00:10Z",
+      "model": "Meta-Llama-3.3-70B-Instruct",
+      "outcome": "not_called",
+      "provider": "sambanova"
+    },
     "6dc3c85c7060c8150a0d8e8e40afc752e4e81d389f0dc97ed6556971d484d80b": {
       "attempt_finished_at": "2026-08-22T16:36:17Z",
       "model": "gpt-oss-120b",
@@ -54998,6 +55946,12 @@ This page does not store secrets, raw prompts, raw completions, or provider resp
       "model": "gemini-3.7-flash",
       "outcome": "not_called",
       "provider": "gemini"
+    },
+    "6e028f78241fcb74e8c192baeb305057ddbf7bca4637b8f37c5bdfcce7a70194": {
+      "attempt_finished_at": "2026-08-22T23:00:10Z",
+      "model": "Meta-Llama-3.3-70B-Instruct",
+      "outcome": "not_called",
+      "provider": "sambanova"
     },
     "6e051aabffa96527ae2c326063c93bab8567db7f781881494dd63cbe619fe826": {
       "attempt_finished_at": "2026-08-22T01:46:42Z",
@@ -55731,6 +56685,12 @@ This page does not store secrets, raw prompts, raw completions, or provider resp
       "outcome": "not_called",
       "provider": "sambanova"
     },
+    "6f76a9b7175f0d618551be2e717785e4b194f7f235117373b929038709934487": {
+      "attempt_finished_at": "2026-08-22T23:00:07Z",
+      "model": "gemini-3.7-flash",
+      "outcome": "not_called",
+      "provider": "gemini"
+    },
     "6f79d138dc8c351e576859ab758c1622781cdbf97e1fb29d0e7cbb83864a6afa": {
       "attempt_finished_at": "2026-08-20T12:04:05Z",
       "model": "google/gemma-4-31b-it:free",
@@ -56061,6 +57021,12 @@ This page does not store secrets, raw prompts, raw completions, or provider resp
       "outcome": "not_called",
       "provider": "sambanova"
     },
+    "700e7c28c2320c6df8f5a75a9defbf883de5b022113a220650b9deec69888594": {
+      "attempt_finished_at": "2026-08-22T23:00:10Z",
+      "model": "DeepSeek-V3.2",
+      "outcome": "not_called",
+      "provider": "sambanova"
+    },
     "700e89cabdad003a80d3ac5a817281ded353b2b9f4d533546b1610e859051921": {
       "attempt_finished_at": "2026-08-20T22:40:00Z",
       "model": "google/gemma-4-26b-a4b-it:free",
@@ -56229,6 +57195,12 @@ This page does not store secrets, raw prompts, raw completions, or provider resp
       "outcome": "not_called",
       "provider": "sambanova"
     },
+    "706185424b93bac59b4a43e8a65da4cee8e1f60b94dcea2f941b7c099ce68f5b": {
+      "attempt_finished_at": "2026-08-22T23:00:10Z",
+      "model": "DeepSeek-V3.1",
+      "outcome": "not_called",
+      "provider": "sambanova"
+    },
     "7063db1e08589e6685a009769ce33661958ef2004f004342acf10be7310e8556": {
       "attempt_finished_at": "2026-08-22T03:27:21Z",
       "model": "DeepSeek-V3.1",
@@ -56282,6 +57254,12 @@ This page does not store secrets, raw prompts, raw completions, or provider resp
       "model": "gemini-3-flash-preview",
       "outcome": "not_called",
       "provider": "gemini"
+    },
+    "7073a4e4fcddb84c3a0637444d389f9fb38ab29d72611603ebf4efd21b43fff2": {
+      "attempt_finished_at": "2026-08-22T23:00:10Z",
+      "model": "gpt-oss-120b",
+      "outcome": "not_called",
+      "provider": "sambanova"
     },
     "7074ba33080ab0cd4bfd3192f0f69583efa12c0872c0e717c26edd0909e4d952": {
       "attempt_finished_at": "2026-08-22T06:56:00Z",
@@ -57147,6 +58125,12 @@ This page does not store secrets, raw prompts, raw completions, or provider resp
       "outcome": "not_called",
       "provider": "gemini"
     },
+    "723da7ca637928e25de59fb073637efc12060faabe7fb3d80cabf3c5affe6fb2": {
+      "attempt_finished_at": "2026-08-22T23:00:10Z",
+      "model": "Meta-Llama-3.3-70B-Instruct",
+      "outcome": "not_called",
+      "provider": "sambanova"
+    },
     "723efb5bb246ee56b11304ffe301f2c672fa0951129c5a086e2c4270ef911170": {
       "attempt_finished_at": "2026-08-22T21:59:31Z",
       "model": "google/gemma-4-31b-it:free",
@@ -57783,6 +58767,12 @@ This page does not store secrets, raw prompts, raw completions, or provider resp
       "outcome": "not_called",
       "provider": "sambanova"
     },
+    "73928fe59af8060eab2e867e2505169638964373f1ff7e2a54c5e34f3d697c38": {
+      "attempt_finished_at": "2026-08-22T23:00:10Z",
+      "model": "gpt-oss-120b",
+      "outcome": "not_called",
+      "provider": "sambanova"
+    },
     "7396d04fed4c76042620aa58fb5629548846cccbbec0949fdbfbd1d83778d84b": {
       "attempt_finished_at": "2026-08-22T06:57:48Z",
       "model": "gemini-3.7-flash",
@@ -58221,6 +59211,12 @@ This page does not store secrets, raw prompts, raw completions, or provider resp
       "outcome": "provider_failure",
       "provider": "gemini"
     },
+    "7477d7c45179e7b743b2f185191975c54b69c2b6a77fa9f1d378de50974e2c38": {
+      "attempt_finished_at": "2026-08-22T23:00:10Z",
+      "model": "DeepSeek-V3.1",
+      "outcome": "not_called",
+      "provider": "sambanova"
+    },
     "7478fc710c0ac21e4feef8861fc8ebc6c30d48d26e7f8682db176772f75f0abd": {
       "attempt_finished_at": "2026-08-21T00:01:37Z",
       "model": "DeepSeek-V3.1",
@@ -58377,6 +59373,12 @@ This page does not store secrets, raw prompts, raw completions, or provider resp
       "outcome": "valid",
       "provider": "gemini"
     },
+    "74ec35a5622c2ea9cd7370884294962f2d0051e2165ad2c7dbcc960709b410ba": {
+      "attempt_finished_at": "2026-08-22T23:00:07Z",
+      "model": "gemini-3.7-flash",
+      "outcome": "not_called",
+      "provider": "gemini"
+    },
     "74ed8a22346c2f825db7bd681cdf18ec84c2153b766ee052314423284bebc524": {
       "attempt_finished_at": "2026-08-22T04:06:46Z",
       "model": "gemini-3.7-flash",
@@ -58439,6 +59441,12 @@ This page does not store secrets, raw prompts, raw completions, or provider resp
     },
     "751145e4a2fd5e2b57b7747486c39f6d5de444a9276e2109be90e5cdb3436759": {
       "attempt_finished_at": "2026-08-22T20:35:01Z",
+      "model": "gpt-oss-120b",
+      "outcome": "not_called",
+      "provider": "sambanova"
+    },
+    "75118352e2c01095aa5e3f1d9e63fb1dcd8be2e59cd3b37ce88f4582e04532dd": {
+      "attempt_finished_at": "2026-08-22T23:00:10Z",
       "model": "gpt-oss-120b",
       "outcome": "not_called",
       "provider": "sambanova"
@@ -59097,6 +60105,12 @@ This page does not store secrets, raw prompts, raw completions, or provider resp
       "outcome": "not_called",
       "provider": "gemini"
     },
+    "76402107ae87907f8091bab90cb43c054e2e9596a2812b17497d878069ad33a4": {
+      "attempt_finished_at": "2026-08-22T23:00:10Z",
+      "model": "DeepSeek-V3.1",
+      "outcome": "not_called",
+      "provider": "sambanova"
+    },
     "7641a0ab1fb40d24ad104b947a9868f61965bf360ff146fa386b78b5e2e18665": {
       "attempt_finished_at": "2026-08-22T01:46:42Z",
       "model": "DeepSeek-V3.2",
@@ -59577,6 +60591,12 @@ This page does not store secrets, raw prompts, raw completions, or provider resp
       "outcome": "not_called",
       "provider": "sambanova"
     },
+    "77305a7379d2bc14f72a34f60e3dcee6cd39923de7867ab672b750b8a9cdcacc": {
+      "attempt_finished_at": "2026-08-22T23:00:10Z",
+      "model": "DeepSeek-V3.2",
+      "outcome": "not_called",
+      "provider": "sambanova"
+    },
     "77315da92b5c0abf608988ed92b07e8d48cabcd578ee6fe4093d8cdeb6677000": {
       "attempt_finished_at": "2026-08-21T22:36:22Z",
       "model": "DeepSeek-V3.2",
@@ -59745,6 +60765,12 @@ This page does not store secrets, raw prompts, raw completions, or provider resp
       "outcome": "not_called",
       "provider": "sambanova"
     },
+    "778afbdf81489611a5f54af58d7e935da4a8133f9ef50dce12d839183bedc61b": {
+      "attempt_finished_at": "2026-08-22T23:00:10Z",
+      "model": "DeepSeek-V3.1",
+      "outcome": "not_called",
+      "provider": "sambanova"
+    },
     "778fcf38cb64c2e7c4ecf4199eb0a18af51f78609bc0b68d11ec16bd43123c65": {
       "attempt_finished_at": "2026-08-22T15:00:38Z",
       "model": "DeepSeek-V3.2",
@@ -59828,6 +60854,12 @@ This page does not store secrets, raw prompts, raw completions, or provider resp
       "model": "gemini-2.5-flash",
       "outcome": "not_called",
       "provider": "gemini"
+    },
+    "77d301a1a9a48dc6551328fe9624932c382255de5c65e8d27ea8b016ac1b18b3": {
+      "attempt_finished_at": "2026-08-22T23:00:10Z",
+      "model": "gpt-oss-120b",
+      "outcome": "not_called",
+      "provider": "sambanova"
     },
     "77d74990000a913bbd4c48c3d0c8e5e2b7a6f6b387ddc24f161b2d35130a5ab0": {
       "attempt_finished_at": "2026-08-20T09:46:12Z",
@@ -60633,6 +61665,12 @@ This page does not store secrets, raw prompts, raw completions, or provider resp
       "outcome": "not_called",
       "provider": "gemini"
     },
+    "799180121b9001411939a5d835778e50d91712e4a0a861edfa1f2583b93a661d": {
+      "attempt_finished_at": "2026-08-22T23:00:10Z",
+      "model": "DeepSeek-V3.1",
+      "outcome": "not_called",
+      "provider": "sambanova"
+    },
     "7998217b314d9f9aa9a64bdf13d72ee32d9442227fd7e54fc42d9438ffc72e2a": {
       "attempt_finished_at": "2026-08-21T21:02:56Z",
       "model": "DeepSeek-V3.2",
@@ -60776,6 +61814,12 @@ This page does not store secrets, raw prompts, raw completions, or provider resp
       "model": "poolside/laguna-xs-2.1:free",
       "outcome": "not_called",
       "provider": "openrouter"
+    },
+    "79eaa617e96ebe27675994e3f6f489befd6a58b1f2a58ffad01323f8e1e3ebed": {
+      "attempt_finished_at": "2026-08-22T23:00:10Z",
+      "model": "Meta-Llama-3.3-70B-Instruct",
+      "outcome": "not_called",
+      "provider": "sambanova"
     },
     "79eb656f9cd5b58d501ab7d36a071e332ba2ac07d6358d65e00a47f1e033fbcb": {
       "attempt_finished_at": "2026-08-21T14:48:12Z",
@@ -62571,6 +63615,12 @@ This page does not store secrets, raw prompts, raw completions, or provider resp
       "outcome": "not_called",
       "provider": "gemini"
     },
+    "7d5c9ee2a36f9f9174301c71e825d40d62959115cfa162fca46cbe8400da2297": {
+      "attempt_finished_at": "2026-08-22T23:00:10Z",
+      "model": "gpt-oss-120b",
+      "outcome": "not_called",
+      "provider": "sambanova"
+    },
     "7d5d8fcfb67246c53bf837ecc63425ecc206307961259b4c8c7b565b4810f5f2": {
       "attempt_finished_at": "2026-08-20T18:56:07Z",
       "model": "DeepSeek-V3.2",
@@ -62817,6 +63867,12 @@ This page does not store secrets, raw prompts, raw completions, or provider resp
       "outcome": "not_called",
       "provider": "sambanova"
     },
+    "7dcac66be7748a7af5522e1ad65cbcbbf11c86852d7a0ac6343e8c242ccdd62e": {
+      "attempt_finished_at": "2026-08-22T23:00:10Z",
+      "model": "DeepSeek-V3.1",
+      "outcome": "not_called",
+      "provider": "sambanova"
+    },
     "7dd211487c9f05266fbd7c3435bfdeb79d6b1cacaacf98903f97ecfb5f46a3d0": {
       "attempt_finished_at": "2026-08-22T04:46:36Z",
       "model": "Meta-Llama-3.3-70B-Instruct",
@@ -63054,6 +64110,12 @@ This page does not store secrets, raw prompts, raw completions, or provider resp
     "7e46034d8d8ee7d8ac19f8fd39e695c2400ffdf2610a6a83ae70edaa8db0eb66": {
       "attempt_finished_at": "2026-08-22T21:59:13Z",
       "model": "gpt-oss-120b",
+      "outcome": "not_called",
+      "provider": "sambanova"
+    },
+    "7e47404a80b7726366082725a810b239a84cc2bdc0d3d064f46836eec310afbd": {
+      "attempt_finished_at": "2026-08-22T23:00:10Z",
+      "model": "Meta-Llama-3.3-70B-Instruct",
       "outcome": "not_called",
       "provider": "sambanova"
     },
@@ -64070,6 +65132,12 @@ This page does not store secrets, raw prompts, raw completions, or provider resp
       "model": "poolside/laguna-xs-2.1:free",
       "outcome": "not_called",
       "provider": "openrouter"
+    },
+    "808c5f0fa97f6b16d10ef2281b98696b644cedd48bf7e0c1ab1cc65bdfe90c32": {
+      "attempt_finished_at": "2026-08-22T23:00:10Z",
+      "model": "DeepSeek-V3.1",
+      "outcome": "not_called",
+      "provider": "sambanova"
     },
     "809146e836898c7798903b8d1f8b4df302097a26ff87fea76dfb27e906fefd68": {
       "attempt_finished_at": "2026-08-22T03:27:21Z",
@@ -66117,6 +67185,12 @@ This page does not store secrets, raw prompts, raw completions, or provider resp
       "outcome": "not_called",
       "provider": "sambanova"
     },
+    "8458be93969351a7c473e3dd3b40022795122de3f1895bc068edda922c9ff239": {
+      "attempt_finished_at": "2026-08-22T23:00:10Z",
+      "model": "gpt-oss-120b",
+      "outcome": "not_called",
+      "provider": "sambanova"
+    },
     "845aee2148e8ce83caa73332d8ca51b3b2986b73ba05a400618f4ed2af643efc": {
       "attempt_finished_at": "2026-08-21T18:51:56Z",
       "model": "DeepSeek-V3.1",
@@ -67839,6 +68913,12 @@ This page does not store secrets, raw prompts, raw completions, or provider resp
       "outcome": "validator_rejected",
       "provider": "sambanova"
     },
+    "87e5c2938772843d451da6279f092c833f9d982908224f38e579c59d8b505508": {
+      "attempt_finished_at": "2026-08-22T23:00:10Z",
+      "model": "gpt-oss-120b",
+      "outcome": "not_called",
+      "provider": "sambanova"
+    },
     "87e6402722aaf817754367c66d8f748fa5ca521ae089e956f33ee18e1a30bcd4": {
       "attempt_finished_at": "2026-08-22T11:59:44Z",
       "model": "poolside/laguna-xs-2.1:free",
@@ -67950,6 +69030,12 @@ This page does not store secrets, raw prompts, raw completions, or provider resp
     "8812d58a8df0f4b58996e923aa148be6f45fadfeb6a89fa79988ec8acfd903d2": {
       "attempt_finished_at": "2026-08-22T10:35:13Z",
       "model": "Meta-Llama-3.3-70B-Instruct",
+      "outcome": "not_called",
+      "provider": "sambanova"
+    },
+    "881699c1d25227b5667ee17869435bc22ca8047feb2aa01b0a8e9bffb763da9c": {
+      "attempt_finished_at": "2026-08-22T23:00:10Z",
+      "model": "DeepSeek-V3.2",
       "outcome": "not_called",
       "provider": "sambanova"
     },
@@ -69105,11 +70191,23 @@ This page does not store secrets, raw prompts, raw completions, or provider resp
       "outcome": "not_called",
       "provider": "openrouter"
     },
+    "8a33ce44093e5e0002bb722c8490074d9cffbd7691dc83e53f35f41d803472f3": {
+      "attempt_finished_at": "2026-08-22T23:00:10Z",
+      "model": "Meta-Llama-3.3-70B-Instruct",
+      "outcome": "not_called",
+      "provider": "sambanova"
+    },
     "8a39d5e5209d5681bfb31815f82cfbf3a984241519424d2e75b94de89ad895f6": {
       "attempt_finished_at": "2026-08-22T12:57:41Z",
       "model": "gemini-3.7-flash",
       "outcome": "not_called",
       "provider": "gemini"
+    },
+    "8a3c25dee5e418752e061f0f566c9b0da16833c3104bcac3f673ad9000afb7f6": {
+      "attempt_finished_at": "2026-08-22T23:00:10Z",
+      "model": "DeepSeek-V3.2",
+      "outcome": "not_called",
+      "provider": "sambanova"
     },
     "8a3d684729138a0684bdfa865feb8f43f1abeedf04069ed62064b9f2f95d8b82": {
       "attempt_finished_at": "2026-08-20T20:04:54Z",
@@ -69174,6 +70272,12 @@ This page does not store secrets, raw prompts, raw completions, or provider resp
     "8a5ccfbfc9a78f63aa537a11bf6cbde2f2d0df741f04d3b989dd3e9b4bbc3321": {
       "attempt_finished_at": "2026-08-22T01:46:42Z",
       "model": "Meta-Llama-3.3-70B-Instruct",
+      "outcome": "not_called",
+      "provider": "sambanova"
+    },
+    "8a5dc73af9d108e91945d17328c1467322b8c78da79b3527f7f2a40ff949e6b4": {
+      "attempt_finished_at": "2026-08-22T23:00:10Z",
+      "model": "gpt-oss-120b",
       "outcome": "not_called",
       "provider": "sambanova"
     },
@@ -69279,6 +70383,12 @@ This page does not store secrets, raw prompts, raw completions, or provider resp
       "outcome": "not_called",
       "provider": "sambanova"
     },
+    "8a940d31d1e49fabb5c2cc2b3a2bc6bb389498025367635c85fc7933961c7793": {
+      "attempt_finished_at": "2026-08-22T23:00:10Z",
+      "model": "gpt-oss-120b",
+      "outcome": "not_called",
+      "provider": "sambanova"
+    },
     "8a96be029f64dc617d381fbf9de8024640ced5ee9088f63633dd6fe64b418856": {
       "attempt_finished_at": "2026-08-20T22:39:45Z",
       "model": "Meta-Llama-3.3-70B-Instruct",
@@ -69372,6 +70482,12 @@ This page does not store secrets, raw prompts, raw completions, or provider resp
     "8ad10abe54011d453c9e8f2a0ff6edbe9afce323260f34c96ce1147dfb61c8a0": {
       "attempt_finished_at": "2026-08-21T15:56:15Z",
       "model": "DeepSeek-V3.1",
+      "outcome": "not_called",
+      "provider": "sambanova"
+    },
+    "8ad186758ae1fff949f999c62ff8ad9a2e8f9b6380005131cf1dda332fad5907": {
+      "attempt_finished_at": "2026-08-22T23:00:10Z",
+      "model": "gpt-oss-120b",
       "outcome": "not_called",
       "provider": "sambanova"
     },
@@ -70581,6 +71697,12 @@ This page does not store secrets, raw prompts, raw completions, or provider resp
       "outcome": "not_called",
       "provider": "sambanova"
     },
+    "8d2f789c612eb1028107c0de76643ca2e8bf207842d1093628084162514333de": {
+      "attempt_finished_at": "2026-08-22T23:00:10Z",
+      "model": "gpt-oss-120b",
+      "outcome": "not_called",
+      "provider": "sambanova"
+    },
     "8d301b2f01483682e99251c0fdec78e0370923db76a1224906061e6974e1b92e": {
       "attempt_finished_at": "2026-08-22T11:59:44Z",
       "model": "poolside/laguna-s-2.1:free",
@@ -70617,6 +71739,12 @@ This page does not store secrets, raw prompts, raw completions, or provider resp
       "outcome": "not_called",
       "provider": "sambanova"
     },
+    "8d375690f08b309885713e45d5c7aa5690604e34dea20b0f965b17f9bb5ca21d": {
+      "attempt_finished_at": "2026-08-22T23:00:10Z",
+      "model": "DeepSeek-V3.2",
+      "outcome": "not_called",
+      "provider": "sambanova"
+    },
     "8d379c1d99a207c0cb4318e94f4cfc7a132c6efd2a2ef1515709c8e3a6d95409": {
       "attempt_finished_at": "2026-08-22T13:39:58Z",
       "model": "Meta-Llama-3.3-70B-Instruct",
@@ -70640,6 +71768,12 @@ This page does not store secrets, raw prompts, raw completions, or provider resp
       "model": "google/gemma-4-26b-a4b-it:free",
       "outcome": "not_called",
       "provider": "openrouter"
+    },
+    "8d4cdff9a27450bf642b40b6d1d8d86729d3ceef20c6693c0787523e6df9f927": {
+      "attempt_finished_at": "2026-08-22T23:00:10Z",
+      "model": "gpt-oss-120b",
+      "outcome": "not_called",
+      "provider": "sambanova"
     },
     "8d5069f7fb99ac6b6e77d6a6a38bb644cd8f4592109a237472d01c1e44006fc6": {
       "attempt_finished_at": "2026-08-22T05:50:42Z",
@@ -70797,6 +71931,12 @@ This page does not store secrets, raw prompts, raw completions, or provider resp
       "outcome": "not_called",
       "provider": "gemini"
     },
+    "8da814a3fc6edd295da928eba2276347ce995b199d1c429ec146aebffe606d22": {
+      "attempt_finished_at": "2026-08-22T23:00:07Z",
+      "model": "gemini-3.7-flash",
+      "outcome": "not_called",
+      "provider": "gemini"
+    },
     "8daa22b9eb827cba1a398c992e8715a229e3e66a01644506144f98487273a6fb": {
       "attempt_finished_at": "2026-08-21T14:48:12Z",
       "model": "DeepSeek-V3.2",
@@ -70830,6 +71970,12 @@ This page does not store secrets, raw prompts, raw completions, or provider resp
     "8dbeb81ea28e52d6fdf4517b1d7763c59ae6580d7b5576e02d4b37976a219e2a": {
       "attempt_finished_at": "2026-08-22T03:27:21Z",
       "model": "Meta-Llama-3.3-70B-Instruct",
+      "outcome": "not_called",
+      "provider": "sambanova"
+    },
+    "8dbf535d4a41518feaaeb3dc4e46489f80f9528f422d989e8e9bccbc88a97ad7": {
+      "attempt_finished_at": "2026-08-22T23:00:10Z",
+      "model": "DeepSeek-V3.2",
       "outcome": "not_called",
       "provider": "sambanova"
     },
@@ -70952,6 +72098,12 @@ This page does not store secrets, raw prompts, raw completions, or provider resp
       "model": "google/gemma-4-31b-it:free",
       "outcome": "not_called",
       "provider": "openrouter"
+    },
+    "8e0e461701d5083c6305fd50e9940b7b495215e0f498321a0b44551de9944f4c": {
+      "attempt_finished_at": "2026-08-22T23:00:10Z",
+      "model": "DeepSeek-V3.1",
+      "outcome": "not_called",
+      "provider": "sambanova"
     },
     "8e143c6d4df3cc2e4008facca736b2eb08bcb5abae4742464ac0fce17e01274c": {
       "attempt_finished_at": "2026-08-21T13:56:01Z",
@@ -71319,6 +72471,12 @@ This page does not store secrets, raw prompts, raw completions, or provider resp
       "outcome": "not_called",
       "provider": "sambanova"
     },
+    "8ebaf75a0119153a94b0fc68b1ede35b94e54ea7d434d9310a1c01f5a45178e0": {
+      "attempt_finished_at": "2026-08-22T23:00:10Z",
+      "model": "DeepSeek-V3.1",
+      "outcome": "not_called",
+      "provider": "sambanova"
+    },
     "8ebf38693eb185692143fcf35b7196b99af7cf752a4531c4e670e42af009e4c7": {
       "attempt_finished_at": "2026-08-20T10:55:29Z",
       "model": "nvidia/nemotron-3-ultra-550b-a55b:free",
@@ -71631,6 +72789,12 @@ This page does not store secrets, raw prompts, raw completions, or provider resp
       "outcome": "not_called",
       "provider": "openrouter"
     },
+    "8f49ed9606f50c7fbaa72f4b50cb5407c1121c28b01a5bdad4046cacd54fbb8a": {
+      "attempt_finished_at": "2026-08-22T23:00:07Z",
+      "model": "gemini-3.7-flash",
+      "outcome": "not_called",
+      "provider": "gemini"
+    },
     "8f4c24ec8c7b72a181a61b8cd12ba67bb19f427645e09cf565e490356cdf41e6": {
       "attempt_finished_at": "2026-08-20T09:47:45Z",
       "model": "gemma-4-31B-it",
@@ -71832,6 +72996,12 @@ This page does not store secrets, raw prompts, raw completions, or provider resp
     "8fae9e5190d84c8f63901ae8c3c82c5ec781853f701a78181ccdd88fb12a718f": {
       "attempt_finished_at": "2026-08-20T22:39:45Z",
       "model": "Meta-Llama-3.3-70B-Instruct",
+      "outcome": "not_called",
+      "provider": "sambanova"
+    },
+    "8fbf34ee944495257b924b3609b890e1185ab77e19cc901d515d93471a4a1eb0": {
+      "attempt_finished_at": "2026-08-22T23:00:10Z",
+      "model": "gpt-oss-120b",
       "outcome": "not_called",
       "provider": "sambanova"
     },
@@ -72105,6 +73275,12 @@ This page does not store secrets, raw prompts, raw completions, or provider resp
       "outcome": "not_called",
       "provider": "gemini"
     },
+    "9056dfc3dfabf6f1271aa92056bed9e2f78da6df3f92599f6b541e8f90be0e60": {
+      "attempt_finished_at": "2026-08-22T23:00:10Z",
+      "model": "gpt-oss-120b",
+      "outcome": "not_called",
+      "provider": "sambanova"
+    },
     "9059bc3a14a25fdcb99ace56d1988b8a53d5513ee137ec1f17058db8f7ea963f": {
       "attempt_finished_at": "2026-08-21T13:07:00Z",
       "model": "DeepSeek-V3.1",
@@ -72114,6 +73290,12 @@ This page does not store secrets, raw prompts, raw completions, or provider resp
     "9059d01fec180f36b5a3ecfeed5d74531097cd3165b65b93c161817e5fe7247b": {
       "attempt_finished_at": "2026-08-21T09:49:16Z",
       "model": "gpt-oss-120b",
+      "outcome": "not_called",
+      "provider": "sambanova"
+    },
+    "905ca2bbbf497bfa1729a91bc51ffa57f09f07c5281a71137f80757e818403c8": {
+      "attempt_finished_at": "2026-08-22T23:00:10Z",
+      "model": "DeepSeek-V3.1",
       "outcome": "not_called",
       "provider": "sambanova"
     },
@@ -72228,6 +73410,12 @@ This page does not store secrets, raw prompts, raw completions, or provider resp
     "9094a1f0a03911d5961dad4b626f164d81fbce80603cd8d410077c467d581597": {
       "attempt_finished_at": "2026-08-22T16:36:17Z",
       "model": "gpt-oss-120b",
+      "outcome": "not_called",
+      "provider": "sambanova"
+    },
+    "90951a23e996dae5f2197283d7903e93a2fe057317e5f3564f554bca83e70930": {
+      "attempt_finished_at": "2026-08-22T23:00:10Z",
+      "model": "DeepSeek-V3.1",
       "outcome": "not_called",
       "provider": "sambanova"
     },
@@ -72476,6 +73664,12 @@ This page does not store secrets, raw prompts, raw completions, or provider resp
       "model": "gemini-3.6-flash",
       "outcome": "valid",
       "provider": "gemini"
+    },
+    "9122b494af8cac30cfd6a196ad62662eed4a4e71ff4e015a49096fd31c5aa5cc": {
+      "attempt_finished_at": "2026-08-22T23:00:10Z",
+      "model": "DeepSeek-V3.1",
+      "outcome": "not_called",
+      "provider": "sambanova"
     },
     "91231ab5c64512581fdf3944324853a3cfd18a836ede831a4b218c907e516717": {
       "attempt_finished_at": "2026-08-22T01:46:42Z",
@@ -73383,6 +74577,12 @@ This page does not store secrets, raw prompts, raw completions, or provider resp
       "outcome": "not_called",
       "provider": "sambanova"
     },
+    "930a358d9b6da50153eb0a1fe2a7805ab6530b9c487fb64d32df6424c6999893": {
+      "attempt_finished_at": "2026-08-22T23:00:10Z",
+      "model": "DeepSeek-V3.2",
+      "outcome": "not_called",
+      "provider": "sambanova"
+    },
     "930aa5c74030c86738f0342110fff5e9f95b89ed71f770651797f05951152836": {
       "attempt_finished_at": "2026-08-21T17:15:01Z",
       "model": "DeepSeek-V3.1",
@@ -73761,6 +74961,12 @@ This page does not store secrets, raw prompts, raw completions, or provider resp
       "outcome": "not_called",
       "provider": "sambanova"
     },
+    "93fca996e2e6f38030b745cbe0fe817fc941950052a1965310818a20ce5cd7a1": {
+      "attempt_finished_at": "2026-08-22T23:00:10Z",
+      "model": "gpt-oss-120b",
+      "outcome": "not_called",
+      "provider": "sambanova"
+    },
     "93fe7d3c94ea9860df94042d828cd7274077449d9be5ab282867cd8d03f17b7a": {
       "attempt_finished_at": "2026-08-21T07:54:40Z",
       "model": "DeepSeek-V3.1",
@@ -73869,6 +75075,12 @@ This page does not store secrets, raw prompts, raw completions, or provider resp
       "outcome": "not_called",
       "provider": "sambanova"
     },
+    "94301b6a97075d20f3fba8a05d551df24ae4b90bfe4a0a093021ed8fce67bb4c": {
+      "attempt_finished_at": "2026-08-22T23:00:07Z",
+      "model": "gemini-3.7-flash",
+      "outcome": "not_called",
+      "provider": "gemini"
+    },
     "94308dd4531cf35edb968d90e3d832a02faa815f6d4ec30a81863f75596243e8": {
       "attempt_finished_at": "2026-08-21T01:53:50Z",
       "model": "DeepSeek-V3.1",
@@ -73950,6 +75162,12 @@ This page does not store secrets, raw prompts, raw completions, or provider resp
     "944d781d5bdadabf039df5e4eab442642111d0b2b7772f9239488d3abf2bf6c4": {
       "attempt_finished_at": "2026-08-22T19:06:47Z",
       "model": "DeepSeek-V3.1",
+      "outcome": "not_called",
+      "provider": "sambanova"
+    },
+    "94503000be6272308bfcab23124cd2cdd9c5c369c0e135d5c465704d56176e57": {
+      "attempt_finished_at": "2026-08-22T23:00:10Z",
+      "model": "DeepSeek-V3.2",
       "outcome": "not_called",
       "provider": "sambanova"
     },
@@ -74168,6 +75386,12 @@ This page does not store secrets, raw prompts, raw completions, or provider resp
       "model": "DeepSeek-V3.1",
       "outcome": "not_called",
       "provider": "sambanova"
+    },
+    "94bef848f05577fe069734884ec0ca19bfcdeec7970ae36124b1b8e405e3514f": {
+      "attempt_finished_at": "2026-08-22T23:00:07Z",
+      "model": "gemini-3.7-flash",
+      "outcome": "not_called",
+      "provider": "gemini"
     },
     "94c2d727e5c90ed9680b0553659a342364f8734eff398ba1dcc6a9af100bffcd": {
       "attempt_finished_at": "2026-08-20T20:04:54Z",
@@ -74499,6 +75723,12 @@ This page does not store secrets, raw prompts, raw completions, or provider resp
       "outcome": "not_called",
       "provider": "openrouter"
     },
+    "958c991ba276027851aecb3679f3456faa4e75de15863f828ff20ac2fdd25772": {
+      "attempt_finished_at": "2026-08-22T23:00:10Z",
+      "model": "gpt-oss-120b",
+      "outcome": "provider_failure",
+      "provider": "sambanova"
+    },
     "9592655f6a5081f81c23305384cf6fe097ea871055c6d7a84e23094024cd8f3a": {
       "attempt_finished_at": "2026-08-22T10:37:54Z",
       "model": "gemini-3.7-flash",
@@ -74642,6 +75872,12 @@ This page does not store secrets, raw prompts, raw completions, or provider resp
       "model": "DeepSeek-V3.1",
       "outcome": "not_called",
       "provider": "sambanova"
+    },
+    "95f40b0650b671fae76559dda531c9091712a4409d6be87c86e29f9c6005def7": {
+      "attempt_finished_at": "2026-08-22T23:00:07Z",
+      "model": "gemini-3.7-flash",
+      "outcome": "not_called",
+      "provider": "gemini"
     },
     "95f547afa2b3de7fc595f3480c227dc817b3aaa53305ef6c7270faf43b368348": {
       "attempt_finished_at": "2026-08-22T16:36:17Z",
@@ -75012,6 +76248,12 @@ This page does not store secrets, raw prompts, raw completions, or provider resp
     "96992c6d57b72396b81e9f19a4fc2cc8eb109ef246c67fd448773cf0d64b2e28": {
       "attempt_finished_at": "2026-08-21T03:13:20Z",
       "model": "Meta-Llama-3.3-70B-Instruct",
+      "outcome": "not_called",
+      "provider": "sambanova"
+    },
+    "969a3f4174c6b3f217c450698809054da083a8846ed6f6b1c9f4076f527548da": {
+      "attempt_finished_at": "2026-08-22T23:00:10Z",
+      "model": "gpt-oss-120b",
       "outcome": "not_called",
       "provider": "sambanova"
     },
@@ -76089,6 +77331,12 @@ This page does not store secrets, raw prompts, raw completions, or provider resp
       "outcome": "not_called",
       "provider": "gemini"
     },
+    "98c8ebd54ec481f6783c911a78a51b849f8bd8d5caa869dfb71aad5fa0b4570f": {
+      "attempt_finished_at": "2026-08-22T23:00:10Z",
+      "model": "DeepSeek-V3.2",
+      "outcome": "not_called",
+      "provider": "sambanova"
+    },
     "98cacc60aca3be2234808b791d21e52119a27f68628451d9fb074e2932087288": {
       "attempt_finished_at": "2026-08-21T17:15:01Z",
       "model": "gpt-oss-120b",
@@ -76767,6 +78015,12 @@ This page does not store secrets, raw prompts, raw completions, or provider resp
       "outcome": "not_called",
       "provider": "sambanova"
     },
+    "9a34d350323878cff2075396e3cfb8f3e1bd1706a76c50c8d81cf436c1994d2c": {
+      "attempt_finished_at": "2026-08-22T23:00:10Z",
+      "model": "gpt-oss-120b",
+      "outcome": "not_called",
+      "provider": "sambanova"
+    },
     "9a3666d3fbe2662e5415389b672f1d9e42647c964e52fed46efb5fd300ec69c5": {
       "attempt_finished_at": "2026-08-21T15:56:15Z",
       "model": "gpt-oss-120b",
@@ -76880,6 +78134,12 @@ This page does not store secrets, raw prompts, raw completions, or provider resp
       "model": "gemini-3.7-flash",
       "outcome": "not_called",
       "provider": "gemini"
+    },
+    "9a703c65ab7e1b07b3097ba0eb27713305c4a30705e8b0c5892a1dab15823806": {
+      "attempt_finished_at": "2026-08-22T23:00:10Z",
+      "model": "DeepSeek-V3.1",
+      "outcome": "not_called",
+      "provider": "sambanova"
     },
     "9a775ad31d1a8de4631ed81503e79d3b21299fe0e1b9709e4b1626f5c200f6ee": {
       "attempt_finished_at": "2026-08-21T11:05:26Z",
@@ -77079,6 +78339,12 @@ This page does not store secrets, raw prompts, raw completions, or provider resp
       "outcome": "not_called",
       "provider": "gemini"
     },
+    "9ab89082ab3b360bbd1b25db53ded246dcaf4e02deccc055b726caae42ffbe1d": {
+      "attempt_finished_at": "2026-08-22T23:00:10Z",
+      "model": "DeepSeek-V3.1",
+      "outcome": "not_called",
+      "provider": "sambanova"
+    },
     "9ab9e79d946cf505f66ecf01b500c9cf9c0ad426c8a921c831a03675cdd88a10": {
       "attempt_finished_at": "2026-08-20T16:15:39Z",
       "model": "poolside/laguna-xs-2.1:free",
@@ -77181,6 +78447,12 @@ This page does not store secrets, raw prompts, raw completions, or provider resp
       "outcome": "not_called",
       "provider": "sambanova"
     },
+    "9add20226534c2805db375a2b4f919dc57664281bd1e31d741d607ee386be3f9": {
+      "attempt_finished_at": "2026-08-22T23:00:10Z",
+      "model": "gpt-oss-120b",
+      "outcome": "not_called",
+      "provider": "sambanova"
+    },
     "9ae28459d3b81b00af4e168b87af4d12f48013212240b01d793a96f1315ca1d0": {
       "attempt_finished_at": "2026-08-22T01:46:42Z",
       "model": "gpt-oss-120b",
@@ -77240,6 +78512,12 @@ This page does not store secrets, raw prompts, raw completions, or provider resp
       "model": "gemini-3.6-flash",
       "outcome": "valid",
       "provider": "gemini"
+    },
+    "9b04c4f87ede4e47cce5ad31fb509a05b847bc5bbb08a24b496861990623584d": {
+      "attempt_finished_at": "2026-08-22T23:00:10Z",
+      "model": "DeepSeek-V3.1",
+      "outcome": "not_called",
+      "provider": "sambanova"
     },
     "9b05d5f98f9591166c931d112f9548fd0647212c4e8176df60124d53c6982f71": {
       "attempt_finished_at": "2026-08-21T17:15:01Z",
@@ -77385,6 +78663,12 @@ This page does not store secrets, raw prompts, raw completions, or provider resp
       "outcome": "not_called",
       "provider": "sambanova"
     },
+    "9b42878ed2710d6dd2933b3e817676a44a782807deb7996ec7f68d7580e83f31": {
+      "attempt_finished_at": "2026-08-22T23:00:10Z",
+      "model": "DeepSeek-V3.1",
+      "outcome": "not_called",
+      "provider": "sambanova"
+    },
     "9b49b2c8a79b66efe75ec74ee44d413cc599edbc318a744b29decc9887095f30": {
       "attempt_finished_at": "2026-08-21T15:56:42Z",
       "model": "gemini-2.5-flash",
@@ -77523,6 +78807,12 @@ This page does not store secrets, raw prompts, raw completions, or provider resp
       "outcome": "not_called",
       "provider": "sambanova"
     },
+    "9b9bfc464bb6c90b128ff9b531049cff8032a377b350f487d24f3e4f9851f6dc": {
+      "attempt_finished_at": "2026-08-22T23:00:10Z",
+      "model": "Meta-Llama-3.3-70B-Instruct",
+      "outcome": "not_called",
+      "provider": "sambanova"
+    },
     "9ba298e8b38ea474d9fbcc399a9f459c57c37e51a2898564fd735bf9fcdb060b": {
       "attempt_finished_at": "2026-08-22T06:56:00Z",
       "model": "DeepSeek-V3.2",
@@ -77580,6 +78870,12 @@ This page does not store secrets, raw prompts, raw completions, or provider resp
     "9bb0bca39841c705bfc93b5cba05dd119196633340b46ea1fa2ecf0dd818fede": {
       "attempt_finished_at": "2026-08-21T14:48:12Z",
       "model": "Meta-Llama-3.3-70B-Instruct",
+      "outcome": "not_called",
+      "provider": "sambanova"
+    },
+    "9bb12bdb712334644b8713b6e4af0801c5b87c578be2b05c97c5e9655ef9b2ef": {
+      "attempt_finished_at": "2026-08-22T23:00:10Z",
+      "model": "DeepSeek-V3.2",
       "outcome": "not_called",
       "provider": "sambanova"
     },
@@ -78111,6 +79407,12 @@ This page does not store secrets, raw prompts, raw completions, or provider resp
       "outcome": "not_called",
       "provider": "gemini"
     },
+    "9c95e71bcbf2c8506e9140d74f22d91ef2ab9ba4ff3dd7d5ab393d0050f687e6": {
+      "attempt_finished_at": "2026-08-22T23:00:10Z",
+      "model": "Meta-Llama-3.3-70B-Instruct",
+      "outcome": "not_called",
+      "provider": "sambanova"
+    },
     "9c98200d8a565db0b6d4c6af5658bbe47293825a98f7c0921fd13141210cb899": {
       "attempt_finished_at": "2026-08-22T03:27:21Z",
       "model": "gpt-oss-120b",
@@ -78261,6 +79563,12 @@ This page does not store secrets, raw prompts, raw completions, or provider resp
       "outcome": "not_called",
       "provider": "gemini"
     },
+    "9cd617a312e1d3f89a91b73cc751a2c94824124888e7289f2f1b4e42bcf66488": {
+      "attempt_finished_at": "2026-08-22T23:00:10Z",
+      "model": "DeepSeek-V3.1",
+      "outcome": "not_called",
+      "provider": "sambanova"
+    },
     "9cd647a879187c733b3990ceb41a7907c2be3550fc7271894c42b52902272224": {
       "attempt_finished_at": "2026-08-21T14:53:36Z",
       "model": "gemini-3.1-flash-lite",
@@ -78300,6 +79608,12 @@ This page does not store secrets, raw prompts, raw completions, or provider resp
     "9cdec237e2d7cd0330155f75b60ebde819a59e7c3119ab86e9ab79b2a65c9032": {
       "attempt_finished_at": "2026-08-22T04:46:36Z",
       "model": "DeepSeek-V3.2",
+      "outcome": "not_called",
+      "provider": "sambanova"
+    },
+    "9ce4bb6d82b891899c2e8ea79fd35be8db6e9edcb189b25c83ceb0ba9f7bdd8a": {
+      "attempt_finished_at": "2026-08-22T23:00:10Z",
+      "model": "Meta-Llama-3.3-70B-Instruct",
       "outcome": "not_called",
       "provider": "sambanova"
     },
@@ -78759,6 +80073,12 @@ This page does not store secrets, raw prompts, raw completions, or provider resp
       "outcome": "not_called",
       "provider": "sambanova"
     },
+    "9ddfe53b2ccc81f9096cda8f6391aeb1ad75e0467408c7faba62fb421b80dca8": {
+      "attempt_finished_at": "2026-08-22T23:00:10Z",
+      "model": "DeepSeek-V3.1",
+      "outcome": "not_called",
+      "provider": "sambanova"
+    },
     "9de2f0cf89d2a8fd0e1bed6dabae17cae0bd7b95a2e9a6c1e1bd63b60d204bab": {
       "attempt_finished_at": "2026-08-20T09:58:10Z",
       "model": "gemma-4-31B-it",
@@ -78971,6 +80291,18 @@ This page does not store secrets, raw prompts, raw completions, or provider resp
     },
     "9e6349d43596e19b6296e15046c3ba002a43751c67a329063601090b82e51d07": {
       "attempt_finished_at": "2026-08-21T03:13:19Z",
+      "model": "gpt-oss-120b",
+      "outcome": "not_called",
+      "provider": "sambanova"
+    },
+    "9e66d04f9f2c6af379142a7d696b59bf2208980a21cab51b50821442ee422cfe": {
+      "attempt_finished_at": "2026-08-22T23:00:07Z",
+      "model": "gemini-3.7-flash",
+      "outcome": "not_called",
+      "provider": "gemini"
+    },
+    "9e6a7b1688f9d2e1179ab2bb331a849ce203c60cfae6a5244c8c1b5d2e51450a": {
+      "attempt_finished_at": "2026-08-22T23:00:10Z",
       "model": "gpt-oss-120b",
       "outcome": "not_called",
       "provider": "sambanova"
@@ -79226,6 +80558,12 @@ This page does not store secrets, raw prompts, raw completions, or provider resp
       "model": "DeepSeek-V3.2",
       "outcome": "not_called",
       "provider": "sambanova"
+    },
+    "9edc9540522c49f6ebd2452b1ac120aa8427019efbbff4940a49596bfe0d39e0": {
+      "attempt_finished_at": "2026-08-22T23:00:07Z",
+      "model": "gemini-3.7-flash",
+      "outcome": "not_called",
+      "provider": "gemini"
     },
     "9ee14477acefe2036bbbbe7cb67f25fa5d7e88dd718879b4d8ec61c1b6eac36d": {
       "attempt_finished_at": "2026-08-22T08:02:20Z",
@@ -79706,6 +81044,12 @@ This page does not store secrets, raw prompts, raw completions, or provider resp
       "model": "DeepSeek-V3.2",
       "outcome": "not_called",
       "provider": "sambanova"
+    },
+    "9fe5f981eb9f17c5ffc1d98c11646d80cee877367bafe55dedf0cd4cfaab1071": {
+      "attempt_finished_at": "2026-08-22T23:00:07Z",
+      "model": "gemini-3.7-flash",
+      "outcome": "not_called",
+      "provider": "gemini"
     },
     "9fe82a5f8d90a2b45c6822d3ee8e68684e6dcd67e30fd6dc456a529e1b7a1cfa": {
       "attempt_finished_at": "2026-08-20T14:49:30Z",
@@ -80463,6 +81807,12 @@ This page does not store secrets, raw prompts, raw completions, or provider resp
       "outcome": "not_called",
       "provider": "sambanova"
     },
+    "a172d45446caa6bbc5703200b76074851d31e653df979cb3dcf6accabc2b62cb": {
+      "attempt_finished_at": "2026-08-22T23:00:10Z",
+      "model": "Meta-Llama-3.3-70B-Instruct",
+      "outcome": "not_called",
+      "provider": "sambanova"
+    },
     "a172f40721a372228d2f5b18822f38fdadc2cd92e2510e31dcc7b1086ccf15d3": {
       "attempt_finished_at": "2026-08-22T20:35:01Z",
       "model": "gpt-oss-120b",
@@ -80485,6 +81835,12 @@ This page does not store secrets, raw prompts, raw completions, or provider resp
       "attempt_finished_at": "2026-08-22T07:40:47Z",
       "model": "gemini-3-flash-preview",
       "outcome": "valid",
+      "provider": "gemini"
+    },
+    "a1873d631958bf45829ebb39f065f02a69f2263b5318567065bf1397699fd8ee": {
+      "attempt_finished_at": "2026-08-22T23:00:07Z",
+      "model": "gemini-3.7-flash",
+      "outcome": "not_called",
       "provider": "gemini"
     },
     "a18bde3c731879d59bcb728498a6271866c926b3d9021e25c8f65975d5959fff": {
@@ -80628,6 +81984,12 @@ This page does not store secrets, raw prompts, raw completions, or provider resp
     "a1b80425a0f3c4d89ffd3405f08952ef42e1640957cb9d58c33a3657080337ae": {
       "attempt_finished_at": "2026-08-22T13:39:58Z",
       "model": "DeepSeek-V3.1",
+      "outcome": "not_called",
+      "provider": "sambanova"
+    },
+    "a1b88a9d98b7b4c73162428d0c32612dd24683ba857743c457e5d23556775ee8": {
+      "attempt_finished_at": "2026-08-22T23:00:10Z",
+      "model": "DeepSeek-V3.2",
       "outcome": "not_called",
       "provider": "sambanova"
     },
@@ -81075,6 +82437,12 @@ This page does not store secrets, raw prompts, raw completions, or provider resp
       "outcome": "not_called",
       "provider": "gemini"
     },
+    "a29b92de771820d8d1a8bbff3aac3c4a2bcbd11d900cefe89a1d0d9cd517a2c4": {
+      "attempt_finished_at": "2026-08-22T23:00:10Z",
+      "model": "DeepSeek-V3.2",
+      "outcome": "not_called",
+      "provider": "sambanova"
+    },
     "a29fd94526bea11dc7ea7abe975dc7ad5de2c594910902e9d840e82215c50253": {
       "attempt_finished_at": "2026-08-20T21:07:33Z",
       "model": "google/gemma-4-31b-it:free",
@@ -81242,6 +82610,12 @@ This page does not store secrets, raw prompts, raw completions, or provider resp
       "model": "openai/gpt-oss-20b:free",
       "outcome": "not_called",
       "provider": "openrouter"
+    },
+    "a2f8996465d1d506d0925435a5d9e6424e591505fc78b9119b4c99834864057e": {
+      "attempt_finished_at": "2026-08-22T23:00:10Z",
+      "model": "gpt-oss-120b",
+      "outcome": "not_called",
+      "provider": "sambanova"
     },
     "a2f9a3188846052c063e0591eae771101d32992e4ecffacf22ca59d18e7a6238": {
       "attempt_finished_at": "2026-08-21T04:52:21Z",
@@ -81567,6 +82941,12 @@ This page does not store secrets, raw prompts, raw completions, or provider resp
       "outcome": "not_called",
       "provider": "sambanova"
     },
+    "a3b002c7625f3ff09ddc89cc8a03e6b91e27eecd55b0e3b881ec78604161b798": {
+      "attempt_finished_at": "2026-08-22T23:00:10Z",
+      "model": "DeepSeek-V3.2",
+      "outcome": "not_called",
+      "provider": "sambanova"
+    },
     "a3b4992727d1a4b32dfcad73ef14259ff53498bd5da68f80b68d91e2c53eb7bb": {
       "attempt_finished_at": "2026-08-22T20:35:01Z",
       "model": "gpt-oss-120b",
@@ -81584,6 +82964,12 @@ This page does not store secrets, raw prompts, raw completions, or provider resp
       "model": "gemini-2.5-flash",
       "outcome": "valid",
       "provider": "gemini"
+    },
+    "a3ba603ac6eab71ec260f3bd967432d513aa125d5da82eb715407520cabe655a": {
+      "attempt_finished_at": "2026-08-22T23:00:10Z",
+      "model": "DeepSeek-V3.1",
+      "outcome": "not_called",
+      "provider": "sambanova"
     },
     "a3c1b1bd0f68f578b46b4a6134c292e58d78c57747bc239547258c8771e873dd": {
       "attempt_finished_at": "2026-08-20T09:48:00Z",
@@ -82887,6 +84273,12 @@ This page does not store secrets, raw prompts, raw completions, or provider resp
       "outcome": "not_called",
       "provider": "sambanova"
     },
+    "a64e1d069b1f640545d904c8c3e3ed61b273f19549957233bdc53215856045d7": {
+      "attempt_finished_at": "2026-08-22T23:00:10Z",
+      "model": "DeepSeek-V3.2",
+      "outcome": "not_called",
+      "provider": "sambanova"
+    },
     "a64e7e3052ccd45390ee3428f8a6c9318355f75cd7a9fb9485eec15fc22f2157": {
       "attempt_finished_at": "2026-08-20T14:49:30Z",
       "model": "DeepSeek-V3.2",
@@ -83283,6 +84675,12 @@ This page does not store secrets, raw prompts, raw completions, or provider resp
       "outcome": "not_called",
       "provider": "sambanova"
     },
+    "a71ad0d3c6b6992c302a762ba9570ae6de5ee76fc472f3c6f5a7ca2755e88c22": {
+      "attempt_finished_at": "2026-08-22T23:00:10Z",
+      "model": "Meta-Llama-3.3-70B-Instruct",
+      "outcome": "not_called",
+      "provider": "sambanova"
+    },
     "a71d50d02448dc3821f660f17b96e1680c6dc9983d2d234b2f214679555c5744": {
       "attempt_finished_at": "2026-08-21T13:07:15Z",
       "model": "poolside/laguna-s-2.1:free",
@@ -83322,6 +84720,12 @@ This page does not store secrets, raw prompts, raw completions, or provider resp
     "a7320ed8e73e2a9d8ae0fa6b7ee656c3d62b9aa589eaa6a1b59206ac63602284": {
       "attempt_finished_at": "2026-08-21T04:52:21Z",
       "model": "DeepSeek-V3.1",
+      "outcome": "not_called",
+      "provider": "sambanova"
+    },
+    "a7356da62491e8ad9af754ec3e088d33f0500fdc7b3649edebe94e9a9bd6e759": {
+      "attempt_finished_at": "2026-08-22T23:00:10Z",
+      "model": "DeepSeek-V3.2",
       "outcome": "not_called",
       "provider": "sambanova"
     },
@@ -83991,6 +85395,12 @@ This page does not store secrets, raw prompts, raw completions, or provider resp
       "outcome": "not_called",
       "provider": "sambanova"
     },
+    "a8795e7f649f13e5e3b6f2f446415ece01f4d395ee12467feb6ddf8c92f03edb": {
+      "attempt_finished_at": "2026-08-22T23:00:10Z",
+      "model": "DeepSeek-V3.1",
+      "outcome": "not_called",
+      "provider": "sambanova"
+    },
     "a87ec410e5d26e938fa70802f7426e2a7c9d80f4e58724ddf5ff8651ca86cb0a": {
       "attempt_finished_at": "2026-08-22T02:42:54Z",
       "model": "gemini-3-flash-preview",
@@ -84195,6 +85605,12 @@ This page does not store secrets, raw prompts, raw completions, or provider resp
       "outcome": "not_called",
       "provider": "sambanova"
     },
+    "a8e26d88ed231291419cb6350080c47985632fe242fb3f77fe4641f19fcfbad3": {
+      "attempt_finished_at": "2026-08-22T23:00:10Z",
+      "model": "DeepSeek-V3.1",
+      "outcome": "not_called",
+      "provider": "sambanova"
+    },
     "a8e45f07406faaa33f4b126b5a3d77b6d7571308ceea180cf9eed3e8a00e138a": {
       "attempt_finished_at": "2026-08-20T18:56:07Z",
       "model": "DeepSeek-V3.1",
@@ -84354,6 +85770,12 @@ This page does not store secrets, raw prompts, raw completions, or provider resp
     "a93a5e89236d0bdcd8e3224fdfb6d86ebbb6d91c0a10c0e76997affb80ea083b": {
       "attempt_finished_at": "2026-08-22T00:00:44Z",
       "model": "Meta-Llama-3.3-70B-Instruct",
+      "outcome": "not_called",
+      "provider": "sambanova"
+    },
+    "a93cab1004294db788ab104e57c1dcc5d78c0a6ef0951f7b2f034fa5c9da91ae": {
+      "attempt_finished_at": "2026-08-22T23:00:10Z",
+      "model": "DeepSeek-V3.2",
       "outcome": "not_called",
       "provider": "sambanova"
     },
@@ -84723,6 +86145,12 @@ This page does not store secrets, raw prompts, raw completions, or provider resp
       "outcome": "not_called",
       "provider": "sambanova"
     },
+    "aa04204a846dd00bb54856c4b96c4eca387428a17022e45266903df2117f76de": {
+      "attempt_finished_at": "2026-08-22T23:00:10Z",
+      "model": "gpt-oss-120b",
+      "outcome": "not_called",
+      "provider": "sambanova"
+    },
     "aa05223a25a59dcd3dabde89237b5452b3fbd937a1b241efd13f936b18264d55": {
       "attempt_finished_at": "2026-08-20T10:15:55Z",
       "model": "gemma-4-31B-it",
@@ -84957,6 +86385,12 @@ This page does not store secrets, raw prompts, raw completions, or provider resp
       "outcome": "not_called",
       "provider": "gemini"
     },
+    "aa4894038de7c6c9df5f315f0fe74f2b9e78f66f300307c826f5741208552003": {
+      "attempt_finished_at": "2026-08-22T23:00:10Z",
+      "model": "Meta-Llama-3.3-70B-Instruct",
+      "outcome": "not_called",
+      "provider": "sambanova"
+    },
     "aa4987c3b36207c4b8721e844abe836573c321a3dc7dfc8c9a0e5dbb981f7aa4": {
       "attempt_finished_at": "2026-08-22T09:05:18Z",
       "model": "Meta-Llama-3.3-70B-Instruct",
@@ -85008,6 +86442,12 @@ This page does not store secrets, raw prompts, raw completions, or provider resp
     "aa6a66751d3b52d9dbed055a4b9336e24779f404249717dfaacaef2e163b5249": {
       "attempt_finished_at": "2026-08-21T18:51:56Z",
       "model": "DeepSeek-V3.2",
+      "outcome": "not_called",
+      "provider": "sambanova"
+    },
+    "aa6bbfdad1964052a912c3812be671f4e37bc126fdd0da5cc7c0ddd4178d40c1": {
+      "attempt_finished_at": "2026-08-22T23:00:10Z",
+      "model": "gpt-oss-120b",
       "outcome": "not_called",
       "provider": "sambanova"
     },
@@ -85539,6 +86979,12 @@ This page does not store secrets, raw prompts, raw completions, or provider resp
       "outcome": "provider_failure",
       "provider": "gemini"
     },
+    "ab86eb3fb732f2ea7f4bb4a52f26c6fe04c674f354d2da2e419e80769d94d8f7": {
+      "attempt_finished_at": "2026-08-22T23:00:10Z",
+      "model": "DeepSeek-V3.1",
+      "outcome": "not_called",
+      "provider": "sambanova"
+    },
     "ab8abfc220fbebc21177166e13d18563e224ab0c67d3ba88b46de1aada204184": {
       "attempt_finished_at": "2026-08-20T09:51:43Z",
       "model": "gemini-2.5-flash",
@@ -85700,6 +87146,12 @@ This page does not store secrets, raw prompts, raw completions, or provider resp
       "model": "gemini-3-flash-preview",
       "outcome": "not_called",
       "provider": "gemini"
+    },
+    "abd5ca225ff0792376302f17615f9efb93e9b162129f073cddefaf6b21acc150": {
+      "attempt_finished_at": "2026-08-22T23:00:10Z",
+      "model": "Meta-Llama-3.3-70B-Instruct",
+      "outcome": "not_called",
+      "provider": "sambanova"
     },
     "abdbb1c51896d56f3847a82f35ef7a36c0f0b2eab9f9a56dd0ac3a97b38acd7a": {
       "attempt_finished_at": "2026-08-22T00:00:44Z",
@@ -85893,6 +87345,12 @@ This page does not store secrets, raw prompts, raw completions, or provider resp
       "outcome": "not_called",
       "provider": "sambanova"
     },
+    "ac2c44aa536863d224243a62304a70e1c32b4c0f2f7a8c48647682019c5f1422": {
+      "attempt_finished_at": "2026-08-22T23:00:10Z",
+      "model": "gpt-oss-120b",
+      "outcome": "not_called",
+      "provider": "sambanova"
+    },
     "ac3199e9760057a18b31b92844ddf57df942f5cc79334ead83b5a003017e95ef": {
       "attempt_finished_at": "2026-08-22T10:37:54Z",
       "model": "gemini-3.7-flash",
@@ -86061,6 +87519,12 @@ This page does not store secrets, raw prompts, raw completions, or provider resp
       "outcome": "not_called",
       "provider": "sambanova"
     },
+    "ac720fc2b379088e0e4a42de726f892cf19d0950bb2fda51d8483faacaf703af": {
+      "attempt_finished_at": "2026-08-22T23:00:10Z",
+      "model": "DeepSeek-V3.1",
+      "outcome": "not_called",
+      "provider": "sambanova"
+    },
     "ac753c216abf8f6e976ac78fa67e8e3736979c120cc6c3779ba0b747dfe700f5": {
       "attempt_finished_at": "2026-08-21T13:07:00Z",
       "model": "DeepSeek-V3.2",
@@ -86214,6 +87678,12 @@ This page does not store secrets, raw prompts, raw completions, or provider resp
     "aca868c811fd321026054e5f5778601b99da9f697de49c8f253cd80f717ba6d0": {
       "attempt_finished_at": "2026-08-20T21:17:04Z",
       "model": "gpt-oss-120b",
+      "outcome": "not_called",
+      "provider": "sambanova"
+    },
+    "aca880f0bfa654e4b41f73f9ec29977af7b209dfd00e027b175341733773c7b3": {
+      "attempt_finished_at": "2026-08-22T23:00:10Z",
+      "model": "Meta-Llama-3.3-70B-Instruct",
       "outcome": "not_called",
       "provider": "sambanova"
     },
@@ -86633,6 +88103,12 @@ This page does not store secrets, raw prompts, raw completions, or provider resp
     },
     "adacfd79b386d989b54fc891442b03abe4af08b1ed1be88aa395a0dd90947770": {
       "attempt_finished_at": "2026-08-21T22:36:22Z",
+      "model": "Meta-Llama-3.3-70B-Instruct",
+      "outcome": "not_called",
+      "provider": "sambanova"
+    },
+    "adaf24bb860b33998bb3bc49def9e79f1cb560f538f1dd6a5c6f349af2093ba5": {
+      "attempt_finished_at": "2026-08-22T23:00:10Z",
       "model": "Meta-Llama-3.3-70B-Instruct",
       "outcome": "not_called",
       "provider": "sambanova"
@@ -87069,6 +88545,12 @@ This page does not store secrets, raw prompts, raw completions, or provider resp
       "outcome": "not_called",
       "provider": "openrouter"
     },
+    "ae9702db3ca3c86214472ce335201861d459768db346ba776fef2c70574fee28": {
+      "attempt_finished_at": "2026-08-22T23:00:10Z",
+      "model": "DeepSeek-V3.2",
+      "outcome": "not_called",
+      "provider": "sambanova"
+    },
     "ae9b60134134196179446ea77067c2ef75e0d61c0dc2b50c81626d7ad5063f91": {
       "attempt_finished_at": "2026-08-22T04:46:36Z",
       "model": "Meta-Llama-3.3-70B-Instruct",
@@ -87102,6 +88584,12 @@ This page does not store secrets, raw prompts, raw completions, or provider resp
     "aeb348314730263e101d112ceb4bed58b3ab624fbd2aaa3b308b91d8ce639e17": {
       "attempt_finished_at": "2026-08-21T18:51:56Z",
       "model": "DeepSeek-V3.1",
+      "outcome": "not_called",
+      "provider": "sambanova"
+    },
+    "aeb4bf29087672b16dec6b6e5c544434bf71ba198f86c79f7d83e8c68ad4ca0d": {
+      "attempt_finished_at": "2026-08-22T23:00:10Z",
+      "model": "Meta-Llama-3.3-70B-Instruct",
       "outcome": "not_called",
       "provider": "sambanova"
     },
@@ -87525,6 +89013,18 @@ This page does not store secrets, raw prompts, raw completions, or provider resp
       "outcome": "not_called",
       "provider": "sambanova"
     },
+    "af9205b2cea58db35cddfad2fa9e2156d86286da4329c72082e48b0a12156da5": {
+      "attempt_finished_at": "2026-08-22T23:00:10Z",
+      "model": "Meta-Llama-3.3-70B-Instruct",
+      "outcome": "not_called",
+      "provider": "sambanova"
+    },
+    "af95cd838fd497dc480453c6557f09b0b82967dca0cca2b76abf7d52786718a4": {
+      "attempt_finished_at": "2026-08-22T23:00:10Z",
+      "model": "Meta-Llama-3.3-70B-Instruct",
+      "outcome": "not_called",
+      "provider": "sambanova"
+    },
     "af983e751dc7a1c74e6c6c53de049fced36e6ab1830a592f1b42cbb420c13c3b": {
       "attempt_finished_at": "2026-08-22T05:50:42Z",
       "model": "gpt-oss-120b",
@@ -87588,6 +89088,18 @@ This page does not store secrets, raw prompts, raw completions, or provider resp
     "afbd4af40467427b94d49465e24c97d637040472299957a30f27156bc5d96e86": {
       "attempt_finished_at": "2026-08-22T06:56:00Z",
       "model": "DeepSeek-V3.2",
+      "outcome": "not_called",
+      "provider": "sambanova"
+    },
+    "afbf60e3a88a70160a1ad489accde5ece0273a2d1f4b22ef9c4d1002fee7bd42": {
+      "attempt_finished_at": "2026-08-22T23:00:10Z",
+      "model": "gpt-oss-120b",
+      "outcome": "not_called",
+      "provider": "sambanova"
+    },
+    "afc60b8618e5f01a3ef4796b1e5ea781e07f2d67455a509df7e14eff4e55132e": {
+      "attempt_finished_at": "2026-08-22T23:00:10Z",
+      "model": "Meta-Llama-3.3-70B-Instruct",
       "outcome": "not_called",
       "provider": "sambanova"
     },
@@ -87665,6 +89177,18 @@ This page does not store secrets, raw prompts, raw completions, or provider resp
     },
     "aff2d047d3924c032b412d00bd022dafc2c597ba7e67c7fdad36b06910aa52e6": {
       "attempt_finished_at": "2026-08-22T06:56:00Z",
+      "model": "Meta-Llama-3.3-70B-Instruct",
+      "outcome": "not_called",
+      "provider": "sambanova"
+    },
+    "aff2d2488e2833acf601e37e369aef8c9a401dea4b0164d976e3b7fd4574bf75": {
+      "attempt_finished_at": "2026-08-22T23:00:10Z",
+      "model": "DeepSeek-V3.1",
+      "outcome": "not_called",
+      "provider": "sambanova"
+    },
+    "aff5729c4b2f22b3bc8c80cfa3ba0599d060270acfb00802435e74139d849d81": {
+      "attempt_finished_at": "2026-08-22T23:00:10Z",
       "model": "Meta-Llama-3.3-70B-Instruct",
       "outcome": "not_called",
       "provider": "sambanova"
@@ -88112,6 +89636,12 @@ This page does not store secrets, raw prompts, raw completions, or provider resp
       "model": "gpt-oss-120b",
       "outcome": "not_called",
       "provider": "sambanova"
+    },
+    "b0d9d98684d6c7d3537f0431c1e2db3f5f8672901e80bcc15d797cb7dfd2ce71": {
+      "attempt_finished_at": "2026-08-22T23:00:07Z",
+      "model": "gemini-3.7-flash",
+      "outcome": "not_called",
+      "provider": "gemini"
     },
     "b0e022e6bfc04ac1a3ce207408c12dabfad90b425b2ecc94a0dfb6e6e4cd32af": {
       "attempt_finished_at": "2026-08-22T16:36:51Z",
@@ -88941,6 +90471,12 @@ This page does not store secrets, raw prompts, raw completions, or provider resp
       "outcome": "not_called",
       "provider": "sambanova"
     },
+    "b2d2ce89279c3cc4414239d6703bb1c4980c8e0661c3096fe472151feddf9a9f": {
+      "attempt_finished_at": "2026-08-22T23:00:07Z",
+      "model": "gemini-3.7-flash",
+      "outcome": "not_called",
+      "provider": "gemini"
+    },
     "b2d46402efc1ccd24f0d9b6ba6668eda92e0da18c6acd6058b2e8055b4d62b2c": {
       "attempt_finished_at": "2026-08-21T00:01:48Z",
       "model": "google/gemma-4-31b-it:free",
@@ -88992,6 +90528,12 @@ This page does not store secrets, raw prompts, raw completions, or provider resp
     "b2f383dd5dd66c47d74e65d5c8dc7153cc3961b7e4c606aa2d1ddd0e9eb4b671": {
       "attempt_finished_at": "2026-08-21T14:48:12Z",
       "model": "Meta-Llama-3.3-70B-Instruct",
+      "outcome": "not_called",
+      "provider": "sambanova"
+    },
+    "b2fb33a327ad060957e77509a8bb7a3896c7ed482445cebb1d49dc0262a9c3b9": {
+      "attempt_finished_at": "2026-08-22T23:00:10Z",
+      "model": "DeepSeek-V3.1",
       "outcome": "not_called",
       "provider": "sambanova"
     },
@@ -89745,6 +91287,12 @@ This page does not store secrets, raw prompts, raw completions, or provider resp
       "outcome": "not_called",
       "provider": "gemini"
     },
+    "b4987214c7c13c74fe35a28aefd7f1158f440e802a389dc390a498c1f8ab520e": {
+      "attempt_finished_at": "2026-08-22T23:00:10Z",
+      "model": "DeepSeek-V3.1",
+      "outcome": "not_called",
+      "provider": "sambanova"
+    },
     "b49bff4ea18df818b53e76c1ebb684db364b16af96e1af4cc79c13674b422b9f": {
       "attempt_finished_at": "2026-08-21T20:00:06Z",
       "model": "nvidia/nemotron-nano-9b-v2:free",
@@ -90009,6 +91557,12 @@ This page does not store secrets, raw prompts, raw completions, or provider resp
       "outcome": "not_called",
       "provider": "gemini"
     },
+    "b5349eae11a554ac328dce3ec0728cae1019cbfbc29ac0caf80c6181d1d5828b": {
+      "attempt_finished_at": "2026-08-22T23:00:10Z",
+      "model": "Meta-Llama-3.3-70B-Instruct",
+      "outcome": "not_called",
+      "provider": "sambanova"
+    },
     "b536eaf37a15dae9de21ea39370ac83bd100f34ad47ec1ab0b3b98d4e992a824": {
       "attempt_finished_at": "2026-08-21T13:56:01Z",
       "model": "qwen/qwen3.6-27b",
@@ -90110,6 +91664,12 @@ This page does not store secrets, raw prompts, raw completions, or provider resp
       "model": "DeepSeek-V3.1",
       "outcome": "not_called",
       "provider": "sambanova"
+    },
+    "b564a984030dc4c16c00415776dfa394e78f02036fdc4c127778f70cef4511c2": {
+      "attempt_finished_at": "2026-08-22T23:00:07Z",
+      "model": "gemini-3.7-flash",
+      "outcome": "not_called",
+      "provider": "gemini"
     },
     "b564f793e6427351a678990bf06e740cf67abfb37a7fdb26f77e3b0854abcfe6": {
       "attempt_finished_at": "2026-08-22T17:59:20Z",
@@ -90680,6 +92240,12 @@ This page does not store secrets, raw prompts, raw completions, or provider resp
       "model": "gemini-3-flash-preview",
       "outcome": "not_called",
       "provider": "gemini"
+    },
+    "b68a681d2505887bb096a8026ebd3c2029d3aacb2ed37f6124cf285d2e7daf80": {
+      "attempt_finished_at": "2026-08-22T23:00:10Z",
+      "model": "gpt-oss-120b",
+      "outcome": "not_called",
+      "provider": "sambanova"
     },
     "b68b6d0c7471af3ef503636c20ea37bf888658cdc3cac4a86c93141100493bdf": {
       "attempt_finished_at": "2026-08-22T21:59:13Z",
@@ -91461,6 +93027,12 @@ This page does not store secrets, raw prompts, raw completions, or provider resp
       "outcome": "not_called",
       "provider": "sambanova"
     },
+    "b84944b5fdd9bd4c221408d0decefcf58be1ade82d46c8da746810c51829dd36": {
+      "attempt_finished_at": "2026-08-22T23:00:10Z",
+      "model": "Meta-Llama-3.3-70B-Instruct",
+      "outcome": "not_called",
+      "provider": "sambanova"
+    },
     "b84be5ad06332789563261f8d68cba25ee6933c13723e38239ec0b017e0a9a9d": {
       "attempt_finished_at": "2026-08-20T09:48:33Z",
       "model": "gemini-3.6-flash",
@@ -91694,6 +93266,12 @@ This page does not store secrets, raw prompts, raw completions, or provider resp
       "model": "poolside/laguna-xs-2.1:free",
       "outcome": "not_called",
       "provider": "openrouter"
+    },
+    "b8c084a958245e71050b54daca6de6a7bafc50a3762b3d4cddac3e26cd84d598": {
+      "attempt_finished_at": "2026-08-22T23:00:10Z",
+      "model": "Meta-Llama-3.3-70B-Instruct",
+      "outcome": "not_called",
+      "provider": "sambanova"
     },
     "b8c703db017aa876686161988259063f945a9452e52f52564f007dbc96dc7b52": {
       "attempt_finished_at": "2026-08-22T15:00:45Z",
@@ -92133,6 +93711,12 @@ This page does not store secrets, raw prompts, raw completions, or provider resp
       "outcome": "not_called",
       "provider": "sambanova"
     },
+    "b99585b9f936a43a6e7a80f75e9bce819959053d83a7f1d2f3de3caf65712bb9": {
+      "attempt_finished_at": "2026-08-22T23:00:10Z",
+      "model": "DeepSeek-V3.2",
+      "outcome": "not_called",
+      "provider": "sambanova"
+    },
     "b996bc180c0a4807d7ab7032908a63277d734d7e682ba8865e2f30b868624c45": {
       "attempt_finished_at": "2026-08-21T06:06:35Z",
       "model": "gpt-oss-120b",
@@ -92511,6 +94095,12 @@ This page does not store secrets, raw prompts, raw completions, or provider resp
       "outcome": "not_called",
       "provider": "sambanova"
     },
+    "ba49bee75531e764c9371f24f9ddf9133ec593a4c9c6edcc3adf110bcf172e18": {
+      "attempt_finished_at": "2026-08-22T23:00:10Z",
+      "model": "DeepSeek-V3.2",
+      "outcome": "not_called",
+      "provider": "sambanova"
+    },
     "ba4ab78736e432cb72c7eac7baae96e07cc7953ea1d76e549b59305ccb8e4d95": {
       "attempt_finished_at": "2026-08-21T21:35:06Z",
       "model": "gemini-3-flash-preview",
@@ -92829,6 +94419,12 @@ This page does not store secrets, raw prompts, raw completions, or provider resp
       "outcome": "not_called",
       "provider": "sambanova"
     },
+    "bafc32fd235f595bffa5caf813ea8b50c098141b0cf6d734a073679f74a240ae": {
+      "attempt_finished_at": "2026-08-22T23:00:10Z",
+      "model": "DeepSeek-V3.1",
+      "outcome": "not_called",
+      "provider": "sambanova"
+    },
     "bafda42c3bdea2c1b799d0a04e7663953dd2b929dee56dbe1679eddcb903165a": {
       "attempt_finished_at": "2026-08-21T22:02:43Z",
       "model": "gemini-3.7-flash",
@@ -93026,6 +94622,12 @@ This page does not store secrets, raw prompts, raw completions, or provider resp
       "model": "gpt-oss-120b",
       "outcome": "not_called",
       "provider": "sambanova"
+    },
+    "bb4eed9a332c983c430f3c0ad8cbc5aa78cb8a168f83943db838007fa3ef3d62": {
+      "attempt_finished_at": "2026-08-22T23:00:07Z",
+      "model": "gemini-3.7-flash",
+      "outcome": "not_called",
+      "provider": "gemini"
     },
     "bb4f295e3711ed124e4035f40bc8ba50486e36ca3c572d8e3eb398fad435cf18": {
       "attempt_finished_at": "2026-08-22T01:57:33Z",
@@ -93741,6 +95343,12 @@ This page does not store secrets, raw prompts, raw completions, or provider resp
       "outcome": "not_called",
       "provider": "sambanova"
     },
+    "bce1a88f9a88da691ac2c99792fd5478809ab7095c09c9c1067798762a7626e3": {
+      "attempt_finished_at": "2026-08-22T23:00:10Z",
+      "model": "DeepSeek-V3.2",
+      "outcome": "not_called",
+      "provider": "sambanova"
+    },
     "bce37715e8a7ae733b96e58fcc2e8d7f402157f71b7f95388f60a0579d3f9efa": {
       "attempt_finished_at": "2026-08-22T16:36:51Z",
       "model": "gemini-3.7-flash",
@@ -93824,6 +95432,12 @@ This page does not store secrets, raw prompts, raw completions, or provider resp
       "model": "gemini-3.7-flash",
       "outcome": "not_called",
       "provider": "gemini"
+    },
+    "bd1f4409ef935127096f8b72615d7387727b1911695c5a9b12dd14b135f19006": {
+      "attempt_finished_at": "2026-08-22T23:00:10Z",
+      "model": "Meta-Llama-3.3-70B-Instruct",
+      "outcome": "not_called",
+      "provider": "sambanova"
     },
     "bd1fbded3e23aafb61af800a13a3e1a4f79f8a0e7b8e1fed09e2a2ad22f52058": {
       "attempt_finished_at": "2026-08-21T07:54:40Z",
@@ -94683,6 +96297,18 @@ This page does not store secrets, raw prompts, raw completions, or provider resp
       "outcome": "not_called",
       "provider": "sambanova"
     },
+    "bec3a99a6fe8f6c00b08bb2da0c89c7a2961f20e22c93a4b2d623574c8698cdd": {
+      "attempt_finished_at": "2026-08-22T23:00:10Z",
+      "model": "Meta-Llama-3.3-70B-Instruct",
+      "outcome": "not_called",
+      "provider": "sambanova"
+    },
+    "bec41b679a556cd676cb9cf3bfd715d617c2278302bf7c6bc4fe322c600422ba": {
+      "attempt_finished_at": "2026-08-22T23:00:10Z",
+      "model": "DeepSeek-V3.2",
+      "outcome": "not_called",
+      "provider": "sambanova"
+    },
     "bec948bce8f0db23edf90226aa574ab03f9c8a1303f575b0952385724460ed59": {
       "attempt_finished_at": "2026-08-20T09:52:43Z",
       "model": "gemini-2.5-flash",
@@ -94736,6 +96362,12 @@ This page does not store secrets, raw prompts, raw completions, or provider resp
       "model": "gemini-3.7-flash",
       "outcome": "not_called",
       "provider": "gemini"
+    },
+    "bee463b04745e4be8ef66d052c54adba48aec06ebe1d80793762d4429367dc38": {
+      "attempt_finished_at": "2026-08-22T23:00:10Z",
+      "model": "DeepSeek-V3.1",
+      "outcome": "not_called",
+      "provider": "sambanova"
     },
     "bee6d0ba9487e01065cd913bca8c7eba93a32bb9f2c9c8f0052704132d2f4c20": {
       "attempt_finished_at": "2026-08-21T14:00:56Z",
@@ -95133,6 +96765,12 @@ This page does not store secrets, raw prompts, raw completions, or provider resp
       "outcome": "not_called",
       "provider": "sambanova"
     },
+    "bf9dc4e03471c7fd14db95d3dac228b85606a3b98a96b2905c673d065c3291c8": {
+      "attempt_finished_at": "2026-08-22T23:00:10Z",
+      "model": "DeepSeek-V3.1",
+      "outcome": "not_called",
+      "provider": "sambanova"
+    },
     "bfa1d368bcdb7eaad69764ce55138cf68c300414db74292dbcefc636ba0c1b20": {
       "attempt_finished_at": "2026-08-21T11:04:58Z",
       "model": "gpt-oss-120b",
@@ -95294,6 +96932,12 @@ This page does not store secrets, raw prompts, raw completions, or provider resp
       "model": "gemini-3.7-flash",
       "outcome": "not_called",
       "provider": "gemini"
+    },
+    "bff60bc5dfa49c123e9fb6c115be3bea49cfde588e65591352fd2251ae1bacb1": {
+      "attempt_finished_at": "2026-08-22T23:00:10Z",
+      "model": "DeepSeek-V3.2",
+      "outcome": "not_called",
+      "provider": "sambanova"
     },
     "bff71be81d20cb6ba32fe1e29a339f2d64529eb116c16e0ed2397a1ba53a82a5": {
       "attempt_finished_at": "2026-08-21T15:56:33Z",
@@ -95862,6 +97506,12 @@ This page does not store secrets, raw prompts, raw completions, or provider resp
     "c11b3b6515bf23cfebbb60ef951dd66df5d09b8cc8fd8fa82da3d1072215b2b2": {
       "attempt_finished_at": "2026-08-20T16:15:24Z",
       "model": "gpt-oss-120b",
+      "outcome": "not_called",
+      "provider": "sambanova"
+    },
+    "c11e44b1be1663811bff1c0b9170c492cf7b949d1951efc84d5daa5c2bdaadc3": {
+      "attempt_finished_at": "2026-08-22T23:00:10Z",
+      "model": "DeepSeek-V3.1",
       "outcome": "not_called",
       "provider": "sambanova"
     },
@@ -98289,6 +99939,12 @@ This page does not store secrets, raw prompts, raw completions, or provider resp
       "outcome": "not_called",
       "provider": "sambanova"
     },
+    "c5f7a964c74d8f07bbe187b44d585d8c88e871bdf32640dc1ce6f0a303b25f49": {
+      "attempt_finished_at": "2026-08-22T23:00:10Z",
+      "model": "Meta-Llama-3.3-70B-Instruct",
+      "outcome": "not_called",
+      "provider": "sambanova"
+    },
     "c5f96dabf0a4e9beb37cae8d1489ac3970e6fe2a6290887b8557bfea565eb932": {
       "attempt_finished_at": "2026-08-21T06:06:35Z",
       "model": "DeepSeek-V3.1",
@@ -98609,6 +100265,12 @@ This page does not store secrets, raw prompts, raw completions, or provider resp
     },
     "c6b33af21bf2de00f140d550bfd48a20df6b0d8b54a89917cfa2b8c165e0e4d4": {
       "attempt_finished_at": "2026-08-21T22:02:43Z",
+      "model": "gemini-3.7-flash",
+      "outcome": "not_called",
+      "provider": "gemini"
+    },
+    "c6b697d2bd21430675f4137d4d7bb99a3432810008e4c9366c4eac040dbfa5e0": {
+      "attempt_finished_at": "2026-08-22T23:00:07Z",
       "model": "gemini-3.7-flash",
       "outcome": "not_called",
       "provider": "gemini"
@@ -99483,6 +101145,12 @@ This page does not store secrets, raw prompts, raw completions, or provider resp
       "outcome": "not_called",
       "provider": "sambanova"
     },
+    "c898de6af5ef4fca59df04091978a7c0a00ea6388e3e0e38b5951bac700c718f": {
+      "attempt_finished_at": "2026-08-22T23:00:10Z",
+      "model": "DeepSeek-V3.2",
+      "outcome": "not_called",
+      "provider": "sambanova"
+    },
     "c899166c04532712a3dd81eface1a9a441b8849c89055b4cedb1e676c80ec1b2": {
       "attempt_finished_at": "2026-08-21T14:48:12Z",
       "model": "DeepSeek-V3.2",
@@ -99596,6 +101264,12 @@ This page does not store secrets, raw prompts, raw completions, or provider resp
       "model": "gemini-3.6-flash",
       "outcome": "not_called",
       "provider": "gemini"
+    },
+    "c8c5fb43c0d030fcfe7da50e3a17ae178890b644da31be4e6bb4cbc0b7571aa7": {
+      "attempt_finished_at": "2026-08-22T23:00:10Z",
+      "model": "DeepSeek-V3.2",
+      "outcome": "not_called",
+      "provider": "sambanova"
     },
     "c8c6701bc4a9efb20164f5010985cb5dc8bb9c3d387c80f18c70a678a765e670": {
       "attempt_finished_at": "2026-08-20T11:15:23Z",
@@ -99921,6 +101595,12 @@ This page does not store secrets, raw prompts, raw completions, or provider resp
       "outcome": "not_called",
       "provider": "gemini"
     },
+    "c95b22ac6755e206fd527d629fef1c4577218550150327248c8e5be191f3aa3a": {
+      "attempt_finished_at": "2026-08-22T23:00:10Z",
+      "model": "DeepSeek-V3.1",
+      "outcome": "not_called",
+      "provider": "sambanova"
+    },
     "c95be50564e8f890def2395375d23e5c4d33af2aa04df51fbd87cdf5886a1ec2": {
       "attempt_finished_at": "2026-08-22T08:43:45Z",
       "model": "gemini-3.6-flash",
@@ -100068,6 +101748,12 @@ This page does not store secrets, raw prompts, raw completions, or provider resp
     "c9a03162426101a9acaf7fd1e9d67f56acb4f7591d2ba96518dd908310649820": {
       "attempt_finished_at": "2026-08-21T04:52:21Z",
       "model": "gpt-oss-120b",
+      "outcome": "not_called",
+      "provider": "sambanova"
+    },
+    "c9a132e7b894aa43d3a63e96f02d824ed861e8b5fb0f96013fda9efe47cfcf09": {
+      "attempt_finished_at": "2026-08-22T23:00:10Z",
+      "model": "DeepSeek-V3.2",
       "outcome": "not_called",
       "provider": "sambanova"
     },
@@ -100701,6 +102387,12 @@ This page does not store secrets, raw prompts, raw completions, or provider resp
       "outcome": "not_called",
       "provider": "sambanova"
     },
+    "cac9a7028339fac775cac54c31bae143d61b69802a85e44e02f41f698b47ab6c": {
+      "attempt_finished_at": "2026-08-22T23:00:10Z",
+      "model": "DeepSeek-V3.2",
+      "outcome": "not_called",
+      "provider": "sambanova"
+    },
     "cacb354a50859651f184b4e48cf44ef7adf03976f34a1c6bece60353c2fa5b12": {
       "attempt_finished_at": "2026-08-21T15:56:28Z",
       "model": "gemini-3.6-flash",
@@ -100734,6 +102426,12 @@ This page does not store secrets, raw prompts, raw completions, or provider resp
     "cade9d73f39fc974e4df47cf8213c261c8ecaf31ac15b1e9a29bda49d6ca4321": {
       "attempt_finished_at": "2026-08-21T17:15:08Z",
       "model": "gemini-3-flash-preview",
+      "outcome": "not_called",
+      "provider": "gemini"
+    },
+    "cae1770ba11c33f7d7682d82804695d11af6666145212b14974bb281740b47b5": {
+      "attempt_finished_at": "2026-08-22T23:00:07Z",
+      "model": "gemini-3.7-flash",
       "outcome": "not_called",
       "provider": "gemini"
     },
@@ -101083,6 +102781,12 @@ This page does not store secrets, raw prompts, raw completions, or provider resp
       "attempt_finished_at": "2026-08-20T11:15:23Z",
       "model": "DeepSeek-V3.1",
       "outcome": "not_called",
+      "provider": "sambanova"
+    },
+    "cb8d1c1c5063925f72ef0c18b87e9988f1afa7e5ed1d0a1aed9f07ef44233061": {
+      "attempt_finished_at": "2026-08-22T23:00:09Z",
+      "model": "Meta-Llama-3.3-70B-Instruct",
+      "outcome": "provider_failure",
       "provider": "sambanova"
     },
     "cb90ef9149f3a9f75f2bf66ee7280a7cb67005140af73cccee12d94bbcff1bb1": {
@@ -101493,6 +103197,12 @@ This page does not store secrets, raw prompts, raw completions, or provider resp
       "outcome": "not_called",
       "provider": "sambanova"
     },
+    "cc396287dd8d08f461fa7c8288ac1736dd7a1fe1a76e2ec00e3262aa9ae9871a": {
+      "attempt_finished_at": "2026-08-22T23:00:10Z",
+      "model": "Meta-Llama-3.3-70B-Instruct",
+      "outcome": "not_called",
+      "provider": "sambanova"
+    },
     "cc3d15707662f57239d2c05cb63cbcba4b803eda0ebb7dd30ceb0c6e1f4bd23e": {
       "attempt_finished_at": "2026-08-21T07:54:40Z",
       "model": "DeepSeek-V3.2",
@@ -101670,6 +103380,12 @@ This page does not store secrets, raw prompts, raw completions, or provider resp
     "cc8db51b4aadb299f16dd8d2742a2a231e6ec63c0e2269d55eec46ac18c90561": {
       "attempt_finished_at": "2026-08-21T07:54:40Z",
       "model": "Meta-Llama-3.3-70B-Instruct",
+      "outcome": "not_called",
+      "provider": "sambanova"
+    },
+    "cc8e341105b312e79a31572b8770f93bbd7095bd8e4f72d656fd142351efc500": {
+      "attempt_finished_at": "2026-08-22T23:00:10Z",
+      "model": "DeepSeek-V3.2",
       "outcome": "not_called",
       "provider": "sambanova"
     },
@@ -102123,6 +103839,12 @@ This page does not store secrets, raw prompts, raw completions, or provider resp
       "outcome": "not_called",
       "provider": "sambanova"
     },
+    "cdaa85f4e846be5e4e5fdda4eaf4c44bc9dc18fdae51b733874a04d1a84bf1e7": {
+      "attempt_finished_at": "2026-08-22T23:00:10Z",
+      "model": "Meta-Llama-3.3-70B-Instruct",
+      "outcome": "not_called",
+      "provider": "sambanova"
+    },
     "cdad7c1e2decf7dc1c28cfe2ba0fa9f766ccd0968179a74513fe31f5011a340e": {
       "attempt_finished_at": "2026-08-22T21:59:31Z",
       "model": "nvidia/nemotron-nano-9b-v2:free",
@@ -102381,6 +104103,12 @@ This page does not store secrets, raw prompts, raw completions, or provider resp
       "outcome": "not_called",
       "provider": "openrouter"
     },
+    "ce55390d5e013d4ea7b3c7670fcccde2e122ac9bc037cdfccec407b5011a4a55": {
+      "attempt_finished_at": "2026-08-22T23:00:10Z",
+      "model": "DeepSeek-V3.1",
+      "outcome": "not_called",
+      "provider": "sambanova"
+    },
     "ce5566a90f3dba687720ffad6608903e306bbb5838db666ff1c92b44a91d5c03": {
       "attempt_finished_at": "2026-08-21T18:51:56Z",
       "model": "Meta-Llama-3.3-70B-Instruct",
@@ -102558,6 +104286,12 @@ This page does not store secrets, raw prompts, raw completions, or provider resp
     "ceaaa7e40ce3cad06852b292de32829ef2096cbecbb69676a9c0b79a41bb809c": {
       "attempt_finished_at": "2026-08-21T00:01:37Z",
       "model": "gpt-oss-120b",
+      "outcome": "not_called",
+      "provider": "sambanova"
+    },
+    "ceaaba135eab33f7fc944f344dfd3eacbc5cee23081735f8f8c70c7d850d4013": {
+      "attempt_finished_at": "2026-08-22T23:00:10Z",
+      "model": "DeepSeek-V3.2",
       "outcome": "not_called",
       "provider": "sambanova"
     },
@@ -102786,6 +104520,12 @@ This page does not store secrets, raw prompts, raw completions, or provider resp
     "cf0e5e983e4c0a137dcfaf34f5bfc4f697acb44ff5d359533052773bdcddc651": {
       "attempt_finished_at": "2026-08-20T21:17:04Z",
       "model": "Meta-Llama-3.3-70B-Instruct",
+      "outcome": "not_called",
+      "provider": "sambanova"
+    },
+    "cf1099f81753238a3023248728e9c17ab52a13a1ec19dd3d37ed11e254c68a4d": {
+      "attempt_finished_at": "2026-08-22T23:00:10Z",
+      "model": "DeepSeek-V3.1",
       "outcome": "not_called",
       "provider": "sambanova"
     },
@@ -103062,6 +104802,12 @@ This page does not store secrets, raw prompts, raw completions, or provider resp
     "cf8aecad84f23e160ae08f048e1dc5c7c0a4dab6f4fd1f6545713f3dd71e6767": {
       "attempt_finished_at": "2026-08-20T11:15:23Z",
       "model": "Meta-Llama-3.3-70B-Instruct",
+      "outcome": "not_called",
+      "provider": "sambanova"
+    },
+    "cf93684c6458b26818aeca82a6d61a5f257f8170a399866573cb623da2c0ad0f": {
+      "attempt_finished_at": "2026-08-22T23:00:10Z",
+      "model": "DeepSeek-V3.2",
       "outcome": "not_called",
       "provider": "sambanova"
     },
@@ -104037,6 +105783,12 @@ This page does not store secrets, raw prompts, raw completions, or provider resp
       "outcome": "not_called",
       "provider": "openrouter"
     },
+    "d18f8431d68819daae2dfa0e1dac7a7a15c808f8d207e5c227803b49f54c93d9": {
+      "attempt_finished_at": "2026-08-22T23:00:10Z",
+      "model": "gpt-oss-120b",
+      "outcome": "not_called",
+      "provider": "sambanova"
+    },
     "d19073df6fbe41058e1c29d7f131dc9db9c6e3cd0bce5626725d030466393b89": {
       "attempt_finished_at": "2026-08-20T12:04:05Z",
       "model": "google/gemma-4-26b-a4b-it:free",
@@ -104096,6 +105848,12 @@ This page does not store secrets, raw prompts, raw completions, or provider resp
       "model": "DeepSeek-V3.2",
       "outcome": "not_called",
       "provider": "sambanova"
+    },
+    "d1a73d5fb1f0bd5e80404f634f987b98f0f19d44e9580b5d5df0a4adfbb90e03": {
+      "attempt_finished_at": "2026-08-22T23:00:07Z",
+      "model": "gemini-3.7-flash",
+      "outcome": "not_called",
+      "provider": "gemini"
     },
     "d1a75d326fd34571f47ebf0061d634e0fa7522903b7828cc05dad573942d00ad": {
       "attempt_finished_at": "2026-08-21T07:54:40Z",
@@ -104160,6 +105918,12 @@ This page does not store secrets, raw prompts, raw completions, or provider resp
     "d1ca1cb8e110fef877aa703ffd504d6a5b73966107efa5e8b16831576f3000f6": {
       "attempt_finished_at": "2026-08-22T10:35:13Z",
       "model": "Meta-Llama-3.3-70B-Instruct",
+      "outcome": "not_called",
+      "provider": "sambanova"
+    },
+    "d1cc4065b9fd220c5d1ab4f3e9fe4a259ee22c1b539e65ac9778bcefffaadac0": {
+      "attempt_finished_at": "2026-08-22T23:00:10Z",
+      "model": "DeepSeek-V3.1",
       "outcome": "not_called",
       "provider": "sambanova"
     },
@@ -105459,6 +107223,12 @@ This page does not store secrets, raw prompts, raw completions, or provider resp
       "outcome": "not_called",
       "provider": "gemini"
     },
+    "d42f29122cede0290f64edd13399b8fd641296df1cfd7e7e765035e8f0e7bb68": {
+      "attempt_finished_at": "2026-08-22T23:00:07Z",
+      "model": "gemini-3.7-flash",
+      "outcome": "not_called",
+      "provider": "gemini"
+    },
     "d42fe10b974f0d6ad4cffb8539d22f01550cbb87ec08744fab5f99eed5d5ee59": {
       "attempt_finished_at": "2026-08-22T12:57:41Z",
       "model": "gemini-3.7-flash",
@@ -105476,6 +107246,12 @@ This page does not store secrets, raw prompts, raw completions, or provider resp
       "model": "gemini-3.7-flash",
       "outcome": "not_called",
       "provider": "gemini"
+    },
+    "d437fc727097051df6e5f3a1363f048e6d3554dfafd86bcb8e38d00c9945a557": {
+      "attempt_finished_at": "2026-08-22T23:00:10Z",
+      "model": "Meta-Llama-3.3-70B-Instruct",
+      "outcome": "not_called",
+      "provider": "sambanova"
     },
     "d438a1bb5091d846a70636581e6007ff4a8a7e28b8f14a4b39aad46024619770": {
       "attempt_finished_at": "2026-08-22T05:50:48Z",
@@ -106797,6 +108573,12 @@ This page does not store secrets, raw prompts, raw completions, or provider resp
       "outcome": "not_called",
       "provider": "sambanova"
     },
+    "d6dd5b29f78ab5e494133d0213dd5b14612d2eae357dcd6e5614a518184270dc": {
+      "attempt_finished_at": "2026-08-22T23:00:10Z",
+      "model": "gpt-oss-120b",
+      "outcome": "not_called",
+      "provider": "sambanova"
+    },
     "d6e3881e5484b98202d5f6392b4813f7d370f63bc2344c1863a2e5c732e5f849": {
       "attempt_finished_at": "2026-08-21T22:02:13Z",
       "model": "gemini-3-flash-preview",
@@ -106854,6 +108636,12 @@ This page does not store secrets, raw prompts, raw completions, or provider resp
     "d6fcdc71442dafc025e37a83959849d831a50900d65903e709a9ca47b48f4d66": {
       "attempt_finished_at": "2026-08-21T07:54:40Z",
       "model": "DeepSeek-V3.2",
+      "outcome": "not_called",
+      "provider": "sambanova"
+    },
+    "d6fd66891d76817a2263b0d74c6219aaaa7706125ad897c87e350141e887383f": {
+      "attempt_finished_at": "2026-08-22T23:00:10Z",
+      "model": "Meta-Llama-3.3-70B-Instruct",
       "outcome": "not_called",
       "provider": "sambanova"
     },
@@ -107589,6 +109377,12 @@ This page does not store secrets, raw prompts, raw completions, or provider resp
       "outcome": "not_called",
       "provider": "sambanova"
     },
+    "d89ba7808facbef1a4d55fbf45c96aae7a72df54a704658f0b2ef1a6cad4f23e": {
+      "attempt_finished_at": "2026-08-22T23:00:10Z",
+      "model": "DeepSeek-V3.2",
+      "outcome": "not_called",
+      "provider": "sambanova"
+    },
     "d89e7b2c9b25b7e5ebf5f3b6654ed1ce1bca88f978decfd9f5b7773e6c96d74f": {
       "attempt_finished_at": "2026-08-22T06:56:00Z",
       "model": "Meta-Llama-3.3-70B-Instruct",
@@ -107606,6 +109400,12 @@ This page does not store secrets, raw prompts, raw completions, or provider resp
       "model": "gemini-3.6-flash",
       "outcome": "not_called",
       "provider": "gemini"
+    },
+    "d8ab7fb416ed7c057d34fca2c41cf95a09bd61342c32173ddd17f313d1d497ad": {
+      "attempt_finished_at": "2026-08-22T23:00:10Z",
+      "model": "DeepSeek-V3.1",
+      "outcome": "not_called",
+      "provider": "sambanova"
     },
     "d8ac0028effc5a151ceb3ff251d1a1f388db60c09d5fa6f4543f79abfff84be5": {
       "attempt_finished_at": "2026-08-21T23:02:55Z",
@@ -107657,6 +109457,12 @@ This page does not store secrets, raw prompts, raw completions, or provider resp
     },
     "d8b8dbaa8685d2d2b6f49e6853d8aa25c61c89a3e1e7515e752183a30cc19322": {
       "attempt_finished_at": "2026-08-20T22:39:45Z",
+      "model": "DeepSeek-V3.1",
+      "outcome": "not_called",
+      "provider": "sambanova"
+    },
+    "d8bbf883cf77e5e26572a69d6d81347ca7f7975d1efa56746f704bbfafea62ed": {
+      "attempt_finished_at": "2026-08-22T23:00:10Z",
       "model": "DeepSeek-V3.1",
       "outcome": "not_called",
       "provider": "sambanova"
@@ -107762,6 +109568,12 @@ This page does not store secrets, raw prompts, raw completions, or provider resp
       "model": "DeepSeek-V3.1",
       "outcome": "not_called",
       "provider": "sambanova"
+    },
+    "d8deddb03b5a993126f1a2b685ec3086a2892c5ddb9cc15db6238f60fa9aaccd": {
+      "attempt_finished_at": "2026-08-22T23:00:07Z",
+      "model": "gemini-3.7-flash",
+      "outcome": "not_called",
+      "provider": "gemini"
     },
     "d8dfdad181575e580f96377aa2b2fc4f826b4f7db875fde7638be3e2a48a146e": {
       "attempt_finished_at": "2026-08-22T09:05:18Z",
@@ -107991,6 +109803,12 @@ This page does not store secrets, raw prompts, raw completions, or provider resp
       "outcome": "not_called",
       "provider": "gemini"
     },
+    "d95339314b5e3e8a16ac36c96a69c003082504594e5e007bbd923be0fe204d99": {
+      "attempt_finished_at": "2026-08-22T23:00:10Z",
+      "model": "DeepSeek-V3.1",
+      "outcome": "not_called",
+      "provider": "sambanova"
+    },
     "d95a36dc35268ee807136da9da02debfab9e0e3be9971e50631c0bfc3af5b058": {
       "attempt_finished_at": "2026-08-21T06:06:35Z",
       "model": "DeepSeek-V3.1",
@@ -108105,6 +109923,12 @@ This page does not store secrets, raw prompts, raw completions, or provider resp
       "outcome": "not_called",
       "provider": "sambanova"
     },
+    "d9865eda3e6016e64fb693261fd1cafce0e2659e8dfa874a954207161ca63f90": {
+      "attempt_finished_at": "2026-08-22T23:00:10Z",
+      "model": "gpt-oss-120b",
+      "outcome": "not_called",
+      "provider": "sambanova"
+    },
     "d987c1e086eff8af64ae05a022250c274ad396e948efae819be7caa88c66bcb1": {
       "attempt_finished_at": "2026-08-20T16:15:24Z",
       "model": "Meta-Llama-3.3-70B-Instruct",
@@ -108114,6 +109938,12 @@ This page does not store secrets, raw prompts, raw completions, or provider resp
     "d989b7f5349f2cd81ac938718c6aebccc97472f0f3a5f122286f88424e810ac6": {
       "attempt_finished_at": "2026-08-21T23:34:12Z",
       "model": "gemini-2.5-flash",
+      "outcome": "not_called",
+      "provider": "gemini"
+    },
+    "d98bb3fbce18f2d57e7c698a3effb936f27974cd4fe2eaad0c40e0ff62896911": {
+      "attempt_finished_at": "2026-08-22T23:00:07Z",
+      "model": "gemini-3.7-flash",
       "outcome": "not_called",
       "provider": "gemini"
     },
@@ -108128,6 +109958,12 @@ This page does not store secrets, raw prompts, raw completions, or provider resp
       "model": "google/gemma-4-31b-it:free",
       "outcome": "not_called",
       "provider": "openrouter"
+    },
+    "d992122353f84266105a01eda55d110680a62b545f554209c2fab95e512d86b1": {
+      "attempt_finished_at": "2026-08-22T23:00:10Z",
+      "model": "DeepSeek-V3.1",
+      "outcome": "not_called",
+      "provider": "sambanova"
     },
     "d997f310ecc7ea0e23d1900236da137abc9ee895b7f97071169d168472353d17": {
       "attempt_finished_at": "2026-08-21T03:13:20Z",
@@ -108144,6 +109980,12 @@ This page does not store secrets, raw prompts, raw completions, or provider resp
     "d99d183b21e16e7d0a6bc5ff05d8fe26ae34ee298ff3e1e9e3c455bb896a3bf8": {
       "attempt_finished_at": "2026-08-20T09:46:12Z",
       "model": "DeepSeek-V3.2",
+      "outcome": "not_called",
+      "provider": "sambanova"
+    },
+    "d99d535ec0d4507852f803f085745fce10154eb0b41462a7147978fdbe6c3475": {
+      "attempt_finished_at": "2026-08-22T23:00:10Z",
+      "model": "DeepSeek-V3.1",
       "outcome": "not_called",
       "provider": "sambanova"
     },
@@ -108789,6 +110631,12 @@ This page does not store secrets, raw prompts, raw completions, or provider resp
       "outcome": "not_called",
       "provider": "sambanova"
     },
+    "daf52d05f944626d5ec5f4a548d13d07b522cc5cd0bc522acc07f6276162f3ec": {
+      "attempt_finished_at": "2026-08-22T23:00:10Z",
+      "model": "gpt-oss-120b",
+      "outcome": "not_called",
+      "provider": "sambanova"
+    },
     "daf6ee60ea253169ab73362e1aee06fa889b108e075f63f5fb7416852a498995": {
       "attempt_finished_at": "2026-08-22T19:07:08Z",
       "model": "gemini-3.7-flash",
@@ -109077,6 +110925,12 @@ This page does not store secrets, raw prompts, raw completions, or provider resp
       "outcome": "not_called",
       "provider": "sambanova"
     },
+    "db832d2ac9f99cd1e8f7eb7534385bc8e02c61381afc8947fc22163d7d431876": {
+      "attempt_finished_at": "2026-08-22T23:00:10Z",
+      "model": "DeepSeek-V3.2",
+      "outcome": "not_called",
+      "provider": "sambanova"
+    },
     "db83496dedc82abcc3e1e01dcef32606ec02272d2233e606b513d5cdc41cba46": {
       "attempt_finished_at": "2026-08-20T16:15:24Z",
       "model": "DeepSeek-V3.1",
@@ -109127,6 +110981,12 @@ This page does not store secrets, raw prompts, raw completions, or provider resp
     },
     "db949f8ed52de5ebd0a055aac62efceb415805388184e3096de078a039404d5f": {
       "attempt_finished_at": "2026-08-22T14:33:19Z",
+      "model": "gemini-3.7-flash",
+      "outcome": "not_called",
+      "provider": "gemini"
+    },
+    "db95ed155759f763585db4cc42cd8f0f23b815835f543b660ab8a61834823ada": {
+      "attempt_finished_at": "2026-08-22T23:00:07Z",
       "model": "gemini-3.7-flash",
       "outcome": "not_called",
       "provider": "gemini"
@@ -109251,6 +111111,12 @@ This page does not store secrets, raw prompts, raw completions, or provider resp
       "outcome": "provider_failure",
       "provider": "openrouter"
     },
+    "dbce1e6d3475eb4885e800e849e0ba845d399104f20f1b7d052683eaa51245e5": {
+      "attempt_finished_at": "2026-08-22T23:00:07Z",
+      "model": "gemini-3.7-flash",
+      "outcome": "not_called",
+      "provider": "gemini"
+    },
     "dbcf92df8fe3f29d103a0f2097b9542be9d5c4aa3345d202d754698b280c68ce": {
       "attempt_finished_at": "2026-08-21T09:49:32Z",
       "model": "google/gemma-4-26b-a4b-it:free",
@@ -109304,6 +111170,12 @@ This page does not store secrets, raw prompts, raw completions, or provider resp
       "model": "poolside/laguna-s-2.1:free",
       "outcome": "not_called",
       "provider": "openrouter"
+    },
+    "dbf33866e92b4297287303789c4874da65789b4dd9fd00f7a1ee4ea2433aee89": {
+      "attempt_finished_at": "2026-08-22T23:00:10Z",
+      "model": "DeepSeek-V3.1",
+      "outcome": "not_called",
+      "provider": "sambanova"
     },
     "dbf828f887bebf3af415b487a3093b7fe77f5d11e01a18778b288c87644ccafe": {
       "attempt_finished_at": "2026-08-20T09:58:10Z",
@@ -109731,6 +111603,12 @@ This page does not store secrets, raw prompts, raw completions, or provider resp
       "outcome": "not_called",
       "provider": "sambanova"
     },
+    "dcd202312ce9d47cbaf99999e44d78a145708c5c2fccc8bde85ea74e487fdb6e": {
+      "attempt_finished_at": "2026-08-22T23:00:10Z",
+      "model": "Meta-Llama-3.3-70B-Instruct",
+      "outcome": "not_called",
+      "provider": "sambanova"
+    },
     "dcd38bfe06e1224b3dce693b81d489ff8d269de2f8620fdfe882f14e4eca9a9f": {
       "attempt_finished_at": "2026-08-21T13:57:24Z",
       "model": "gemini-3.6-flash",
@@ -110061,6 +111939,12 @@ This page does not store secrets, raw prompts, raw completions, or provider resp
       "outcome": "not_called",
       "provider": "sambanova"
     },
+    "dd845b3b21e246b960c15b5707e5b339ae00f846a3f3a0ff31b515af10ae617c": {
+      "attempt_finished_at": "2026-08-22T23:00:10Z",
+      "model": "Meta-Llama-3.3-70B-Instruct",
+      "outcome": "not_called",
+      "provider": "sambanova"
+    },
     "dd8589a502f0141566b908ed9582fd08e64c9d19de80dd186fda73da4c3a06d7": {
       "attempt_finished_at": "2026-08-22T05:50:42Z",
       "model": "DeepSeek-V3.1",
@@ -110136,6 +112020,12 @@ This page does not store secrets, raw prompts, raw completions, or provider resp
     "ddb00c55888e1f4dd768b5ed2bb6987ee59bfd3068b36ea4f7f79d60c55d06b3": {
       "attempt_finished_at": "2026-08-22T11:59:24Z",
       "model": "gpt-oss-120b",
+      "outcome": "not_called",
+      "provider": "sambanova"
+    },
+    "ddb507c7e7c958287c86a2c9a587bccef08cdc2d39c9db41bd1ec4bfffc99880": {
+      "attempt_finished_at": "2026-08-22T23:00:10Z",
+      "model": "DeepSeek-V3.1",
       "outcome": "not_called",
       "provider": "sambanova"
     },
@@ -110358,6 +112248,12 @@ This page does not store secrets, raw prompts, raw completions, or provider resp
     "de164b058acbc74110e13f7d546613a29ca94cc364a3ca33844e6f7a71c971c5": {
       "attempt_finished_at": "2026-08-21T21:02:56Z",
       "model": "DeepSeek-V3.2",
+      "outcome": "not_called",
+      "provider": "sambanova"
+    },
+    "de17496b173cf7caf7d2b307cd7f17b91e97c23e132c4a6f4f2b419c73f575f5": {
+      "attempt_finished_at": "2026-08-22T23:00:10Z",
+      "model": "gpt-oss-120b",
       "outcome": "not_called",
       "provider": "sambanova"
     },
@@ -111669,6 +113565,12 @@ This page does not store secrets, raw prompts, raw completions, or provider resp
       "outcome": "not_called",
       "provider": "sambanova"
     },
+    "e0c7cb51ce1e1eebbda195716a582fc6de8144beb4b1f121fb75aee587c156e0": {
+      "attempt_finished_at": "2026-08-22T23:00:10Z",
+      "model": "gpt-oss-120b",
+      "outcome": "not_called",
+      "provider": "sambanova"
+    },
     "e0ca5464a71a026e18bd2021e40c6743bb77ecae0e94da76c8d02dde48d6a101": {
       "attempt_finished_at": "2026-08-22T10:35:13Z",
       "model": "DeepSeek-V3.1",
@@ -111873,6 +113775,12 @@ This page does not store secrets, raw prompts, raw completions, or provider resp
       "outcome": "not_called",
       "provider": "openrouter"
     },
+    "e126a34369598b7b8903d0eb81a6a33e8c9df3b53b18c87518c434c011acc08d": {
+      "attempt_finished_at": "2026-08-22T23:00:10Z",
+      "model": "DeepSeek-V3.2",
+      "outcome": "not_called",
+      "provider": "sambanova"
+    },
     "e12a6796582ff1d8370d618dfb8e07e984f920e287b7ea8641468436f213e750": {
       "attempt_finished_at": "2026-08-22T13:39:58Z",
       "model": "DeepSeek-V3.2",
@@ -112053,6 +113961,12 @@ This page does not store secrets, raw prompts, raw completions, or provider resp
       "outcome": "not_called",
       "provider": "sambanova"
     },
+    "e1938bfda663f9a3fdc0558cd6794b65899ce5ccb929b201edd7f547c65854bb": {
+      "attempt_finished_at": "2026-08-22T23:00:10Z",
+      "model": "Meta-Llama-3.3-70B-Instruct",
+      "outcome": "not_called",
+      "provider": "sambanova"
+    },
     "e19700adb2db366c183474f44b0f7ff2f0d8bab14846cd9fea6be57cf1398e4b": {
       "attempt_finished_at": "2026-08-20T14:49:30Z",
       "model": "Meta-Llama-3.3-70B-Instruct",
@@ -112212,6 +114126,12 @@ This page does not store secrets, raw prompts, raw completions, or provider resp
     "e1c70c855c1236d2766d73091d183074c087a583333ab330409a6acde482f6b4": {
       "attempt_finished_at": "2026-08-22T21:59:13Z",
       "model": "gpt-oss-120b",
+      "outcome": "not_called",
+      "provider": "sambanova"
+    },
+    "e1c88fa549bce168ca356201c1da86c6fd9c5f0f9407afc2e1c136add39c1bbc": {
+      "attempt_finished_at": "2026-08-22T23:00:10Z",
+      "model": "DeepSeek-V3.1",
       "outcome": "not_called",
       "provider": "sambanova"
     },
@@ -113049,6 +114969,12 @@ This page does not store secrets, raw prompts, raw completions, or provider resp
       "outcome": "not_called",
       "provider": "gemini"
     },
+    "e363adf801d8b1994cd50e3a8e8ffd8ccd36d9e5a3a4dae7dbc0a6337dcbbc7e": {
+      "attempt_finished_at": "2026-08-22T23:00:10Z",
+      "model": "gpt-oss-120b",
+      "outcome": "not_called",
+      "provider": "sambanova"
+    },
     "e364ff044d5c4caa8fdf40787c63ba4b40b76b75911dd7d5c2ad2b08c722c116": {
       "attempt_finished_at": "2026-08-20T09:52:58Z",
       "model": "openai/gpt-oss-20b",
@@ -113084,6 +115010,18 @@ This page does not store secrets, raw prompts, raw completions, or provider resp
       "model": "gemini-3.7-flash",
       "outcome": "not_called",
       "provider": "gemini"
+    },
+    "e374080438668b077304546af8f0ae55f9dc01a3100071227f54670cd895ac1c": {
+      "attempt_finished_at": "2026-08-22T23:00:10Z",
+      "model": "Meta-Llama-3.3-70B-Instruct",
+      "outcome": "not_called",
+      "provider": "sambanova"
+    },
+    "e37e37fab94f01000389ed17c5599a1b64cec8ee511bdc7f9660de57f73ebdf9": {
+      "attempt_finished_at": "2026-08-22T23:00:10Z",
+      "model": "DeepSeek-V3.1",
+      "outcome": "not_called",
+      "provider": "sambanova"
     },
     "e382e649b31427291f28a0c4a1d796ae34672c49610db374756d3d4950d8df81": {
       "attempt_finished_at": "2026-08-21T19:34:22Z",
@@ -113307,6 +115245,12 @@ This page does not store secrets, raw prompts, raw completions, or provider resp
       "outcome": "not_called",
       "provider": "sambanova"
     },
+    "e40888499b4ce0c28d6131c688d4f8d3deef9a6346c5bd2bbb46d2107daa78c8": {
+      "attempt_finished_at": "2026-08-22T23:00:10Z",
+      "model": "DeepSeek-V3.1",
+      "outcome": "not_called",
+      "provider": "sambanova"
+    },
     "e414d0a3adb6f8915b7aec63d57d839d6dbf4fad82b58e3d30ec048bba720afa": {
       "attempt_finished_at": "2026-08-22T01:57:33Z",
       "model": "gemini-3.7-flash",
@@ -113402,6 +115346,12 @@ This page does not store secrets, raw prompts, raw completions, or provider resp
       "model": "gemini-3-flash-preview",
       "outcome": "not_called",
       "provider": "gemini"
+    },
+    "e42bef10ff5753e2f401fa199cdc60d400f2699779aeb8a685ffc14e2bba0316": {
+      "attempt_finished_at": "2026-08-22T23:00:10Z",
+      "model": "DeepSeek-V3.2",
+      "outcome": "not_called",
+      "provider": "sambanova"
     },
     "e42e3c074fc74c8c81973882b56c45d6d178d0e2fc969b83d25a7710d54b88fa": {
       "attempt_finished_at": "2026-08-21T17:15:01Z",
@@ -113720,6 +115670,12 @@ This page does not store secrets, raw prompts, raw completions, or provider resp
       "model": "gemini-3.7-flash",
       "outcome": "not_called",
       "provider": "gemini"
+    },
+    "e4bbe4362f2213247bb39aabc8a9557a4baf26cf08f09ac85feb46776ccc964a": {
+      "attempt_finished_at": "2026-08-22T23:00:10Z",
+      "model": "DeepSeek-V3.1",
+      "outcome": "not_called",
+      "provider": "sambanova"
     },
     "e4bcf95594118c7af163de7248acbc7a4d0e4d0990153411961a2ffa561b1fca": {
       "attempt_finished_at": "2026-08-22T03:27:35Z",
@@ -114447,6 +116403,12 @@ This page does not store secrets, raw prompts, raw completions, or provider resp
       "outcome": "not_called",
       "provider": "gemini"
     },
+    "e648a61ccf3514f46a5ad6d0994c61db1b93a2c8ecaaa7e4162c131dcd9b5a7d": {
+      "attempt_finished_at": "2026-08-22T23:00:10Z",
+      "model": "DeepSeek-V3.2",
+      "outcome": "not_called",
+      "provider": "sambanova"
+    },
     "e64b53abdc6b459812cbcc0861a6c9bcd7672d030daa4342ac835d91c3ec5677": {
       "attempt_finished_at": "2026-08-21T07:54:40Z",
       "model": "Meta-Llama-3.3-70B-Instruct",
@@ -114542,6 +116504,12 @@ This page does not store secrets, raw prompts, raw completions, or provider resp
       "model": "gemini-3-flash-preview",
       "outcome": "valid",
       "provider": "gemini"
+    },
+    "e671182c40b984a499b3feff7f4d68bf403f6b7e888adc4c35e46ae3d8972660": {
+      "attempt_finished_at": "2026-08-22T23:00:10Z",
+      "model": "Meta-Llama-3.3-70B-Instruct",
+      "outcome": "not_called",
+      "provider": "sambanova"
     },
     "e6722a663a8cf935d13778b49b306ac412a6e91fe7e8b8109cfd304ad7b25bb7": {
       "attempt_finished_at": "2026-08-22T21:59:13Z",
@@ -115383,6 +117351,18 @@ This page does not store secrets, raw prompts, raw completions, or provider resp
       "outcome": "not_called",
       "provider": "sambanova"
     },
+    "e82c60c89dc44a78087c25256c509602cd19b2974771ae221daf6b021496538d": {
+      "attempt_finished_at": "2026-08-22T23:00:07Z",
+      "model": "gemini-3.7-flash",
+      "outcome": "not_called",
+      "provider": "gemini"
+    },
+    "e82cd42f5d88771925d7e15d5a80de113c91493f32493b80456564cf3ec696ff": {
+      "attempt_finished_at": "2026-08-22T23:00:10Z",
+      "model": "Meta-Llama-3.3-70B-Instruct",
+      "outcome": "not_called",
+      "provider": "sambanova"
+    },
     "e82cdd3ddbb1ec124a7da2c066779f8fe9ab163198fc0296bd84a49183d42d87": {
       "attempt_finished_at": "2026-08-20T12:03:54Z",
       "model": "gpt-oss-120b",
@@ -115863,6 +117843,12 @@ This page does not store secrets, raw prompts, raw completions, or provider resp
       "outcome": "not_called",
       "provider": "sambanova"
     },
+    "e9310fdba0d8d28b845b7ba63348ed8cf33ecba8e4c4735100343258c6d9f7f6": {
+      "attempt_finished_at": "2026-08-22T23:00:10Z",
+      "model": "gpt-oss-120b",
+      "outcome": "not_called",
+      "provider": "sambanova"
+    },
     "e932863b7d135095be00e8759d8641c4f8c6aa39d101ee9064fc4f0332283af8": {
       "attempt_finished_at": "2026-08-20T09:58:03Z",
       "model": "gemma-4-31B-it",
@@ -116205,6 +118191,12 @@ This page does not store secrets, raw prompts, raw completions, or provider resp
       "outcome": "provider_failure",
       "provider": "sambanova"
     },
+    "e9db67fbde720675899033239769a420eed81908618a4ab00eb9e6309d1ba219": {
+      "attempt_finished_at": "2026-08-22T23:00:10Z",
+      "model": "DeepSeek-V3.1",
+      "outcome": "not_called",
+      "provider": "sambanova"
+    },
     "e9dcfe19d57fa7f99a14d8bc75beb91ae6ed51a2369a8ce78ebdd68e9cbd3815": {
       "attempt_finished_at": "2026-08-22T05:14:28Z",
       "model": "gemini-2.5-flash",
@@ -116304,6 +118296,12 @@ This page does not store secrets, raw prompts, raw completions, or provider resp
     "ea08852d8cc7c8b49267257163e4c6cee719855200346b92ae0321a880cd5aef": {
       "attempt_finished_at": "2026-08-22T01:55:26Z",
       "model": "gemini-2.5-flash",
+      "outcome": "not_called",
+      "provider": "gemini"
+    },
+    "ea11f14cb530748ebae7608063b048e899b746900a5cdb88c8a9acd5c90cdccb": {
+      "attempt_finished_at": "2026-08-22T23:00:07Z",
+      "model": "gemini-3.7-flash",
       "outcome": "not_called",
       "provider": "gemini"
     },
@@ -116445,6 +118443,12 @@ This page does not store secrets, raw prompts, raw completions, or provider resp
       "outcome": "not_called",
       "provider": "sambanova"
     },
+    "ea65ffd9ead1a9ada32e54669a3c3d8e6d908f593ec1f0db35d5e2e0a585dad1": {
+      "attempt_finished_at": "2026-08-22T23:00:10Z",
+      "model": "Meta-Llama-3.3-70B-Instruct",
+      "outcome": "not_called",
+      "provider": "sambanova"
+    },
     "ea67490d0d51d6f70cfb463b83198ede2d8384eafdb8d2c67a8b838bc6db7dd0": {
       "attempt_finished_at": "2026-08-21T01:53:50Z",
       "model": "DeepSeek-V3.2",
@@ -116570,6 +118574,12 @@ This page does not store secrets, raw prompts, raw completions, or provider resp
       "model": "poolside/laguna-xs-2.1:free",
       "outcome": "not_called",
       "provider": "openrouter"
+    },
+    "eab3d65b7479b04fd7ed1c759f2499ef201487d6b341cb7f367876c5557c11cf": {
+      "attempt_finished_at": "2026-08-22T23:00:10Z",
+      "model": "Meta-Llama-3.3-70B-Instruct",
+      "outcome": "not_called",
+      "provider": "sambanova"
     },
     "eab52140c77390b23281cd38668367ce543b278590189a774e3898d08735a70c": {
       "attempt_finished_at": "2026-08-22T04:46:36Z",
@@ -117021,6 +119031,12 @@ This page does not store secrets, raw prompts, raw completions, or provider resp
       "outcome": "not_called",
       "provider": "openrouter"
     },
+    "eb8a01868efaac15da07667a0554e0955e1d8910547d64e07dec0d288bd9c991": {
+      "attempt_finished_at": "2026-08-22T23:00:07Z",
+      "model": "gemini-3.7-flash",
+      "outcome": "not_called",
+      "provider": "gemini"
+    },
     "eb8da9257e1184584ea5495a073026a0b5da4d0e5121ac916d747d7e703b9904": {
       "attempt_finished_at": "2026-08-22T15:00:38Z",
       "model": "gpt-oss-120b",
@@ -117453,6 +119469,12 @@ This page does not store secrets, raw prompts, raw completions, or provider resp
       "outcome": "valid",
       "provider": "gemini"
     },
+    "ec37f3f3115d7a8cc2a02a7518f3683208a6042873d5508318de81a6bf9c3306": {
+      "attempt_finished_at": "2026-08-22T23:00:10Z",
+      "model": "Meta-Llama-3.3-70B-Instruct",
+      "outcome": "not_called",
+      "provider": "sambanova"
+    },
     "ec393c4ac4c0d7beddaf1d47307f32d2e460306cbb07b0266e22884053d00ed6": {
       "attempt_finished_at": "2026-08-22T06:56:00Z",
       "model": "gpt-oss-120b",
@@ -117813,6 +119835,18 @@ This page does not store secrets, raw prompts, raw completions, or provider resp
       "outcome": "not_called",
       "provider": "sambanova"
     },
+    "ecf8ad0434ebad0076f055d3cfe089946c9d08e70f356e6ec5686c8d9ca669b8": {
+      "attempt_finished_at": "2026-08-22T23:00:10Z",
+      "model": "DeepSeek-V3.2",
+      "outcome": "not_called",
+      "provider": "sambanova"
+    },
+    "ecf8e5f76438041c4a9b96a4ff07fed2e574253ece882496c20a0e47aac0bf77": {
+      "attempt_finished_at": "2026-08-22T23:00:10Z",
+      "model": "Meta-Llama-3.3-70B-Instruct",
+      "outcome": "not_called",
+      "provider": "sambanova"
+    },
     "ecfebee626e04e8639a62d569385d21356c773b95fc6861ee0145d838e7c25af": {
       "attempt_finished_at": "2026-08-22T17:59:35Z",
       "model": "google/gemma-4-31b-it:free",
@@ -117827,6 +119861,12 @@ This page does not store secrets, raw prompts, raw completions, or provider resp
     },
     "ed0c3d80fdef229bdfd22b3be7d899a1dafd5f639ed2f941cda619c6fbbaeb9d": {
       "attempt_finished_at": "2026-08-21T21:02:56Z",
+      "model": "gpt-oss-120b",
+      "outcome": "not_called",
+      "provider": "sambanova"
+    },
+    "ed1373bb6964e2f41809a3d6de3eb2c6a0e245b55b902327fb98b71c8d9c212b": {
+      "attempt_finished_at": "2026-08-22T23:00:10Z",
       "model": "gpt-oss-120b",
       "outcome": "not_called",
       "provider": "sambanova"
@@ -118083,6 +120123,12 @@ This page does not store secrets, raw prompts, raw completions, or provider resp
       "outcome": "not_called",
       "provider": "sambanova"
     },
+    "ed8afdbe8acfd8485714708f0bcc4863ec2c63787f3cf7cf2cca227a78b6b334": {
+      "attempt_finished_at": "2026-08-22T23:00:10Z",
+      "model": "DeepSeek-V3.1",
+      "outcome": "not_called",
+      "provider": "sambanova"
+    },
     "ed8c8211f932a9b11bb4959f8651b11f97b1f3bdc8178683a99165f36a62e393": {
       "attempt_finished_at": "2026-08-20T09:53:51Z",
       "model": "MiniMax-M2.7",
@@ -118106,6 +120152,12 @@ This page does not store secrets, raw prompts, raw completions, or provider resp
       "model": "gemini-3-flash-preview",
       "outcome": "not_called",
       "provider": "gemini"
+    },
+    "ed9d4198657b0199dfc01b2d8b0bcaf181c9e3482230b1d3dfde68e197b22c25": {
+      "attempt_finished_at": "2026-08-22T23:00:10Z",
+      "model": "DeepSeek-V3.2",
+      "outcome": "not_called",
+      "provider": "sambanova"
     },
     "ed9e0f159e8c50fce3f2f206ee4f3db006e95a28c4328826b9c1a89de3369116": {
       "attempt_finished_at": "2026-08-22T15:00:38Z",
@@ -118326,6 +120378,12 @@ This page does not store secrets, raw prompts, raw completions, or provider resp
     "edf110289c1c3a62696d1aea5019bdeee3158e65a74580968d383f759b881239": {
       "attempt_finished_at": "2026-08-22T13:39:58Z",
       "model": "gpt-oss-120b",
+      "outcome": "not_called",
+      "provider": "sambanova"
+    },
+    "edf344498b36de1714a033d4e2b447a7cd459dc13d025589945d4da54e07f717": {
+      "attempt_finished_at": "2026-08-22T23:00:10Z",
+      "model": "Meta-Llama-3.3-70B-Instruct",
       "outcome": "not_called",
       "provider": "sambanova"
     },
@@ -119211,6 +121269,12 @@ This page does not store secrets, raw prompts, raw completions, or provider resp
       "outcome": "not_called",
       "provider": "sambanova"
     },
+    "efbfb4503216097848fe134e645f7c36c5f78c1eaca0986e576e4ec7798f0ffc": {
+      "attempt_finished_at": "2026-08-22T23:00:10Z",
+      "model": "Meta-Llama-3.3-70B-Instruct",
+      "outcome": "not_called",
+      "provider": "sambanova"
+    },
     "efbfba0c931e73296f95a298b7630603a9733aef56c9e2b6bbb40ee54d52d4b7": {
       "attempt_finished_at": "2026-08-21T01:53:50Z",
       "model": "gpt-oss-120b",
@@ -119298,6 +121362,12 @@ This page does not store secrets, raw prompts, raw completions, or provider resp
     "efdae2b07dd1d71f167e5def73ee8ca0492c3d244d6eac983a084ed23364d03e": {
       "attempt_finished_at": "2026-08-21T00:01:37Z",
       "model": "Meta-Llama-3.3-70B-Instruct",
+      "outcome": "not_called",
+      "provider": "sambanova"
+    },
+    "efe6eda78d7e9ec322cdd969183e9d809eeb2e1c4245f3490513f03780021ec7": {
+      "attempt_finished_at": "2026-08-22T23:00:10Z",
+      "model": "gpt-oss-120b",
       "outcome": "not_called",
       "provider": "sambanova"
     },
@@ -120597,6 +122667,12 @@ This page does not store secrets, raw prompts, raw completions, or provider resp
       "outcome": "not_called",
       "provider": "sambanova"
     },
+    "f294cd69ccafa6af4890f36e62224ece47c3a35d345ba21ef3a3b5192a10ba1b": {
+      "attempt_finished_at": "2026-08-22T23:00:10Z",
+      "model": "Meta-Llama-3.3-70B-Instruct",
+      "outcome": "not_called",
+      "provider": "sambanova"
+    },
     "f295d92072b248b04646d9a9b83815c1f987a70303b2391d039f08dab5c37c97": {
       "attempt_finished_at": "2026-08-21T17:15:01Z",
       "model": "DeepSeek-V3.2",
@@ -120647,6 +122723,12 @@ This page does not store secrets, raw prompts, raw completions, or provider resp
     },
     "f2c13e93803af2b0958bbe7543428f06ab2998c8b916b5c0c02b86930cabd3bf": {
       "attempt_finished_at": "2026-08-22T10:35:13Z",
+      "model": "DeepSeek-V3.2",
+      "outcome": "not_called",
+      "provider": "sambanova"
+    },
+    "f2c6f2af15f79c4938a5b4d025b7e130535ea3c3d0575290a614c3c55af4053d": {
+      "attempt_finished_at": "2026-08-22T23:00:10Z",
       "model": "DeepSeek-V3.2",
       "outcome": "not_called",
       "provider": "sambanova"
@@ -121389,6 +123471,12 @@ This page does not store secrets, raw prompts, raw completions, or provider resp
       "outcome": "not_called",
       "provider": "groq"
     },
+    "f4180d9fd23d381c7624af420a6515dd5f9c463ac634930b32684426a5f6f0a8": {
+      "attempt_finished_at": "2026-08-22T23:00:07Z",
+      "model": "gemini-3.7-flash",
+      "outcome": "not_called",
+      "provider": "gemini"
+    },
     "f41bbfffc2409fd5898c1f757e938bf0c529155411b7f3f48f0944203e658e4c": {
       "attempt_finished_at": "2026-08-20T22:40:00Z",
       "model": "poolside/laguna-s-2.1:free",
@@ -121466,6 +123554,12 @@ This page does not store secrets, raw prompts, raw completions, or provider resp
       "model": "gemini-3.7-flash",
       "outcome": "not_called",
       "provider": "gemini"
+    },
+    "f43b542b6ced1f7d65af556d1d2127a4a20b8deab621e619f6674de4907e015e": {
+      "attempt_finished_at": "2026-08-22T23:00:10Z",
+      "model": "gpt-oss-120b",
+      "outcome": "not_called",
+      "provider": "sambanova"
     },
     "f43f41c246d9569264547a0e0aae04eff63a5bdc5ddad105527274b08176fda5": {
       "attempt_finished_at": "2026-08-21T14:48:44Z",
@@ -122148,6 +124242,12 @@ This page does not store secrets, raw prompts, raw completions, or provider resp
     "f5a25789c009384b7df1ff8af3a84a88d0dc033cad4da56c15e38352593bb044": {
       "attempt_finished_at": "2026-08-22T16:36:17Z",
       "model": "DeepSeek-V3.1",
+      "outcome": "not_called",
+      "provider": "sambanova"
+    },
+    "f5a26b455e0849c0dd7e32ac68c8fef29e967269c29b2541c4b0524f35440f6e": {
+      "attempt_finished_at": "2026-08-22T23:00:10Z",
+      "model": "DeepSeek-V3.2",
       "outcome": "not_called",
       "provider": "sambanova"
     },
@@ -123489,6 +125589,12 @@ This page does not store secrets, raw prompts, raw completions, or provider resp
       "outcome": "not_called",
       "provider": "gemini"
     },
+    "f83f18c35a7292f82cc32a052a639da6779edb2c1013d9193703eddd80d8d615": {
+      "attempt_finished_at": "2026-08-22T23:00:07Z",
+      "model": "gemini-3.7-flash",
+      "outcome": "not_called",
+      "provider": "gemini"
+    },
     "f840ed34e46ab50665d158232e5bf6c0812d6a172380901c0608339196f80af4": {
       "attempt_finished_at": "2026-08-22T12:57:41Z",
       "model": "gemini-3.7-flash",
@@ -123536,6 +125642,12 @@ This page does not store secrets, raw prompts, raw completions, or provider resp
       "model": "nvidia/nemotron-nano-9b-v2:free",
       "outcome": "not_called",
       "provider": "openrouter"
+    },
+    "f85fb7d0cbaf854334ed8dfa711a1ed514169d4195c210c59d3c9d08432ce085": {
+      "attempt_finished_at": "2026-08-22T23:00:10Z",
+      "model": "DeepSeek-V3.2",
+      "outcome": "not_called",
+      "provider": "sambanova"
     },
     "f865b2ac135829b53d3b2acd51a9ef1c658ab78fe652e145019047db2454605b": {
       "attempt_finished_at": "2026-08-22T13:39:58Z",
@@ -124497,6 +126609,12 @@ This page does not store secrets, raw prompts, raw completions, or provider resp
       "outcome": "not_called",
       "provider": "gemini"
     },
+    "fa17cbea9ef464d7369827b6f3b0db6348ed2493cebf39cfe08d479e5fcea546": {
+      "attempt_finished_at": "2026-08-22T23:00:10Z",
+      "model": "DeepSeek-V3.2",
+      "outcome": "not_called",
+      "provider": "sambanova"
+    },
     "fa1bab101dc83d91239784846b7d43fbf64966a6df9d0698f7c7d05bb95ad647": {
       "attempt_finished_at": "2026-08-22T16:36:51Z",
       "model": "gemini-3.7-flash",
@@ -124923,6 +127041,12 @@ This page does not store secrets, raw prompts, raw completions, or provider resp
       "outcome": "provider_failure",
       "provider": "sambanova"
     },
+    "fb0113d06eef978384ce1ce54439358e177c17ea228dc151137a7b20f4c33039": {
+      "attempt_finished_at": "2026-08-22T23:00:10Z",
+      "model": "DeepSeek-V3.2",
+      "outcome": "not_called",
+      "provider": "sambanova"
+    },
     "fb09a556cd544dcf38f4a5bf6274972b5a274df3a834f23d32d195a9df6038e6": {
       "attempt_finished_at": "2026-08-21T20:06:58Z",
       "model": "gemini-2.5-flash",
@@ -124994,6 +127118,12 @@ This page does not store secrets, raw prompts, raw completions, or provider resp
       "model": "gemini-3.7-flash",
       "outcome": "not_called",
       "provider": "gemini"
+    },
+    "fb3a3f63eb30ae6b381066b44fbfb4815726a735c020d846a3074eaa051d2ac2": {
+      "attempt_finished_at": "2026-08-22T23:00:10Z",
+      "model": "DeepSeek-V3.2",
+      "outcome": "not_called",
+      "provider": "sambanova"
     },
     "fb3b97a6e7e9dfbd39abd4055e8808d6a3829fd621acadb8599377f19577399b": {
       "attempt_finished_at": "2026-08-22T08:02:37Z",
@@ -125114,6 +127244,12 @@ This page does not store secrets, raw prompts, raw completions, or provider resp
       "model": "poolside/laguna-s-2.1:free",
       "outcome": "not_called",
       "provider": "openrouter"
+    },
+    "fb68ce40ea68f2902126a0812c3d24279ce7d62f6b4158de90dfd068f56a1b8a": {
+      "attempt_finished_at": "2026-08-22T23:00:10Z",
+      "model": "DeepSeek-V3.1",
+      "outcome": "not_called",
+      "provider": "sambanova"
     },
     "fb6bf2be974c61c4103a55a0677967ce2d297ff651102097889f7aa65829fc3b": {
       "attempt_finished_at": "2026-08-22T00:01:02Z",
@@ -125262,6 +127398,12 @@ This page does not store secrets, raw prompts, raw completions, or provider resp
     "fbb73670a256bd5e44aa507c89a7b586cf213b06106c53e139e6301f58ec7d99": {
       "attempt_finished_at": "2026-08-20T17:40:21Z",
       "model": "gpt-oss-120b",
+      "outcome": "not_called",
+      "provider": "sambanova"
+    },
+    "fbbec65d924f8a29ab8bf9331e0365d84b60d9daa16ca4a23e42bbbb72645edc": {
+      "attempt_finished_at": "2026-08-22T23:00:10Z",
+      "model": "DeepSeek-V3.2",
       "outcome": "not_called",
       "provider": "sambanova"
     },
@@ -125448,6 +127590,12 @@ This page does not store secrets, raw prompts, raw completions, or provider resp
     "fc29fe2cb2996ec120af773e87b92ca806944688c5d99682b9644b0247fce9fd": {
       "attempt_finished_at": "2026-08-22T09:05:18Z",
       "model": "Meta-Llama-3.3-70B-Instruct",
+      "outcome": "not_called",
+      "provider": "sambanova"
+    },
+    "fc2b3b23867550e3736917f05844be225a7fc17aa812d39732d5cbf5cbef31ad": {
+      "attempt_finished_at": "2026-08-22T23:00:10Z",
+      "model": "DeepSeek-V3.1",
       "outcome": "not_called",
       "provider": "sambanova"
     },
@@ -126627,6 +128775,12 @@ This page does not store secrets, raw prompts, raw completions, or provider resp
       "outcome": "not_called",
       "provider": "sambanova"
     },
+    "fe27827f920cf79fbaf85d6e06a07d526e991773da41416b821de25a49193534": {
+      "attempt_finished_at": "2026-08-22T23:00:10Z",
+      "model": "Meta-Llama-3.3-70B-Instruct",
+      "outcome": "not_called",
+      "provider": "sambanova"
+    },
     "fe29346c8b0c167b18d8d760ee3d331b5ff19285d91ec2facd5f925758f25143": {
       "attempt_finished_at": "2026-08-22T20:35:01Z",
       "model": "Meta-Llama-3.3-70B-Instruct",
@@ -126915,6 +129069,12 @@ This page does not store secrets, raw prompts, raw completions, or provider resp
       "outcome": "not_called",
       "provider": "gemini"
     },
+    "feb7080825093704074ae60da29f67525cce3b760c0963e94b74029455438472": {
+      "attempt_finished_at": "2026-08-22T23:00:10Z",
+      "model": "gpt-oss-120b",
+      "outcome": "not_called",
+      "provider": "sambanova"
+    },
     "feb715da0494fb7680e5b5646a2c798a91dc3add061430f03a7d2f9082d0d068": {
       "attempt_finished_at": "2026-08-22T16:36:17Z",
       "model": "DeepSeek-V3.2",
@@ -127016,6 +129176,12 @@ This page does not store secrets, raw prompts, raw completions, or provider resp
       "model": "DeepSeek-V3.1",
       "outcome": "not_called",
       "provider": "sambanova"
+    },
+    "fee833496cd892b743d7dbd1d11052e36bb784fb4c32f95ddf77d5186fbc8b78": {
+      "attempt_finished_at": "2026-08-22T23:00:07Z",
+      "model": "gemini-3.7-flash",
+      "outcome": "not_called",
+      "provider": "gemini"
     },
     "fee91d51b87bd04fbae4245f21daa62e3c1f60dd33e902bbfb0c33943bd512d3": {
       "attempt_finished_at": "2026-08-21T21:02:56Z",
