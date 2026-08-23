@@ -1,0 +1,73 @@
+{
+  "aggregation": {
+    "source_event_sha256": "18f644c85c7ef860c4448289ac2eef3f5dc8cb2bca1ef37e2a1751254473a2a0",
+    "transport_filename": "3da57e16660f187576619fccdef59bd0fd4a1cebf901a8202b484fd614486179.json"
+  },
+  "attempt_finished_at": "2026-08-23T21:59:28Z",
+  "attempt_id": "3da57e16660f187576619fccdef59bd0fd4a1cebf901a8202b484fd614486179",
+  "attempt_started_at": "2026-08-23T21:59:23Z",
+  "event_version": 1,
+  "model": "gpt-oss-120b",
+  "outcome": "provider_failure",
+  "output_artifact": null,
+  "output_sha256": null,
+  "provider": "sambanova",
+  "provider_attempts": 1,
+  "quota_observations": [
+    {
+      "call_source": "signal",
+      "event_id": "01787522368353405580-19594305-b9c8-4e9f-9ab5-65753c1cd079",
+      "failure": {
+        "diagnostic": "Error code: 429 - {'error': {'message': 'Rate limit exceeded', 'type': 'rate_limit_exceeded', 'param': None, 'code': None}, 'request_id': 'da5mqg1gldmk33aorf80'} None {'message': 'Rate limit exceeded', 'type': 'rate_limit_exceeded', 'param': None, 'code': None}",
+        "kind": "rate_or_quota_limited",
+        "quota_group_ids": [
+          "sambanova:gpt-oss-120b"
+        ],
+        "retry_after_seconds": 3600,
+        "retry_not_before": "2026-08-23T22:59:28Z",
+        "retry_source": "inferred",
+        "retryable_immediately": false,
+        "scope": "quota_group"
+      },
+      "headers": {
+        "connection": "keep-alive",
+        "content-security-policy": "default-src 'none'",
+        "content-type": "application/json; charset=utf-8",
+        "date": "Sun, 23 Aug 2026 21:59:28 GMT",
+        "permissions-policy": "camera=(), microphone=(), geolocation=()",
+        "referrer-policy": "strict-origin-when-cross-origin",
+        "strict-transport-security": "max-age=31536000; includeSubDomains",
+        "transfer-encoding": "chunked",
+        "x-content-type-options": "nosniff",
+        "x-frame-options": "SAMEORIGIN",
+        "x-request-id": "da5mqg1gldmk33aorf80"
+      },
+      "model": "gpt-oss-120b",
+      "observed_at": "2026-08-23T21:59:28Z",
+      "outcome": "failure",
+      "provider": "sambanova",
+      "request_sent": true,
+      "schema_version": 1,
+      "task_id": "032a1af630b79e0304128bdd3a63d7af4b06f151b5174880cb678de58bdfed25",
+      "usage": {
+        "cached_tokens": null,
+        "input_tokens": null,
+        "output_tokens": null,
+        "reasoning_tokens": null,
+        "total_tokens": null
+      }
+    }
+  ],
+  "runner_returncode": 1,
+  "signal_count": 0,
+  "task_id": "032a1af630b79e0304128bdd3a63d7af4b06f151b5174880cb678de58bdfed25",
+  "usage": {
+    "cached_tokens": null,
+    "input_tokens": null,
+    "output_tokens": null,
+    "reasoning_tokens": null,
+    "total_tokens": null
+  },
+  "worker_id": "sambanova",
+  "workflow_run_id": "32669121827-1"
+}
