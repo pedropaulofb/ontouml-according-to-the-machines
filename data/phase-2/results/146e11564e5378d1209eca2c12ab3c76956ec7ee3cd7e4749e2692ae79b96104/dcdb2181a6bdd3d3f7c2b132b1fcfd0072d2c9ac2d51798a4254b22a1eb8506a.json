@@ -1,0 +1,29 @@
+{
+  "aggregation": {
+    "source_event_sha256": "91c99de8f2ea953a6e05f6c094e820e451ac49f455683069d9448e25bc5af507",
+    "transport_filename": "dcdb2181a6bdd3d3f7c2b132b1fcfd0072d2c9ac2d51798a4254b22a1eb8506a.json"
+  },
+  "attempt_finished_at": "2026-08-23T15:02:12Z",
+  "attempt_id": "dcdb2181a6bdd3d3f7c2b132b1fcfd0072d2c9ac2d51798a4254b22a1eb8506a",
+  "attempt_started_at": "2026-08-23T15:02:12Z",
+  "event_version": 1,
+  "model": "google/gemma-4-31b-it:free",
+  "outcome": "not_called",
+  "output_artifact": null,
+  "output_sha256": null,
+  "provider": "openrouter",
+  "provider_attempts": 0,
+  "quota_observations": [],
+  "reason": "required quota group is exhausted",
+  "signal_count": 0,
+  "task_id": "146e11564e5378d1209eca2c12ab3c76956ec7ee3cd7e4749e2692ae79b96104",
+  "usage": {
+    "cached_tokens": null,
+    "input_tokens": null,
+    "output_tokens": null,
+    "reasoning_tokens": null,
+    "total_tokens": null
+  },
+  "worker_id": "openrouter",
+  "workflow_run_id": "32647203464-1"
+}
