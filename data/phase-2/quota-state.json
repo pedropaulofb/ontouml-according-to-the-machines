@@ -4,7 +4,7 @@
     "daily_period_start": "2026-08-23",
     "source": "configured"
   },
-  "last_updated_at": "2026-08-23T06:04:08Z",
+  "last_updated_at": "2026-08-23T06:57:26Z",
   "processed_event_ids": [
     "01787044575385241714-da20d73c-26ec-462c-a1d4-198de5477b38",
     "01787044578572383222-966719cd-7fa5-46a3-a0d6-3a110180d3b5",
@@ -1318,13 +1318,15 @@
     "01787465035903332954-790ebb27-1e7c-4941-9170-4fb99d1f7ed8",
     "01787465035979223847-324405e4-b998-4002-9c53-44f73d1800e2",
     "01787465042153872684-35ec7a66-c03e-45ee-a886-b616f4a0599f",
-    "01787465048176883967-77eb9cdf-47c0-40f7-9835-cd3741a86feb"
+    "01787465048176883967-77eb9cdf-47c0-40f7-9835-cd3741a86feb",
+    "01787468231731901319-033b82e9-3559-41c3-af58-f16593936a8c",
+    "01787468246833833002-4a52d713-7d52-4c3c-a615-68bfea3b7122"
   ],
   "provider_blocks": {},
   "quota_groups": {
     "gemini-project": {
       "input_tokens_used_day_local": 42103,
-      "last_updated_at": "2026-08-23T06:03:52Z",
+      "last_updated_at": "2026-08-23T06:57:26Z",
       "output_tokens_used_day_local": 3832,
       "provenance": {
         "input_tokens_used_day_local": {
@@ -1359,7 +1361,7 @@
         },
         "requests_used_day_local": {
           "estimated": false,
-          "observed_at": "2026-08-23T06:03:52Z",
+          "observed_at": "2026-08-23T06:57:26Z",
           "source": "locally-counted"
         },
         "reset_at": {
@@ -1398,7 +1400,7 @@
       "requests_limit_day": null,
       "requests_limit_minute": null,
       "requests_remaining_minute": null,
-      "requests_used_day_local": 13,
+      "requests_used_day_local": 15,
       "reset_at": null,
       "retry_not_before": null,
       "scope": "project",
@@ -1926,7 +1928,7 @@
     },
     "gemini:gemini-3.7-flash": {
       "input_tokens_used_day_local": 21742,
-      "last_updated_at": "2026-08-23T06:03:52Z",
+      "last_updated_at": "2026-08-23T06:57:26Z",
       "output_tokens_used_day_local": 1817,
       "provenance": {
         "input_tokens_used_day_local": {
@@ -1961,7 +1963,7 @@
         },
         "requests_used_day_local": {
           "estimated": false,
-          "observed_at": "2026-08-23T06:03:52Z",
+          "observed_at": "2026-08-23T06:57:26Z",
           "source": "locally-counted"
         },
         "reset_at": {
@@ -1971,12 +1973,12 @@
         },
         "retry_not_before": {
           "estimated": false,
-          "observed_at": "2026-08-23T06:03:52Z",
+          "observed_at": "2026-08-23T06:57:26Z",
           "source": "provider-reported"
         },
         "status": {
           "estimated": false,
-          "observed_at": "2026-08-23T06:03:52Z",
+          "observed_at": "2026-08-23T06:57:26Z",
           "source": "provider-reported"
         },
         "tokens_limit_minute": {
@@ -2000,9 +2002,9 @@
       "requests_limit_day": null,
       "requests_limit_minute": null,
       "requests_remaining_minute": null,
-      "requests_used_day_local": 11,
+      "requests_used_day_local": 13,
       "reset_at": null,
-      "retry_not_before": "2026-08-23T06:03:59Z",
+      "retry_not_before": "2026-08-23T06:57:59Z",
       "scope": "model",
       "source": "provider-reported",
       "status": "deferred_quota",
@@ -3898,15 +3900,15 @@
     },
     "gemini:gemini-3.7-flash": {
       "authorized_recheck_task_id": null,
-      "block_reason": null,
-      "block_scope": null,
-      "last_updated_at": "2026-08-23T03:13:09Z",
+      "block_reason": "provider_unavailable",
+      "block_scope": "slot",
+      "last_updated_at": "2026-08-23T06:57:11Z",
       "last_validation_at": null,
       "last_validation_result": null,
       "model": "gemini-3.7-flash",
       "provider": "gemini",
-      "retry_not_before": null,
-      "status": "eligible",
+      "retry_not_before": "2026-08-23T07:57:11Z",
+      "status": "temporarily_unavailable",
       "validation_required": false
     },
     "groq:openai/gpt-oss-120b": {
