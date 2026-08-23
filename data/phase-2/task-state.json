@@ -170370,37 +170370,30 @@
       },
       "last_attempt_at": "2026-08-23T15:32:35Z",
       "last_outcome": {
-        "attempt_id": "3555e4c773f68ceceddea342e409d93242f07f27dc80969e942de719f3a4289c",
-        "finished_at": "2026-08-23T14:02:19Z",
-        "kind": "provider_unavailable",
-        "provider_attempts": 2
-      },
-      "lease": {
         "attempt_id": "e74568c47cdbdebd3331f36808f995c4dfaf7d6ffc9f98436f8712e6d2f92d6b",
-        "attempt_number": 39,
-        "expires_at": "2026-08-23T16:32:35Z",
-        "leased_at": "2026-08-23T15:32:35Z",
-        "worker_id": "gemini",
-        "workflow_run_id": "32648841933-1"
+        "finished_at": "2026-08-23T15:33:17Z",
+        "kind": "valid",
+        "provider_attempts": 1
       },
+      "lease": null,
       "publication": {
-        "last_attempt_at": null,
+        "last_attempt_at": "2026-08-23T15:33:54Z",
         "last_error": null,
-        "payload_path": null,
-        "status": "not_required"
+        "payload_path": "data/phase-2/publications/d30ecb2ed4ea47bcd2b5d2f37adc976dfab79dec6afce26cdb6caae25f177e80.json",
+        "status": "published"
       },
       "result_record": {
-        "event_path": "data/phase-2/results/d30ecb2ed4ea47bcd2b5d2f37adc976dfab79dec6afce26cdb6caae25f177e80/3555e4c773f68ceceddea342e409d93242f07f27dc80969e942de719f3a4289c.json",
-        "output_sha256": null,
-        "validated_output_path": null
+        "event_path": "data/phase-2/results/d30ecb2ed4ea47bcd2b5d2f37adc976dfab79dec6afce26cdb6caae25f177e80/e74568c47cdbdebd3331f36808f995c4dfaf7d6ffc9f98436f8712e6d2f92d6b.json",
+        "output_sha256": "e163a73d62819380011b7a11bbb25d86e99d4bc07632651c14d6ec296f2a6566",
+        "validated_output_path": "data/phase-2/results/d30ecb2ed4ea47bcd2b5d2f37adc976dfab79dec6afce26cdb6caae25f177e80/e74568c47cdbdebd3331f36808f995c4dfaf7d6ffc9f98436f8712e6d2f92d6b.md"
       },
-      "retry_not_before": "2026-08-23T15:02:18Z",
+      "retry_not_before": null,
       "source_metadata": {
         "repository_commit_sha": "295c35f04b97db70b6a1cda4b26c1f8e39b1cba6"
       },
-      "status": "leased",
+      "status": "completed",
       "task_id": "d30ecb2ed4ea47bcd2b5d2f37adc976dfab79dec6afce26cdb6caae25f177e80",
-      "updated_at": "2026-08-23T15:32:35Z",
+      "updated_at": "2026-08-23T15:33:54Z",
       "validation_rejection_count": 0
     },
     "d30f4d2b71ca03c82096fb6e8d0cecb97a7933994b52542f9f6942940aabd754": {
