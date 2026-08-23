@@ -1,0 +1,114 @@
+{
+  "aggregation": {
+    "source_event_sha256": "b98d04342b7a281b3d39a5c9d78f6b6c395294deaa516e1c48a013975e02c8e3",
+    "transport_filename": "fdc1dbef093119e6e8f4f7406b2843d5704dc330dff526bcdd1fa2ca4b292b4c.json"
+  },
+  "attempt_finished_at": "2026-08-23T17:59:00Z",
+  "attempt_id": "fdc1dbef093119e6e8f4f7406b2843d5704dc330dff526bcdd1fa2ca4b292b4c",
+  "attempt_started_at": "2026-08-23T17:58:40Z",
+  "event_version": 1,
+  "model": "gemini-3.7-flash",
+  "outcome": "provider_failure",
+  "output_artifact": null,
+  "output_sha256": null,
+  "provider": "gemini",
+  "provider_attempts": 2,
+  "quota_observations": [
+    {
+      "call_source": "signal",
+      "event_id": "01787507923609692155-aaba3360-32d8-4995-b332-1865a7950ca2",
+      "failure": {
+        "diagnostic": "503 UNAVAILABLE. {'error': {'code': 503, 'message': 'This model is currently experiencing high demand. Spikes in demand are usually temporary. Please try again later.', 'status': 'UNAVAILABLE'}} 503 UNAVAILABLE",
+        "kind": "provider_unavailable",
+        "quota_group_ids": [],
+        "retry_after_seconds": 3600,
+        "retry_not_before": "2026-08-23T18:58:43Z",
+        "retry_source": "inferred",
+        "retryable_immediately": true,
+        "scope": "slot"
+      },
+      "headers": {
+        "alt-svc": "h3=\":443\"; ma=2592000,h3-29=\":443\"; ma=2592000",
+        "content-encoding": "gzip",
+        "content-type": "application/json; charset=UTF-8",
+        "date": "Sun, 23 Aug 2026 17:58:43 GMT",
+        "server": "scaffolding on HTTPServer2",
+        "server-timing": "gfet4t7; dur=1836",
+        "transfer-encoding": "chunked",
+        "vary": "Origin, X-Origin, Referer",
+        "x-content-type-options": "nosniff",
+        "x-frame-options": "SAMEORIGIN",
+        "x-gemini-service-tier": "standard",
+        "x-xss-protection": "0"
+      },
+      "model": "gemini-3.7-flash",
+      "observed_at": "2026-08-23T17:58:43Z",
+      "outcome": "failure",
+      "provider": "gemini",
+      "request_sent": true,
+      "schema_version": 1,
+      "task_id": "2cf66119a77516fc7a2f803f276a5756624da758a2a31a7140936137f6f499b8",
+      "usage": {
+        "cached_tokens": null,
+        "input_tokens": null,
+        "output_tokens": null,
+        "reasoning_tokens": null,
+        "total_tokens": null
+      }
+    },
+    {
+      "call_source": "signal",
+      "event_id": "01787507940609459865-f870988c-afec-4806-a01a-43dc69715cf0",
+      "failure": {
+        "diagnostic": "503 UNAVAILABLE. {'error': {'code': 503, 'message': 'This model is currently experiencing high demand. Spikes in demand are usually temporary. Please try again later.', 'status': 'UNAVAILABLE'}} 503 UNAVAILABLE",
+        "kind": "provider_unavailable",
+        "quota_group_ids": [],
+        "retry_after_seconds": 3600,
+        "retry_not_before": "2026-08-23T18:59:00Z",
+        "retry_source": "inferred",
+        "retryable_immediately": true,
+        "scope": "slot"
+      },
+      "headers": {
+        "alt-svc": "h3=\":443\"; ma=2592000,h3-29=\":443\"; ma=2592000",
+        "content-encoding": "gzip",
+        "content-type": "application/json; charset=UTF-8",
+        "date": "Sun, 23 Aug 2026 17:59:00 GMT",
+        "server": "scaffolding on HTTPServer2",
+        "server-timing": "gfet4t7; dur=1974",
+        "transfer-encoding": "chunked",
+        "vary": "Origin, X-Origin, Referer",
+        "x-content-type-options": "nosniff",
+        "x-frame-options": "SAMEORIGIN",
+        "x-gemini-service-tier": "standard",
+        "x-xss-protection": "0"
+      },
+      "model": "gemini-3.7-flash",
+      "observed_at": "2026-08-23T17:59:00Z",
+      "outcome": "failure",
+      "provider": "gemini",
+      "request_sent": true,
+      "schema_version": 1,
+      "task_id": "2cf66119a77516fc7a2f803f276a5756624da758a2a31a7140936137f6f499b8",
+      "usage": {
+        "cached_tokens": null,
+        "input_tokens": null,
+        "output_tokens": null,
+        "reasoning_tokens": null,
+        "total_tokens": null
+      }
+    }
+  ],
+  "runner_returncode": 1,
+  "signal_count": 0,
+  "task_id": "2cf66119a77516fc7a2f803f276a5756624da758a2a31a7140936137f6f499b8",
+  "usage": {
+    "cached_tokens": null,
+    "input_tokens": null,
+    "output_tokens": null,
+    "reasoning_tokens": null,
+    "total_tokens": null
+  },
+  "worker_id": "gemini",
+  "workflow_run_id": "32656485844-1"
+}
