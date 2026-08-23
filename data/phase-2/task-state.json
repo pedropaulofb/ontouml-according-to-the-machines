@@ -1,5 +1,5 @@
 {
-  "last_reconciled_at": "2026-08-23T03:12:35Z",
+  "last_reconciled_at": "2026-08-23T04:06:57Z",
   "queue_generation": "phase-2-recalibration-v1",
   "registry_sha256": "456e184dcbb45c67f6a48efb8d59830ac56149c2ff4c88d738a45d28d05d4442",
   "schema_version": 1,
@@ -15797,7 +15797,7 @@
       "validation_rejection_count": 0
     },
     "128b20094cd956d2be80baf888673e7f8dccac9e6d38317fd8af497833029fff": {
-      "attempt_count": 26,
+      "attempt_count": 27,
       "created_at": "2026-08-18T12:30:00Z",
       "identity": {
         "agent": "language-style-checker",
@@ -15812,14 +15812,21 @@
         "segmentation_profile": "full-page-v1",
         "validator_version": "check-signal-schema-v1"
       },
-      "last_attempt_at": "2026-08-23T01:56:00Z",
+      "last_attempt_at": "2026-08-23T04:06:57Z",
       "last_outcome": {
         "attempt_id": "b2a7a1fa835785e99392ec4f18b1239d5efddd8787c161dd58f3e79ea8afe715",
         "finished_at": "2026-08-23T01:57:00Z",
         "kind": "not_called",
         "provider_attempts": 0
       },
-      "lease": null,
+      "lease": {
+        "attempt_id": "607a9e8090ee5c051404aa967f276f4eeb9c69296395bdecf184fb1a4862340b",
+        "attempt_number": 27,
+        "expires_at": "2026-08-23T05:06:57Z",
+        "leased_at": "2026-08-23T04:06:57Z",
+        "worker_id": "gemini",
+        "workflow_run_id": "32617035211-1"
+      },
       "publication": {
         "last_attempt_at": null,
         "last_error": null,
@@ -15835,9 +15842,9 @@
       "source_metadata": {
         "repository_commit_sha": "295c35f04b97db70b6a1cda4b26c1f8e39b1cba6"
       },
-      "status": "pending",
+      "status": "leased",
       "task_id": "128b20094cd956d2be80baf888673e7f8dccac9e6d38317fd8af497833029fff",
-      "updated_at": "2026-08-23T01:57:00Z",
+      "updated_at": "2026-08-23T04:06:57Z",
       "validation_rejection_count": 0
     },
     "128e3819f2f8f9bc5b1cae475f2494d9411dacf2062fc9e73b278a44f32c431d": {
@@ -20841,7 +20848,7 @@
       "validation_rejection_count": 1
     },
     "1888063013ed5e65d5ceb769b620b1bc2a90f075b9f58d62bb60d3b4359c028e": {
-      "attempt_count": 26,
+      "attempt_count": 27,
       "created_at": "2026-08-18T12:30:00Z",
       "identity": {
         "agent": "language-style-checker",
@@ -20856,14 +20863,21 @@
         "segmentation_profile": "full-page-v1",
         "validator_version": "check-signal-schema-v1"
       },
-      "last_attempt_at": "2026-08-23T01:56:00Z",
+      "last_attempt_at": "2026-08-23T04:06:57Z",
       "last_outcome": {
         "attempt_id": "6c67bd20907765676b8f4b982f05537e5ef59579c75cf0377c227aa1ee29c7ec",
         "finished_at": "2026-08-23T01:57:00Z",
         "kind": "not_called",
         "provider_attempts": 0
       },
-      "lease": null,
+      "lease": {
+        "attempt_id": "0a9f847c9380b10fb80e39fb5ed0077c77852fbdfdafd3c920ab7eaaf18757ef",
+        "attempt_number": 27,
+        "expires_at": "2026-08-23T05:06:57Z",
+        "leased_at": "2026-08-23T04:06:57Z",
+        "worker_id": "gemini",
+        "workflow_run_id": "32617035211-1"
+      },
       "publication": {
         "last_attempt_at": null,
         "last_error": null,
@@ -20879,9 +20893,9 @@
       "source_metadata": {
         "repository_commit_sha": "295c35f04b97db70b6a1cda4b26c1f8e39b1cba6"
       },
-      "status": "pending",
+      "status": "leased",
       "task_id": "1888063013ed5e65d5ceb769b620b1bc2a90f075b9f58d62bb60d3b4359c028e",
-      "updated_at": "2026-08-23T01:57:00Z",
+      "updated_at": "2026-08-23T04:06:57Z",
       "validation_rejection_count": 0
     },
     "188c920aea29865006c286636cc129713f1d27163eb9e03643ed264135795f9a": {
@@ -22328,7 +22342,7 @@
       "validation_rejection_count": 0
     },
     "1a7b2d9a81f15638581245eb9b06e20c5259b11e18a36a03692d8a2d513d7f33": {
-      "attempt_count": 26,
+      "attempt_count": 27,
       "created_at": "2026-08-18T12:30:00Z",
       "identity": {
         "agent": "page-hygiene-checker",
@@ -22343,14 +22357,21 @@
         "segmentation_profile": "full-page-v1",
         "validator_version": "check-signal-schema-v1"
       },
-      "last_attempt_at": "2026-08-23T01:56:00Z",
+      "last_attempt_at": "2026-08-23T04:06:57Z",
       "last_outcome": {
         "attempt_id": "9905ab01049d33d99342b0c6d5c1f58ac08f33fc96849e38aa90832ea72581e2",
         "finished_at": "2026-08-23T01:57:00Z",
         "kind": "not_called",
         "provider_attempts": 0
       },
-      "lease": null,
+      "lease": {
+        "attempt_id": "9c584001a81a90f76341aa90b397abee64ff4009a3481954ccb722540d813cb4",
+        "attempt_number": 27,
+        "expires_at": "2026-08-23T05:06:57Z",
+        "leased_at": "2026-08-23T04:06:57Z",
+        "worker_id": "gemini",
+        "workflow_run_id": "32617035211-1"
+      },
       "publication": {
         "last_attempt_at": null,
         "last_error": null,
@@ -22366,9 +22387,9 @@
       "source_metadata": {
         "repository_commit_sha": "295c35f04b97db70b6a1cda4b26c1f8e39b1cba6"
       },
-      "status": "pending",
+      "status": "leased",
       "task_id": "1a7b2d9a81f15638581245eb9b06e20c5259b11e18a36a03692d8a2d513d7f33",
-      "updated_at": "2026-08-23T01:57:00Z",
+      "updated_at": "2026-08-23T04:06:57Z",
       "validation_rejection_count": 0
     },
     "1a987230fd402a1f13ac6f0e720c551adba58c2300f65e18abacc1d0487f0ad8": {
@@ -23724,7 +23745,7 @@
       "validation_rejection_count": 0
     },
     "1c5d0140d1492f53af7789154b4d7b3e665801103a32a929feee69a3a407c871": {
-      "attempt_count": 26,
+      "attempt_count": 27,
       "created_at": "2026-08-18T12:30:00Z",
       "identity": {
         "agent": "page-hygiene-checker",
@@ -23739,14 +23760,21 @@
         "segmentation_profile": "full-page-v1",
         "validator_version": "check-signal-schema-v1"
       },
-      "last_attempt_at": "2026-08-23T01:56:00Z",
+      "last_attempt_at": "2026-08-23T04:06:57Z",
       "last_outcome": {
         "attempt_id": "409791b8e1a512c6945f2a715f5c8632dfbfd921f2b2971412f6a2e95266f5ce",
         "finished_at": "2026-08-23T01:57:00Z",
         "kind": "not_called",
         "provider_attempts": 0
       },
-      "lease": null,
+      "lease": {
+        "attempt_id": "f85b12f26c92d979a4a9fc77141ac5c4dd5ecbba8c20f17de85cea36e56d89e7",
+        "attempt_number": 27,
+        "expires_at": "2026-08-23T05:06:57Z",
+        "leased_at": "2026-08-23T04:06:57Z",
+        "worker_id": "gemini",
+        "workflow_run_id": "32617035211-1"
+      },
       "publication": {
         "last_attempt_at": null,
         "last_error": null,
@@ -23762,9 +23790,9 @@
       "source_metadata": {
         "repository_commit_sha": "295c35f04b97db70b6a1cda4b26c1f8e39b1cba6"
       },
-      "status": "pending",
+      "status": "leased",
       "task_id": "1c5d0140d1492f53af7789154b4d7b3e665801103a32a929feee69a3a407c871",
-      "updated_at": "2026-08-23T01:57:00Z",
+      "updated_at": "2026-08-23T04:06:57Z",
       "validation_rejection_count": 0
     },
     "1c5eca9335816dc74ec28721130df463195cc80a9b1866ae722514dd3ac31e65": {
@@ -27773,7 +27801,7 @@
       "validation_rejection_count": 0
     },
     "222db88ea1938038103085334373f71a3523c8eeb0d7b9f826f86d2a18b52d81": {
-      "attempt_count": 26,
+      "attempt_count": 27,
       "created_at": "2026-08-18T12:30:00Z",
       "identity": {
         "agent": "page-hygiene-checker",
@@ -27788,14 +27816,21 @@
         "segmentation_profile": "full-page-v1",
         "validator_version": "check-signal-schema-v1"
       },
-      "last_attempt_at": "2026-08-23T01:56:00Z",
+      "last_attempt_at": "2026-08-23T04:06:57Z",
       "last_outcome": {
         "attempt_id": "6f6c622d5d8f51f2310988f287ce6ddf15116864d1d6c59d784880b9efdce4b9",
         "finished_at": "2026-08-23T01:57:00Z",
         "kind": "not_called",
         "provider_attempts": 0
       },
-      "lease": null,
+      "lease": {
+        "attempt_id": "8890e6d1a8c5818149dcf43d3571df66313d73d5a90167308c25140118b35297",
+        "attempt_number": 27,
+        "expires_at": "2026-08-23T05:06:57Z",
+        "leased_at": "2026-08-23T04:06:57Z",
+        "worker_id": "gemini",
+        "workflow_run_id": "32617035211-1"
+      },
       "publication": {
         "last_attempt_at": null,
         "last_error": null,
@@ -27811,9 +27846,9 @@
       "source_metadata": {
         "repository_commit_sha": "295c35f04b97db70b6a1cda4b26c1f8e39b1cba6"
       },
-      "status": "pending",
+      "status": "leased",
       "task_id": "222db88ea1938038103085334373f71a3523c8eeb0d7b9f826f86d2a18b52d81",
-      "updated_at": "2026-08-23T01:57:00Z",
+      "updated_at": "2026-08-23T04:06:57Z",
       "validation_rejection_count": 0
     },
     "2234988a8eb517cdfde39a92d6246b9accf4d6564bbf96928304b275e57d2138": {
@@ -31759,7 +31794,7 @@
       "validation_rejection_count": 0
     },
     "271306c6b8a4d91433ed53b2152e436e61a8b4d8d30c7cc76895c07f60281865": {
-      "attempt_count": 26,
+      "attempt_count": 27,
       "created_at": "2026-08-18T12:30:00Z",
       "identity": {
         "agent": "page-hygiene-checker",
@@ -31774,14 +31809,21 @@
         "segmentation_profile": "full-page-v1",
         "validator_version": "check-signal-schema-v1"
       },
-      "last_attempt_at": "2026-08-23T01:56:00Z",
+      "last_attempt_at": "2026-08-23T04:06:57Z",
       "last_outcome": {
         "attempt_id": "586180a105827841b5d0200d04d56eed1c46e206eb6e345343149107050aecb0",
         "finished_at": "2026-08-23T01:57:00Z",
         "kind": "not_called",
         "provider_attempts": 0
       },
-      "lease": null,
+      "lease": {
+        "attempt_id": "6e2945788444c62dce0ea0672900a4589a50d8cec5da4fbbf6f6bbef41b80d97",
+        "attempt_number": 27,
+        "expires_at": "2026-08-23T05:06:57Z",
+        "leased_at": "2026-08-23T04:06:57Z",
+        "worker_id": "gemini",
+        "workflow_run_id": "32617035211-1"
+      },
       "publication": {
         "last_attempt_at": null,
         "last_error": null,
@@ -31797,9 +31839,9 @@
       "source_metadata": {
         "repository_commit_sha": "295c35f04b97db70b6a1cda4b26c1f8e39b1cba6"
       },
-      "status": "pending",
+      "status": "leased",
       "task_id": "271306c6b8a4d91433ed53b2152e436e61a8b4d8d30c7cc76895c07f60281865",
-      "updated_at": "2026-08-23T01:57:00Z",
+      "updated_at": "2026-08-23T04:06:57Z",
       "validation_rejection_count": 0
     },
     "272ede0c37572103f0cd73ffe3026ca91ba8adc4c5915b7fd27702fc0759024a": {
@@ -34111,7 +34153,7 @@
       "validation_rejection_count": 0
     },
     "29fe9d0dabf8325a9e328fc72444b8be5ee83c6b2fa309a7b4d20bd8f5a065a9": {
-      "attempt_count": 26,
+      "attempt_count": 27,
       "created_at": "2026-08-18T12:30:00Z",
       "identity": {
         "agent": "language-style-checker",
@@ -34126,14 +34168,21 @@
         "segmentation_profile": "full-page-v1",
         "validator_version": "check-signal-schema-v1"
       },
-      "last_attempt_at": "2026-08-23T01:56:00Z",
+      "last_attempt_at": "2026-08-23T04:06:57Z",
       "last_outcome": {
         "attempt_id": "4b2ba907c3521b40c3e65af410d4132821e15d911901cef3700d4aefd6fa2f53",
         "finished_at": "2026-08-23T01:57:00Z",
         "kind": "not_called",
         "provider_attempts": 0
       },
-      "lease": null,
+      "lease": {
+        "attempt_id": "27a0f50c308981706a01957c41eebdf6c9812141652643dd30ae6c0b3c209d9e",
+        "attempt_number": 27,
+        "expires_at": "2026-08-23T05:06:57Z",
+        "leased_at": "2026-08-23T04:06:57Z",
+        "worker_id": "gemini",
+        "workflow_run_id": "32617035211-1"
+      },
       "publication": {
         "last_attempt_at": null,
         "last_error": null,
@@ -34149,9 +34198,9 @@
       "source_metadata": {
         "repository_commit_sha": "295c35f04b97db70b6a1cda4b26c1f8e39b1cba6"
       },
-      "status": "pending",
+      "status": "leased",
       "task_id": "29fe9d0dabf8325a9e328fc72444b8be5ee83c6b2fa309a7b4d20bd8f5a065a9",
-      "updated_at": "2026-08-23T01:57:00Z",
+      "updated_at": "2026-08-23T04:06:57Z",
       "validation_rejection_count": 0
     },
     "2a0a30aa066ae95ca249f1ace41e0ebbdcd0e2a70a4551da54ee42fb6735c28d": {
@@ -35784,7 +35833,7 @@
       "validation_rejection_count": 0
     },
     "2c43f076e27ca23628abe00e86090a9b395f3035073bb62fab6f15dbe31107db": {
-      "attempt_count": 26,
+      "attempt_count": 27,
       "created_at": "2026-08-18T12:30:00Z",
       "identity": {
         "agent": "language-style-checker",
@@ -35799,14 +35848,21 @@
         "segmentation_profile": "full-page-v1",
         "validator_version": "check-signal-schema-v1"
       },
-      "last_attempt_at": "2026-08-23T01:56:00Z",
+      "last_attempt_at": "2026-08-23T04:06:57Z",
       "last_outcome": {
         "attempt_id": "2bcffe68d463e200121b2c716b48ff57f602d531eaac53236867af76f5abe77b",
         "finished_at": "2026-08-23T01:57:00Z",
         "kind": "not_called",
         "provider_attempts": 0
       },
-      "lease": null,
+      "lease": {
+        "attempt_id": "3485a744da3f4f3bdec37192e17c7dc32ac5f5f5b7323069ab48c27598e8ae28",
+        "attempt_number": 27,
+        "expires_at": "2026-08-23T05:06:57Z",
+        "leased_at": "2026-08-23T04:06:57Z",
+        "worker_id": "gemini",
+        "workflow_run_id": "32617035211-1"
+      },
       "publication": {
         "last_attempt_at": null,
         "last_error": null,
@@ -35822,9 +35878,9 @@
       "source_metadata": {
         "repository_commit_sha": "295c35f04b97db70b6a1cda4b26c1f8e39b1cba6"
       },
-      "status": "pending",
+      "status": "leased",
       "task_id": "2c43f076e27ca23628abe00e86090a9b395f3035073bb62fab6f15dbe31107db",
-      "updated_at": "2026-08-23T01:57:00Z",
+      "updated_at": "2026-08-23T04:06:57Z",
       "validation_rejection_count": 0
     },
     "2c46d001b60a2d91bc0502ea2e1836d15f82d4ddaa5f58e3b055383ce05275fa": {
@@ -36414,7 +36470,7 @@
       "validation_rejection_count": 0
     },
     "2cf66119a77516fc7a2f803f276a5756624da758a2a31a7140936137f6f499b8": {
-      "attempt_count": 26,
+      "attempt_count": 27,
       "created_at": "2026-08-18T12:30:00Z",
       "identity": {
         "agent": "page-hygiene-checker",
@@ -36429,14 +36485,21 @@
         "segmentation_profile": "full-page-v1",
         "validator_version": "check-signal-schema-v1"
       },
-      "last_attempt_at": "2026-08-23T01:56:00Z",
+      "last_attempt_at": "2026-08-23T04:06:57Z",
       "last_outcome": {
         "attempt_id": "cda07447298ad5c60a0b787880af12a9d9d7164ce9b199119388e0be0be8334c",
         "finished_at": "2026-08-23T01:57:00Z",
         "kind": "not_called",
         "provider_attempts": 0
       },
-      "lease": null,
+      "lease": {
+        "attempt_id": "062e84025ec49583f25268aa8e49ec54d23814d1864b0cd73a5ee38c63994b09",
+        "attempt_number": 27,
+        "expires_at": "2026-08-23T05:06:57Z",
+        "leased_at": "2026-08-23T04:06:57Z",
+        "worker_id": "gemini",
+        "workflow_run_id": "32617035211-1"
+      },
       "publication": {
         "last_attempt_at": null,
         "last_error": null,
@@ -36452,9 +36515,9 @@
       "source_metadata": {
         "repository_commit_sha": "295c35f04b97db70b6a1cda4b26c1f8e39b1cba6"
       },
-      "status": "pending",
+      "status": "leased",
       "task_id": "2cf66119a77516fc7a2f803f276a5756624da758a2a31a7140936137f6f499b8",
-      "updated_at": "2026-08-23T01:57:00Z",
+      "updated_at": "2026-08-23T04:06:57Z",
       "validation_rejection_count": 0
     },
     "2cfe8f7604ee09070e770202bb88019602443c57f91c0083c393b6d6638780c4": {
@@ -38278,7 +38341,7 @@
       "validation_rejection_count": 0
     },
     "2ecad368efc56c2d9c3f97cbe09acae9145beb78644a6f4bfaa467313923f6b1": {
-      "attempt_count": 26,
+      "attempt_count": 27,
       "created_at": "2026-08-18T12:30:00Z",
       "identity": {
         "agent": "page-hygiene-checker",
@@ -38293,14 +38356,21 @@
         "segmentation_profile": "full-page-v1",
         "validator_version": "check-signal-schema-v1"
       },
-      "last_attempt_at": "2026-08-23T01:56:00Z",
+      "last_attempt_at": "2026-08-23T04:06:57Z",
       "last_outcome": {
         "attempt_id": "7bb6696178a86257422d409a889cad34c511a0ab988a87a3c41736990e7629b7",
         "finished_at": "2026-08-23T01:57:00Z",
         "kind": "not_called",
         "provider_attempts": 0
       },
-      "lease": null,
+      "lease": {
+        "attempt_id": "b6e5bd453c13a9081ac00c77ff9bd63464fd3861cb075bb3d2e5781a31230119",
+        "attempt_number": 27,
+        "expires_at": "2026-08-23T05:06:57Z",
+        "leased_at": "2026-08-23T04:06:57Z",
+        "worker_id": "gemini",
+        "workflow_run_id": "32617035211-1"
+      },
       "publication": {
         "last_attempt_at": null,
         "last_error": null,
@@ -38316,9 +38386,9 @@
       "source_metadata": {
         "repository_commit_sha": "295c35f04b97db70b6a1cda4b26c1f8e39b1cba6"
       },
-      "status": "pending",
+      "status": "leased",
       "task_id": "2ecad368efc56c2d9c3f97cbe09acae9145beb78644a6f4bfaa467313923f6b1",
-      "updated_at": "2026-08-23T01:57:00Z",
+      "updated_at": "2026-08-23T04:06:57Z",
       "validation_rejection_count": 0
     },
     "2ecfc4d062f04427627d4f64b284d3556be4b561575d66f9843a1b64e4970bf4": {
@@ -42445,7 +42515,7 @@
       "validation_rejection_count": 0
     },
     "33e1aaf794ad2b7e559d6effdb07ab8e884aa05ca5a1ab67e670ac75402c3e2d": {
-      "attempt_count": 26,
+      "attempt_count": 27,
       "created_at": "2026-08-18T12:30:00Z",
       "identity": {
         "agent": "language-style-checker",
@@ -42460,14 +42530,21 @@
         "segmentation_profile": "full-page-v1",
         "validator_version": "check-signal-schema-v1"
       },
-      "last_attempt_at": "2026-08-23T01:56:00Z",
+      "last_attempt_at": "2026-08-23T04:06:57Z",
       "last_outcome": {
         "attempt_id": "086cda5693ec5b5697a5a2e2c894b87c658ba510f09df6208c7359cdcf3c9d46",
         "finished_at": "2026-08-23T01:57:00Z",
         "kind": "not_called",
         "provider_attempts": 0
       },
-      "lease": null,
+      "lease": {
+        "attempt_id": "3306c0105ff3af78f0be6c5e5e532ad8d6a34414f757317ff4cfc93b5728535b",
+        "attempt_number": 27,
+        "expires_at": "2026-08-23T05:06:57Z",
+        "leased_at": "2026-08-23T04:06:57Z",
+        "worker_id": "gemini",
+        "workflow_run_id": "32617035211-1"
+      },
       "publication": {
         "last_attempt_at": null,
         "last_error": null,
@@ -42483,9 +42560,9 @@
       "source_metadata": {
         "repository_commit_sha": "295c35f04b97db70b6a1cda4b26c1f8e39b1cba6"
       },
-      "status": "pending",
+      "status": "leased",
       "task_id": "33e1aaf794ad2b7e559d6effdb07ab8e884aa05ca5a1ab67e670ac75402c3e2d",
-      "updated_at": "2026-08-23T01:57:00Z",
+      "updated_at": "2026-08-23T04:06:57Z",
       "validation_rejection_count": 0
     },
     "33e3a54b0454e754cbd365efa41b816c96824a890d5728a9b92a99f088463325": {
@@ -56115,7 +56192,7 @@
       "validation_rejection_count": 0
     },
     "44d4c054149680afa3bf12fa4501268357bde69d81484d7d2b20904297cf53ad": {
-      "attempt_count": 26,
+      "attempt_count": 27,
       "created_at": "2026-08-18T12:30:00Z",
       "identity": {
         "agent": "language-style-checker",
@@ -56130,14 +56207,21 @@
         "segmentation_profile": "full-page-v1",
         "validator_version": "check-signal-schema-v1"
       },
-      "last_attempt_at": "2026-08-23T01:56:00Z",
+      "last_attempt_at": "2026-08-23T04:06:57Z",
       "last_outcome": {
         "attempt_id": "064692c41509ccb7b4b20c255535c054d7b244c122ac76be5faf4e2fc16efdc2",
         "finished_at": "2026-08-23T01:57:00Z",
         "kind": "not_called",
         "provider_attempts": 0
       },
-      "lease": null,
+      "lease": {
+        "attempt_id": "b405655ccbb16005a29c4206eb70b0a404250379432989a5b9d00399d5ff9af9",
+        "attempt_number": 27,
+        "expires_at": "2026-08-23T05:06:57Z",
+        "leased_at": "2026-08-23T04:06:57Z",
+        "worker_id": "gemini",
+        "workflow_run_id": "32617035211-1"
+      },
       "publication": {
         "last_attempt_at": null,
         "last_error": null,
@@ -56153,9 +56237,9 @@
       "source_metadata": {
         "repository_commit_sha": "295c35f04b97db70b6a1cda4b26c1f8e39b1cba6"
       },
-      "status": "pending",
+      "status": "leased",
       "task_id": "44d4c054149680afa3bf12fa4501268357bde69d81484d7d2b20904297cf53ad",
-      "updated_at": "2026-08-23T01:57:00Z",
+      "updated_at": "2026-08-23T04:06:57Z",
       "validation_rejection_count": 0
     },
     "44d648df23da330a1b2fa30bd80d24a9835e8e4fbb1c0c7811e84ccdae306d17": {
@@ -63711,7 +63795,7 @@
       "validation_rejection_count": 0
     },
     "4e5cce7d35c7a4b3562f6e0b997e6047368fe14857821a47d3e17b420eaf222b": {
-      "attempt_count": 26,
+      "attempt_count": 27,
       "created_at": "2026-08-18T12:30:00Z",
       "identity": {
         "agent": "page-hygiene-checker",
@@ -63726,14 +63810,21 @@
         "segmentation_profile": "full-page-v1",
         "validator_version": "check-signal-schema-v1"
       },
-      "last_attempt_at": "2026-08-23T01:56:00Z",
+      "last_attempt_at": "2026-08-23T04:06:57Z",
       "last_outcome": {
         "attempt_id": "f2980eea99bd4bdf3159a8e5387d80ab120f0a0fb7cef9ccc2b2033a96bcefc1",
         "finished_at": "2026-08-23T01:57:00Z",
         "kind": "not_called",
         "provider_attempts": 0
       },
-      "lease": null,
+      "lease": {
+        "attempt_id": "533930b0186af04ba37fcf825e95ec84eeccba1a8d2c584d3d7929bb506ad244",
+        "attempt_number": 27,
+        "expires_at": "2026-08-23T05:06:57Z",
+        "leased_at": "2026-08-23T04:06:57Z",
+        "worker_id": "gemini",
+        "workflow_run_id": "32617035211-1"
+      },
       "publication": {
         "last_attempt_at": null,
         "last_error": null,
@@ -63749,9 +63840,9 @@
       "source_metadata": {
         "repository_commit_sha": "295c35f04b97db70b6a1cda4b26c1f8e39b1cba6"
       },
-      "status": "pending",
+      "status": "leased",
       "task_id": "4e5cce7d35c7a4b3562f6e0b997e6047368fe14857821a47d3e17b420eaf222b",
-      "updated_at": "2026-08-23T01:57:00Z",
+      "updated_at": "2026-08-23T04:06:57Z",
       "validation_rejection_count": 0
     },
     "4e61275f227e3b0097ba5c740d9d63f61aa8c93c66d938af25ee17372a5d8a9a": {
@@ -65614,7 +65705,7 @@
       "validation_rejection_count": 0
     },
     "509d68ab7f04c6781e09457fc1a9d9a1d38351a54f1c08fb9452c2a6e69561b9": {
-      "attempt_count": 26,
+      "attempt_count": 27,
       "created_at": "2026-08-18T12:30:00Z",
       "identity": {
         "agent": "page-hygiene-checker",
@@ -65629,14 +65720,21 @@
         "segmentation_profile": "full-page-v1",
         "validator_version": "check-signal-schema-v1"
       },
-      "last_attempt_at": "2026-08-23T01:56:00Z",
+      "last_attempt_at": "2026-08-23T04:06:57Z",
       "last_outcome": {
         "attempt_id": "196f56e38088db9d046b558cb8171a60447ed847b019ee0ee6d817b6f9c43fb6",
         "finished_at": "2026-08-23T01:57:00Z",
         "kind": "not_called",
         "provider_attempts": 0
       },
-      "lease": null,
+      "lease": {
+        "attempt_id": "08e3abe74a39a428f672ff985f7635cd610f1dc10ef6d66a4bf438414439ad55",
+        "attempt_number": 27,
+        "expires_at": "2026-08-23T05:06:57Z",
+        "leased_at": "2026-08-23T04:06:57Z",
+        "worker_id": "gemini",
+        "workflow_run_id": "32617035211-1"
+      },
       "publication": {
         "last_attempt_at": null,
         "last_error": null,
@@ -65652,9 +65750,9 @@
       "source_metadata": {
         "repository_commit_sha": "295c35f04b97db70b6a1cda4b26c1f8e39b1cba6"
       },
-      "status": "pending",
+      "status": "leased",
       "task_id": "509d68ab7f04c6781e09457fc1a9d9a1d38351a54f1c08fb9452c2a6e69561b9",
-      "updated_at": "2026-08-23T01:57:00Z",
+      "updated_at": "2026-08-23T04:06:57Z",
       "validation_rejection_count": 0
     },
     "50a6b88a154677c9f18a4b81859a75738cd3ce492282b79e2fe71930a4d940d6": {
@@ -69425,7 +69523,7 @@
       "validation_rejection_count": 0
     },
     "55a706b1b0b06017e43e60be26dc2da4d59b7edf7b695abfd3cf9447f4814635": {
-      "attempt_count": 26,
+      "attempt_count": 27,
       "created_at": "2026-08-18T12:30:00Z",
       "identity": {
         "agent": "language-style-checker",
@@ -69440,14 +69538,21 @@
         "segmentation_profile": "full-page-v1",
         "validator_version": "check-signal-schema-v1"
       },
-      "last_attempt_at": "2026-08-23T01:56:00Z",
+      "last_attempt_at": "2026-08-23T04:06:57Z",
       "last_outcome": {
         "attempt_id": "6b1ad365e66bc51e027ed67123679e989e8a8e64d5774df2f15e7d2680ba1cc9",
         "finished_at": "2026-08-23T01:57:00Z",
         "kind": "not_called",
         "provider_attempts": 0
       },
-      "lease": null,
+      "lease": {
+        "attempt_id": "ea93eeda84c898ed254b9518b78a289ed489cbe4c2103c773f1c6c01c0f4b1b5",
+        "attempt_number": 27,
+        "expires_at": "2026-08-23T05:06:57Z",
+        "leased_at": "2026-08-23T04:06:57Z",
+        "worker_id": "gemini",
+        "workflow_run_id": "32617035211-1"
+      },
       "publication": {
         "last_attempt_at": null,
         "last_error": null,
@@ -69463,9 +69568,9 @@
       "source_metadata": {
         "repository_commit_sha": "295c35f04b97db70b6a1cda4b26c1f8e39b1cba6"
       },
-      "status": "pending",
+      "status": "leased",
       "task_id": "55a706b1b0b06017e43e60be26dc2da4d59b7edf7b695abfd3cf9447f4814635",
-      "updated_at": "2026-08-23T01:57:00Z",
+      "updated_at": "2026-08-23T04:06:57Z",
       "validation_rejection_count": 0
     },
     "55b406a1ab8965456ef4ae35b9a2b4c3a234fc5aab1cc05707f4dd8d672483ef": {
@@ -71523,7 +71628,7 @@
       "validation_rejection_count": 0
     },
     "57cf368abfe3f6812b102868062fcdc0784f5607d3ec6f5d0693eec30293c71f": {
-      "attempt_count": 26,
+      "attempt_count": 27,
       "created_at": "2026-08-18T12:30:00Z",
       "identity": {
         "agent": "page-hygiene-checker",
@@ -71538,14 +71643,21 @@
         "segmentation_profile": "full-page-v1",
         "validator_version": "check-signal-schema-v1"
       },
-      "last_attempt_at": "2026-08-23T01:56:00Z",
+      "last_attempt_at": "2026-08-23T04:06:57Z",
       "last_outcome": {
         "attempt_id": "6efdfb314f97ad24527327c1aea99b45339e74615ec3969ce0e1f60304e27b9c",
         "finished_at": "2026-08-23T01:57:00Z",
         "kind": "not_called",
         "provider_attempts": 0
       },
-      "lease": null,
+      "lease": {
+        "attempt_id": "4008e635da3ef22e3b966749093e20d0f28cd84b4158acd9d8604f583b2d87f8",
+        "attempt_number": 27,
+        "expires_at": "2026-08-23T05:06:57Z",
+        "leased_at": "2026-08-23T04:06:57Z",
+        "worker_id": "gemini",
+        "workflow_run_id": "32617035211-1"
+      },
       "publication": {
         "last_attempt_at": null,
         "last_error": null,
@@ -71561,9 +71673,9 @@
       "source_metadata": {
         "repository_commit_sha": "295c35f04b97db70b6a1cda4b26c1f8e39b1cba6"
       },
-      "status": "pending",
+      "status": "leased",
       "task_id": "57cf368abfe3f6812b102868062fcdc0784f5607d3ec6f5d0693eec30293c71f",
-      "updated_at": "2026-08-23T01:57:00Z",
+      "updated_at": "2026-08-23T04:06:57Z",
       "validation_rejection_count": 0
     },
     "57d5cb7097d53b045048216413529178801987c31907d3417728f8a8eadd4e3f": {
@@ -71806,7 +71918,7 @@
       "validation_rejection_count": 0
     },
     "57fe1fe22909a2034e4f4df6ca6b0cb966e1bbe238316554bbd0468932b18289": {
-      "attempt_count": 26,
+      "attempt_count": 27,
       "created_at": "2026-08-18T12:30:00Z",
       "identity": {
         "agent": "language-style-checker",
@@ -71821,14 +71933,21 @@
         "segmentation_profile": "full-page-v1",
         "validator_version": "check-signal-schema-v1"
       },
-      "last_attempt_at": "2026-08-23T01:56:00Z",
+      "last_attempt_at": "2026-08-23T04:06:57Z",
       "last_outcome": {
         "attempt_id": "af5ac2c8196471a44dbff46ba685975ed13896980df3ab201385517ac830124d",
         "finished_at": "2026-08-23T01:57:00Z",
         "kind": "not_called",
         "provider_attempts": 0
       },
-      "lease": null,
+      "lease": {
+        "attempt_id": "2288c1af6d700afcf6a5fa2d5c317090771f9b25d3351afc12109e5603810cc3",
+        "attempt_number": 27,
+        "expires_at": "2026-08-23T05:06:57Z",
+        "leased_at": "2026-08-23T04:06:57Z",
+        "worker_id": "gemini",
+        "workflow_run_id": "32617035211-1"
+      },
       "publication": {
         "last_attempt_at": null,
         "last_error": null,
@@ -71844,9 +71963,9 @@
       "source_metadata": {
         "repository_commit_sha": "295c35f04b97db70b6a1cda4b26c1f8e39b1cba6"
       },
-      "status": "pending",
+      "status": "leased",
       "task_id": "57fe1fe22909a2034e4f4df6ca6b0cb966e1bbe238316554bbd0468932b18289",
-      "updated_at": "2026-08-23T01:57:00Z",
+      "updated_at": "2026-08-23T04:06:57Z",
       "validation_rejection_count": 0
     },
     "5801b16d28c091517ea12750992b11b303f78c44339603d84c2f5c4e42f126a4": {
@@ -77303,7 +77422,7 @@
       "validation_rejection_count": 0
     },
     "5e7466f39f9732797b47e37b50dd66b549251ac8b023d73de868957ecd045e65": {
-      "attempt_count": 26,
+      "attempt_count": 27,
       "created_at": "2026-08-18T12:30:00Z",
       "identity": {
         "agent": "page-hygiene-checker",
@@ -77318,14 +77437,21 @@
         "segmentation_profile": "full-page-v1",
         "validator_version": "check-signal-schema-v1"
       },
-      "last_attempt_at": "2026-08-23T01:56:00Z",
+      "last_attempt_at": "2026-08-23T04:06:57Z",
       "last_outcome": {
         "attempt_id": "fb0abb1d551168c997caa641e4104d1c0ebcd9efe8e17f11aaaf56b067d705da",
         "finished_at": "2026-08-23T01:57:00Z",
         "kind": "not_called",
         "provider_attempts": 0
       },
-      "lease": null,
+      "lease": {
+        "attempt_id": "0ed717594271d7a22cb03596ebbfe9ed4b55ac849962dbe2d304cdc5c0012f6e",
+        "attempt_number": 27,
+        "expires_at": "2026-08-23T05:06:57Z",
+        "leased_at": "2026-08-23T04:06:57Z",
+        "worker_id": "gemini",
+        "workflow_run_id": "32617035211-1"
+      },
       "publication": {
         "last_attempt_at": null,
         "last_error": null,
@@ -77341,9 +77467,9 @@
       "source_metadata": {
         "repository_commit_sha": "295c35f04b97db70b6a1cda4b26c1f8e39b1cba6"
       },
-      "status": "pending",
+      "status": "leased",
       "task_id": "5e7466f39f9732797b47e37b50dd66b549251ac8b023d73de868957ecd045e65",
-      "updated_at": "2026-08-23T01:57:00Z",
+      "updated_at": "2026-08-23T04:06:57Z",
       "validation_rejection_count": 0
     },
     "5e7ec64734aae45dd502800090e6122f4ed6a78ac9396b19d7451b7ec9b05cb6": {
@@ -87192,7 +87318,7 @@
       "validation_rejection_count": 0
     },
     "6a6725493aadea22683cfe32cd1d10c209220686f10b43572298b774c73092b4": {
-      "attempt_count": 26,
+      "attempt_count": 27,
       "created_at": "2026-08-18T12:30:00Z",
       "identity": {
         "agent": "language-style-checker",
@@ -87207,14 +87333,21 @@
         "segmentation_profile": "full-page-v1",
         "validator_version": "check-signal-schema-v1"
       },
-      "last_attempt_at": "2026-08-23T01:56:00Z",
+      "last_attempt_at": "2026-08-23T04:06:57Z",
       "last_outcome": {
         "attempt_id": "2bb6f29191918bfca2437723ba67fcf9bcd0d746ba79f60fa8eb7781fed23e7d",
         "finished_at": "2026-08-23T01:57:00Z",
         "kind": "not_called",
         "provider_attempts": 0
       },
-      "lease": null,
+      "lease": {
+        "attempt_id": "be5f5c40b9db79ab0e789cc2cc6d3dcdd1ef602df50aa2d0f95b5fa2d184caad",
+        "attempt_number": 27,
+        "expires_at": "2026-08-23T05:06:57Z",
+        "leased_at": "2026-08-23T04:06:57Z",
+        "worker_id": "gemini",
+        "workflow_run_id": "32617035211-1"
+      },
       "publication": {
         "last_attempt_at": null,
         "last_error": null,
@@ -87230,9 +87363,9 @@
       "source_metadata": {
         "repository_commit_sha": "295c35f04b97db70b6a1cda4b26c1f8e39b1cba6"
       },
-      "status": "pending",
+      "status": "leased",
       "task_id": "6a6725493aadea22683cfe32cd1d10c209220686f10b43572298b774c73092b4",
-      "updated_at": "2026-08-23T01:57:00Z",
+      "updated_at": "2026-08-23T04:06:57Z",
       "validation_rejection_count": 0
     },
     "6a823a4d6cb20e4c8c95a4de70eaaadb568973de80d880de7181ec2ce81c56a8": {
@@ -90846,7 +90979,7 @@
       "validation_rejection_count": 0
     },
     "6ef63f92bc65005090bd6dc8d0096abf45dd6dca51579884fa573e9ab7723696": {
-      "attempt_count": 26,
+      "attempt_count": 27,
       "created_at": "2026-08-18T12:30:00Z",
       "identity": {
         "agent": "language-style-checker",
@@ -90861,14 +90994,21 @@
         "segmentation_profile": "full-page-v1",
         "validator_version": "check-signal-schema-v1"
       },
-      "last_attempt_at": "2026-08-23T01:56:00Z",
+      "last_attempt_at": "2026-08-23T04:06:57Z",
       "last_outcome": {
         "attempt_id": "cabf1ccd22b0c465371594383167c3af5df302c8d8e8c56a5f18d048dcb7156e",
         "finished_at": "2026-08-23T01:57:00Z",
         "kind": "not_called",
         "provider_attempts": 0
       },
-      "lease": null,
+      "lease": {
+        "attempt_id": "9f63039f3194df14cbad1e40b4ccbcdd90f75f213cdeb5d1af6609b2aef80007",
+        "attempt_number": 27,
+        "expires_at": "2026-08-23T05:06:57Z",
+        "leased_at": "2026-08-23T04:06:57Z",
+        "worker_id": "gemini",
+        "workflow_run_id": "32617035211-1"
+      },
       "publication": {
         "last_attempt_at": null,
         "last_error": null,
@@ -90884,9 +91024,9 @@
       "source_metadata": {
         "repository_commit_sha": "295c35f04b97db70b6a1cda4b26c1f8e39b1cba6"
       },
-      "status": "pending",
+      "status": "leased",
       "task_id": "6ef63f92bc65005090bd6dc8d0096abf45dd6dca51579884fa573e9ab7723696",
-      "updated_at": "2026-08-23T01:57:00Z",
+      "updated_at": "2026-08-23T04:06:57Z",
       "validation_rejection_count": 0
     },
     "6efbc75dcbb254f9cd2ecb52ae8f391520c8e6491234870a839b0e10891a3a01": {
@@ -96856,7 +96996,7 @@
       "validation_rejection_count": 0
     },
     "76ee3e7463ad17f11e3a350f6379ee814932df8b20b7b2f92c876f8e433f4604": {
-      "attempt_count": 26,
+      "attempt_count": 27,
       "created_at": "2026-08-18T12:30:00Z",
       "identity": {
         "agent": "language-style-checker",
@@ -96871,14 +97011,21 @@
         "segmentation_profile": "full-page-v1",
         "validator_version": "check-signal-schema-v1"
       },
-      "last_attempt_at": "2026-08-23T01:56:00Z",
+      "last_attempt_at": "2026-08-23T04:06:57Z",
       "last_outcome": {
         "attempt_id": "622c312d3259801a94cf60dd064b9af5a81284e6b1fdb315ae302aea5c1813d0",
         "finished_at": "2026-08-23T01:57:00Z",
         "kind": "not_called",
         "provider_attempts": 0
       },
-      "lease": null,
+      "lease": {
+        "attempt_id": "e67fdff810035f15c2fd98f6a6eab62c901fc8b94059484eb9df1cedfd574871",
+        "attempt_number": 27,
+        "expires_at": "2026-08-23T05:06:57Z",
+        "leased_at": "2026-08-23T04:06:57Z",
+        "worker_id": "gemini",
+        "workflow_run_id": "32617035211-1"
+      },
       "publication": {
         "last_attempt_at": null,
         "last_error": null,
@@ -96894,9 +97041,9 @@
       "source_metadata": {
         "repository_commit_sha": "295c35f04b97db70b6a1cda4b26c1f8e39b1cba6"
       },
-      "status": "pending",
+      "status": "leased",
       "task_id": "76ee3e7463ad17f11e3a350f6379ee814932df8b20b7b2f92c876f8e433f4604",
-      "updated_at": "2026-08-23T01:57:00Z",
+      "updated_at": "2026-08-23T04:06:57Z",
       "validation_rejection_count": 0
     },
     "76eef617b605400815d5461fa86f76c95f2b64343d07d1a6288f6bb908796c4e": {
@@ -103803,7 +103950,7 @@
       "validation_rejection_count": 0
     },
     "8052789f313101b5ad752b081c2c690d3d038a7dbec9f39ea6bf51643db1da98": {
-      "attempt_count": 26,
+      "attempt_count": 27,
       "created_at": "2026-08-18T12:30:00Z",
       "identity": {
         "agent": "language-style-checker",
@@ -103818,14 +103965,21 @@
         "segmentation_profile": "full-page-v1",
         "validator_version": "check-signal-schema-v1"
       },
-      "last_attempt_at": "2026-08-23T01:56:00Z",
+      "last_attempt_at": "2026-08-23T04:06:57Z",
       "last_outcome": {
         "attempt_id": "5cb985ec557fe6bc6a5f1461ecc85af386c70007f10873756583daa31349661b",
         "finished_at": "2026-08-23T01:57:00Z",
         "kind": "not_called",
         "provider_attempts": 0
       },
-      "lease": null,
+      "lease": {
+        "attempt_id": "f633356c1d8f65799046ad11ff65427774aa0c6834b4ebdc710d2466d9afef71",
+        "attempt_number": 27,
+        "expires_at": "2026-08-23T05:06:57Z",
+        "leased_at": "2026-08-23T04:06:57Z",
+        "worker_id": "gemini",
+        "workflow_run_id": "32617035211-1"
+      },
       "publication": {
         "last_attempt_at": null,
         "last_error": null,
@@ -103841,9 +103995,9 @@
       "source_metadata": {
         "repository_commit_sha": "295c35f04b97db70b6a1cda4b26c1f8e39b1cba6"
       },
-      "status": "pending",
+      "status": "leased",
       "task_id": "8052789f313101b5ad752b081c2c690d3d038a7dbec9f39ea6bf51643db1da98",
-      "updated_at": "2026-08-23T01:57:00Z",
+      "updated_at": "2026-08-23T04:06:57Z",
       "validation_rejection_count": 0
     },
     "8061f236f4971da8ed88e0d9345a8ce2c809f77982cbf1cbb14c899568e3655f": {
@@ -111822,7 +111976,7 @@
       "validation_rejection_count": 0
     },
     "8a0ba7e60fa11ac43b47c775dcfd375e1c926947e1fe0067169cc982343961d6": {
-      "attempt_count": 26,
+      "attempt_count": 27,
       "created_at": "2026-08-18T12:30:00Z",
       "identity": {
         "agent": "page-hygiene-checker",
@@ -111837,14 +111991,21 @@
         "segmentation_profile": "full-page-v1",
         "validator_version": "check-signal-schema-v1"
       },
-      "last_attempt_at": "2026-08-23T01:56:00Z",
+      "last_attempt_at": "2026-08-23T04:06:57Z",
       "last_outcome": {
         "attempt_id": "2792409f56bdfd9a9a80580d7d1e03534ec920c3e52c2b13de29a9819b630091",
         "finished_at": "2026-08-23T01:57:00Z",
         "kind": "not_called",
         "provider_attempts": 0
       },
-      "lease": null,
+      "lease": {
+        "attempt_id": "654024297dae976cc9f02118bd962e9c2e077fb8ea1e9f104f0f11aadefbbaf3",
+        "attempt_number": 27,
+        "expires_at": "2026-08-23T05:06:57Z",
+        "leased_at": "2026-08-23T04:06:57Z",
+        "worker_id": "gemini",
+        "workflow_run_id": "32617035211-1"
+      },
       "publication": {
         "last_attempt_at": null,
         "last_error": null,
@@ -111860,9 +112021,9 @@
       "source_metadata": {
         "repository_commit_sha": "295c35f04b97db70b6a1cda4b26c1f8e39b1cba6"
       },
-      "status": "pending",
+      "status": "leased",
       "task_id": "8a0ba7e60fa11ac43b47c775dcfd375e1c926947e1fe0067169cc982343961d6",
-      "updated_at": "2026-08-23T01:57:00Z",
+      "updated_at": "2026-08-23T04:06:57Z",
       "validation_rejection_count": 0
     },
     "8a22e4a9f3b21824765d8370c961b89ea7f3c6cfcfb951639bec658ecb803ba2": {
@@ -120247,7 +120408,7 @@
       "validation_rejection_count": 0
     },
     "94f6a73cefd1c6e22d2876ddbfed75bcf0db8c910062890f2a06ab3d4f46b246": {
-      "attempt_count": 26,
+      "attempt_count": 27,
       "created_at": "2026-08-18T12:30:00Z",
       "identity": {
         "agent": "page-hygiene-checker",
@@ -120262,14 +120423,21 @@
         "segmentation_profile": "full-page-v1",
         "validator_version": "check-signal-schema-v1"
       },
-      "last_attempt_at": "2026-08-23T01:56:00Z",
+      "last_attempt_at": "2026-08-23T04:06:57Z",
       "last_outcome": {
         "attempt_id": "174ee32a658cabc5320d24bdd98dbfc73a7822b67d2335d07c125f62b51a1d49",
         "finished_at": "2026-08-23T01:57:00Z",
         "kind": "not_called",
         "provider_attempts": 0
       },
-      "lease": null,
+      "lease": {
+        "attempt_id": "f34bb75d2b4e6f563bb66ead7ebd170cbbe5a58bc90448ec4677469e8f4a4459",
+        "attempt_number": 27,
+        "expires_at": "2026-08-23T05:06:57Z",
+        "leased_at": "2026-08-23T04:06:57Z",
+        "worker_id": "gemini",
+        "workflow_run_id": "32617035211-1"
+      },
       "publication": {
         "last_attempt_at": null,
         "last_error": null,
@@ -120285,9 +120453,9 @@
       "source_metadata": {
         "repository_commit_sha": "295c35f04b97db70b6a1cda4b26c1f8e39b1cba6"
       },
-      "status": "pending",
+      "status": "leased",
       "task_id": "94f6a73cefd1c6e22d2876ddbfed75bcf0db8c910062890f2a06ab3d4f46b246",
-      "updated_at": "2026-08-23T01:57:00Z",
+      "updated_at": "2026-08-23T04:06:57Z",
       "validation_rejection_count": 0
     },
     "94f8a4d5c83b63594bb80ad73685765709db03ea8b8ed9928fe16a0ee79d4c7e": {
@@ -124086,7 +124254,7 @@
       "validation_rejection_count": 0
     },
     "990c8a1dd987413cb2f249952dead993689d77dbf05be3832083104496ee834c": {
-      "attempt_count": 26,
+      "attempt_count": 27,
       "created_at": "2026-08-18T12:30:00Z",
       "identity": {
         "agent": "page-hygiene-checker",
@@ -124101,14 +124269,21 @@
         "segmentation_profile": "full-page-v1",
         "validator_version": "check-signal-schema-v1"
       },
-      "last_attempt_at": "2026-08-23T01:56:00Z",
+      "last_attempt_at": "2026-08-23T04:06:57Z",
       "last_outcome": {
         "attempt_id": "81352861710f215993511a360661bd9ce26ddfc39bda71a452f7a8a7341bbf31",
         "finished_at": "2026-08-23T01:57:00Z",
         "kind": "not_called",
         "provider_attempts": 0
       },
-      "lease": null,
+      "lease": {
+        "attempt_id": "52d78a004341aaa66022eab8d090b6db3d82055066d0df17c4b44ea76121c9b5",
+        "attempt_number": 27,
+        "expires_at": "2026-08-23T05:06:57Z",
+        "leased_at": "2026-08-23T04:06:57Z",
+        "worker_id": "gemini",
+        "workflow_run_id": "32617035211-1"
+      },
       "publication": {
         "last_attempt_at": null,
         "last_error": null,
@@ -124124,9 +124299,9 @@
       "source_metadata": {
         "repository_commit_sha": "295c35f04b97db70b6a1cda4b26c1f8e39b1cba6"
       },
-      "status": "pending",
+      "status": "leased",
       "task_id": "990c8a1dd987413cb2f249952dead993689d77dbf05be3832083104496ee834c",
-      "updated_at": "2026-08-23T01:57:00Z",
+      "updated_at": "2026-08-23T04:06:57Z",
       "validation_rejection_count": 0
     },
     "9915c0f2e750661313156d707f5244675746b039987da043eed9a33617b2b29c": {
@@ -125901,7 +126076,7 @@
       "validation_rejection_count": 0
     },
     "9b86d98f0201966e4ad926955f1c49955e3c005e1bdde449245718656d65fe4f": {
-      "attempt_count": 26,
+      "attempt_count": 27,
       "created_at": "2026-08-18T12:30:00Z",
       "identity": {
         "agent": "page-hygiene-checker",
@@ -125916,14 +126091,21 @@
         "segmentation_profile": "full-page-v1",
         "validator_version": "check-signal-schema-v1"
       },
-      "last_attempt_at": "2026-08-23T01:56:00Z",
+      "last_attempt_at": "2026-08-23T04:06:57Z",
       "last_outcome": {
         "attempt_id": "c861b398883bb7057052a091a1e1ede79b04535c386dfd3e59319e3797341b96",
         "finished_at": "2026-08-23T01:57:00Z",
         "kind": "not_called",
         "provider_attempts": 0
       },
-      "lease": null,
+      "lease": {
+        "attempt_id": "069d2f73d365e60d062b22f04bdf4d51644f8b329a014d54c1334edfc2a67921",
+        "attempt_number": 27,
+        "expires_at": "2026-08-23T05:06:57Z",
+        "leased_at": "2026-08-23T04:06:57Z",
+        "worker_id": "gemini",
+        "workflow_run_id": "32617035211-1"
+      },
       "publication": {
         "last_attempt_at": null,
         "last_error": null,
@@ -125939,13 +126121,13 @@
       "source_metadata": {
         "repository_commit_sha": "295c35f04b97db70b6a1cda4b26c1f8e39b1cba6"
       },
-      "status": "pending",
+      "status": "leased",
       "task_id": "9b86d98f0201966e4ad926955f1c49955e3c005e1bdde449245718656d65fe4f",
-      "updated_at": "2026-08-23T01:57:00Z",
+      "updated_at": "2026-08-23T04:06:57Z",
       "validation_rejection_count": 0
     },
     "9b8bd06a189e0a2b8aabf2ac1b4ccdddb07ad141c3d658a0ae3f65cab8b15a14": {
-      "attempt_count": 26,
+      "attempt_count": 27,
       "created_at": "2026-08-18T12:30:00Z",
       "identity": {
         "agent": "page-hygiene-checker",
@@ -125960,14 +126142,21 @@
         "segmentation_profile": "full-page-v1",
         "validator_version": "check-signal-schema-v1"
       },
-      "last_attempt_at": "2026-08-23T01:56:00Z",
+      "last_attempt_at": "2026-08-23T04:06:57Z",
       "last_outcome": {
         "attempt_id": "7290db23a68457141a6499a9964e3e76084569f579975ac4e1c1007ae05bd421",
         "finished_at": "2026-08-23T01:57:00Z",
         "kind": "not_called",
         "provider_attempts": 0
       },
-      "lease": null,
+      "lease": {
+        "attempt_id": "41acd67020807fd00075de754710351faab03c36e8aaf3de3bc19d5ff5cec426",
+        "attempt_number": 27,
+        "expires_at": "2026-08-23T05:06:57Z",
+        "leased_at": "2026-08-23T04:06:57Z",
+        "worker_id": "gemini",
+        "workflow_run_id": "32617035211-1"
+      },
       "publication": {
         "last_attempt_at": null,
         "last_error": null,
@@ -125983,9 +126172,9 @@
       "source_metadata": {
         "repository_commit_sha": "295c35f04b97db70b6a1cda4b26c1f8e39b1cba6"
       },
-      "status": "pending",
+      "status": "leased",
       "task_id": "9b8bd06a189e0a2b8aabf2ac1b4ccdddb07ad141c3d658a0ae3f65cab8b15a14",
-      "updated_at": "2026-08-23T01:57:00Z",
+      "updated_at": "2026-08-23T04:06:57Z",
       "validation_rejection_count": 0
     },
     "9b8d67e7a8e21389c7a5a12b68489e93f08955f66e87ce4c606513eadf9b42a5": {
@@ -129761,7 +129950,7 @@
       "validation_rejection_count": 0
     },
     "a06a58ded18a252e0ae8cef680a7f0011a9ed604799f55955f1d3ac2dcd13a18": {
-      "attempt_count": 26,
+      "attempt_count": 27,
       "created_at": "2026-08-18T12:30:00Z",
       "identity": {
         "agent": "language-style-checker",
@@ -129776,14 +129965,21 @@
         "segmentation_profile": "full-page-v1",
         "validator_version": "check-signal-schema-v1"
       },
-      "last_attempt_at": "2026-08-23T01:56:00Z",
+      "last_attempt_at": "2026-08-23T04:06:57Z",
       "last_outcome": {
         "attempt_id": "0d2f7d42c57511ac8c969efde06e050e3a5ab776fbeda28ecb6e180442c93430",
         "finished_at": "2026-08-23T01:57:00Z",
         "kind": "not_called",
         "provider_attempts": 0
       },
-      "lease": null,
+      "lease": {
+        "attempt_id": "24fc91f09707f6a4ee33997a54f1d22263792eddca06779af88028d09bcd85c7",
+        "attempt_number": 27,
+        "expires_at": "2026-08-23T05:06:57Z",
+        "leased_at": "2026-08-23T04:06:57Z",
+        "worker_id": "gemini",
+        "workflow_run_id": "32617035211-1"
+      },
       "publication": {
         "last_attempt_at": null,
         "last_error": null,
@@ -129799,9 +129995,9 @@
       "source_metadata": {
         "repository_commit_sha": "295c35f04b97db70b6a1cda4b26c1f8e39b1cba6"
       },
-      "status": "pending",
+      "status": "leased",
       "task_id": "a06a58ded18a252e0ae8cef680a7f0011a9ed604799f55955f1d3ac2dcd13a18",
-      "updated_at": "2026-08-23T01:57:00Z",
+      "updated_at": "2026-08-23T04:06:57Z",
       "validation_rejection_count": 0
     },
     "a07660afbfa519f039457689cba709938f4deb2de1ba323482cfcd2815b9bd3d": {
@@ -136040,7 +136236,7 @@
       "validation_rejection_count": 0
     },
     "a844aae531f8bcf34d0cdd9b5d89e09683d42f845cff29ba327ff82334795cb2": {
-      "attempt_count": 26,
+      "attempt_count": 27,
       "created_at": "2026-08-18T12:30:00Z",
       "identity": {
         "agent": "page-hygiene-checker",
@@ -136055,14 +136251,21 @@
         "segmentation_profile": "full-page-v1",
         "validator_version": "check-signal-schema-v1"
       },
-      "last_attempt_at": "2026-08-23T01:56:00Z",
+      "last_attempt_at": "2026-08-23T04:06:57Z",
       "last_outcome": {
         "attempt_id": "2e8722ffa54c343e1641ef2d95f2c1efb082ac8693e865ec7299adcce58beb91",
         "finished_at": "2026-08-23T01:57:00Z",
         "kind": "not_called",
         "provider_attempts": 0
       },
-      "lease": null,
+      "lease": {
+        "attempt_id": "6b33d0e911df7c7eb974edfa57f1f3970e4e88cc3f244117006469d697534fa5",
+        "attempt_number": 27,
+        "expires_at": "2026-08-23T05:06:57Z",
+        "leased_at": "2026-08-23T04:06:57Z",
+        "worker_id": "gemini",
+        "workflow_run_id": "32617035211-1"
+      },
       "publication": {
         "last_attempt_at": null,
         "last_error": null,
@@ -136078,9 +136281,9 @@
       "source_metadata": {
         "repository_commit_sha": "295c35f04b97db70b6a1cda4b26c1f8e39b1cba6"
       },
-      "status": "pending",
+      "status": "leased",
       "task_id": "a844aae531f8bcf34d0cdd9b5d89e09683d42f845cff29ba327ff82334795cb2",
-      "updated_at": "2026-08-23T01:57:00Z",
+      "updated_at": "2026-08-23T04:06:57Z",
       "validation_rejection_count": 0
     },
     "a8514b7e9817a6d1f703549d0573282d1a7c4deb8ba381e088ba7a2cd638897f": {
@@ -136917,7 +137120,7 @@
       "validation_rejection_count": 0
     },
     "a990cc233b365f1bd42e6357694ea07f6e5a48c73032799e610ae82bbb2b06a3": {
-      "attempt_count": 26,
+      "attempt_count": 27,
       "created_at": "2026-08-18T12:30:00Z",
       "identity": {
         "agent": "language-style-checker",
@@ -136932,14 +137135,21 @@
         "segmentation_profile": "full-page-v1",
         "validator_version": "check-signal-schema-v1"
       },
-      "last_attempt_at": "2026-08-23T01:56:00Z",
+      "last_attempt_at": "2026-08-23T04:06:57Z",
       "last_outcome": {
         "attempt_id": "b3e1a9109e3b02c6dc19fa2a3a300623a2c4c44fa6b81beb457e90444de43ecf",
         "finished_at": "2026-08-23T01:57:00Z",
         "kind": "not_called",
         "provider_attempts": 0
       },
-      "lease": null,
+      "lease": {
+        "attempt_id": "2bf044f3e5f051380f2d3a2735d520baa5e3e790a4150e38134218c9bc78256a",
+        "attempt_number": 27,
+        "expires_at": "2026-08-23T05:06:57Z",
+        "leased_at": "2026-08-23T04:06:57Z",
+        "worker_id": "gemini",
+        "workflow_run_id": "32617035211-1"
+      },
       "publication": {
         "last_attempt_at": null,
         "last_error": null,
@@ -136955,9 +137165,9 @@
       "source_metadata": {
         "repository_commit_sha": "295c35f04b97db70b6a1cda4b26c1f8e39b1cba6"
       },
-      "status": "pending",
+      "status": "leased",
       "task_id": "a990cc233b365f1bd42e6357694ea07f6e5a48c73032799e610ae82bbb2b06a3",
-      "updated_at": "2026-08-23T01:57:00Z",
+      "updated_at": "2026-08-23T04:06:57Z",
       "validation_rejection_count": 0
     },
     "a99729098e2324001b15750728a597376f3a1e61b3f909d8638697111180c3a9": {
@@ -137605,7 +137815,7 @@
       "validation_rejection_count": 0
     },
     "aa83d138023dd382d40a49d23d488ba33d977aa3fcb029c7477a38cacc62ba42": {
-      "attempt_count": 26,
+      "attempt_count": 27,
       "created_at": "2026-08-18T12:30:00Z",
       "identity": {
         "agent": "page-hygiene-checker",
@@ -137620,14 +137830,21 @@
         "segmentation_profile": "full-page-v1",
         "validator_version": "check-signal-schema-v1"
       },
-      "last_attempt_at": "2026-08-23T01:56:00Z",
+      "last_attempt_at": "2026-08-23T04:06:57Z",
       "last_outcome": {
         "attempt_id": "83e9c4b9a2bb39d8f8e7565368d01efe8bf88bbba24743d60af328afe7061773",
         "finished_at": "2026-08-23T01:57:00Z",
         "kind": "not_called",
         "provider_attempts": 0
       },
-      "lease": null,
+      "lease": {
+        "attempt_id": "922be97ce681c413f81961103fc311c5d8fc3af1b49fa922146e80a42e62017e",
+        "attempt_number": 27,
+        "expires_at": "2026-08-23T05:06:57Z",
+        "leased_at": "2026-08-23T04:06:57Z",
+        "worker_id": "gemini",
+        "workflow_run_id": "32617035211-1"
+      },
       "publication": {
         "last_attempt_at": null,
         "last_error": null,
@@ -137643,9 +137860,9 @@
       "source_metadata": {
         "repository_commit_sha": "295c35f04b97db70b6a1cda4b26c1f8e39b1cba6"
       },
-      "status": "pending",
+      "status": "leased",
       "task_id": "aa83d138023dd382d40a49d23d488ba33d977aa3fcb029c7477a38cacc62ba42",
-      "updated_at": "2026-08-23T01:57:00Z",
+      "updated_at": "2026-08-23T04:06:57Z",
       "validation_rejection_count": 0
     },
     "aa9d207e6db673b907ece4247f27fbaa3bdf186f2700c265cb3a7336d5d2160f": {
@@ -140498,7 +140715,7 @@
       "validation_rejection_count": 0
     },
     "ae4b867d01500355dd6f3b0b37183168bef6b11f994af6c82685b42c6802b949": {
-      "attempt_count": 26,
+      "attempt_count": 27,
       "created_at": "2026-08-18T12:30:00Z",
       "identity": {
         "agent": "page-hygiene-checker",
@@ -140513,14 +140730,21 @@
         "segmentation_profile": "full-page-v1",
         "validator_version": "check-signal-schema-v1"
       },
-      "last_attempt_at": "2026-08-23T01:56:00Z",
+      "last_attempt_at": "2026-08-23T04:06:57Z",
       "last_outcome": {
         "attempt_id": "a526931ae82a07003c01c5aab6fbdf1a28f4eb92f6681856aa64faa59d0ccffb",
         "finished_at": "2026-08-23T01:57:00Z",
         "kind": "not_called",
         "provider_attempts": 0
       },
-      "lease": null,
+      "lease": {
+        "attempt_id": "1da37ece455af78e1011475eb296586015fb5b0f4f7f19e870088a1e5626d49d",
+        "attempt_number": 27,
+        "expires_at": "2026-08-23T05:06:57Z",
+        "leased_at": "2026-08-23T04:06:57Z",
+        "worker_id": "gemini",
+        "workflow_run_id": "32617035211-1"
+      },
       "publication": {
         "last_attempt_at": null,
         "last_error": null,
@@ -140536,9 +140760,9 @@
       "source_metadata": {
         "repository_commit_sha": "295c35f04b97db70b6a1cda4b26c1f8e39b1cba6"
       },
-      "status": "pending",
+      "status": "leased",
       "task_id": "ae4b867d01500355dd6f3b0b37183168bef6b11f994af6c82685b42c6802b949",
-      "updated_at": "2026-08-23T01:57:00Z",
+      "updated_at": "2026-08-23T04:06:57Z",
       "validation_rejection_count": 0
     },
     "ae506fcfb4e32e256ce18de96e3515ee5dca88191c68f582dd56c9cfb6395093": {
@@ -145221,7 +145445,7 @@
       "validation_rejection_count": 0
     },
     "b3db376312ec9e59e4d9d483920cfcc79949aa64ee9b673c80ac9d5716784dd4": {
-      "attempt_count": 26,
+      "attempt_count": 27,
       "created_at": "2026-08-18T12:30:00Z",
       "identity": {
         "agent": "language-style-checker",
@@ -145236,14 +145460,21 @@
         "segmentation_profile": "full-page-v1",
         "validator_version": "check-signal-schema-v1"
       },
-      "last_attempt_at": "2026-08-23T01:56:00Z",
+      "last_attempt_at": "2026-08-23T04:06:57Z",
       "last_outcome": {
         "attempt_id": "9fbde481006abf564263525c0a61669d258b99fae038864868bd30d641c59341",
         "finished_at": "2026-08-23T01:57:00Z",
         "kind": "not_called",
         "provider_attempts": 0
       },
-      "lease": null,
+      "lease": {
+        "attempt_id": "58a95d528151d0da29119e249e4744aecedc8c3500c2ad4f2c6135960d9e6760",
+        "attempt_number": 27,
+        "expires_at": "2026-08-23T05:06:57Z",
+        "leased_at": "2026-08-23T04:06:57Z",
+        "worker_id": "gemini",
+        "workflow_run_id": "32617035211-1"
+      },
       "publication": {
         "last_attempt_at": null,
         "last_error": null,
@@ -145259,9 +145490,9 @@
       "source_metadata": {
         "repository_commit_sha": "295c35f04b97db70b6a1cda4b26c1f8e39b1cba6"
       },
-      "status": "pending",
+      "status": "leased",
       "task_id": "b3db376312ec9e59e4d9d483920cfcc79949aa64ee9b673c80ac9d5716784dd4",
-      "updated_at": "2026-08-23T01:57:00Z",
+      "updated_at": "2026-08-23T04:06:57Z",
       "validation_rejection_count": 0
     },
     "b3dfe17c54a0c2ce14f16fe1dc546039288a7ae7d22f0cd92d5c8b5d2cfd68d4": {
@@ -147192,7 +147423,7 @@
       "validation_rejection_count": 0
     },
     "b60ae3dd2fc08987fcb1771ce7fea695df72018015ad6bcf7ea57745cf6245fe": {
-      "attempt_count": 26,
+      "attempt_count": 27,
       "created_at": "2026-08-18T12:30:00Z",
       "identity": {
         "agent": "page-hygiene-checker",
@@ -147207,14 +147438,21 @@
         "segmentation_profile": "full-page-v1",
         "validator_version": "check-signal-schema-v1"
       },
-      "last_attempt_at": "2026-08-23T01:56:00Z",
+      "last_attempt_at": "2026-08-23T04:06:57Z",
       "last_outcome": {
         "attempt_id": "21df6ba448fa5f96f7ee95b06fe39fa02f151753c5ef8d2d3bed8d4bc4dfd27f",
         "finished_at": "2026-08-23T01:57:00Z",
         "kind": "not_called",
         "provider_attempts": 0
       },
-      "lease": null,
+      "lease": {
+        "attempt_id": "059d84db9c25726e1e5f7544c1983320e53617e3f1a889bc947df21e0d1f5aeb",
+        "attempt_number": 27,
+        "expires_at": "2026-08-23T05:06:57Z",
+        "leased_at": "2026-08-23T04:06:57Z",
+        "worker_id": "gemini",
+        "workflow_run_id": "32617035211-1"
+      },
       "publication": {
         "last_attempt_at": null,
         "last_error": null,
@@ -147230,9 +147468,9 @@
       "source_metadata": {
         "repository_commit_sha": "295c35f04b97db70b6a1cda4b26c1f8e39b1cba6"
       },
-      "status": "pending",
+      "status": "leased",
       "task_id": "b60ae3dd2fc08987fcb1771ce7fea695df72018015ad6bcf7ea57745cf6245fe",
-      "updated_at": "2026-08-23T01:57:00Z",
+      "updated_at": "2026-08-23T04:06:57Z",
       "validation_rejection_count": 0
     },
     "b629675b10d3285a32e75b990bbba538ec359c7e95e4fb2848517ba5ef559c1c": {
@@ -147275,7 +147513,7 @@
       "validation_rejection_count": 0
     },
     "b63324672b2c51bd826499ba025a017b39d76f497f4a1bc43f7faad450518a3b": {
-      "attempt_count": 26,
+      "attempt_count": 27,
       "created_at": "2026-08-18T12:30:00Z",
       "identity": {
         "agent": "language-style-checker",
@@ -147290,14 +147528,21 @@
         "segmentation_profile": "full-page-v1",
         "validator_version": "check-signal-schema-v1"
       },
-      "last_attempt_at": "2026-08-23T01:56:00Z",
+      "last_attempt_at": "2026-08-23T04:06:57Z",
       "last_outcome": {
         "attempt_id": "494d80ce780e5694e4ed2279a32e123dd77224c8eb7c61ff279176b3273ff905",
         "finished_at": "2026-08-23T01:57:00Z",
         "kind": "not_called",
         "provider_attempts": 0
       },
-      "lease": null,
+      "lease": {
+        "attempt_id": "e62e0084fc27706bbb551daca8905352ca3258ee49f3bf0009f6cc28839ad78b",
+        "attempt_number": 27,
+        "expires_at": "2026-08-23T05:06:57Z",
+        "leased_at": "2026-08-23T04:06:57Z",
+        "worker_id": "gemini",
+        "workflow_run_id": "32617035211-1"
+      },
       "publication": {
         "last_attempt_at": null,
         "last_error": null,
@@ -147313,9 +147558,9 @@
       "source_metadata": {
         "repository_commit_sha": "295c35f04b97db70b6a1cda4b26c1f8e39b1cba6"
       },
-      "status": "pending",
+      "status": "leased",
       "task_id": "b63324672b2c51bd826499ba025a017b39d76f497f4a1bc43f7faad450518a3b",
-      "updated_at": "2026-08-23T01:57:00Z",
+      "updated_at": "2026-08-23T04:06:57Z",
       "validation_rejection_count": 0
     },
     "b6463865375849075f7f21192c002d4ac295d66e8b3a7d7b5de2255e0ec30e9e": {
@@ -148412,7 +148657,7 @@
       "validation_rejection_count": 0
     },
     "b7f3dd5b671dfee059c6342fb7d1fdf9d353f75bfb634e3e01df27c5aad738de": {
-      "attempt_count": 26,
+      "attempt_count": 27,
       "created_at": "2026-08-18T12:30:00Z",
       "identity": {
         "agent": "page-hygiene-checker",
@@ -148427,14 +148672,21 @@
         "segmentation_profile": "full-page-v1",
         "validator_version": "check-signal-schema-v1"
       },
-      "last_attempt_at": "2026-08-23T01:56:00Z",
+      "last_attempt_at": "2026-08-23T04:06:57Z",
       "last_outcome": {
         "attempt_id": "3c402fc63cff82cad78205f5cae40b6f3cccf9f129a724690edeca2144378c05",
         "finished_at": "2026-08-23T01:57:00Z",
         "kind": "not_called",
         "provider_attempts": 0
       },
-      "lease": null,
+      "lease": {
+        "attempt_id": "7c38dfd786970378507993f8410ef72e4a396fa223b1af77efadcc77c9b3bc83",
+        "attempt_number": 27,
+        "expires_at": "2026-08-23T05:06:57Z",
+        "leased_at": "2026-08-23T04:06:57Z",
+        "worker_id": "gemini",
+        "workflow_run_id": "32617035211-1"
+      },
       "publication": {
         "last_attempt_at": null,
         "last_error": null,
@@ -148450,9 +148702,9 @@
       "source_metadata": {
         "repository_commit_sha": "295c35f04b97db70b6a1cda4b26c1f8e39b1cba6"
       },
-      "status": "pending",
+      "status": "leased",
       "task_id": "b7f3dd5b671dfee059c6342fb7d1fdf9d353f75bfb634e3e01df27c5aad738de",
-      "updated_at": "2026-08-23T01:57:00Z",
+      "updated_at": "2026-08-23T04:06:57Z",
       "validation_rejection_count": 0
     },
     "b8216a4dd2837a812b0d1aba16c34721461fa7232522cdddd0bdedb302dfccb3": {
@@ -164419,7 +164671,7 @@
       "validation_rejection_count": 0
     },
     "cc3026397b1fe97dcb9d38ce65cf8c96d2c6463aa26614e87de882785886bfe3": {
-      "attempt_count": 26,
+      "attempt_count": 27,
       "created_at": "2026-08-18T12:30:00Z",
       "identity": {
         "agent": "language-style-checker",
@@ -164434,14 +164686,21 @@
         "segmentation_profile": "full-page-v1",
         "validator_version": "check-signal-schema-v1"
       },
-      "last_attempt_at": "2026-08-23T01:56:00Z",
+      "last_attempt_at": "2026-08-23T04:06:57Z",
       "last_outcome": {
         "attempt_id": "b0f5db508b13f691e9978a5388c69348bba0263074ebb6f8511ed8db3e0a2442",
         "finished_at": "2026-08-23T01:57:00Z",
         "kind": "not_called",
         "provider_attempts": 0
       },
-      "lease": null,
+      "lease": {
+        "attempt_id": "53a1012f86cc3dc50e64870f62dac86dbf283b4487e9cb7e08b53819b985f425",
+        "attempt_number": 27,
+        "expires_at": "2026-08-23T05:06:57Z",
+        "leased_at": "2026-08-23T04:06:57Z",
+        "worker_id": "gemini",
+        "workflow_run_id": "32617035211-1"
+      },
       "publication": {
         "last_attempt_at": null,
         "last_error": null,
@@ -164457,9 +164716,9 @@
       "source_metadata": {
         "repository_commit_sha": "295c35f04b97db70b6a1cda4b26c1f8e39b1cba6"
       },
-      "status": "pending",
+      "status": "leased",
       "task_id": "cc3026397b1fe97dcb9d38ce65cf8c96d2c6463aa26614e87de882785886bfe3",
-      "updated_at": "2026-08-23T01:57:00Z",
+      "updated_at": "2026-08-23T04:06:57Z",
       "validation_rejection_count": 0
     },
     "cc356f08de2e82148f62bdbc779d52b949a68a643df74504a60de5490e6085e4": {
@@ -166737,7 +166996,7 @@
       "validation_rejection_count": 0
     },
     "cf4ad73c966254c449eae753c3241b0d7ab2995d47450f9aaca25ae0d8daa9dd": {
-      "attempt_count": 26,
+      "attempt_count": 27,
       "created_at": "2026-08-18T12:30:00Z",
       "identity": {
         "agent": "page-hygiene-checker",
@@ -166752,14 +167011,21 @@
         "segmentation_profile": "full-page-v1",
         "validator_version": "check-signal-schema-v1"
       },
-      "last_attempt_at": "2026-08-23T01:56:00Z",
+      "last_attempt_at": "2026-08-23T04:06:57Z",
       "last_outcome": {
         "attempt_id": "0dd6f48e6832d63896b570989e6284cba44682200b9178b36d1dc0fc967f01b8",
         "finished_at": "2026-08-23T01:57:00Z",
         "kind": "not_called",
         "provider_attempts": 0
       },
-      "lease": null,
+      "lease": {
+        "attempt_id": "c46a34f735149e5d4e6f5cffced38d23f2ccf2836785a644065c659fadb2f63c",
+        "attempt_number": 27,
+        "expires_at": "2026-08-23T05:06:57Z",
+        "leased_at": "2026-08-23T04:06:57Z",
+        "worker_id": "gemini",
+        "workflow_run_id": "32617035211-1"
+      },
       "publication": {
         "last_attempt_at": null,
         "last_error": null,
@@ -166775,9 +167041,9 @@
       "source_metadata": {
         "repository_commit_sha": "295c35f04b97db70b6a1cda4b26c1f8e39b1cba6"
       },
-      "status": "pending",
+      "status": "leased",
       "task_id": "cf4ad73c966254c449eae753c3241b0d7ab2995d47450f9aaca25ae0d8daa9dd",
-      "updated_at": "2026-08-23T01:57:00Z",
+      "updated_at": "2026-08-23T04:06:57Z",
       "validation_rejection_count": 0
     },
     "cf5709ffe8ce1706788c720a806f713ce6d3e01be41014ba8a58cdb056f8886d": {
@@ -169909,7 +170175,7 @@
       "validation_rejection_count": 0
     },
     "d2a081f6999efc9e567607310380e36fbf873fa70dadcefe5ca09bc59b64e0fa": {
-      "attempt_count": 26,
+      "attempt_count": 27,
       "created_at": "2026-08-18T12:30:00Z",
       "identity": {
         "agent": "language-style-checker",
@@ -169924,14 +170190,21 @@
         "segmentation_profile": "full-page-v1",
         "validator_version": "check-signal-schema-v1"
       },
-      "last_attempt_at": "2026-08-23T01:56:00Z",
+      "last_attempt_at": "2026-08-23T04:06:57Z",
       "last_outcome": {
         "attempt_id": "ef1d9a9ce2aa0f2105b743ad9e8204106773d4a24f9fa5327843e849fc390200",
         "finished_at": "2026-08-23T01:57:00Z",
         "kind": "not_called",
         "provider_attempts": 0
       },
-      "lease": null,
+      "lease": {
+        "attempt_id": "ab9297629e2a4dfcbe5630ec1a4ca4bc74e35f741533eaacdf619610488dde96",
+        "attempt_number": 27,
+        "expires_at": "2026-08-23T05:06:57Z",
+        "leased_at": "2026-08-23T04:06:57Z",
+        "worker_id": "gemini",
+        "workflow_run_id": "32617035211-1"
+      },
       "publication": {
         "last_attempt_at": null,
         "last_error": null,
@@ -169947,9 +170220,9 @@
       "source_metadata": {
         "repository_commit_sha": "295c35f04b97db70b6a1cda4b26c1f8e39b1cba6"
       },
-      "status": "pending",
+      "status": "leased",
       "task_id": "d2a081f6999efc9e567607310380e36fbf873fa70dadcefe5ca09bc59b64e0fa",
-      "updated_at": "2026-08-23T01:57:00Z",
+      "updated_at": "2026-08-23T04:06:57Z",
       "validation_rejection_count": 0
     },
     "d2a5ae084417989e14a9326582251a50a17e9dcdd54d18f42690ecc8a21dbdd8": {
@@ -170353,7 +170626,7 @@
       "validation_rejection_count": 0
     },
     "d30ecb2ed4ea47bcd2b5d2f37adc976dfab79dec6afce26cdb6caae25f177e80": {
-      "attempt_count": 26,
+      "attempt_count": 27,
       "created_at": "2026-08-18T12:30:00Z",
       "identity": {
         "agent": "language-style-checker",
@@ -170368,14 +170641,21 @@
         "segmentation_profile": "full-page-v1",
         "validator_version": "check-signal-schema-v1"
       },
-      "last_attempt_at": "2026-08-23T01:56:00Z",
+      "last_attempt_at": "2026-08-23T04:06:57Z",
       "last_outcome": {
         "attempt_id": "8c25dffb0dc115b1c7b7e6d7caed75a4425a3a732c420338839f8a0b4a5b1e85",
         "finished_at": "2026-08-23T01:57:00Z",
         "kind": "not_called",
         "provider_attempts": 0
       },
-      "lease": null,
+      "lease": {
+        "attempt_id": "72443af530441bd14eade72afa3a1ef8f327a378ac1a1f42b74f870084d97a4a",
+        "attempt_number": 27,
+        "expires_at": "2026-08-23T05:06:57Z",
+        "leased_at": "2026-08-23T04:06:57Z",
+        "worker_id": "gemini",
+        "workflow_run_id": "32617035211-1"
+      },
       "publication": {
         "last_attempt_at": null,
         "last_error": null,
@@ -170391,9 +170671,9 @@
       "source_metadata": {
         "repository_commit_sha": "295c35f04b97db70b6a1cda4b26c1f8e39b1cba6"
       },
-      "status": "pending",
+      "status": "leased",
       "task_id": "d30ecb2ed4ea47bcd2b5d2f37adc976dfab79dec6afce26cdb6caae25f177e80",
-      "updated_at": "2026-08-23T01:57:00Z",
+      "updated_at": "2026-08-23T04:06:57Z",
       "validation_rejection_count": 0
     },
     "d30f4d2b71ca03c82096fb6e8d0cecb97a7933994b52542f9f6942940aabd754": {
@@ -183252,7 +183532,7 @@
       "validation_rejection_count": 0
     },
     "e2c1dad6317056e317f844a771a694785516d0bd8ef6f2a6c9987d51fdc026ad": {
-      "attempt_count": 26,
+      "attempt_count": 27,
       "created_at": "2026-08-18T12:30:00Z",
       "identity": {
         "agent": "language-style-checker",
@@ -183267,14 +183547,21 @@
         "segmentation_profile": "full-page-v1",
         "validator_version": "check-signal-schema-v1"
       },
-      "last_attempt_at": "2026-08-23T01:56:00Z",
+      "last_attempt_at": "2026-08-23T04:06:57Z",
       "last_outcome": {
         "attempt_id": "3cbd1b468773d0e8f3d0d11cdcce950246658b8b533a9612048d9c37c76f0521",
         "finished_at": "2026-08-23T01:57:00Z",
         "kind": "not_called",
         "provider_attempts": 0
       },
-      "lease": null,
+      "lease": {
+        "attempt_id": "4b5027291cc600df3f48631f3c0c9003734d816ff5d53fa25c6656d7e592f286",
+        "attempt_number": 27,
+        "expires_at": "2026-08-23T05:06:57Z",
+        "leased_at": "2026-08-23T04:06:57Z",
+        "worker_id": "gemini",
+        "workflow_run_id": "32617035211-1"
+      },
       "publication": {
         "last_attempt_at": null,
         "last_error": null,
@@ -183290,9 +183577,9 @@
       "source_metadata": {
         "repository_commit_sha": "295c35f04b97db70b6a1cda4b26c1f8e39b1cba6"
       },
-      "status": "pending",
+      "status": "leased",
       "task_id": "e2c1dad6317056e317f844a771a694785516d0bd8ef6f2a6c9987d51fdc026ad",
-      "updated_at": "2026-08-23T01:57:00Z",
+      "updated_at": "2026-08-23T04:06:57Z",
       "validation_rejection_count": 0
     },
     "e2dd119e15fac37b1d500957b412566df6a6c290c2f99ee392a6c503461f9fc0": {
@@ -183823,7 +184110,7 @@
       "validation_rejection_count": 0
     },
     "e39a43f4d7163d394c30644cafc5cab45938e55ce52bd79e5f836ad034e9cd01": {
-      "attempt_count": 26,
+      "attempt_count": 27,
       "created_at": "2026-08-18T12:30:00Z",
       "identity": {
         "agent": "language-style-checker",
@@ -183838,14 +184125,21 @@
         "segmentation_profile": "full-page-v1",
         "validator_version": "check-signal-schema-v1"
       },
-      "last_attempt_at": "2026-08-23T01:56:00Z",
+      "last_attempt_at": "2026-08-23T04:06:57Z",
       "last_outcome": {
         "attempt_id": "577b3ec5cd0bfc4f2ad68ecd93f2696ba7f6d4bde67c391b1378754433d73bf8",
         "finished_at": "2026-08-23T01:57:00Z",
         "kind": "not_called",
         "provider_attempts": 0
       },
-      "lease": null,
+      "lease": {
+        "attempt_id": "04f88435ea801f255bbf90a5d0cbd4af2e0fae37f5ca6a19f53bef3e874a36d2",
+        "attempt_number": 27,
+        "expires_at": "2026-08-23T05:06:57Z",
+        "leased_at": "2026-08-23T04:06:57Z",
+        "worker_id": "gemini",
+        "workflow_run_id": "32617035211-1"
+      },
       "publication": {
         "last_attempt_at": null,
         "last_error": null,
@@ -183861,9 +184155,9 @@
       "source_metadata": {
         "repository_commit_sha": "295c35f04b97db70b6a1cda4b26c1f8e39b1cba6"
       },
-      "status": "pending",
+      "status": "leased",
       "task_id": "e39a43f4d7163d394c30644cafc5cab45938e55ce52bd79e5f836ad034e9cd01",
-      "updated_at": "2026-08-23T01:57:00Z",
+      "updated_at": "2026-08-23T04:06:57Z",
       "validation_rejection_count": 0
     },
     "e39fd2bde03e023071fad18c2266ece13375351fc7cc09a9e6ca4604699df3ad": {
@@ -185579,7 +185873,7 @@
       "validation_rejection_count": 0
     },
     "e5f0d31aecd0c0d2e4d8e06e5a0ea5eae833a6688a67ac694c6eab4be3c53e18": {
-      "attempt_count": 26,
+      "attempt_count": 27,
       "created_at": "2026-08-18T12:30:00Z",
       "identity": {
         "agent": "language-style-checker",
@@ -185594,14 +185888,21 @@
         "segmentation_profile": "full-page-v1",
         "validator_version": "check-signal-schema-v1"
       },
-      "last_attempt_at": "2026-08-23T01:56:00Z",
+      "last_attempt_at": "2026-08-23T04:06:57Z",
       "last_outcome": {
         "attempt_id": "a9317f15a08fa7a220229edeb97a21b08f6a612a4111447152bc127038d4d88f",
         "finished_at": "2026-08-23T01:57:00Z",
         "kind": "not_called",
         "provider_attempts": 0
       },
-      "lease": null,
+      "lease": {
+        "attempt_id": "8d400506aef5b2d1cc1e7c5a6ae32c1a2ca2ec08a44e32fca8c7b69628873f97",
+        "attempt_number": 27,
+        "expires_at": "2026-08-23T05:06:57Z",
+        "leased_at": "2026-08-23T04:06:57Z",
+        "worker_id": "gemini",
+        "workflow_run_id": "32617035211-1"
+      },
       "publication": {
         "last_attempt_at": null,
         "last_error": null,
@@ -185617,9 +185918,9 @@
       "source_metadata": {
         "repository_commit_sha": "295c35f04b97db70b6a1cda4b26c1f8e39b1cba6"
       },
-      "status": "pending",
+      "status": "leased",
       "task_id": "e5f0d31aecd0c0d2e4d8e06e5a0ea5eae833a6688a67ac694c6eab4be3c53e18",
-      "updated_at": "2026-08-23T01:57:00Z",
+      "updated_at": "2026-08-23T04:06:57Z",
       "validation_rejection_count": 0
     },
     "e5f46e9501e5d8f5848bc9af62c67349eaefad0fbd3fb7953ac4727dfbbcc0c9": {
@@ -194125,7 +194426,7 @@
       "validation_rejection_count": 0
     },
     "ef2a958119c360a86ab516db384842f0566d88efa211e79a8575de33f2e84543": {
-      "attempt_count": 26,
+      "attempt_count": 27,
       "created_at": "2026-08-18T12:30:00Z",
       "identity": {
         "agent": "page-hygiene-checker",
@@ -194140,14 +194441,21 @@
         "segmentation_profile": "full-page-v1",
         "validator_version": "check-signal-schema-v1"
       },
-      "last_attempt_at": "2026-08-23T01:56:00Z",
+      "last_attempt_at": "2026-08-23T04:06:57Z",
       "last_outcome": {
         "attempt_id": "893d70e65a864a137af7a4437fc67a29adbbad48d2a835515c2ed423098a25a6",
         "finished_at": "2026-08-23T01:57:00Z",
         "kind": "not_called",
         "provider_attempts": 0
       },
-      "lease": null,
+      "lease": {
+        "attempt_id": "d35e56b78e5671430013248e1cf9464f34e2eecc204c7651e0d7d86883c2eca2",
+        "attempt_number": 27,
+        "expires_at": "2026-08-23T05:06:57Z",
+        "leased_at": "2026-08-23T04:06:57Z",
+        "worker_id": "gemini",
+        "workflow_run_id": "32617035211-1"
+      },
       "publication": {
         "last_attempt_at": null,
         "last_error": null,
@@ -194163,9 +194471,9 @@
       "source_metadata": {
         "repository_commit_sha": "295c35f04b97db70b6a1cda4b26c1f8e39b1cba6"
       },
-      "status": "pending",
+      "status": "leased",
       "task_id": "ef2a958119c360a86ab516db384842f0566d88efa211e79a8575de33f2e84543",
-      "updated_at": "2026-08-23T01:57:00Z",
+      "updated_at": "2026-08-23T04:06:57Z",
       "validation_rejection_count": 0
     },
     "ef3107e82f59f0054a3536d2f818acf9822a1d3f541a312f987f29f3c9cf26f0": {
