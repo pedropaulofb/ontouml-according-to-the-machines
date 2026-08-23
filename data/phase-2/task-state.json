@@ -65631,37 +65631,30 @@
       },
       "last_attempt_at": "2026-08-23T11:00:43Z",
       "last_outcome": {
-        "attempt_id": "d4bc08517940e3ed3151eb24c705ef6040c0ef57171b516d3dc2300c03bda2b6",
-        "finished_at": "2026-08-23T09:39:54Z",
-        "kind": "provider_unavailable",
+        "attempt_id": "47eede6bc334f6c4bb665fe5bc21e62bdf6a90e7181b452fdf001bceb357f7a5",
+        "finished_at": "2026-08-23T11:01:47Z",
+        "kind": "valid",
         "provider_attempts": 2
       },
-      "lease": {
-        "attempt_id": "47eede6bc334f6c4bb665fe5bc21e62bdf6a90e7181b452fdf001bceb357f7a5",
-        "attempt_number": 35,
-        "expires_at": "2026-08-23T12:00:43Z",
-        "leased_at": "2026-08-23T11:00:43Z",
-        "worker_id": "gemini",
-        "workflow_run_id": "32635303291-1"
-      },
+      "lease": null,
       "publication": {
-        "last_attempt_at": null,
+        "last_attempt_at": "2026-08-23T11:02:17Z",
         "last_error": null,
-        "payload_path": null,
+        "payload_path": "data/phase-2/publications/509d68ab7f04c6781e09457fc1a9d9a1d38351a54f1c08fb9452c2a6e69561b9.json",
         "status": "not_required"
       },
       "result_record": {
-        "event_path": "data/phase-2/results/509d68ab7f04c6781e09457fc1a9d9a1d38351a54f1c08fb9452c2a6e69561b9/d4bc08517940e3ed3151eb24c705ef6040c0ef57171b516d3dc2300c03bda2b6.json",
-        "output_sha256": null,
-        "validated_output_path": null
+        "event_path": "data/phase-2/results/509d68ab7f04c6781e09457fc1a9d9a1d38351a54f1c08fb9452c2a6e69561b9/47eede6bc334f6c4bb665fe5bc21e62bdf6a90e7181b452fdf001bceb357f7a5.json",
+        "output_sha256": "bbb47dcf989b3ad9f3cceb117c0148725f655855d56d0e501a1501becc2eaf7b",
+        "validated_output_path": "data/phase-2/results/509d68ab7f04c6781e09457fc1a9d9a1d38351a54f1c08fb9452c2a6e69561b9/47eede6bc334f6c4bb665fe5bc21e62bdf6a90e7181b452fdf001bceb357f7a5.md"
       },
-      "retry_not_before": "2026-08-23T10:39:53Z",
+      "retry_not_before": null,
       "source_metadata": {
         "repository_commit_sha": "295c35f04b97db70b6a1cda4b26c1f8e39b1cba6"
       },
-      "status": "leased",
+      "status": "completed",
       "task_id": "509d68ab7f04c6781e09457fc1a9d9a1d38351a54f1c08fb9452c2a6e69561b9",
-      "updated_at": "2026-08-23T11:00:43Z",
+      "updated_at": "2026-08-23T11:02:17Z",
       "validation_rejection_count": 0
     },
     "50a6b88a154677c9f18a4b81859a75738cd3ce492282b79e2fe71930a4d940d6": {
