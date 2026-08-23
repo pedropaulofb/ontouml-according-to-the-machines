@@ -4,7 +4,7 @@
 
 Subkind (`«subkind»`) is characterized as a rigid sortal specialization that carries, rather than supplies, a principle of identity. A Subkind refines a Kind and depends on the identity principle supplied by a unique Kind or ultimate sortal; it is therefore distinguished from Kind, which supplies the identity principle, while remaining grouped with Kind as a rigid sortal.
 
-The consolidated sources support a constraint-oriented reading of Subkind: it specializes a unique Kind or ultimate sortal and, as a rigid type, must not specialize anti-rigid types such as Phase, Role, or RoleMixin. Earlier source material presents Subkind as a rigid restriction of a substance sortal, while later OntoUML 2-oriented material allows Subkind to refine endurant kinds of supported ontological natures, with the ultimate Kind determining the relevant identity principle and ontological nature.
+A constraint-oriented reading of Subkind indicates that it specializes a unique Kind or ultimate sortal and, as a rigid type, must not specialize anti-rigid types such as Phase, Role, or RoleMixin. Earlier source material presents Subkind as a rigid restriction of a substance sortal, while later OntoUML 2-oriented material allows Subkind to refine endurant kinds of supported ontological natures, with the ultimate Kind determining the relevant identity principle and ontological nature.
 
 Subkind specialization is distinct from phase classification. A generalization set of Subkinds may form a partition, but the available sources do not require every Subkind generalization set to be a partition. One source also notes that the Subkind stereotype may be omitted in conceptual specifications without loss of clarity.
 
@@ -12,11 +12,11 @@ In multi-level and powertype-oriented contexts, Subkind is used to mark lower-le
 
 ## Stereotype Profile
 
-The stereotype profile is not yet available.
+The stereotype profile is unavailable.
 
 ## Examples
 
-Examples are not yet available.
+Examples are unavailable.
 
 ## References
 
@@ -52,3 +52,4 @@ Examples are not yet available.
 | 2026-06-30 | Phase 2 | Phase 2 automated resolver | Signal resolution | resolve-page-hygiene-signal-issue-v1.2.2 | Phase 2 automated resolver: page-hygiene signals v1.2.2 | GitHub issue #166 | Applied accepted page-hygiene-checker signal edits through automated Phase 2 resolution; not a conceptual or source-faithfulness validation. |
 | 2026-07-17 | Phase 2 | Phase 2 automated resolver | Signal resolution | resolve-language-style-signal-issue-v1.2.2 | Phase 2 automated resolver: language-style signals v1.2.2 | GitHub issue #264 | Applied accepted language-style-checker signal edits through automated Phase 2 resolution; not a conceptual or source-faithfulness validation. |
 | 2026-07-24 | Phase 2 | Phase 2 automated resolver | Signal resolution | resolve-language-style-signal-issue-v1.2.2 | Phase 2 automated resolver: language-style signals v1.2.2 | GitHub issue #332 | Applied accepted language-style-checker signal edits through automated Phase 2 resolution; not a conceptual or source-faithfulness validation. |
+| 2026-08-23 | Phase 2 | Phase 2 automated resolver | Signal resolution | resolve-language-style-signal-issue-v1.2.2 | Phase 2 automated resolver: language-style signals v1.2.2 | GitHub issue #566 | Applied accepted language-style-checker signal edits through automated Phase 2 resolution; not a conceptual or source-faithfulness validation. |
