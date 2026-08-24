@@ -1,0 +1,50 @@
+{
+  "aggregation": {
+    "source_event_sha256": "5b52f49f80aff81b20b5389fe079cc5488b07ca87ee0ea1fe2555281dd76c235",
+    "transport_filename": "7d21c61314a878e86e091b8f84d7715aa53b72905fd8e32d5b3a0cd6a0a5ea30.json"
+  },
+  "attempt_finished_at": "2026-08-24T21:52:07Z",
+  "attempt_id": "7d21c61314a878e86e091b8f84d7715aa53b72905fd8e32d5b3a0cd6a0a5ea30",
+  "attempt_started_at": "2026-08-24T21:51:57Z",
+  "event_version": 1,
+  "model": "gemini-3.7-flash",
+  "outcome": "valid",
+  "output_artifact": "data/phase-2/results/cc3026397b1fe97dcb9d38ce65cf8c96d2c6463aa26614e87de882785886bfe3/7d21c61314a878e86e091b8f84d7715aa53b72905fd8e32d5b3a0cd6a0a5ea30.md",
+  "output_sha256": "d438c616799e5726536446f7f0bb21a0af3e2ea687bd966c4263ca0bc2860f35",
+  "provider": "gemini",
+  "provider_attempts": 1,
+  "quota_observations": [
+    {
+      "call_source": "signal",
+      "event_id": "01787608327462609623-957767fc-66cc-439c-a74f-b415dc8d9323",
+      "failure": null,
+      "headers": {},
+      "model": "gemini-3.7-flash",
+      "observed_at": "2026-08-24T21:52:07Z",
+      "outcome": "success",
+      "provider": "gemini",
+      "request_sent": true,
+      "schema_version": 1,
+      "task_id": "cc3026397b1fe97dcb9d38ce65cf8c96d2c6463aa26614e87de882785886bfe3",
+      "usage": {
+        "cached_tokens": null,
+        "input_tokens": 2943,
+        "output_tokens": 242,
+        "reasoning_tokens": null,
+        "total_tokens": 3185
+      }
+    }
+  ],
+  "runner_returncode": 0,
+  "signal_count": 0,
+  "task_id": "cc3026397b1fe97dcb9d38ce65cf8c96d2c6463aa26614e87de882785886bfe3",
+  "usage": {
+    "cached_tokens": null,
+    "input_tokens": 2943,
+    "output_tokens": 242,
+    "reasoning_tokens": null,
+    "total_tokens": 3185
+  },
+  "worker_id": "gemini",
+  "workflow_run_id": "32781601078-1"
+}
