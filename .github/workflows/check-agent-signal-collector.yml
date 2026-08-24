@@ -199,7 +199,7 @@ jobs:
           persist-credentials: false
 
       - name: Download diagnostic artifacts
-        uses: actions/download-artifact@v7
+        uses: actions/download-artifact@v8
         continue-on-error: true
         with:
           name: phase-2-diagnostic-${{ github.run_id }}-${{ github.run_attempt }}
@@ -398,7 +398,7 @@ jobs:
         with:
           python-version: "3.12"
       - run: python -m pip install -r requirements.txt
-      - uses: actions/download-artifact@v7
+      - uses: actions/download-artifact@v8
         with:
           name: phase-2-provider-work-plans-${{ github.run_id }}-${{ github.run_attempt }}
           path: .tmp/phase-2/work-plans
@@ -430,7 +430,7 @@ jobs:
         with:
           python-version: "3.12"
       - run: python -m pip install -r requirements.txt
-      - uses: actions/download-artifact@v7
+      - uses: actions/download-artifact@v8
         with:
           name: phase-2-provider-work-plans-${{ github.run_id }}-${{ github.run_attempt }}
           path: .tmp/phase-2/work-plans
@@ -462,7 +462,7 @@ jobs:
         with:
           python-version: "3.12"
       - run: python -m pip install -r requirements.txt
-      - uses: actions/download-artifact@v7
+      - uses: actions/download-artifact@v8
         with:
           name: phase-2-provider-work-plans-${{ github.run_id }}-${{ github.run_attempt }}
           path: .tmp/phase-2/work-plans
@@ -494,7 +494,7 @@ jobs:
         with:
           python-version: "3.12"
       - run: python -m pip install -r requirements.txt
-      - uses: actions/download-artifact@v7
+      - uses: actions/download-artifact@v8
         with:
           name: phase-2-provider-work-plans-${{ github.run_id }}-${{ github.run_attempt }}
           path: .tmp/phase-2/work-plans
@@ -541,7 +541,7 @@ jobs:
           python-version: "3.12"
 
       - name: Download available provider artifacts
-        uses: actions/download-artifact@v7
+        uses: actions/download-artifact@v8
         continue-on-error: true
         with:
           pattern: phase-2-worker-*-${{ github.run_id }}-${{ github.run_attempt }}
