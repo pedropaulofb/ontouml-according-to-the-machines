@@ -176,7 +176,7 @@ Check signal: page-hygiene-checker: classes/event
 
 ## Current implementation status
 
-The current implementation includes check execution, output validation, page-plus-agent issue routing, duplicate-control for comments, content-addressed quota-aware collection through SambaNova, Groq, Gemini, and OpenRouter, archived manual signal-review prompts for the two LLM-based check agents, automated signal-resolution prompts for those check agents, deterministic patch application, PR creation, branch update by rebase, squash auto-merge enablement, issue closure, and a one-shot Groq fallback for recognized primary Gemini resolver unavailability.
+The current implementation includes check execution, output validation, page-plus-agent issue routing, duplicate-control for comments, content-addressed quota-aware collection through SambaNova, Groq, Gemini, and OpenRouter, archived manual signal-review prompts for the two LLM-based check agents, automated signal-resolution prompts for those check agents, deterministic patch application, PR creation, branch update by rebase, squash auto-merge enablement, issue closure, and a one-shot Gemini `gemini-3.6-flash` fallback for recognized primary Gemini resolver unavailability.
 
 Signal collection reconciles 39 canonical pages × 2 LLM check agents × 25 configured provider-model slots into 1,950 desired tasks. The global repository SHA is traceability metadata rather than completion identity, so unrelated commits do not repeat completed work.
 
@@ -276,7 +276,7 @@ The current implementation can:
 - select the oldest eligible open `page-hygiene-checker` or `language-style-checker` signal issue for automated resolution;
 - manually resolve a selected issue through `workflow_dispatch`;
 - keep `gemini-3.5-flash` as the primary Gemini model for automated signal resolution;
-- run Groq `openai/gpt-oss-120b` once as the resolver fallback when the primary Gemini call fails with recognized provider-unavailability diagnostics;
+- run Gemini `gemini-3.6-flash` once as the resolver fallback when the primary Gemini call fails with recognized provider-unavailability diagnostics;
 - fail normally when the primary resolver call fails for non-provider-unavailability reasons;
 - fail normally when the fallback resolver model also fails;
 - generate and validate a strict JSON resolution plan;
@@ -298,7 +298,7 @@ These capabilities do not mean every scheduled LLM output is valid. Invalid mode
 
 Transient provider-side availability failures and empty provider responses can remain nonfatal in the canonical scheduled signal-collector workflow when `--allow-provider-failures` is used. Quota, rate-limit, authentication, configuration, request-shape, unknown provider, resolver, and issue-manager failures remain fatal unless the relevant retry or wrapper logic succeeds.
 
-The automated resolver workflow has a different failure-handling policy. It does not suppress primary resolver failures in general. It performs one Groq fallback attempt only for recognized primary Gemini provider unavailability; invalid plans and other failures do not trigger fallback.
+The automated resolver workflow has a different failure-handling policy. It does not suppress primary resolver failures in general. It performs one Gemini `gemini-3.6-flash` fallback attempt only for recognized primary Gemini provider unavailability; invalid plans and other failures do not trigger fallback.
 
 ### Current limitations and operational risks
 

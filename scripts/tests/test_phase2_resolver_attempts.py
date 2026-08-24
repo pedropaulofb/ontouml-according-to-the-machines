@@ -329,7 +329,37 @@ class ResolverAttemptTests(unittest.TestCase):
         self.assertEqual(result, 1)
         provider_call.assert_not_called()
         self.assertIn("provider_error_kind=provider_unavailable", provider_error)
-        self.assertIn("no duplicate Gemini call was made", provider_error)
+        self.assertIn("no duplicate primary-model call was made", provider_error)
+        self.assertIn("configured Gemini fallback remains eligible", provider_error)
+
+    def test_fallback_eligibility_uses_gemini_36_request_identity(self) -> None:
+        primary = self.context()
+        fallback = self.context(
+            provider="gemini",
+            model="gemini-3.6-flash",
+            max_tokens=6000,
+        )
+        state = resolver_attempt_state.build_initial_state(timestamp=TIMESTAMP)
+
+        with (
+            mock.patch.object(resolver, "build_resolver_attempt_context", return_value=fallback) as build,
+            mock.patch.object(resolver, "attempt_is_blocked", return_value=False),
+            mock.patch.object(resolver, "resolver_slot_eligibility", return_value=(True, "eligible")) as eligible,
+        ):
+            result = resolver._fallback_remains_eligible(context=primary, attempt_state=state, now=NOW)
+
+        self.assertTrue(result)
+        build.assert_called_once_with(
+            issue=primary.issue,
+            page_text=primary.page_text,
+            prompt=primary.prompt,
+            active_comments=primary.active_comments,
+            provider="gemini",
+            model="gemini-3.6-flash",
+            max_completion_tokens=6000,
+            max_attempts=1,
+        )
+        eligible.assert_called_once_with("gemini", "gemini-3.6-flash", now=NOW)
 
     def test_groq_plan_uses_existing_exact_replacement_validation(self) -> None:
         page = (

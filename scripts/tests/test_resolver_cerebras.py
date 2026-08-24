@@ -61,7 +61,7 @@ class ResolverProviderTests(unittest.TestCase):
                 1,
             )
 
-    def test_workflow_uses_cross_provider_groq_fallback(self) -> None:
+    def test_workflow_uses_fixed_gemini_fallback(self) -> None:
         workflow = (
             Path(__file__).resolve().parents[2] / ".github" / "workflows" / "phase-2-signal-resolver.yml"
         ).read_text(encoding="utf-8")
@@ -70,16 +70,25 @@ class ResolverProviderTests(unittest.TestCase):
         self.assertIn('default: "gemini-3.5-flash"', workflow)
         self.assertNotIn("CEREBRAS_API_KEY", workflow)
         self.assertNotIn('fallback_provider="cerebras"', workflow)
-        self.assertIn('fallback_provider="groq"', workflow)
-        self.assertIn('fallback_model="openai/gpt-oss-120b"', workflow)
+        self.assertIn('fallback_provider="gemini"', workflow)
+        self.assertIn('fallback_model="gemini-3.6-flash"', workflow)
         self.assertIn('fallback_max_completion_tokens="6000"', workflow)
+        self.assertEqual(resolver.RESOLVER_FALLBACK_SPEC, ("gemini", "gemini-3.6-flash"))
+        self.assertEqual(resolver.RESOLVER_FALLBACK_MAX_COMPLETION_TOKENS, 6000)
         self.assertIn(
             'run_resolver "$fallback_provider" "$fallback_model"',
             workflow,
         )
         self.assertIn('if [[ "$provider" != "gemini" ]]; then', workflow)
+        self.assertIn(
+            'if [[ "$provider" == "$fallback_provider" && "$model" == "$fallback_model" ]]; then',
+            workflow,
+        )
+        self.assertIn("a duplicate provider call is not allowed", workflow)
         self.assertIn("provider_unavailable_issue_number()", workflow)
         self.assertNotIn("Running Cerebras fallback", workflow)
+        self.assertIn("Running Gemini fallback once", workflow)
+        self.assertNotIn("Running Groq fallback", workflow)
         self.assertIn("PHASE2_RESOLVER_ATTEMPT_EVENT_DIR", workflow)
         self.assertIn("--add data/phase-2/resolver-attempt-state.json", workflow)
         self.assertIn("--resolver-attempt-events", workflow)

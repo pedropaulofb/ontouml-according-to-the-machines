@@ -167,13 +167,19 @@ class SchedulerSelectionTests(unittest.TestCase):
         self.assertEqual(second[slot.provider]["assignments"], [])
 
     def test_shared_resolver_slots_are_withheld_only_when_work_is_pending(self) -> None:
-        shared = self.registry.find("gemini", "gemini-3.5-flash")
-        assert shared is not None
-        _tasks, plans = self.build(
-            [task_record(shared.provider, shared.model, "page.md")],
-            resolver_work_pending=True,
+        self.assertEqual(
+            task_scheduler.SHARED_RESOLVER_SPECS,
+            {("gemini", "gemini-3.5-flash"), ("gemini", "gemini-3.6-flash")},
         )
-        self.assertEqual(plans["gemini"]["assignments"], [])
+        for provider, model in task_scheduler.SHARED_RESOLVER_SPECS:
+            with self.subTest(provider=provider, model=model):
+                shared = self.registry.find(provider, model)
+                assert shared is not None
+                _tasks, plans = self.build(
+                    [task_record(shared.provider, shared.model, "page.md")],
+                    resolver_work_pending=True,
+                )
+                self.assertEqual(plans[provider]["assignments"], [])
 
     def test_openrouter_shared_capacity_is_capped_at_fifty(self) -> None:
         slot = next(slot for slot in self.registry.executable_slots if slot.provider == "openrouter")
@@ -216,11 +222,14 @@ class SchedulerCliStateNeutralityTests(unittest.TestCase):
                 repo_root = Path(temporary)
                 for relative in (
                     Path("config/phase-2"),
-                    Path("data/phase-2"),
                     Path("docs/stereotypes"),
                     Path("prompts/phase-2"),
                 ):
                     shutil.copytree(REPO_ROOT / relative, repo_root / relative)
+                fixture_data_root = repo_root / "data/phase-2"
+                fixture_data_root.mkdir(parents=True)
+                for filename in ("task-state.json", "quota-state.json"):
+                    shutil.copy2(REPO_ROOT / "data/phase-2" / filename, fixture_data_root / filename)
                 subprocess.run(["git", "init", "--quiet"], cwd=repo_root, check=True)
                 subprocess.run(
                     ["git", "config", "user.email", "phase2-tests@example.invalid"],

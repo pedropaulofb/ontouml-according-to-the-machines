@@ -47,7 +47,7 @@ QUOTA_PROVENANCE_FIELDS = {
     "reset_at",
     "retry_not_before",
 }
-SHARED_RESOLVER_SPECS = {("gemini", "gemini-3.5-flash"), ("groq", "openai/gpt-oss-120b")}
+SHARED_RESOLVER_SPECS = {("gemini", "gemini-3.5-flash"), ("gemini", "gemini-3.6-flash")}
 
 
 class QuotaStateError(ValueError):

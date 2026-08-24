@@ -107,8 +107,8 @@ jobs:
 
           provider="${PROVIDER_INPUT:-gemini}"
           model="${MODEL_INPUT:-gemini-3.5-flash}"
-          fallback_provider="groq"
-          fallback_model="openai/gpt-oss-120b"
+          fallback_provider="gemini"
+          fallback_model="gemini-3.6-flash"
           fallback_max_completion_tokens="6000"
           dry_run="${DRY_RUN_INPUT:-false}"
           issue_label="${ISSUE_INPUT:-oldest eligible open issue}"
@@ -229,7 +229,7 @@ jobs:
           fallback_issue=""
 
           if [[ "$provider" != "gemini" ]]; then
-            echo "::error::Fallback skipped: provider=${provider}; cross-provider fallback is only configured for primary Gemini resolver runs."
+            echo "::error::Fallback skipped: provider=${provider}; fallback is only configured for primary Gemini resolver runs."
             exit "$primary_exit_code"
           fi
 
@@ -238,7 +238,12 @@ jobs:
             exit "$primary_exit_code"
           fi
 
-          echo "::warning::Primary Gemini resolver model failed with provider unavailability for issue #${fallback_issue}. Running Groq fallback once: ${fallback_model}"
+          if [[ "$provider" == "$fallback_provider" && "$model" == "$fallback_model" ]]; then
+            echo "::error::Fallback skipped: selected primary provider/model already matches the configured fallback, so a duplicate provider call is not allowed."
+            exit "$primary_exit_code"
+          fi
+
+          echo "::warning::Primary Gemini resolver model failed with provider unavailability for issue #${fallback_issue}. Running Gemini fallback once: ${fallback_model}"
           preserve_primary_provider_error_artifacts
 
           if run_resolver "$fallback_provider" "$fallback_model" "${ISSUE_INPUT:-$fallback_issue}" "fallback" "$fallback_max_completion_tokens"; then

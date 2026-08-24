@@ -44,8 +44,8 @@ Production secrets:
 | Secret | Use |
 |---|---|
 | `SAMBANOVA_API_KEY` | SambaNova signal tasks |
-| `GROQ_API_KEY` | Groq signal tasks and resolver fallback |
-| `GEMINI_API_KEY` | Gemini signal tasks and resolver primary |
+| `GROQ_API_KEY` | Groq signal tasks and manually selected Groq resolver primary |
+| `GEMINI_API_KEY` | Gemini signal tasks and default resolver primary/fallback |
 | `OPENROUTER_API_KEY` | OpenRouter signal tasks |
 | `PHASE2_AUTOMATION_TOKEN` | Lease/state commits, result publication, resolver branches, PRs, and issue updates |
 
@@ -158,7 +158,7 @@ The common examples above are intentionally small. The following existing comman
 | `--allow-rejected-check-outputs` | Preserve validator-rejected outputs without making the diagnostic batch fatal. |
 | `--allow-provider-failures` | Keep recognized transient provider availability failures nonfatal; actionable failures remain fatal. |
 | `--quota-state` | Select the persisted best-known quota state used by the pre-call guard. |
-| `--resolver-work-pending` | Withhold the shared Gemini and Groq resolver slots from signal diagnostics. |
+| `--resolver-work-pending` | Withhold the two shared Gemini resolver slots from signal diagnostics. |
 
 ### `run_check_agent.py`
 
@@ -204,7 +204,7 @@ The scheduler:
 - selects the oldest eligible tasks rather than rotating by time;
 - respects every shared and model-specific quota group;
 - bounds provider work by the execution-time budget and optional per-provider task limit;
-- reserves Gemini `gemini-3.5-flash` and Groq `openai/gpt-oss-120b` for eligible resolver work before signal tasks;
+- reserves Gemini `gemini-3.5-flash` and `gemini-3.6-flash` for eligible resolver work before signal tasks;
 - never calls a slot blocked by policy or execution configuration;
 - allows one controlled endpoint-availability recheck after cooldown;
 - emits no provider call when no eligible task exists.
@@ -288,14 +288,14 @@ Production defaults:
 | Role | Provider/model | Attempts | Completion cap |
 |---|---|---:|---:|
 | Primary | `gemini:gemini-3.5-flash` | 1 | 8,000 |
-| Fallback | `groq:openai/gpt-oss-120b` | 1 | 6,000 |
+| Fallback | `gemini:gemini-3.6-flash` | 1 | 6,000 |
 
-Groq fallback runs only for a recognized primary Gemini provider-unavailability failure. An invalid plan, quota block, policy block, authentication/configuration error, or other failure does not trigger it. Primary and fallback calls use the shared quota state. Persisted content-addressed resolver attempts prevent an unchanged terminal attempt from being repeated.
+The Gemini `gemini-3.6-flash` fallback runs only for a recognized primary Gemini provider-unavailability failure. An invalid plan, quota block, policy block, authentication/configuration error, or other failure does not trigger it. Primary and fallback calls use the shared quota state. Persisted content-addressed resolver attempts prevent an unchanged terminal attempt from being repeated.
 
 Resolver dry-run still makes a real provider call, generates and validates a plan, and writes local artifacts, but it does not edit the page or write to GitHub:
 
 ```bash
-python scripts/phase-2/resolve_signal_issue.py --repo OWNER/REPOSITORY --issue ISSUE_NUMBER --provider groq --model openai/gpt-oss-120b --max-completion-tokens 6000 --provider-max-attempts 1 --dry-run
+python scripts/phase-2/resolve_signal_issue.py --repo OWNER/REPOSITORY --issue ISSUE_NUMBER --provider gemini --model gemini-3.6-flash --max-completion-tokens 6000 --provider-max-attempts 1 --dry-run
 ```
 
 Preflight checks whether eligible resolver work should reserve a shared slot and makes no provider call:
@@ -400,7 +400,7 @@ The resolver requires repository Actions read/write permission, permission for A
 
 Historical executions produced valid and invalid outputs across Gemini, SambaNova, OpenRouter, and the now-retired provider slots. Observed failure classes included Gemini `503 UNAVAILABLE`, overly long `Location` fragments, invalid redundant top-level resolver decisions, and ambiguous exact-replacement targets.
 
-The current design addresses those observed classes through deterministic decision normalization, unchanged exact-one-match validation, Groq cross-provider fallback, content-addressed attempt state, and preserved error artifacts. These observations are historical evidence, not guarantees of future provider behavior; current registry, state, workflows, scripts, and generated artifacts remain authoritative.
+The current design addresses those observed classes through deterministic decision normalization, unchanged exact-one-match validation, a one-shot Gemini secondary-model fallback, content-addressed attempt state, and preserved error artifacts. These observations are historical evidence, not guarantees of future provider behavior; current registry, state, workflows, scripts, and generated artifacts remain authoritative.
 
 ## Standard validation
 

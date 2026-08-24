@@ -744,15 +744,15 @@ class QuotaStateTests(unittest.TestCase):
             ),
             self.event(
                 event_id="resolver-fallback",
-                provider="groq",
-                model="openai/gpt-oss-120b",
+                provider="gemini",
+                model="gemini-3.6-flash",
                 call_source="resolver-fallback",
             ),
         ]
         updated, _ = quota_state.aggregate_events(self.state, events, self.registry)
         self.assertEqual(updated["quota_groups"]["gemini:gemini-3.5-flash"]["requests_used_day_local"], 2)
-        self.assertEqual(updated["quota_groups"]["gemini-project"]["requests_used_day_local"], 2)
-        self.assertEqual(updated["quota_groups"]["groq:openai/gpt-oss-120b"]["requests_used_day_local"], 1)
+        self.assertEqual(updated["quota_groups"]["gemini:gemini-3.6-flash"]["requests_used_day_local"], 1)
+        self.assertEqual(updated["quota_groups"]["gemini-project"]["requests_used_day_local"], 3)
 
     def test_resolver_priority_withholds_only_two_shared_signal_slots(self) -> None:
         self.assertFalse(
@@ -766,8 +766,8 @@ class QuotaStateTests(unittest.TestCase):
         self.assertFalse(
             self.eligible(
                 self.state,
-                "groq",
-                "openai/gpt-oss-120b",
+                "gemini",
+                "gemini-3.6-flash",
                 resolver_work_pending=True,
             )
         )
@@ -776,6 +776,14 @@ class QuotaStateTests(unittest.TestCase):
                 self.state,
                 "gemini",
                 "gemini-3.5-flash-lite",
+                resolver_work_pending=True,
+            )
+        )
+        self.assertTrue(
+            self.eligible(
+                self.state,
+                "groq",
+                "openai/gpt-oss-120b",
                 resolver_work_pending=True,
             )
         )

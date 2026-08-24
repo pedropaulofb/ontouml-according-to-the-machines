@@ -61,7 +61,7 @@ DEFAULT_PROVIDER_CONCURRENCY = {
 }
 SHARED_RESOLVER_SPECS = {
     ("gemini", "gemini-3.5-flash"),
-    ("groq", "openai/gpt-oss-120b"),
+    ("gemini", "gemini-3.6-flash"),
 }
 SCHEDULABLE_STATUSES = {
     "pending",

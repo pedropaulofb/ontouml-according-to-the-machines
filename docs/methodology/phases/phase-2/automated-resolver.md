@@ -168,10 +168,10 @@ primary provider: gemini
 primary model: gemini-3.5-flash
 primary max_completion_tokens: 8000
 
-fallback provider: groq
-fallback model: openai/gpt-oss-120b
+fallback provider: gemini
+fallback model: gemini-3.6-flash
 fallback max_completion_tokens: 6000
-fallback reasoning: low
+fallback thinking: low
 fallback final output: only the strict JSON plan
 ```
 
@@ -182,11 +182,11 @@ The workflow-level fallback sequence is:
 ```text
 run resolver once with the selected primary provider/model
 → if the run succeeds, exit successfully
-→ if the primary provider is Gemini and its provider-error artifact contains provider-unavailability or 503-like diagnostics, run Groq openai/gpt-oss-120b once for the same issue
+→ if the primary provider is Gemini and its provider-error artifact contains provider-unavailability or 503-like diagnostics, run Gemini gemini-3.6-flash once for the same issue
 → otherwise fail the workflow normally
 ```
 
-The fallback is cross-provider: a temporary Gemini service failure does not leave the resolver dependent on a second Gemini model.
+The fallback is model-diverse but not provider-diverse. It avoids the Groq free-tier token-per-minute ceiling for full resolver inputs, but both resolver attempts still depend on Gemini service availability.
 
 Provider-unavailability detection scans resolver error artifacts under:
 
@@ -219,25 +219,19 @@ to:
 issue-<issue-number>-primary-provider-error.txt
 ```
 
-Then it runs the Groq fallback once.
+Then it runs the Gemini `gemini-3.6-flash` fallback once.
 
 The fallback does **not** hide non-provider failures:
 
 - if the primary call fails for quota, rate-limit, authentication, configuration, invalid request, output-validation, plan-validation, GitHub, or other non-provider-unavailability reasons, the workflow fails normally;
 - if the primary call fails for an unrecognized provider error that does not match the workflow marker pattern, the workflow fails normally;
-- if the Groq fallback model also fails, the workflow fails normally.
+- if the configured Gemini fallback model also fails, the workflow fails normally.
 
-Manual dispatch can override the primary `provider` and `model`. The cross-provider fallback remains fixed to Groq `openai/gpt-oss-120b` and is used only when the selected primary provider is `gemini` and the primary failure matches provider-unavailability diagnostics.
+Manual dispatch can override the primary `provider` and `model`. The fallback remains fixed to Gemini `gemini-3.6-flash` and is used only when the selected primary provider is `gemini` and the primary failure matches provider-unavailability diagnostics. If the selected primary already is Gemini `gemini-3.6-flash`, the workflow skips fallback rather than making a duplicate provider call.
 
-Groq resolver calls require:
+Both default resolver routes require `GEMINI_API_KEY` in GitHub Actions; local execution may use `GEMINI_API_KEY` or `GOOGLE_API_KEY`. A manually selected Groq primary still requires `GROQ_API_KEY`.
 
-```text
-GROQ_API_KEY
-```
-
-Gemini resolver calls require `GEMINI_API_KEY` in GitHub Actions; local execution may use `GEMINI_API_KEY` or `GOOGLE_API_KEY`.
-
-Both routes use the configured low-reasoning policy and suppress provider reasoning from the returned plan. The existing deterministic parser, normalizers, and plan validator remain authoritative for the resolver contract and page-dependent safety checks.
+Both default routes use the configured low-thinking policy and suppress provider thoughts from the returned plan. The existing deterministic parser, normalizers, and plan validator remain authoritative for the resolver contract and page-dependent safety checks.
 
 ### Resolver attempt identity and persistence
 
@@ -262,9 +256,9 @@ data/phase-2/resolver-attempt-state.json
 
 Provider failures after a request, invalid plans, deterministic execution failures, and completed attempts block the unchanged identity from another provider call. A pre-call withholding or configuration failure is recorded as `not_called` and does not falsely consume the logical attempt. A page change, active-signal change, prompt change, validator change, provider/model change, or request-configuration change produces a new attempt identity.
 
-If a persisted unchanged Gemini attempt failed for recognized provider unavailability and the Groq identity remains eligible, a later primary run emits the same fallback signal without calling Gemini again. Invalid Gemini plans are terminal validation outcomes and do not invoke Groq.
+If a persisted unchanged primary Gemini attempt failed for recognized provider unavailability and the Gemini `gemini-3.6-flash` identity remains eligible, a later primary run emits the same fallback signal without calling the primary model again. Invalid Gemini plans are terminal validation outcomes and do not invoke the fallback.
 
-Resolver provider calls emit the same replayable quota events as signal-generation calls. The workflow's always-running shared state-writer step aggregates quota events, task consequences, and resolver-attempt events against the latest branch state before committing them. Resolver preflight uses those quota observations and attempt records when reserving the Gemini or Groq shared scheduler slot.
+Resolver provider calls emit the same replayable quota events as signal-generation calls. The workflow's always-running shared state-writer step aggregates quota events, task consequences, and resolver-attempt events against the latest branch state before committing them. Resolver preflight uses those quota observations and attempt records when reserving the shared Gemini `gemini-3.5-flash` and `gemini-3.6-flash` scheduler slots.
 
 ### Resolver accepted-change flow
 
@@ -418,7 +412,7 @@ Manual dispatch inputs:
 | Input | Purpose |
 |---|---|
 | `issue` | Issue number or URL. Empty means oldest eligible open issue. |
-| `provider` | Primary workflow provider: `gemini` or `groq`; default `gemini`. Groq is also used by the fixed fallback path. |
+| `provider` | Primary workflow provider: `gemini` or `groq`; default `gemini`. The fixed fallback always uses Gemini. |
 | `model` | Primary provider model; default `gemini-3.5-flash`. |
 | `dry_run` | Generate and validate a resolution plan without GitHub writes. |
 
@@ -433,11 +427,7 @@ permissions:
 
 The workflow checks out the repository with `secrets.PHASE2_AUTOMATION_TOKEN` and exposes the same secret as `GH_TOKEN` and `GITHUB_TOKEN` for resolver GitHub operations, including branch-write operations.
 
-The cross-provider fallback additionally requires:
-
-```text
-GROQ_API_KEY
-```
+The fixed fallback reuses `GEMINI_API_KEY`; it requires no additional provider secret beyond the configured Gemini key.
 
 Concurrency group:
 

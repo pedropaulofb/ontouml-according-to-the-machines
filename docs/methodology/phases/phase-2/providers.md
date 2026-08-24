@@ -131,7 +131,7 @@ Signal-generation adapters make one initial request plus at most one retry after
 
 Quota, rate-limit, billing/policy, authentication, authorization, model-not-found, deterministic invalid-request, context-length, and validator failures do not receive this immediate transient retry. Provider retry never selects an alternate provider-model slot. The queue aggregator applies the resulting classified event to task and quota state.
 
-Resolver calls are narrower: `resolve_signal_issue.py` and the workflow default to one provider attempt. The workflow may then make the single Groq fallback described below; invalid plans and nonavailability failures do not receive another provider call.
+Resolver calls are narrower: `resolve_signal_issue.py` and the workflow default to one provider attempt. The workflow may then make the single Gemini `gemini-3.6-flash` fallback described below; invalid plans and nonavailability failures do not receive another provider call.
 
 ## Retry and slot lifecycle
 
@@ -148,7 +148,7 @@ Retirement preserves task and statistics history. If a request-configuration, pr
 
 ## Resolver providers
 
-The scheduled resolver uses Gemini `gemini-3.5-flash` as primary and Groq `openai/gpt-oss-120b` as its one-shot fallback. Groq is attempted only after a recognized Gemini provider-unavailability failure and only when the same content-addressed resolver attempt remains eligible. Invalid Gemini plans and other failure classes do not trigger the fallback.
+The scheduled resolver uses Gemini `gemini-3.5-flash` as primary and Gemini `gemini-3.6-flash` as its one-shot fallback. The fallback is attempted only after a recognized primary provider-unavailability failure and only when the same content-addressed resolver attempt remains eligible. Invalid primary plans and other failure classes do not trigger the fallback. This model-diverse fallback avoids the Groq free-tier token-per-minute ceiling for full resolver inputs, but it does not provide provider diversity.
 
 Resolver primary and fallback calls emit quota events into the same quota state used by signal scheduling. Eligible resolver work has priority on the two shared slots; when there is no eligible resolver work, their remaining free capacity is available to signal generation. Content-addressed resolver-attempt state prevents unchanged terminal attempts from being called repeatedly.
 

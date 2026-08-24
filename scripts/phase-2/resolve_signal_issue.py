@@ -115,7 +115,7 @@ JSON_SYSTEM_INSTRUCTION = (
     "Do not include Markdown fences, analysis, prefaces, or explanations outside JSON."
 )
 RESOLVER_PRIMARY_SPEC = ("gemini", "gemini-3.5-flash")
-RESOLVER_FALLBACK_SPEC = ("groq", "openai/gpt-oss-120b")
+RESOLVER_FALLBACK_SPEC = ("gemini", "gemini-3.6-flash")
 RESOLVER_FALLBACK_MAX_COMPLETION_TOKENS = 6000
 RESOLVER_VALIDATOR_VERSION = "resolver-plan-validator-v1.2.2"
 RESOLVER_REQUEST_CONFIG_VERSION = "resolver-request-v1"
@@ -1856,8 +1856,8 @@ def main() -> int:
         if replay_fallback:
             message = (
                 "provider_error_kind=provider_unavailable: the unchanged Gemini primary attempt already failed "
-                "for recognized provider unavailability; no duplicate Gemini call was made and the Groq fallback "
-                "remains eligible."
+                "for recognized provider unavailability; no duplicate primary-model call was made and the "
+                "configured Gemini fallback remains eligible."
             )
             write_text_artifact(output_dir, f"issue-{issue.number}-provider-error.txt", message)
             raise ResolverError(message)
