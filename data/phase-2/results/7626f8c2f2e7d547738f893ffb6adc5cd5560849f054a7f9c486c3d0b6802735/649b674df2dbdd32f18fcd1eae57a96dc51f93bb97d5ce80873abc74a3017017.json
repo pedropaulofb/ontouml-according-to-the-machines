@@ -1,0 +1,73 @@
+{
+  "aggregation": {
+    "source_event_sha256": "afa31541683125d775f070143aca4ddcb2bb21ca3628941828f388e46b5499fc",
+    "transport_filename": "649b674df2dbdd32f18fcd1eae57a96dc51f93bb97d5ce80873abc74a3017017.json"
+  },
+  "attempt_finished_at": "2026-08-24T01:54:15Z",
+  "attempt_id": "649b674df2dbdd32f18fcd1eae57a96dc51f93bb97d5ce80873abc74a3017017",
+  "attempt_started_at": "2026-08-24T01:54:10Z",
+  "event_version": 1,
+  "model": "Meta-Llama-3.3-70B-Instruct",
+  "outcome": "provider_failure",
+  "output_artifact": null,
+  "output_sha256": null,
+  "provider": "sambanova",
+  "provider_attempts": 1,
+  "quota_observations": [
+    {
+      "call_source": "signal",
+      "event_id": "01787536455127869265-7eddb30c-a5d7-4025-8a5a-52bd3972fcc4",
+      "failure": {
+        "diagnostic": "Error code: 429 - {'error': {'message': 'Rate limit exceeded', 'type': 'rate_limit_exceeded', 'param': None, 'code': None}, 'request_id': 'da5q8hpgldmhr42t26m0'} None {'message': 'Rate limit exceeded', 'type': 'rate_limit_exceeded', 'param': None, 'code': None}",
+        "kind": "rate_or_quota_limited",
+        "quota_group_ids": [
+          "sambanova:Meta-Llama-3.3-70B-Instruct"
+        ],
+        "retry_after_seconds": 3600,
+        "retry_not_before": "2026-08-24T02:54:15Z",
+        "retry_source": "inferred",
+        "retryable_immediately": false,
+        "scope": "quota_group"
+      },
+      "headers": {
+        "connection": "keep-alive",
+        "content-security-policy": "default-src 'none'",
+        "content-type": "application/json; charset=utf-8",
+        "date": "Mon, 24 Aug 2026 01:54:15 GMT",
+        "permissions-policy": "camera=(), microphone=(), geolocation=()",
+        "referrer-policy": "strict-origin-when-cross-origin",
+        "strict-transport-security": "max-age=31536000; includeSubDomains",
+        "transfer-encoding": "chunked",
+        "x-content-type-options": "nosniff",
+        "x-frame-options": "SAMEORIGIN",
+        "x-request-id": "da5q8hpgldmhr42t26m0"
+      },
+      "model": "Meta-Llama-3.3-70B-Instruct",
+      "observed_at": "2026-08-24T01:54:15Z",
+      "outcome": "failure",
+      "provider": "sambanova",
+      "request_sent": true,
+      "schema_version": 1,
+      "task_id": "7626f8c2f2e7d547738f893ffb6adc5cd5560849f054a7f9c486c3d0b6802735",
+      "usage": {
+        "cached_tokens": null,
+        "input_tokens": null,
+        "output_tokens": null,
+        "reasoning_tokens": null,
+        "total_tokens": null
+      }
+    }
+  ],
+  "runner_returncode": 1,
+  "signal_count": 0,
+  "task_id": "7626f8c2f2e7d547738f893ffb6adc5cd5560849f054a7f9c486c3d0b6802735",
+  "usage": {
+    "cached_tokens": null,
+    "input_tokens": null,
+    "output_tokens": null,
+    "reasoning_tokens": null,
+    "total_tokens": null
+  },
+  "worker_id": "sambanova",
+  "workflow_run_id": "32681183341-1"
+}

@@ -1,0 +1,73 @@
+{
+  "aggregation": {
+    "source_event_sha256": "1d8519066babac49756ad82bd779676b100a8dd33c18ff4979f0f7d84b157f25",
+    "transport_filename": "23c39eccd0aec40595d613c9376b79def2514cf653f6bf2d45e97c641f27f601.json"
+  },
+  "attempt_finished_at": "2026-08-24T01:54:15Z",
+  "attempt_id": "23c39eccd0aec40595d613c9376b79def2514cf653f6bf2d45e97c641f27f601",
+  "attempt_started_at": "2026-08-24T01:54:10Z",
+  "event_version": 1,
+  "model": "DeepSeek-V3.2",
+  "outcome": "provider_failure",
+  "output_artifact": null,
+  "output_sha256": null,
+  "provider": "sambanova",
+  "provider_attempts": 1,
+  "quota_observations": [
+    {
+      "call_source": "signal",
+      "event_id": "01787536455223531876-1aa257d1-20fb-4a41-a785-a1dd1d3752ff",
+      "failure": {
+        "diagnostic": "Error code: 429 - {'error': {'message': 'Rate limit exceeded', 'type': 'rate_limit_exceeded', 'param': None, 'code': None}, 'request_id': 'da5q8hpgldmk33aqi52g'} None {'message': 'Rate limit exceeded', 'type': 'rate_limit_exceeded', 'param': None, 'code': None}",
+        "kind": "rate_or_quota_limited",
+        "quota_group_ids": [
+          "sambanova:DeepSeek-V3.2"
+        ],
+        "retry_after_seconds": 3600,
+        "retry_not_before": "2026-08-24T02:54:15Z",
+        "retry_source": "inferred",
+        "retryable_immediately": false,
+        "scope": "quota_group"
+      },
+      "headers": {
+        "connection": "keep-alive",
+        "content-security-policy": "default-src 'none'",
+        "content-type": "application/json; charset=utf-8",
+        "date": "Mon, 24 Aug 2026 01:54:15 GMT",
+        "permissions-policy": "camera=(), microphone=(), geolocation=()",
+        "referrer-policy": "strict-origin-when-cross-origin",
+        "strict-transport-security": "max-age=31536000; includeSubDomains",
+        "transfer-encoding": "chunked",
+        "x-content-type-options": "nosniff",
+        "x-frame-options": "SAMEORIGIN",
+        "x-request-id": "da5q8hpgldmk33aqi52g"
+      },
+      "model": "DeepSeek-V3.2",
+      "observed_at": "2026-08-24T01:54:15Z",
+      "outcome": "failure",
+      "provider": "sambanova",
+      "request_sent": true,
+      "schema_version": 1,
+      "task_id": "06d1b2ed733b6299141dd836f9060a532dce1b71514b138ce66cc8ed322aa4a7",
+      "usage": {
+        "cached_tokens": null,
+        "input_tokens": null,
+        "output_tokens": null,
+        "reasoning_tokens": null,
+        "total_tokens": null
+      }
+    }
+  ],
+  "runner_returncode": 1,
+  "signal_count": 0,
+  "task_id": "06d1b2ed733b6299141dd836f9060a532dce1b71514b138ce66cc8ed322aa4a7",
+  "usage": {
+    "cached_tokens": null,
+    "input_tokens": null,
+    "output_tokens": null,
+    "reasoning_tokens": null,
+    "total_tokens": null
+  },
+  "worker_id": "sambanova",
+  "workflow_run_id": "32681183341-1"
+}
