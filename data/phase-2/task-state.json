@@ -1,5 +1,5 @@
 {
-  "last_reconciled_at": "2026-08-24T20:44:02Z",
+  "last_reconciled_at": "2026-08-24T21:12:53Z",
   "queue_generation": "phase-2-recalibration-v1",
   "registry_sha256": "456e184dcbb45c67f6a48efb8d59830ac56149c2ff4c88d738a45d28d05d4442",
   "schema_version": 1,
@@ -27773,7 +27773,7 @@
       "validation_rejection_count": 0
     },
     "222db88ea1938038103085334373f71a3523c8eeb0d7b9f826f86d2a18b52d81": {
-      "attempt_count": 51,
+      "attempt_count": 52,
       "created_at": "2026-08-18T12:30:00Z",
       "identity": {
         "agent": "page-hygiene-checker",
@@ -27788,14 +27788,21 @@
         "segmentation_profile": "full-page-v1",
         "validator_version": "check-signal-schema-v1"
       },
-      "last_attempt_at": "2026-08-24T20:04:18Z",
+      "last_attempt_at": "2026-08-24T21:12:53Z",
       "last_outcome": {
         "attempt_id": "5e29d46f5238ddd135caebf0058337a30c9e1b96dafcf2425486460ade889de9",
         "finished_at": "2026-08-24T20:05:44Z",
         "kind": "provider_unavailable",
         "provider_attempts": 2
       },
-      "lease": null,
+      "lease": {
+        "attempt_id": "53313d5ef2c954cd2ee137e2063fa354c44cda4e5290a44f892aea5eb7872629",
+        "attempt_number": 52,
+        "expires_at": "2026-08-24T22:12:53Z",
+        "leased_at": "2026-08-24T21:12:53Z",
+        "worker_id": "gemini",
+        "workflow_run_id": "32778141694-1"
+      },
       "publication": {
         "last_attempt_at": null,
         "last_error": null,
@@ -27811,9 +27818,9 @@
       "source_metadata": {
         "repository_commit_sha": "295c35f04b97db70b6a1cda4b26c1f8e39b1cba6"
       },
-      "status": "temporarily_unavailable",
+      "status": "leased",
       "task_id": "222db88ea1938038103085334373f71a3523c8eeb0d7b9f826f86d2a18b52d81",
-      "updated_at": "2026-08-24T20:05:44Z",
+      "updated_at": "2026-08-24T21:12:53Z",
       "validation_rejection_count": 0
     },
     "2234988a8eb517cdfde39a92d6246b9accf4d6564bbf96928304b275e57d2138": {
