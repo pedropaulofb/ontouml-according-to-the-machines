@@ -1,0 +1,88 @@
+{
+  "aggregation": {
+    "source_event_sha256": "31283cb7b762112e172deba724ca748eeacee6efef804293f8bb673f9ce14207",
+    "transport_filename": "b05cac1002c59454e87a75dd62703da0686d0277ead8aa570f1951b552ab0d6c.json"
+  },
+  "attempt_finished_at": "2026-08-24T18:06:47Z",
+  "attempt_id": "b05cac1002c59454e87a75dd62703da0686d0277ead8aa570f1951b552ab0d6c",
+  "attempt_started_at": "2026-08-24T18:06:29Z",
+  "event_version": 1,
+  "model": "nvidia/nemotron-3-ultra-550b-a55b:free",
+  "outcome": "provider_failure",
+  "output_artifact": null,
+  "output_sha256": null,
+  "provider": "openrouter",
+  "provider_attempts": 2,
+  "quota_observations": [
+    {
+      "call_source": "signal",
+      "event_id": "01787594792377630968-5b3af373-5b43-48a3-b80e-73944b8a039a",
+      "failure": {
+        "diagnostic": "OpenAI-compatible response did not contain choices[0].message.content (choices=<unavailable>).",
+        "kind": "provider_unavailable",
+        "quota_group_ids": [],
+        "retry_after_seconds": 3600,
+        "retry_not_before": "2026-08-24T19:06:32Z",
+        "retry_source": "inferred",
+        "retryable_immediately": true,
+        "scope": "slot"
+      },
+      "headers": {},
+      "model": "nvidia/nemotron-3-ultra-550b-a55b:free",
+      "observed_at": "2026-08-24T18:06:32Z",
+      "outcome": "failure",
+      "provider": "openrouter",
+      "request_sent": true,
+      "schema_version": 1,
+      "task_id": "2c4707d83993c1193bc2ab2ba61b07c5d62dd3bb10430dd6df4747009a0c32eb",
+      "usage": {
+        "cached_tokens": null,
+        "input_tokens": null,
+        "output_tokens": null,
+        "reasoning_tokens": null,
+        "total_tokens": null
+      }
+    },
+    {
+      "call_source": "signal",
+      "event_id": "01787594807841882994-90171652-3103-478f-b120-9a755bb3d4ac",
+      "failure": {
+        "diagnostic": "OpenAI-compatible response did not contain choices[0].message.content (choices=<unavailable>).",
+        "kind": "provider_unavailable",
+        "quota_group_ids": [],
+        "retry_after_seconds": 3600,
+        "retry_not_before": "2026-08-24T19:06:47Z",
+        "retry_source": "inferred",
+        "retryable_immediately": true,
+        "scope": "slot"
+      },
+      "headers": {},
+      "model": "nvidia/nemotron-3-ultra-550b-a55b:free",
+      "observed_at": "2026-08-24T18:06:47Z",
+      "outcome": "failure",
+      "provider": "openrouter",
+      "request_sent": true,
+      "schema_version": 1,
+      "task_id": "2c4707d83993c1193bc2ab2ba61b07c5d62dd3bb10430dd6df4747009a0c32eb",
+      "usage": {
+        "cached_tokens": null,
+        "input_tokens": null,
+        "output_tokens": null,
+        "reasoning_tokens": null,
+        "total_tokens": null
+      }
+    }
+  ],
+  "runner_returncode": 1,
+  "signal_count": 0,
+  "task_id": "2c4707d83993c1193bc2ab2ba61b07c5d62dd3bb10430dd6df4747009a0c32eb",
+  "usage": {
+    "cached_tokens": null,
+    "input_tokens": null,
+    "output_tokens": null,
+    "reasoning_tokens": null,
+    "total_tokens": null
+  },
+  "worker_id": "openrouter",
+  "workflow_run_id": "32760328754-1"
+}
