@@ -56132,37 +56132,30 @@
       },
       "last_attempt_at": "2026-08-25T11:37:20Z",
       "last_outcome": {
-        "attempt_id": "1c05158fb5c2a0f7bb953ecf7624101c5f23a367e1172f1d547372e53ee1ee74",
-        "finished_at": "2026-08-25T10:21:41Z",
-        "kind": "provider_unavailable",
+        "attempt_id": "c67c6c5860594bee9ca15b95f24e09e2d1839c6e5ed8d6e0909292cb2e47fef2",
+        "finished_at": "2026-08-25T11:39:04Z",
+        "kind": "valid",
         "provider_attempts": 2
       },
-      "lease": {
-        "attempt_id": "c67c6c5860594bee9ca15b95f24e09e2d1839c6e5ed8d6e0909292cb2e47fef2",
-        "attempt_number": 61,
-        "expires_at": "2026-08-25T12:37:20Z",
-        "leased_at": "2026-08-25T11:37:20Z",
-        "worker_id": "gemini",
-        "workflow_run_id": "32843205380-1"
-      },
+      "lease": null,
       "publication": {
-        "last_attempt_at": null,
+        "last_attempt_at": "2026-08-25T11:39:40Z",
         "last_error": null,
-        "payload_path": null,
-        "status": "not_required"
+        "payload_path": "data/phase-2/publications/44d4c054149680afa3bf12fa4501268357bde69d81484d7d2b20904297cf53ad.json",
+        "status": "published"
       },
       "result_record": {
-        "event_path": "data/phase-2/results/44d4c054149680afa3bf12fa4501268357bde69d81484d7d2b20904297cf53ad/1c05158fb5c2a0f7bb953ecf7624101c5f23a367e1172f1d547372e53ee1ee74.json",
-        "output_sha256": null,
-        "validated_output_path": null
+        "event_path": "data/phase-2/results/44d4c054149680afa3bf12fa4501268357bde69d81484d7d2b20904297cf53ad/c67c6c5860594bee9ca15b95f24e09e2d1839c6e5ed8d6e0909292cb2e47fef2.json",
+        "output_sha256": "ea01a71f25bf9e9d0d01d688515c2a77d884448345190f8afcacc1b08469dd90",
+        "validated_output_path": "data/phase-2/results/44d4c054149680afa3bf12fa4501268357bde69d81484d7d2b20904297cf53ad/c67c6c5860594bee9ca15b95f24e09e2d1839c6e5ed8d6e0909292cb2e47fef2.md"
       },
-      "retry_not_before": "2026-08-25T11:21:41Z",
+      "retry_not_before": null,
       "source_metadata": {
         "repository_commit_sha": "295c35f04b97db70b6a1cda4b26c1f8e39b1cba6"
       },
-      "status": "leased",
+      "status": "completed",
       "task_id": "44d4c054149680afa3bf12fa4501268357bde69d81484d7d2b20904297cf53ad",
-      "updated_at": "2026-08-25T11:37:20Z",
+      "updated_at": "2026-08-25T11:39:40Z",
       "validation_rejection_count": 0
     },
     "44d648df23da330a1b2fa30bd80d24a9835e8e4fbb1c0c7811e84ccdae306d17": {
