@@ -147292,37 +147292,30 @@
       },
       "last_attempt_at": "2026-08-25T07:04:44Z",
       "last_outcome": {
-        "attempt_id": "fcff86df883efdf1f773de6c6c0cad43d828d09287cc0750ce68672b6b2c55b2",
-        "finished_at": "2026-08-25T05:42:21Z",
-        "kind": "rate_or_quota_limited",
-        "provider_attempts": 2
-      },
-      "lease": {
         "attempt_id": "d377db1ab996cd45156f776a55fca5736905ff1c2ea8e6f0e6ae5c456b393e29",
-        "attempt_number": 59,
-        "expires_at": "2026-08-25T08:04:44Z",
-        "leased_at": "2026-08-25T07:04:44Z",
-        "worker_id": "gemini",
-        "workflow_run_id": "32819783657-1"
+        "finished_at": "2026-08-25T07:05:41Z",
+        "kind": "valid",
+        "provider_attempts": 1
       },
+      "lease": null,
       "publication": {
-        "last_attempt_at": null,
+        "last_attempt_at": "2026-08-25T07:06:30Z",
         "last_error": null,
-        "payload_path": null,
-        "status": "not_required"
+        "payload_path": "data/phase-2/publications/b63324672b2c51bd826499ba025a017b39d76f497f4a1bc43f7faad450518a3b.json",
+        "status": "published"
       },
       "result_record": {
-        "event_path": "data/phase-2/results/b63324672b2c51bd826499ba025a017b39d76f497f4a1bc43f7faad450518a3b/fcff86df883efdf1f773de6c6c0cad43d828d09287cc0750ce68672b6b2c55b2.json",
-        "output_sha256": null,
-        "validated_output_path": null
+        "event_path": "data/phase-2/results/b63324672b2c51bd826499ba025a017b39d76f497f4a1bc43f7faad450518a3b/d377db1ab996cd45156f776a55fca5736905ff1c2ea8e6f0e6ae5c456b393e29.json",
+        "output_sha256": "9a8eec221ab7a53c9e7f9bfe26bbdedbee1972ff3710755e22929c61120f2ac3",
+        "validated_output_path": "data/phase-2/results/b63324672b2c51bd826499ba025a017b39d76f497f4a1bc43f7faad450518a3b/d377db1ab996cd45156f776a55fca5736905ff1c2ea8e6f0e6ae5c456b393e29.md"
       },
-      "retry_not_before": "2026-08-25T05:42:59Z",
+      "retry_not_before": null,
       "source_metadata": {
         "repository_commit_sha": "295c35f04b97db70b6a1cda4b26c1f8e39b1cba6"
       },
-      "status": "leased",
+      "status": "completed",
       "task_id": "b63324672b2c51bd826499ba025a017b39d76f497f4a1bc43f7faad450518a3b",
-      "updated_at": "2026-08-25T07:04:44Z",
+      "updated_at": "2026-08-25T07:06:30Z",
       "validation_rejection_count": 0
     },
     "b6463865375849075f7f21192c002d4ac295d66e8b3a7d7b5de2255e0ec30e9e": {
