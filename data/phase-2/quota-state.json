@@ -4,7 +4,7 @@
     "daily_period_start": "2026-08-26",
     "source": "configured"
   },
-  "last_updated_at": "2026-08-26T11:16:33Z",
+  "last_updated_at": "2026-08-26T11:54:39Z",
   "processed_event_ids": [
     "01787044575385241714-da20d73c-26ec-462c-a1d4-198de5477b38",
     "01787044578572383222-966719cd-7fa5-46a3-a0d6-3a110180d3b5",
@@ -1902,23 +1902,35 @@
     "01787742984963694998-99d16d28-9795-4715-b341-6e0f74ec525f",
     "01787742988907888778-232f1203-4d8d-4816-b519-2eb0d092749b",
     "01787742992622363689-76e3d827-0083-4ca9-8081-9f69b9f4913d",
-    "01787742993471230708-09d475b6-736f-439b-bc2d-72dcb8b65987"
+    "01787742993471230708-09d475b6-736f-439b-bc2d-72dcb8b65987",
+    "01787745254901163065-69a6773a-c0b2-4914-af1b-22d1fde3dcc6",
+    "01787745255387554348-089555a2-da02-42e5-bf01-7e39b91e02e9",
+    "01787745256329129276-430f3a6c-241b-4a3c-bc3d-2ad18d371d82",
+    "01787745259235574654-b8f2ac56-5a78-41b5-a45c-a9a6ad363965",
+    "01787745263890498090-7a458012-344b-4a3b-ab94-04aa4021cc9d",
+    "01787745267454228752-48c1004f-7b3a-4b50-9190-953e245ebc01",
+    "01787745270593024033-88739841-3f89-4dfe-a632-1e90a821ffa5",
+    "01787745270640180870-832a5e61-483a-428a-971f-a3fadb572438",
+    "01787745270882140207-b38833db-7846-4fb0-9418-830e7be8a01a",
+    "01787745274792809043-dfe65457-8605-4a18-8d6c-dbeaedf32331",
+    "01787745278733118326-a4750b8b-cdc8-4a5c-be7d-02ac7486cd14",
+    "01787745279685023103-ef924ae8-6e15-4b5e-ac55-4c52d29f0e24"
   ],
   "provider_blocks": {},
   "quota_groups": {
     "gemini-project": {
-      "input_tokens_used_day_local": 621871,
-      "last_updated_at": "2026-08-26T11:16:33Z",
-      "output_tokens_used_day_local": 53335,
+      "input_tokens_used_day_local": 666434,
+      "last_updated_at": "2026-08-26T11:54:39Z",
+      "output_tokens_used_day_local": 57150,
       "provenance": {
         "input_tokens_used_day_local": {
           "estimated": false,
-          "observed_at": "2026-08-26T11:16:32Z",
+          "observed_at": "2026-08-26T11:54:38Z",
           "source": "locally-counted"
         },
         "output_tokens_used_day_local": {
           "estimated": false,
-          "observed_at": "2026-08-26T11:16:32Z",
+          "observed_at": "2026-08-26T11:54:38Z",
           "source": "locally-counted"
         },
         "remaining_estimate": {
@@ -1943,7 +1955,7 @@
         },
         "requests_used_day_local": {
           "estimated": false,
-          "observed_at": "2026-08-26T11:16:33Z",
+          "observed_at": "2026-08-26T11:54:39Z",
           "source": "locally-counted"
         },
         "reset_at": {
@@ -1973,7 +1985,7 @@
         },
         "total_tokens_used_day_local": {
           "estimated": false,
-          "observed_at": "2026-08-26T11:16:32Z",
+          "observed_at": "2026-08-26T11:54:38Z",
           "source": "locally-counted"
         }
       },
@@ -1982,7 +1994,7 @@
       "requests_limit_day": null,
       "requests_limit_minute": null,
       "requests_remaining_minute": null,
-      "requests_used_day_local": 129,
+      "requests_used_day_local": 139,
       "reset_at": null,
       "retry_not_before": null,
       "scope": "project",
@@ -1990,21 +2002,21 @@
       "status": "eligible",
       "tokens_limit_minute": null,
       "tokens_remaining_minute": null,
-      "total_tokens_used_day_local": 675206
+      "total_tokens_used_day_local": 723584
     },
     "gemini:gemini-2.5-flash": {
-      "input_tokens_used_day_local": 41303,
-      "last_updated_at": "2026-08-26T11:16:33Z",
-      "output_tokens_used_day_local": 4176,
+      "input_tokens_used_day_local": 80597,
+      "last_updated_at": "2026-08-26T11:54:39Z",
+      "output_tokens_used_day_local": 7582,
       "provenance": {
         "input_tokens_used_day_local": {
           "estimated": false,
-          "observed_at": "2026-08-26T11:16:32Z",
+          "observed_at": "2026-08-26T11:54:38Z",
           "source": "locally-counted"
         },
         "output_tokens_used_day_local": {
           "estimated": false,
-          "observed_at": "2026-08-26T11:16:32Z",
+          "observed_at": "2026-08-26T11:54:38Z",
           "source": "locally-counted"
         },
         "remaining_estimate": {
@@ -2029,7 +2041,7 @@
         },
         "requests_used_day_local": {
           "estimated": false,
-          "observed_at": "2026-08-26T11:16:33Z",
+          "observed_at": "2026-08-26T11:54:39Z",
           "source": "locally-counted"
         },
         "reset_at": {
@@ -2039,12 +2051,12 @@
         },
         "retry_not_before": {
           "estimated": false,
-          "observed_at": "2026-08-26T11:16:33Z",
+          "observed_at": "2026-08-26T11:54:39Z",
           "source": "provider-reported"
         },
         "status": {
           "estimated": false,
-          "observed_at": "2026-08-26T11:16:33Z",
+          "observed_at": "2026-08-26T11:54:39Z",
           "source": "provider-reported"
         },
         "tokens_limit_minute": {
@@ -2059,7 +2071,7 @@
         },
         "total_tokens_used_day_local": {
           "estimated": false,
-          "observed_at": "2026-08-26T11:16:32Z",
+          "observed_at": "2026-08-26T11:54:38Z",
           "source": "locally-counted"
         }
       },
@@ -2068,29 +2080,29 @@
       "requests_limit_day": null,
       "requests_limit_minute": null,
       "requests_remaining_minute": null,
-      "requests_used_day_local": 12,
+      "requests_used_day_local": 20,
       "reset_at": null,
-      "retry_not_before": "2026-08-26T11:16:59Z",
+      "retry_not_before": "2026-08-26T11:54:59Z",
       "scope": "model",
       "source": "provider-reported",
       "status": "deferred_quota",
       "tokens_limit_minute": null,
       "tokens_remaining_minute": null,
-      "total_tokens_used_day_local": 45479
+      "total_tokens_used_day_local": 88179
     },
     "gemini:gemini-3-flash-preview": {
-      "input_tokens_used_day_local": 109081,
-      "last_updated_at": "2026-08-26T11:16:05Z",
-      "output_tokens_used_day_local": 9877,
+      "input_tokens_used_day_local": 114350,
+      "last_updated_at": "2026-08-26T11:54:16Z",
+      "output_tokens_used_day_local": 10286,
       "provenance": {
         "input_tokens_used_day_local": {
           "estimated": false,
-          "observed_at": "2026-08-26T10:47:49Z",
+          "observed_at": "2026-08-26T11:54:15Z",
           "source": "locally-counted"
         },
         "output_tokens_used_day_local": {
           "estimated": false,
-          "observed_at": "2026-08-26T10:47:49Z",
+          "observed_at": "2026-08-26T11:54:15Z",
           "source": "locally-counted"
         },
         "remaining_estimate": {
@@ -2115,7 +2127,7 @@
         },
         "requests_used_day_local": {
           "estimated": false,
-          "observed_at": "2026-08-26T11:16:05Z",
+          "observed_at": "2026-08-26T11:54:16Z",
           "source": "locally-counted"
         },
         "reset_at": {
@@ -2125,12 +2137,12 @@
         },
         "retry_not_before": {
           "estimated": false,
-          "observed_at": "2026-08-26T11:16:05Z",
+          "observed_at": "2026-08-26T11:54:16Z",
           "source": "provider-reported"
         },
         "status": {
           "estimated": false,
-          "observed_at": "2026-08-26T11:16:05Z",
+          "observed_at": "2026-08-26T11:54:16Z",
           "source": "provider-reported"
         },
         "tokens_limit_minute": {
@@ -2145,7 +2157,7 @@
         },
         "total_tokens_used_day_local": {
           "estimated": false,
-          "observed_at": "2026-08-26T10:47:49Z",
+          "observed_at": "2026-08-26T11:54:15Z",
           "source": "locally-counted"
         }
       },
@@ -2154,15 +2166,15 @@
       "requests_limit_day": null,
       "requests_limit_minute": null,
       "requests_remaining_minute": null,
-      "requests_used_day_local": 25,
+      "requests_used_day_local": 27,
       "reset_at": null,
-      "retry_not_before": "2026-08-26T11:16:59Z",
+      "retry_not_before": "2026-08-26T11:54:59Z",
       "scope": "model",
       "source": "provider-reported",
       "status": "deferred_quota",
       "tokens_limit_minute": null,
       "tokens_remaining_minute": null,
-      "total_tokens_used_day_local": 118958
+      "total_tokens_used_day_local": 124636
     },
     "gemini:gemini-3.1-flash-lite": {
       "input_tokens_used_day_local": 238139,
@@ -3800,7 +3812,7 @@
     },
     "sambanova-account": {
       "input_tokens_used_day_local": 0,
-      "last_updated_at": "2026-08-26T11:15:59Z",
+      "last_updated_at": "2026-08-26T11:54:30Z",
       "output_tokens_used_day_local": 0,
       "provenance": {
         "input_tokens_used_day_local": {
@@ -3835,7 +3847,7 @@
         },
         "requests_used_day_local": {
           "estimated": false,
-          "observed_at": "2026-08-26T11:15:59Z",
+          "observed_at": "2026-08-26T11:54:30Z",
           "source": "locally-counted"
         },
         "reset_at": {
@@ -3874,7 +3886,7 @@
       "requests_limit_day": null,
       "requests_limit_minute": null,
       "requests_remaining_minute": null,
-      "requests_used_day_local": 36,
+      "requests_used_day_local": 38,
       "reset_at": null,
       "retry_not_before": null,
       "scope": "account",
@@ -4144,7 +4156,7 @@
     },
     "sambanova:MiniMax-M2.7": {
       "input_tokens_used_day_local": 0,
-      "last_updated_at": "2026-08-26T10:47:48Z",
+      "last_updated_at": "2026-08-26T11:54:30Z",
       "output_tokens_used_day_local": 0,
       "provenance": {
         "input_tokens_used_day_local": {
@@ -4179,7 +4191,7 @@
         },
         "requests_used_day_local": {
           "estimated": false,
-          "observed_at": "2026-08-26T10:47:48Z",
+          "observed_at": "2026-08-26T11:54:30Z",
           "source": "locally-counted"
         },
         "reset_at": {
@@ -4189,12 +4201,12 @@
         },
         "retry_not_before": {
           "estimated": false,
-          "observed_at": "2026-08-26T10:47:48Z",
+          "observed_at": "2026-08-26T11:54:30Z",
           "source": "inferred"
         },
         "status": {
           "estimated": false,
-          "observed_at": "2026-08-26T10:47:48Z",
+          "observed_at": "2026-08-26T11:54:30Z",
           "source": "provider-reported"
         },
         "tokens_limit_minute": {
@@ -4218,9 +4230,9 @@
       "requests_limit_day": null,
       "requests_limit_minute": null,
       "requests_remaining_minute": null,
-      "requests_used_day_local": 2,
+      "requests_used_day_local": 3,
       "reset_at": null,
-      "retry_not_before": "2026-08-26T11:47:48Z",
+      "retry_not_before": "2026-08-26T12:54:30Z",
       "scope": "model",
       "source": "provider-reported",
       "status": "deferred_quota",
@@ -4230,7 +4242,7 @@
     },
     "sambanova:gemma-4-31B-it": {
       "input_tokens_used_day_local": 0,
-      "last_updated_at": "2026-08-26T10:47:48Z",
+      "last_updated_at": "2026-08-26T11:54:30Z",
       "output_tokens_used_day_local": 0,
       "provenance": {
         "input_tokens_used_day_local": {
@@ -4265,7 +4277,7 @@
         },
         "requests_used_day_local": {
           "estimated": false,
-          "observed_at": "2026-08-26T10:47:48Z",
+          "observed_at": "2026-08-26T11:54:30Z",
           "source": "locally-counted"
         },
         "reset_at": {
@@ -4275,12 +4287,12 @@
         },
         "retry_not_before": {
           "estimated": false,
-          "observed_at": "2026-08-26T10:47:48Z",
+          "observed_at": "2026-08-26T11:54:30Z",
           "source": "inferred"
         },
         "status": {
           "estimated": false,
-          "observed_at": "2026-08-26T10:47:48Z",
+          "observed_at": "2026-08-26T11:54:30Z",
           "source": "provider-reported"
         },
         "tokens_limit_minute": {
@@ -4304,9 +4316,9 @@
       "requests_limit_day": null,
       "requests_limit_minute": null,
       "requests_remaining_minute": null,
-      "requests_used_day_local": 2,
+      "requests_used_day_local": 3,
       "reset_at": null,
-      "retry_not_before": "2026-08-26T11:47:48Z",
+      "retry_not_before": "2026-08-26T12:54:30Z",
       "scope": "model",
       "source": "provider-reported",
       "status": "deferred_quota",

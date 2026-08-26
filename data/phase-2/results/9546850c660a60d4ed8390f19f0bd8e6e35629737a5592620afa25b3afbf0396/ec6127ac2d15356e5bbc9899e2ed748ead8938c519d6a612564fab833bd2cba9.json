@@ -1,0 +1,73 @@
+{
+  "aggregation": {
+    "source_event_sha256": "5de1945f064d14d4af0256552a2f7ad655bb444bd896b02eeb42d98136d028e1",
+    "transport_filename": "ec6127ac2d15356e5bbc9899e2ed748ead8938c519d6a612564fab833bd2cba9.json"
+  },
+  "attempt_finished_at": "2026-08-26T11:54:30Z",
+  "attempt_id": "ec6127ac2d15356e5bbc9899e2ed748ead8938c519d6a612564fab833bd2cba9",
+  "attempt_started_at": "2026-08-26T11:54:26Z",
+  "event_version": 1,
+  "model": "MiniMax-M2.7",
+  "outcome": "provider_failure",
+  "output_artifact": null,
+  "output_sha256": null,
+  "provider": "sambanova",
+  "provider_attempts": 1,
+  "quota_observations": [
+    {
+      "call_source": "signal",
+      "event_id": "01787745270640180870-832a5e61-483a-428a-971f-a3fadb572438",
+      "failure": {
+        "diagnostic": "Error code: 429 - {'error': {'message': 'Rate limit exceeded', 'type': 'rate_limit_exceeded', 'param': None, 'code': None}, 'request_id': 'da7d7tkint6vqpf6auk0'} None {'message': 'Rate limit exceeded', 'type': 'rate_limit_exceeded', 'param': None, 'code': None}",
+        "kind": "rate_or_quota_limited",
+        "quota_group_ids": [
+          "sambanova:MiniMax-M2.7"
+        ],
+        "retry_after_seconds": 3600,
+        "retry_not_before": "2026-08-26T12:54:30Z",
+        "retry_source": "inferred",
+        "retryable_immediately": false,
+        "scope": "quota_group"
+      },
+      "headers": {
+        "connection": "keep-alive",
+        "content-security-policy": "default-src 'none'",
+        "content-type": "application/json; charset=utf-8",
+        "date": "Wed, 26 Aug 2026 11:54:30 GMT",
+        "permissions-policy": "camera=(), microphone=(), geolocation=()",
+        "referrer-policy": "strict-origin-when-cross-origin",
+        "strict-transport-security": "max-age=31536000; includeSubDomains",
+        "transfer-encoding": "chunked",
+        "x-content-type-options": "nosniff",
+        "x-frame-options": "SAMEORIGIN",
+        "x-request-id": "da7d7tkint6vqpf6auk0"
+      },
+      "model": "MiniMax-M2.7",
+      "observed_at": "2026-08-26T11:54:30Z",
+      "outcome": "failure",
+      "provider": "sambanova",
+      "request_sent": true,
+      "schema_version": 1,
+      "task_id": "9546850c660a60d4ed8390f19f0bd8e6e35629737a5592620afa25b3afbf0396",
+      "usage": {
+        "cached_tokens": null,
+        "input_tokens": null,
+        "output_tokens": null,
+        "reasoning_tokens": null,
+        "total_tokens": null
+      }
+    }
+  ],
+  "runner_returncode": 1,
+  "signal_count": 0,
+  "task_id": "9546850c660a60d4ed8390f19f0bd8e6e35629737a5592620afa25b3afbf0396",
+  "usage": {
+    "cached_tokens": null,
+    "input_tokens": null,
+    "output_tokens": null,
+    "reasoning_tokens": null,
+    "total_tokens": null
+  },
+  "worker_id": "sambanova",
+  "workflow_run_id": "32965592974-1"
+}
