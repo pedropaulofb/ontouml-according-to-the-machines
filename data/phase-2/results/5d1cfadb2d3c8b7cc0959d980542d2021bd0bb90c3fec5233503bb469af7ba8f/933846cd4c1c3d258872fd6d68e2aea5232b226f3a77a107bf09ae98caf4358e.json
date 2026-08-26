@@ -1,0 +1,73 @@
+{
+  "aggregation": {
+    "source_event_sha256": "81d387f6c29aa198cebf1473edbfd9af8443cbb6f3a9e272ad56e9c1057d198b",
+    "transport_filename": "933846cd4c1c3d258872fd6d68e2aea5232b226f3a77a107bf09ae98caf4358e.json"
+  },
+  "attempt_finished_at": "2026-08-26T10:47:48Z",
+  "attempt_id": "933846cd4c1c3d258872fd6d68e2aea5232b226f3a77a107bf09ae98caf4358e",
+  "attempt_started_at": "2026-08-26T10:47:45Z",
+  "event_version": 1,
+  "model": "gemma-4-31B-it",
+  "outcome": "provider_failure",
+  "output_artifact": null,
+  "output_sha256": null,
+  "provider": "sambanova",
+  "provider_attempts": 1,
+  "quota_observations": [
+    {
+      "call_source": "signal",
+      "event_id": "01787741268072256185-0f2ae29c-f546-4c5a-a8f8-56d000196ea1",
+      "failure": {
+        "diagnostic": "Error code: 429 - {'error': {'message': 'Rate limit exceeded', 'type': 'rate_limit_exceeded', 'param': None, 'code': None}, 'request_id': 'da7c8l1gldmk33boc930'} None {'message': 'Rate limit exceeded', 'type': 'rate_limit_exceeded', 'param': None, 'code': None}",
+        "kind": "rate_or_quota_limited",
+        "quota_group_ids": [
+          "sambanova:gemma-4-31B-it"
+        ],
+        "retry_after_seconds": 3600,
+        "retry_not_before": "2026-08-26T11:47:48Z",
+        "retry_source": "inferred",
+        "retryable_immediately": false,
+        "scope": "quota_group"
+      },
+      "headers": {
+        "connection": "keep-alive",
+        "content-security-policy": "default-src 'none'",
+        "content-type": "application/json; charset=utf-8",
+        "date": "Wed, 26 Aug 2026 10:47:48 GMT",
+        "permissions-policy": "camera=(), microphone=(), geolocation=()",
+        "referrer-policy": "strict-origin-when-cross-origin",
+        "strict-transport-security": "max-age=31536000; includeSubDomains",
+        "transfer-encoding": "chunked",
+        "x-content-type-options": "nosniff",
+        "x-frame-options": "SAMEORIGIN",
+        "x-request-id": "da7c8l1gldmk33boc930"
+      },
+      "model": "gemma-4-31B-it",
+      "observed_at": "2026-08-26T10:47:48Z",
+      "outcome": "failure",
+      "provider": "sambanova",
+      "request_sent": true,
+      "schema_version": 1,
+      "task_id": "5d1cfadb2d3c8b7cc0959d980542d2021bd0bb90c3fec5233503bb469af7ba8f",
+      "usage": {
+        "cached_tokens": null,
+        "input_tokens": null,
+        "output_tokens": null,
+        "reasoning_tokens": null,
+        "total_tokens": null
+      }
+    }
+  ],
+  "runner_returncode": 1,
+  "signal_count": 0,
+  "task_id": "5d1cfadb2d3c8b7cc0959d980542d2021bd0bb90c3fec5233503bb469af7ba8f",
+  "usage": {
+    "cached_tokens": null,
+    "input_tokens": null,
+    "output_tokens": null,
+    "reasoning_tokens": null,
+    "total_tokens": null
+  },
+  "worker_id": "sambanova",
+  "workflow_run_id": "32959932297-1"
+}
