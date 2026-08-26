@@ -264,6 +264,7 @@ class ResultAggregationTests(AggregationFixture):
             self.write_transport(root / "artifacts", event)
             tasks, quota, _counts, _events = self.run_aggregate(root, self.state_with(record))
             legacy_tasks = copy.deepcopy(tasks)
+            legacy_tasks["schema_version"] = task_state.LEGACY_TASK_STATE_SCHEMA_VERSION
             result_record = legacy_tasks["tasks"][record["task_id"]]["result_record"]
             result_record.pop("attempt_id")
             result_record.pop("source_event_sha256")
