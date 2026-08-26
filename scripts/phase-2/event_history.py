@@ -165,6 +165,7 @@ def _append_many_unique(
     key_field: str,
     timestamp_field: str,
     sort_fields: Sequence[str],
+    ignored_conflict_fields: Sequence[str] = (),
 ) -> list[AppendResult]:
     root = Path(history_root)
     by_path, by_key = _load_collection(
@@ -187,8 +188,12 @@ def _append_many_unique(
         if existing is not None:
             existing_path, existing_record, existing_digest = existing
             if existing_digest != digest or canonical_json(existing_record) != canonical_json(normalized):
-                raise EventHistoryConflictError(f"Conflicting history record for {key_field}={key}")
-            results.append(AppendResult(path=existing_path, key=key, content_sha256=digest, appended=False))
+                ignored = set(ignored_conflict_fields)
+                existing_comparable = {field: value for field, value in existing_record.items() if field not in ignored}
+                normalized_comparable = {field: value for field, value in normalized.items() if field not in ignored}
+                if canonical_json(existing_comparable) != canonical_json(normalized_comparable):
+                    raise EventHistoryConflictError(f"Conflicting history record for {key_field}={key}")
+            results.append(AppendResult(path=existing_path, key=key, content_sha256=existing_digest, appended=False))
             continue
 
         by_path.setdefault(target, []).append(normalized)
@@ -248,6 +253,7 @@ def append_rejections(history_root: Path, rejections: Iterable[Mapping[str, Any]
         key_field="rejection_id",
         timestamp_field="observed_at",
         sort_fields=("observed_at", "rejection_id"),
+        ignored_conflict_fields=("observed_at", "source_filename"),
     )
 
 

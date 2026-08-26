@@ -21,6 +21,7 @@ SCRIPT_DIRECTORY = Path(__file__).resolve().parent
 if str(SCRIPT_DIRECTORY) not in sys.path:
     sys.path.insert(0, str(SCRIPT_DIRECTORY))
 
+from event_history import EventHistoryError, append_rejections  # noqa: E402
 from provider_model_registry import DEFAULT_REGISTRY_PATH, ProviderModelRegistry, load_registry  # noqa: E402
 from provider_runtime import format_timestamp, parse_timestamp, utc_now  # noqa: E402
 from quota_state import (  # noqa: E402
@@ -38,7 +39,7 @@ DEFAULT_TASK_STATE_PATH = Path("data/phase-2/task-state.json")
 DEFAULT_ARTIFACT_ROOT = Path(".tmp/phase-2/worker-artifacts")
 DEFAULT_RESULT_ROOT = Path("data/phase-2/results")
 DEFAULT_PUBLICATION_ROOT = Path("data/phase-2/publications")
-DEFAULT_REJECTION_ROOT = Path("data/phase-2/rejected-events")
+DEFAULT_HISTORY_ROOT = Path("data/phase-2/history")
 DEFAULT_STATISTICS_PAGE = Path("docs/methodology/phases/phase-2/model-run-statistics.md")
 TERMINAL_OUTCOMES = {"valid", "validator_rejected", "provider_failure", "not_called"}
 USAGE_FIELDS = ("input_tokens", "output_tokens", "total_tokens", "reasoning_tokens", "cached_tokens")
@@ -46,6 +47,10 @@ USAGE_FIELDS = ("input_tokens", "output_tokens", "total_tokens", "reasoning_toke
 
 class AggregationError(ValueError):
     """Raised when a terminal event cannot be applied safely."""
+
+
+class StaleReplay(AggregationError):
+    """Raised for a valid historical terminal event that no longer matches the current lease."""
 
 
 @dataclass(frozen=True)
@@ -256,15 +261,22 @@ def _atomic_copy(source: Path, target: Path) -> None:
         temporary_path.unlink(missing_ok=True)
 
 
-def _record_rejection(root: Path, transport: TransportEvent | None, path: Path, reason: str) -> None:
+def _rejection_record(
+    transport: TransportEvent | None,
+    path: Path,
+    reason: str,
+    observed_at: str,
+) -> dict[str, Any]:
     source_hash = transport.source_sha256 if transport is not None else hashlib.sha256(path.read_bytes()).hexdigest()
-    value = {
+    rejection_id = _canonical_sha256({"reason": reason, "source_sha256": source_hash})
+    return {
         "schema_version": 1,
+        "rejection_id": rejection_id,
+        "observed_at": observed_at,
         "source_sha256": source_hash,
         "source_filename": path.name,
         "reason": reason,
     }
-    _atomic_write_json(root / f"{source_hash}.json", value)
 
 
 def _lease_matches(task: Mapping[str, Any], event: Mapping[str, Any]) -> bool:
@@ -333,11 +345,11 @@ def _persist_terminal_event(
         if existing_hash != transport.source_sha256:
             raise AggregationError("Persisted task state and durable terminal event disagree.")
         return "duplicate", False
-    if task.get("status") != "leased" or not _lease_matches(task, event):
-        raise AggregationError("Terminal event does not match the task's current persisted lease.")
     identity = task.get("identity", {})
     if identity.get("provider") != event["provider"] or identity.get("model") != event["model"]:
         raise AggregationError("Terminal event provider-model identity does not match its task.")
+    if task.get("status") != "leased" or not _lease_matches(task, event):
+        raise StaleReplay("Terminal event does not match the task's current persisted lease.")
 
     output_relative: str | None = None
     if event["outcome"] in {"valid", "validator_rejected"}:
@@ -485,19 +497,28 @@ def aggregate(
     quota_state: dict[str, Any],
     result_root: Path = DEFAULT_RESULT_ROOT,
     publication_root: Path = DEFAULT_PUBLICATION_ROOT,
-    rejection_root: Path = DEFAULT_REJECTION_ROOT,
+    history_root: Path = DEFAULT_HISTORY_ROOT,
     publisher: Publisher | None = None,
     timestamp: str | None = None,
 ) -> tuple[dict[str, Any], dict[str, Any], dict[str, int], list[dict[str, Any]]]:
     updated_tasks = copy.deepcopy(task_state)
     updated_quota = copy.deepcopy(quota_state)
-    counts = {"applied": 0, "duplicate": 0, "rejected": 0, "transport_rejected": 0}
+    counts = {
+        "applied": 0,
+        "duplicate": 0,
+        "rejected": 0,
+        "transport_rejected": 0,
+        "stale_replay": 0,
+        "actionable_rejected": 0,
+    }
     accepted_events: list[dict[str, Any]] = []
+    actionable_rejections: list[dict[str, Any]] = []
+    effective_timestamp = timestamp or format_timestamp(utc_now())
     transport_events, transport_rejections = load_transport_events(artifact_root)
-    rejection_path = repo_root / rejection_root
     for path, reason in transport_rejections:
-        _record_rejection(rejection_path, None, path, reason)
+        actionable_rejections.append(_rejection_record(None, path, reason, effective_timestamp))
         counts["transport_rejected"] += 1
+        counts["actionable_rejected"] += 1
 
     grouped: dict[str, list[TransportEvent]] = {}
     for transport in transport_events:
@@ -507,14 +528,11 @@ def aggregate(
     for attempt_key, values in sorted(grouped.items()):
         hashes = {value.source_sha256 for value in values}
         if len(hashes) > 1:
+            reason = f"Conflicting terminal events were delivered for attempt {attempt_key}."
             for value in values:
-                _record_rejection(
-                    rejection_path,
-                    value,
-                    value.path,
-                    f"Conflicting terminal events were delivered for attempt {attempt_key}.",
-                )
+                actionable_rejections.append(_rejection_record(value, value.path, reason, effective_timestamp))
                 counts["rejected"] += 1
+                counts["actionable_rejected"] += 1
             continue
         selected.append(values[0])
         counts["duplicate"] += len(values) - 1
@@ -537,15 +555,24 @@ def aggregate(
             counts[disposition] += 1
             if changed:
                 accepted_events.append(event)
-        except (AggregationError, OSError, ValueError) as exc:
-            _record_rejection(rejection_path, transport, transport.path, str(exc))
+        except StaleReplay:
             counts["rejected"] += 1
+            counts["stale_replay"] += 1
+        except (AggregationError, OSError, ValueError) as exc:
+            actionable_rejections.append(_rejection_record(transport, transport.path, str(exc), effective_timestamp))
+            counts["rejected"] += 1
+            counts["actionable_rejected"] += 1
+
+    if actionable_rejections:
+        try:
+            append_rejections(repo_root / history_root, actionable_rejections)
+        except EventHistoryError as exc:
+            raise AggregationError(f"Could not persist actionable rejection history: {exc}") from exc
 
     quota_observations = [
         observation for event in accepted_events for observation in event.get("quota_observations") or []
     ]
     updated_quota, _quota_counts = aggregate_quota_events(updated_quota, quota_observations, registry)
-    effective_timestamp = timestamp or format_timestamp(utc_now())
     if publisher is not None:
         publication_counts = retry_publications(
             repo_root=repo_root,
@@ -576,7 +603,7 @@ def parse_args(argv: Sequence[str] | None = None) -> argparse.Namespace:
     parser.add_argument("--quota-state", default=str(DEFAULT_QUOTA_STATE_PATH))
     parser.add_argument("--result-root", default=str(DEFAULT_RESULT_ROOT))
     parser.add_argument("--publication-root", default=str(DEFAULT_PUBLICATION_ROOT))
-    parser.add_argument("--rejection-root", default=str(DEFAULT_REJECTION_ROOT))
+    parser.add_argument("--history-root", default=str(DEFAULT_HISTORY_ROOT))
     parser.add_argument("--statistics-page", default=str(DEFAULT_STATISTICS_PAGE))
     parser.add_argument("--timestamp")
     return parser.parse_args(argv)
@@ -605,7 +632,7 @@ def main(argv: Sequence[str] | None = None) -> int:
             quota_state=quota_state,
             result_root=Path(args.result_root),
             publication_root=Path(args.publication_root),
-            rejection_root=Path(args.rejection_root),
+            history_root=Path(args.history_root),
             publisher=publisher,
             timestamp=args.timestamp,
         )
