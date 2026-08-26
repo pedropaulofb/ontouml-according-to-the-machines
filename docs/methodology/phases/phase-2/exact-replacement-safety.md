@@ -12,7 +12,7 @@ The active signal-generation prompt is composed from a shared contract and one a
 
 ```text
 prompts/phase-2/check-signal-shared-contract-v1.0.0.md
-prompts/phase-2/page-hygiene-checker-v1.1.0.md
+prompts/phase-2/page-hygiene-checker-v1.1.1.md
 prompts/phase-2/language-style-checker-v1.1.0.md
 prompts/phase-2/resolve-page-hygiene-signal-issue-v1.2.2.md
 prompts/phase-2/resolve-language-style-signal-issue-v1.2.2.md
@@ -50,6 +50,8 @@ Accepted edit-array and edit-local failures are deliberately left to atomic-grou
 
 One accepted signal group may contain multiple edits for multiple occurrences of the same problem. Every edit must independently identify exactly one occurrence. The resolver also rejects duplicate or overlapping accepted targets.
 
+The canonical `## Generation and Review Log` heading, its exact eight-column table header, and its separator row are protected structural spans. An accepted edit that overlaps one of those spans is automatically demoted with `unsafe_edit`; log-entry cells below the separator remain editable. Final plan validation independently rejects the same protected overlaps if automatic demotion is bypassed.
+
 ## Atomic-group automatic demotion
 
 Signal groups are atomic. If any edit in an accepted group cannot be applied safely and deterministically, the wrapper converts the complete group to:
@@ -64,6 +66,7 @@ Examples include:
 - multiple exact matches, including overlapping occurrences;
 - empty or whitespace-only values, unchanged values, or recognized sentinel placeholders such as `None`, `N/A`, and `Not applicable`;
 - duplicate or overlapping targets;
+- edits overlapping the protected Generation and Review Log heading, table header, or separator row;
 - another condition that prevents deterministic application.
 
 The wrapper clears the demoted group's `edits` array and assigns a specific reason code, normally:
@@ -111,4 +114,4 @@ This prevents a stale or ambiguous oldest issue from repeatedly blocking later s
 
 Automatic demotion is deterministic wrapper behavior, not an additional LLM decision. It never invents replacement text, chooses arbitrarily among multiple matches, or partially applies an atomic group.
 
-Plan-level and group-level structure is validated before automatic demotion so that demotion cannot conceal an unrelated schema error. Accepted edit-array and edit-local failures are treated as atomic-group failures and are demoted locally. The final validator for the enforced plan-contract conditions then runs again after demotion and independently rejects recognized sentinel placeholders if the demotion layer is bypassed or later regresses. Invalid identity metadata, group structure, decisions or reason codes, empty or malformed group references/rationales, rejected-group shape, inconsistent final issue-comment placeholders, inconsistent final `overall_decision`, and other non-local schema failures remain fail-closed errors.
+Plan-level and group-level structure is validated before automatic demotion so that demotion cannot conceal an unrelated schema error. Accepted edit-array and edit-local failures are treated as atomic-group failures and are demoted locally. The final validator for the enforced plan-contract conditions then runs again after demotion and independently rejects recognized sentinel placeholders and protected review-log structural overlaps if the demotion layer is bypassed or later regresses. Invalid identity metadata, group structure, decisions or reason codes, empty or malformed group references/rationales, rejected-group shape, inconsistent final issue-comment placeholders, inconsistent final `overall_decision`, and other non-local schema failures remain fail-closed errors.

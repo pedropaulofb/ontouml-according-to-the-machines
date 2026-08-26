@@ -830,6 +830,94 @@ class ResolverExactReplacementTests(unittest.TestCase):
         with self.assertRaisesRegex(resolver.ResolverError, "recognized placeholder values"):
             resolver.validate_plan(plan, issue, "Old wording.\n")
 
+    def test_issue_582_review_log_header_edit_is_demoted_as_unsafe(self) -> None:
+        issue = resolver.IssueSnapshot(
+            number=582,
+            title="Check signal: page-hygiene-checker: classes/role",
+            body="",
+            state="OPEN",
+            url="https://github.com/example/repository/issues/582",
+            agent="page-hygiene-checker",
+            reviewed_page="docs/stereotypes/classes/role.md",
+            comments=[],
+        )
+        current_header = resolver.GENERATION_REVIEW_LOG_HEADER
+        proposed_header = current_header.replace("Prompt Title", "Prompt title")
+        plan = self.plan(
+            [self.group("G-001", [self.edit(current_header, proposed_header)])],
+            number=582,
+        )
+        plan["agent"] = "page-hygiene-checker"
+        plan["reviewed_page"] = issue.reviewed_page
+        page = self.page_with_log("Role description.")
+
+        records = resolver.demote_invalid_accepted_groups(plan, issue, page)
+        resolver.normalize_overall_decision(plan)
+        resolver.validate_plan(plan, issue, page)
+
+        self.assertEqual(len(records), 1)
+        self.assertEqual(records[0]["reason_code"], "unsafe_edit")
+        self.assertIn("protected Generation and Review Log table header", records[0]["rationale"])
+        self.assertEqual(plan["signal_groups"][0]["decision"], "reject_for_phase_2_automation")
+        self.assertEqual(plan["signal_groups"][0]["edits"], [])
+        self.assertEqual(plan["overall_decision"], "no_accepted_changes")
+        self.assertIn(current_header, page)
+        self.assertNotIn(proposed_header, page)
+
+    def test_review_log_heading_edit_is_demoted_as_unsafe(self) -> None:
+        issue = self.make_issue()
+        plan = self.plan(
+            [
+                self.group(
+                    "G-001",
+                    [self.edit(resolver.GENERATION_REVIEW_LOG_HEADING, "## Generation & Review Log")],
+                )
+            ]
+        )
+        page = self.page_with_log("Old wording.")
+
+        records = resolver.demote_invalid_accepted_groups(plan, issue, page)
+
+        self.assertEqual(len(records), 1)
+        self.assertEqual(records[0]["reason_code"], "unsafe_edit")
+        self.assertIn("protected Generation and Review Log heading", records[0]["rationale"])
+
+    def test_review_log_separator_edit_is_demoted_as_unsafe(self) -> None:
+        issue = self.make_issue()
+        separator = "|---|---|---|---|---|---|---|---|"
+        plan = self.plan([self.group("G-001", [self.edit(separator, "|:---|---|---|---|---|---|---|---|")])])
+        page = self.page_with_log("Old wording.")
+
+        records = resolver.demote_invalid_accepted_groups(plan, issue, page)
+
+        self.assertEqual(len(records), 1)
+        self.assertEqual(records[0]["reason_code"], "unsafe_edit")
+        self.assertIn("protected Generation and Review Log table separator row", records[0]["rationale"])
+
+    def test_review_log_entry_cell_edit_remains_allowed(self) -> None:
+        issue = self.make_issue()
+        plan = self.plan([self.group("G-001", [self.edit("Original note.", "Corrected note.")])])
+        page = self.page_with_log("Old wording.") + (
+            "| 2026-08-25 | Phase 2 | Test | Review | prompt-v1 | Prompt | Inputs | Original note. |\n"
+        )
+
+        records = resolver.demote_invalid_accepted_groups(plan, issue, page)
+        resolver.normalize_overall_decision(plan)
+        resolver.validate_plan(plan, issue, page)
+
+        self.assertEqual(records, [])
+        self.assertEqual(plan["signal_groups"][0]["decision"], "accept")
+
+    def test_final_validation_rejects_protected_review_log_edit_if_revalidation_is_bypassed(self) -> None:
+        issue = self.make_issue()
+        current_header = resolver.GENERATION_REVIEW_LOG_HEADER
+        proposed_header = current_header.replace("Prompt Title", "Prompt title")
+        plan = self.plan([self.group("G-001", [self.edit(current_header, proposed_header)])])
+        page = self.page_with_log("Old wording.")
+
+        with self.assertRaisesRegex(resolver.ResolverError, "protected Generation and Review Log table header"):
+            resolver.validate_plan(plan, issue, page)
+
     def test_unchanged_edit_demotes_atomic_group(self) -> None:
         issue = self.make_issue()
         plan = self.plan([self.group("G-001", [self.edit("Old wording.", "Old wording.")])])

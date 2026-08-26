@@ -163,8 +163,8 @@ AGENT_CONTRACTS: dict[str, AgentContract] = {
     "page-hygiene-checker": AgentContract(
         slug="page-hygiene-checker",
         shared_prompt_path="prompts/phase-2/check-signal-shared-contract-v1.0.0.md",
-        prompt_path="prompts/phase-2/page-hygiene-checker-v1.1.0.md",
-        prompt_id="page-hygiene-checker-v1.1.0",
+        prompt_path="prompts/phase-2/page-hygiene-checker-v1.1.1.md",
+        prompt_id="page-hygiene-checker-v1.1.1",
         allowed_categories={
             "reference_hygiene",
             "markdown_hygiene",

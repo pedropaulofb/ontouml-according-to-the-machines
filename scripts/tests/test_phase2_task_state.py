@@ -153,7 +153,7 @@ class TaskReconciliationTests(unittest.TestCase):
         state = task_state.load_task_state(TASK_STATE_PATH)
         registry_sha = task_identity.sha256_text(REGISTRY_PATH.read_text(encoding="utf-8"))
         task_reconciler.validate_desired_state(state, desired, registry_sha)
-        self.assertEqual(len(state["tasks"]), 5148)
+        self.assertEqual(len(state["tasks"]), 6123)
         self.assertEqual(len(desired), 1950)
         self.assertEqual(
             sum(record["status"] == "retired" for record in state["tasks"].values()),

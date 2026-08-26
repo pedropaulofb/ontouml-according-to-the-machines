@@ -92,6 +92,7 @@ REASON_CODES = {
     "other",
 }
 ISSUE_TITLE_RE = re.compile(r"^Check signal: (?P<agent>[a-z0-9-]+): (?P<page>[^\s]+)$")
+GENERATION_REVIEW_LOG_HEADING = "## Generation and Review Log"
 GENERATION_REVIEW_LOG_HEADER = "| Date | Phase | Agent | Action | Prompt ID | Prompt Title | Inputs | Notes |"
 GENERATION_REVIEW_LOG_SEPARATOR_RE = re.compile(
     r"^\|\s*-+\s*\|\s*-+\s*\|\s*-+\s*\|\s*-+\s*\|\s*-+\s*\|\s*-+\s*\|\s*-+\s*\|\s*-+\s*\|\s*$"
@@ -117,7 +118,7 @@ JSON_SYSTEM_INSTRUCTION = (
 RESOLVER_PRIMARY_SPEC = ("gemini", "gemini-3.5-flash")
 RESOLVER_FALLBACK_SPEC = ("gemini", "gemini-3.6-flash")
 RESOLVER_FALLBACK_MAX_COMPLETION_TOKENS = 6000
-RESOLVER_VALIDATOR_VERSION = "resolver-plan-validator-v1.2.2"
+RESOLVER_VALIDATOR_VERSION = "resolver-plan-validator-v1.2.3"
 RESOLVER_REQUEST_CONFIG_VERSION = "resolver-request-v1"
 DEFAULT_TASK_STATE_PATH = Path("data/phase-2/task-state.json")
 
@@ -915,6 +916,42 @@ def exact_occurrence_spans(text: str, needle: str) -> list[tuple[int, int]]:
         start = index + 1
 
 
+def generation_review_log_protected_spans(page_text: str) -> list[tuple[int, int, str]]:
+    """Return spans for fixed review-log structure that resolver edits must preserve."""
+    protected: list[tuple[int, int, str]] = []
+    offset = 0
+    awaiting_separator = False
+    for raw_line in page_text.splitlines(keepends=True):
+        line = raw_line.rstrip("\r\n")
+        stripped = line.strip()
+        line_span = (offset, offset + len(raw_line))
+
+        if stripped == GENERATION_REVIEW_LOG_HEADING:
+            protected.append((*line_span, "Generation and Review Log heading"))
+
+        if stripped == GENERATION_REVIEW_LOG_HEADER:
+            protected.append((*line_span, "Generation and Review Log table header"))
+            awaiting_separator = True
+        elif awaiting_separator and (not stripped or (stripped.startswith("<!--") and stripped.endswith("-->"))):
+            pass
+        elif awaiting_separator:
+            if GENERATION_REVIEW_LOG_SEPARATOR_RE.match(stripped):
+                protected.append((*line_span, "Generation and Review Log table separator row"))
+            awaiting_separator = False
+
+        offset += len(raw_line)
+    return protected
+
+
+def protected_generation_review_log_overlap(page_text: str, span: tuple[int, int]) -> str | None:
+    """Return the protected review-log element overlapped by span, if any."""
+    start, end = span
+    for protected_start, protected_end, label in generation_review_log_protected_spans(page_text):
+        if start < protected_end and protected_start < end:
+            return label
+    return None
+
+
 def line_numbers_for_exact_text(text: str, needle: str) -> list[int]:
     """Return 1-based line numbers where needle occurs exactly in text."""
     return [text.count("\n", 0, start) + 1 for start, _end in exact_occurrence_spans(text, needle)]
@@ -1117,6 +1154,15 @@ def _edit_local_failures(
                 "current_text": current,
                 "match_count": len(spans),
                 "match_lines": line_numbers_for_exact_text(page_text, current),
+            }
+        )
+    elif protected_label := protected_generation_review_log_overlap(page_text, spans[0]):
+        failures.append(
+            {
+                "edit_index": edit_index,
+                "reason_code": "unsafe_edit",
+                "message": f"edit {edit_index} overlaps the protected {protected_label}",
+                "current_text": current,
             }
         )
     return failures, spans[0] if len(spans) == 1 and not failures else None
@@ -1499,6 +1545,9 @@ def validate_plan(plan: dict[str, Any], issue: IssueSnapshot, page_text: str) ->
                             match_lines=match_lines,
                         )
                     )
+                protected_label = protected_generation_review_log_overlap(page_text, spans[0])
+                if protected_label is not None:
+                    raise ResolverError(f"Accepted edit overlaps the protected {protected_label}.")
                 if current in seen_current:
                     raise ResolverError(f"Duplicate current_text across accepted edits: {current[:120]!r}")
                 span = spans[0]

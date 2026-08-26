@@ -245,7 +245,7 @@ Completed:
 - `.github/workflows/page-structure-check.yml` runs the page-structure checker in CI;
 - the page-structure CI workflow uploads generated reports as artifacts and fails on structural signals;
 - `check-signal-shared-contract-v1.0.0` defines the common Markdown signal contract;
-- `page-hygiene-checker-v1.1.0` defines the page-hygiene-specific instructions;
+- `page-hygiene-checker-v1.1.1` defines the page-hygiene-specific instructions;
 - `language-style-checker-v1.1.0` defines the language-style-specific instructions;
 - `run_check_agent.py` runs the two LLM check agents through an agent-aware contract;
 - `run_check_agent.py` supports SambaNova, Groq, Gemini, and OpenRouter provider adapters;

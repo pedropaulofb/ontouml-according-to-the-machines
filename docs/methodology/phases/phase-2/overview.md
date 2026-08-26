@@ -190,7 +190,7 @@ There is no current dedicated manual or automated closure prompt for `page-struc
 .github/workflows/phase-2-signal-resolver.yml
 requirements.txt
 prompts/phase-2/check-signal-shared-contract-v1.0.0.md
-prompts/phase-2/page-hygiene-checker-v1.1.0.md
+prompts/phase-2/page-hygiene-checker-v1.1.1.md
 prompts/phase-2/language-style-checker-v1.1.0.md
 archive/phase-2/manual-closure-prompts/close-page-hygiene-signal-issue-v1.0.0.md
 archive/phase-2/manual-closure-prompts/close-language-style-signal-issue-v1.0.0.md
@@ -246,7 +246,7 @@ The current implementation can:
 - run the deterministic `page-structure-checker`;
 - validate the `Generation and Review Log` table structure in canonical stereotype pages;
 - run one LLM check-agent invocation through `run_check_agent.py`;
-- compose `page-hygiene-checker` from the shared signal contract and `prompts/phase-2/page-hygiene-checker-v1.1.0.md`;
+- compose `page-hygiene-checker` from the shared signal contract and `prompts/phase-2/page-hygiene-checker-v1.1.1.md`;
 - compose `language-style-checker` from the shared signal contract and `prompts/phase-2/language-style-checker-v1.1.0.md`;
 - call Groq models through `scripts/phase-2/providers/groq.py`;
 - call Gemini models through `scripts/phase-2/providers/gemini.py`;

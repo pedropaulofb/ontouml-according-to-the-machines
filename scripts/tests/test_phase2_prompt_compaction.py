@@ -137,6 +137,7 @@ class PromptCompactionTests(unittest.TestCase):
                 "encoding hygiene",
                 "Generation and Review Log hygiene",
                 "reference_hygiene",
+                "| Date | Phase | Agent | Action | Prompt ID | Prompt Title | Inputs | Notes |",
             ),
             "language-style-checker": (
                 "grammar",
@@ -165,8 +166,8 @@ class PromptCompactionTests(unittest.TestCase):
     def test_prompt_ids_and_hashes_are_stable(self) -> None:
         expected = {
             "page-hygiene-checker": (
-                "page-hygiene-checker-v1.1.0",
-                "c798d91b771e3c5b250a38dce1c593c4ac95bcc1198a0a69a419b5b6eb74839d",
+                "page-hygiene-checker-v1.1.1",
+                "a3f5e548514f8018b4ab44dc3d07945378b6522b98a28d6f422f12518e829d08",
             ),
             "language-style-checker": (
                 "language-style-checker-v1.1.0",
@@ -190,7 +191,7 @@ class PromptCompactionTests(unittest.TestCase):
         stable = task_identity.build_effective_prompt_content(
             checker_prompt=prompt,
             agent="page-hygiene-checker",
-            prompt_id="page-hygiene-checker-v1.1.0",
+            prompt_id="page-hygiene-checker-v1.1.1",
             input_scope_note="full canonical stereotype page",
         )
         first = task_identity.build_review_input(
@@ -198,7 +199,7 @@ class PromptCompactionTests(unittest.TestCase):
             agent="page-hygiene-checker",
             provider="groq",
             model="first",
-            prompt_id="page-hygiene-checker-v1.1.0",
+            prompt_id="page-hygiene-checker-v1.1.1",
             review_date="2026-08-17",
             page_path="first.md",
             commit_sha="a" * 40,
@@ -211,7 +212,7 @@ class PromptCompactionTests(unittest.TestCase):
             agent="page-hygiene-checker",
             provider="gemini",
             model="second",
-            prompt_id="page-hygiene-checker-v1.1.0",
+            prompt_id="page-hygiene-checker-v1.1.1",
             review_date="2026-08-18",
             page_path="second.md",
             commit_sha="b" * 40,
@@ -230,7 +231,7 @@ class PromptCompactionTests(unittest.TestCase):
                 provider=slot.provider,
                 model=slot.model,
                 page_content=PAGE,
-                prompt_id="page-hygiene-checker-v1.1.0",
+                prompt_id="page-hygiene-checker-v1.1.1",
                 prompt_content=prompt,
                 slot=slot,
             )

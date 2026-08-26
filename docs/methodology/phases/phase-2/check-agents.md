@@ -192,7 +192,7 @@ Required status check: Check stereotype page structure
 | Implementation status | Implemented in the active check-agent-aware LLM runner and scheduled workflow |
 | Runner | `scripts/phase-2/run_check_agent.py` |
 | Batch runner | `scripts/phase-2/run_check_batch.py` |
-| Prompt | Shared `check-signal-shared-contract-v1.0.0.md` plus `page-hygiene-checker-v1.1.0.md` |
+| Prompt | Shared `check-signal-shared-contract-v1.0.0.md` plus `page-hygiene-checker-v1.1.1.md` |
 | Supported provider adapters | `sambanova`, `groq`, `gemini`, `openrouter` |
 | Active scheduled providers | `sambanova`, `groq`, `gemini`, `openrouter` |
 | Output | Structured Markdown signal comment |
@@ -231,7 +231,7 @@ It must not:
 - recommend conceptual rewrites;
 - recommend repository actions or workflow changes.
 
-The active shared contract plus `page-hygiene-checker-v1.1.0` prompt is Markdown-only. It emits one GitHub issue comment and does not emit YAML, JSON, or a separate machine-readable artifact.
+The active shared contract plus `page-hygiene-checker-v1.1.1` prompt is Markdown-only. It emits one GitHub issue comment and does not emit YAML, JSON, or a separate machine-readable artifact.
 
 `run_check_agent.py` validates the output against the configured page-hygiene contract. Invalid model output is written as `.invalid.md` and is not posted.
 
