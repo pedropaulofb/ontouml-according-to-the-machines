@@ -4369,10 +4369,10 @@
   },
   "runtime_slots": {
     "gemini:gemini-2.5-flash": {
-      "authorized_recheck_task_id": null,
+      "authorized_recheck_task_id": "788e90c277f019c995eb67283b570f9e7f9d0d124f897ac1fe00eef86d641e2b",
       "block_reason": "provider_unavailable",
       "block_scope": "slot",
-      "last_updated_at": "2026-08-26T09:00:27Z",
+      "last_updated_at": "2026-08-26T10:47:02Z",
       "last_validation_at": null,
       "last_validation_result": null,
       "model": "gemini-2.5-flash",
