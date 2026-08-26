@@ -4284,7 +4284,7 @@
       "authorized_recheck_task_id": "5da64a6a04362cf9612afaee88eeac814a99f1cc3440522d392382a9782d963a",
       "block_reason": "provider_unavailable",
       "block_scope": "slot",
-      "last_updated_at": "2026-08-26T05:02:21Z",
+      "last_updated_at": "2026-08-26T05:44:05Z",
       "last_validation_at": null,
       "last_validation_result": null,
       "model": "gemini-3.5-flash",
