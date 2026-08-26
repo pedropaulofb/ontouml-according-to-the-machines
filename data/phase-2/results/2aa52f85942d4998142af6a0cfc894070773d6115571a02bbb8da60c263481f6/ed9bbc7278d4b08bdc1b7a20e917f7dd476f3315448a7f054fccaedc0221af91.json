@@ -1,0 +1,74 @@
+{
+  "aggregation": {
+    "source_event_sha256": "2e40631a402def6e44b5e0f06f19eb8a47b7add195b40881c09bb1e581433585",
+    "transport_filename": "ed9bbc7278d4b08bdc1b7a20e917f7dd476f3315448a7f054fccaedc0221af91.json"
+  },
+  "attempt_finished_at": "2026-08-26T13:12:05Z",
+  "attempt_id": "ed9bbc7278d4b08bdc1b7a20e917f7dd476f3315448a7f054fccaedc0221af91",
+  "attempt_started_at": "2026-08-26T13:12:05Z",
+  "event_version": 1,
+  "model": "gemini-2.5-flash",
+  "outcome": "provider_failure",
+  "output_artifact": null,
+  "output_sha256": null,
+  "provider": "gemini",
+  "provider_attempts": 1,
+  "quota_observations": [
+    {
+      "call_source": "signal",
+      "event_id": "01787749925788771518-366415a7-8dc3-4b00-8c34-8a5f4f4d643a",
+      "failure": {
+        "diagnostic": "429 RESOURCE_EXHAUSTED. {'error': {'code': 429, 'message': 'You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 20, model: gemini-2.5-flash\\nPlease retry in 54.228580754s.', 'status': 'RESOURCE_EXHAUSTED', 'details': [{'@type': 'type.googleapis.com/google.rpc.Help', 'links': [{'description': 'Learn more about Gemini API quotas', 'url': 'https://ai.google.dev/gemini-api/docs/rate-limits'}]}, {'@type': 'type.googleapis.com/google.rpc.QuotaFailure', 'violations': [{'quotaMetric': 'generativelanguage.googleapis.com/generate_content_free_tier_requests', 'quotaId': 'GenerateRequestsPerDayPerProjectPerModel-FreeTier', 'quotaDimensions': {'model': 'gemini-2.5-flash', 'location': 'global'}, 'quotaValue'",
+        "kind": "rate_or_quota_limited",
+        "quota_group_ids": [
+          "gemini:gemini-2.5-flash"
+        ],
+        "retry_after_seconds": 54,
+        "retry_not_before": "2026-08-26T13:12:59Z",
+        "retry_source": "provider-reported",
+        "retryable_immediately": false,
+        "scope": "quota_group"
+      },
+      "headers": {
+        "alt-svc": "h3=\":443\"; ma=2592000,h3-29=\":443\"; ma=2592000",
+        "content-encoding": "gzip",
+        "content-type": "application/json; charset=UTF-8",
+        "date": "Wed, 26 Aug 2026 13:12:05 GMT",
+        "server": "scaffolding on HTTPServer2",
+        "server-timing": "gfet4t7; dur=111",
+        "transfer-encoding": "chunked",
+        "vary": "Origin, X-Origin, Referer",
+        "x-content-type-options": "nosniff",
+        "x-frame-options": "SAMEORIGIN",
+        "x-gemini-service-tier": "standard",
+        "x-xss-protection": "0"
+      },
+      "model": "gemini-2.5-flash",
+      "observed_at": "2026-08-26T13:12:05Z",
+      "outcome": "failure",
+      "provider": "gemini",
+      "request_sent": true,
+      "schema_version": 1,
+      "task_id": "2aa52f85942d4998142af6a0cfc894070773d6115571a02bbb8da60c263481f6",
+      "usage": {
+        "cached_tokens": null,
+        "input_tokens": null,
+        "output_tokens": null,
+        "reasoning_tokens": null,
+        "total_tokens": null
+      }
+    }
+  ],
+  "runner_returncode": 1,
+  "signal_count": 0,
+  "task_id": "2aa52f85942d4998142af6a0cfc894070773d6115571a02bbb8da60c263481f6",
+  "usage": {
+    "cached_tokens": null,
+    "input_tokens": null,
+    "output_tokens": null,
+    "reasoning_tokens": null,
+    "total_tokens": null
+  },
+  "worker_id": "gemini",
+  "workflow_run_id": "32972636228-1"
+}
