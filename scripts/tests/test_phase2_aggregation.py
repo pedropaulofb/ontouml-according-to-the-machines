@@ -175,6 +175,8 @@ class ResultAggregationTests(AggregationFixture):
             self.assertEqual(updated["publication"]["status"], "not_required")
             self.assertTrue((root / updated["result_record"]["event_path"]).is_file())
             self.assertTrue((root / updated["result_record"]["validated_output_path"]).is_file())
+            self.assertEqual(updated["result_record"]["attempt_id"], event["attempt_id"])
+            self.assertEqual(updated["result_record"]["source_event_sha256"], aggregator._canonical_sha256(event))
             self.assertEqual(counts["applied"], 1)
 
     def test_publication_failure_retries_without_reapplying_the_terminal_event(self) -> None:
@@ -204,13 +206,16 @@ class ResultAggregationTests(AggregationFixture):
             self.assertEqual(counts["applied"], 0)
             self.assertEqual(retried_tasks["tasks"][record["task_id"]]["publication"]["status"], "published")
 
-    def test_duplicate_delivery_is_idempotent(self) -> None:
+    def test_duplicate_delivery_is_idempotent_without_durable_event_file(self) -> None:
         record = self.leased_task()
         event = self.event(record)
         with tempfile.TemporaryDirectory() as temporary:
             root = Path(temporary)
             self.write_transport(root / "artifacts", event)
             tasks, quota, _counts, _events = self.run_aggregate(root, self.state_with(record))
+            durable_event_path = root / tasks["tasks"][record["task_id"]]["result_record"]["event_path"]
+            durable_event_path.unlink()
+
             tasks_again, _quota, counts, accepted = aggregator.aggregate(
                 repo_root=root,
                 artifact_root=root / "artifacts",
@@ -222,6 +227,97 @@ class ResultAggregationTests(AggregationFixture):
             self.assertEqual(counts["duplicate"], 1)
             self.assertEqual(accepted, [])
             self.assertEqual(tasks_again, tasks)
+
+    def test_conflicting_replay_uses_state_identity_without_durable_event_file(self) -> None:
+        record = self.leased_task()
+        event = self.event(record)
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            artifacts = root / "artifacts"
+            self.write_transport(artifacts, event)
+            tasks, quota, _counts, _events = self.run_aggregate(root, self.state_with(record))
+            durable_event_path = root / tasks["tasks"][record["task_id"]]["result_record"]["event_path"]
+            durable_event_path.unlink()
+
+            conflicting = copy.deepcopy(event)
+            conflicting["attempt_finished_at"] = "2026-08-17T12:00:01Z"
+            self.write_transport(artifacts, conflicting)
+            tasks_again, _quota, counts, accepted = aggregator.aggregate(
+                repo_root=root,
+                artifact_root=artifacts,
+                registry=self.registry,
+                task_state=tasks,
+                quota_state=quota,
+                timestamp=TIMESTAMP,
+            )
+            self.assertEqual(tasks_again, tasks)
+            self.assertEqual(counts["rejected"], 1)
+            self.assertEqual(counts["actionable_rejected"], 1)
+            self.assertEqual(counts["stale_replay"], 0)
+            self.assertEqual(accepted, [])
+
+    def test_legacy_duplicate_delivery_still_uses_event_path(self) -> None:
+        record = self.leased_task()
+        event = self.event(record)
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            self.write_transport(root / "artifacts", event)
+            tasks, quota, _counts, _events = self.run_aggregate(root, self.state_with(record))
+            legacy_tasks = copy.deepcopy(tasks)
+            result_record = legacy_tasks["tasks"][record["task_id"]]["result_record"]
+            result_record.pop("attempt_id")
+            result_record.pop("source_event_sha256")
+
+            tasks_again, _quota, counts, accepted = aggregator.aggregate(
+                repo_root=root,
+                artifact_root=root / "artifacts",
+                registry=self.registry,
+                task_state=legacy_tasks,
+                quota_state=quota,
+                timestamp=TIMESTAMP,
+            )
+            self.assertEqual(counts["duplicate"], 1)
+            self.assertEqual(accepted, [])
+            self.assertEqual(tasks_again, legacy_tasks)
+
+    def test_prior_result_identity_does_not_block_a_new_leased_attempt(self) -> None:
+        record = self.leased_task()
+        first = self.event(record, outcome="not_called", provider_attempts=0)
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            artifacts = root / "artifacts"
+            self.write_transport(artifacts, first)
+            tasks, quota, _counts, _events = self.run_aggregate(root, self.state_with(record))
+
+            shutil.rmtree(artifacts)
+            updated = tasks["tasks"][record["task_id"]]
+            updated["status"] = "leased"
+            updated["attempt_count"] = 2
+            updated["last_attempt_at"] = "2026-08-17T12:10:00Z"
+            updated["lease"] = {
+                "attempt_id": "attempt-1-2",
+                "attempt_number": 2,
+                "workflow_run_id": "workflow-2",
+                "worker_id": self.slot.provider,
+                "leased_at": "2026-08-17T12:10:00Z",
+                "expires_at": "2026-08-17T13:10:00Z",
+            }
+            second = self.event(updated, outcome="not_called", provider_attempts=0)
+            self.write_transport(artifacts, second)
+
+            tasks_again, _quota, counts, accepted = aggregator.aggregate(
+                repo_root=root,
+                artifact_root=artifacts,
+                registry=self.registry,
+                task_state=tasks,
+                quota_state=quota,
+                timestamp=TIMESTAMP,
+            )
+            result_record = tasks_again["tasks"][record["task_id"]]["result_record"]
+            self.assertEqual(counts["applied"], 1)
+            self.assertEqual(len(accepted), 1)
+            self.assertEqual(result_record["attempt_id"], "attempt-1-2")
+            self.assertEqual(result_record["source_event_sha256"], aggregator._canonical_sha256(second))
 
     def test_recovered_not_called_is_persisted_before_returning_pending(self) -> None:
         record = self.leased_task()

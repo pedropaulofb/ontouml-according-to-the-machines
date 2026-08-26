@@ -325,6 +325,21 @@ def _existing_source_hash(path: Path) -> str | None:
     return aggregation.get("source_event_sha256") if isinstance(aggregation, dict) else None
 
 
+def _stored_result_identity(task: Mapping[str, Any]) -> tuple[str, str] | None:
+    result_record = task.get("result_record")
+    if not isinstance(result_record, dict):
+        raise AggregationError("Persisted task result_record must be an object.")
+    attempt_id = result_record.get("attempt_id")
+    source_sha256 = result_record.get("source_event_sha256")
+    if attempt_id is None and source_sha256 is None:
+        return None
+    if not isinstance(attempt_id, str) or not attempt_id.strip():
+        raise AggregationError("Persisted task result identity requires a non-empty attempt_id.")
+    if not isinstance(source_sha256, str) or len(source_sha256) != 64:
+        raise AggregationError("Persisted task result identity requires a full source-event SHA-256.")
+    return attempt_id, source_sha256
+
+
 def _persist_terminal_event(
     *,
     repo_root: Path,
@@ -337,11 +352,21 @@ def _persist_terminal_event(
 ) -> tuple[str, bool]:
     durable_event_path, durable_output_path = _durable_paths(repo_root, result_root, event)
     relative_event_path = durable_event_path.relative_to(repo_root).as_posix()
+    stored_identity = _stored_result_identity(task)
+    if stored_identity is not None and stored_identity[0] == event["attempt_id"]:
+        if stored_identity[1] != transport.source_sha256:
+            raise AggregationError("Persisted task result identity conflicts with the terminal event.")
+        if durable_event_path.exists():
+            existing_hash = _existing_source_hash(durable_event_path)
+            if existing_hash != stored_identity[1]:
+                raise AggregationError("Persisted task state and durable terminal event disagree.")
+        return "duplicate", False
+
     existing_hash = _existing_source_hash(durable_event_path)
-    already_applied = task["result_record"].get("event_path") == relative_event_path
     if existing_hash is not None and existing_hash != transport.source_sha256:
         raise AggregationError("A distinct terminal event already exists for the same task attempt.")
-    if already_applied:
+    legacy_already_applied = stored_identity is None and task["result_record"].get("event_path") == relative_event_path
+    if legacy_already_applied:
         if existing_hash != transport.source_sha256:
             raise AggregationError("Persisted task state and durable terminal event disagree.")
         return "duplicate", False
@@ -374,6 +399,8 @@ def _persist_terminal_event(
     task["lease"] = None
     task["retry_not_before"] = None
     task["result_record"] = {
+        "attempt_id": event["attempt_id"],
+        "source_event_sha256": transport.source_sha256,
         "event_path": relative_event_path,
         "output_sha256": event.get("output_sha256"),
         "validated_output_path": output_relative if event["outcome"] == "valid" else None,
