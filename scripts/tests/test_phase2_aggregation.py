@@ -497,10 +497,13 @@ class StatisticsTests(AggregationFixture):
     def test_refresh_excludes_pre_recalibration_only_rows_and_sums_queue(self) -> None:
         with tempfile.TemporaryDirectory() as temporary:
             page = Path(temporary) / "statistics.md"
+            state_path = Path(temporary) / "statistics-state.json"
             shutil.copy2(REPO_ROOT / statistics.DEFAULT_STATISTICS_PAGE, page)
+            statistics.write_state(state_path, statistics.load_state(page))
             tasks = task_state.load_task_state(REPO_ROOT / "data/phase-2/task-state.json")
             quota = quota_state.load_state(REPO_ROOT / "data/phase-2/quota-state.json", self.registry)
             statistics.refresh_queue_statistics(
+                statistics_state=state_path,
                 statistics_page=page,
                 registry=self.registry,
                 task_state=tasks,
@@ -508,7 +511,7 @@ class StatisticsTests(AggregationFixture):
                 terminal_events=[],
                 timestamp_utc=TIMESTAMP,
             )
-            state = statistics.load_state(page)
+            state = statistics.load_state(state_path)
             self.assertNotIn("cerebras:gpt-oss-120b", state["models"])
             self.assertNotIn("openrouter:poolside/laguna-m.1:free", state["models"])
             queue = state["queue"]

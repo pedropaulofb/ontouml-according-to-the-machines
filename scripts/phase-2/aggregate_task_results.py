@@ -41,6 +41,7 @@ DEFAULT_RESULT_ROOT = Path("data/phase-2/results")
 DEFAULT_PUBLICATION_ROOT = Path("data/phase-2/publications")
 DEFAULT_HISTORY_ROOT = Path("data/phase-2/history")
 DEFAULT_STATISTICS_PAGE = Path("docs/methodology/phases/phase-2/model-run-statistics.md")
+DEFAULT_STATISTICS_STATE = Path("data/phase-2/statistics-state.json")
 TERMINAL_OUTCOMES = {"valid", "validator_rejected", "provider_failure", "not_called"}
 USAGE_FIELDS = ("input_tokens", "output_tokens", "total_tokens", "reasoning_tokens", "cached_tokens")
 
@@ -632,6 +633,7 @@ def parse_args(argv: Sequence[str] | None = None) -> argparse.Namespace:
     parser.add_argument("--publication-root", default=str(DEFAULT_PUBLICATION_ROOT))
     parser.add_argument("--history-root", default=str(DEFAULT_HISTORY_ROOT))
     parser.add_argument("--statistics-page", default=str(DEFAULT_STATISTICS_PAGE))
+    parser.add_argument("--statistics-state", default=str(DEFAULT_STATISTICS_STATE))
     parser.add_argument("--timestamp")
     return parser.parse_args(argv)
 
@@ -666,6 +668,7 @@ def main(argv: Sequence[str] | None = None) -> int:
         write_task_state(task_path, updated_tasks)
         write_quota_state(quota_path, updated_quota, registry)
         refresh_queue_statistics(
+            statistics_state=_resolve(repo_root, args.statistics_state),
             statistics_page=_resolve(repo_root, args.statistics_page),
             registry=registry,
             task_state=updated_tasks,

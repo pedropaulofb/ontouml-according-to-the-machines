@@ -1,16 +1,17 @@
 #!/usr/bin/env python3
 """Update cumulative Phase 2 check-agent model run statistics.
 
-The script consumes the deterministic Markdown batch summary written by
-`scripts/phase-2/run_check_batch.py` and updates a MkDocs documentation page.
-It does not inspect raw provider completions and it does not ask an LLM to
-classify validity.
+Canonical machine-readable state lives in ``data/phase-2/statistics-state.json``.
+The MkDocs statistics page is derived output. Legacy Markdown-embedded state is
+read only as a transition fallback and by the one-time migration utility.
 """
 
 from __future__ import annotations
 
 import argparse
+import copy
 import json
+import os
 import re
 import sys
 import tempfile
@@ -27,6 +28,7 @@ from provider_model_registry import ProviderModelRegistry, configured_provider_m
 from provider_runtime import parse_timestamp  # noqa: E402
 
 DEFAULT_STATISTICS_PAGE = Path("docs/methodology/phases/phase-2/model-run-statistics.md")
+DEFAULT_STATISTICS_STATE = Path("data/phase-2/statistics-state.json")
 DEFAULT_SUMMARY_PATH = Path(".tmp/phase-2/batch-summary.md")
 STATE_START = "<!-- model-run-statistics-state"
 STATE_END = "-->"
@@ -68,14 +70,6 @@ class SummaryRun:
 
     @property
     def counting_status(self) -> str:
-        """Status used for model-validity counters.
-
-        `run_check_batch.py` can report an overall `failed` status for an
-        issue-manager failure even when `run_check_agent.py` produced a valid
-        output. Counting uses check status so model validity remains tied to the
-        Python-side check-agent validation result.
-        """
-
         return self.check_status or self.overall_status
 
 
@@ -186,13 +180,11 @@ def parse_batch_summary(summary_path: Path) -> list[SummaryRun]:
             continue
         if cells_are_separator(cells):
             continue
-
         row_number_text = row_value(cells, header, "#", fallback_index=0)
         try:
             row_number = int(row_number_text)
         except ValueError:
             continue
-
         overall_status = row_value(cells, header, "status", fallback_index=1).lower()
         check_status = row_value(cells, header, "check status", fallback_index=1).lower()
         issue_status = row_value(cells, header, "issue status", fallback_index=1).lower()
@@ -226,8 +218,6 @@ def empty_state() -> dict[str, Any]:
 
 
 def earliest_seen_event_timestamp(state: dict[str, Any]) -> str:
-    """Return the earliest persisted counted-event timestamp, if available."""
-
     timestamps: list[str] = []
     seen_events = state.get("seen_events", {})
     if not isinstance(seen_events, dict):
@@ -242,19 +232,34 @@ def earliest_seen_event_timestamp(state: dict[str, Any]) -> str:
 
 
 def ensure_collection_start_utc(state: dict[str, Any]) -> str:
-    """Set collection_start_utc from persisted event evidence when missing."""
-
     current = str(state.get("collection_start_utc") or "").strip()
     if current:
         state["collection_start_utc"] = current
         return current
-
     earliest = earliest_seen_event_timestamp(state)
     state["collection_start_utc"] = earliest or None
     return earliest
 
 
+def normalize_state(state: dict[str, Any]) -> dict[str, Any]:
+    state.setdefault("schema_version", STATE_SCHEMA_VERSION)
+    state.setdefault("generated_at", None)
+    state.setdefault("collection_start_utc", None)
+    state.setdefault("active_rotation", [])
+    state.setdefault("models", {})
+    state.setdefault("seen_events", {})
+    state.setdefault("seen_terminal_events", {})
+    state.setdefault("queue", {})
+    ensure_collection_start_utc(state)
+    return state
+
+
 def extract_state(page_text: str) -> dict[str, Any]:
+    """Read legacy state embedded in the Markdown page.
+
+    This function remains for migration/backward compatibility only. New state
+    is never written back into Markdown.
+    """
     start = page_text.find(STATE_START)
     if start == -1:
         return empty_state()
@@ -273,22 +278,67 @@ def extract_state(page_text: str) -> dict[str, Any]:
         return empty_state()
     if not isinstance(state, dict):
         return empty_state()
-    state.setdefault("schema_version", STATE_SCHEMA_VERSION)
-    state.setdefault("generated_at", None)
-    state.setdefault("collection_start_utc", None)
-    state.setdefault("active_rotation", [])
-    state.setdefault("models", {})
-    state.setdefault("seen_events", {})
-    state.setdefault("seen_terminal_events", {})
-    state.setdefault("queue", {})
-    ensure_collection_start_utc(state)
-    return state
+    return normalize_state(state)
 
 
-def load_state(statistics_page: Path) -> dict[str, Any]:
-    if not statistics_page.exists():
-        return empty_state()
-    return extract_state(statistics_page.read_text(encoding="utf-8"))
+def _load_json_state(path: Path) -> dict[str, Any]:
+    try:
+        raw = json.loads(path.read_text(encoding="utf-8"))
+    except json.JSONDecodeError as exc:
+        raise ValueError(f"Invalid statistics state JSON: {path}: {exc}") from exc
+    if not isinstance(raw, dict):
+        raise ValueError(f"Statistics state must be a JSON object: {path}")
+    return normalize_state(raw)
+
+
+def load_state(path: Path, *, legacy_statistics_page: Path | None = None) -> dict[str, Any]:
+    """Load canonical JSON state, with legacy Markdown compatibility.
+
+    Passing a Markdown path retains the pre-Step-5 reader behavior for tests and
+    external callers. Production callers pass the JSON state path explicitly.
+    """
+    path = Path(path)
+    if path.suffix.lower() == ".md":
+        if not path.exists():
+            return empty_state()
+        return extract_state(path.read_text(encoding="utf-8"))
+    if path.exists():
+        return _load_json_state(path)
+    if legacy_statistics_page is not None and Path(legacy_statistics_page).exists():
+        return extract_state(Path(legacy_statistics_page).read_text(encoding="utf-8"))
+    return empty_state()
+
+
+def _canonical_state_text(state: Mapping[str, Any]) -> str:
+    return json.dumps(state, ensure_ascii=False, indent=2, sort_keys=True) + "\n"
+
+
+def _atomic_write_text(path: Path, text: str) -> None:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    with tempfile.NamedTemporaryFile(
+        mode="w",
+        encoding="utf-8",
+        newline="\n",
+        dir=path.parent,
+        prefix=f".{path.name}.",
+        suffix=".tmp",
+        delete=False,
+    ) as handle:
+        temporary = Path(handle.name)
+        handle.write(text)
+        handle.flush()
+        os.fsync(handle.fileno())
+    try:
+        os.replace(temporary, path)
+    finally:
+        if temporary.exists():
+            temporary.unlink()
+
+
+def write_state(path: Path, state: Mapping[str, Any]) -> None:
+    if not isinstance(state, Mapping):
+        raise ValueError("Statistics state must be a mapping.")
+    _atomic_write_text(Path(path), _canonical_state_text(state))
 
 
 def ensure_model_record(state: dict[str, Any], spec: ProviderModelSpec) -> dict[str, Any]:
@@ -422,11 +472,9 @@ def apply_summary_runs(
     ]
     for spec in active_specs:
         ensure_model_record(state, spec)
-
     seen_events = state.setdefault("seen_events", {})
     added = 0
     ignored = 0
-
     for summary_run in summary_runs:
         counting_status = summary_run.counting_status
         if counting_status in IGNORED_STATUSES:
@@ -441,7 +489,6 @@ def apply_summary_runs(
         if key in seen_events:
             ignored += 1
             continue
-
         record["called"] += 1
         record["total_called"] += 1
         record["total_provider_attempts"] += 1
@@ -480,7 +527,6 @@ def apply_summary_runs(
             "commit_sha": commit_sha,
         }
         added += 1
-
     ensure_collection_start_utc(state)
     state["generated_at"] = timestamp_utc
     return added, ignored
@@ -496,7 +542,6 @@ def _terminal_failure_kinds(event: Mapping[str, Any]) -> set[str]:
 
 
 def apply_terminal_events(state: dict[str, Any], terminal_events: Iterable[Mapping[str, Any]]) -> tuple[int, int]:
-    """Apply validated queue terminal events without double-counting an attempt."""
     normalize_existing_models(state)
     seen = state.setdefault("seen_terminal_events", {})
     added = 0
@@ -537,7 +582,6 @@ def apply_terminal_events(state: dict[str, Any], terminal_events: Iterable[Mappi
             record["provider_failed"] += 1
             record["provider_failures"] += 1
             record["last_check_status"] = "provider_failed"
-
         failure_kinds = _terminal_failure_kinds(event)
         record["quota_deferrals"] += int("rate_or_quota_limited" in failure_kinds)
         record["policy_blocks"] += int("provider_policy_block" in failure_kinds)
@@ -546,14 +590,12 @@ def apply_terminal_events(state: dict[str, Any], terminal_events: Iterable[Mappi
         if outcome == "provider_failure" and not failure_kinds:
             record["runner_failed"] += 1
             record["runner_failures"] += 1
-
         usage = event.get("usage") if isinstance(event.get("usage"), dict) else {}
         for field in ("input_tokens", "output_tokens", "reasoning_tokens", "cached_tokens"):
             value = usage.get(field)
             if isinstance(value, int) and not isinstance(value, bool) and value >= 0:
                 record[field] = int(record[field] or 0) + value
                 record[f"{field}_known_events"] += 1
-
         finished_at = str(event["attempt_finished_at"])
         record["last_attempt"] = finished_at
         record["last_run_utc"] = finished_at
@@ -616,9 +658,12 @@ def refresh_queue_statistics(
     quota_state: Mapping[str, Any],
     terminal_events: Iterable[Mapping[str, Any]],
     timestamp_utc: str,
+    statistics_state: Path,
 ) -> None:
-    """Refresh cumulative outcomes and the current queue snapshot in one Markdown artifact."""
-    state = load_state(statistics_page)
+    """Refresh cumulative outcomes, canonical JSON state, and the rendered page."""
+    page = Path(statistics_page)
+    state_path = Path(statistics_state)
+    state = load_state(state_path, legacy_statistics_page=page)
     state["schema_version"] = QUEUE_STATISTICS_SCHEMA_VERSION
     state["active_rotation"] = [
         {"provider": slot.provider, "model": slot.model, "spec": slot.spec} for slot in registry.configured_slots
@@ -663,7 +708,6 @@ def refresh_queue_statistics(
         quota_observation = _last_quota_observation(quota_state, slot.quota_groups)
         if quota_observation:
             record["last_quota_observation"] = max(str(record.get("last_quota_observation") or ""), quota_observation)
-
     for key, record in state.get("models", {}).items():
         if key in configured_keys:
             continue
@@ -674,12 +718,12 @@ def refresh_queue_statistics(
         record["current_completed_tasks"] = 0
         record["completion_percentage"] = 0.0
         record["oldest_pending_age_seconds"] = None
-
     state["queue"] = _queue_status_counts(task_state)
     state["generated_at"] = timestamp_utc
     ensure_collection_start_utc(state)
-    statistics_page.parent.mkdir(parents=True, exist_ok=True)
-    statistics_page.write_text(render_markdown(state), encoding="utf-8")
+    rendered = render_markdown(state)
+    write_state(state_path, state)
+    _atomic_write_text(page, rendered)
 
 
 def sorted_model_records(state: dict[str, Any]) -> list[dict[str, Any]]:
@@ -704,6 +748,7 @@ def _age_display(value: Any) -> str:
 
 
 def render_markdown(state: dict[str, Any]) -> str:
+    state = copy.deepcopy(state)
     normalize_existing_models(state)
     generated_at = state.get("generated_at") or "not generated yet"
     collection_start_utc = ensure_collection_start_utc(state) or "not recorded yet"
@@ -711,19 +756,35 @@ def render_markdown(state: dict[str, Any]) -> str:
     lines: list[str] = [
         "# Phase 2 — Model Run Statistics",
         "",
-        "← Previous: [Execution and Operations](execution-and-operations.md) | [Phase 2 index](index.md) | Next: [Prompts and Status](prompts-and-status.md) →",
+        (
+            "← Previous: [Execution and Operations](execution-and-operations.md) | "
+            "[Phase 2 index](index.md) | Next: [Prompts and Status](prompts-and-status.md) →"
+        ),
         "",
-        "This page stores cumulative execution statistics and the current queue snapshot for the scheduled Phase 2 check-agent signal collector.",
+        (
+            "This page presents cumulative execution statistics and the current queue snapshot "
+            "for the scheduled Phase 2 check-agent signal collector."
+        ),
         "",
-        "The tables are updated from deterministic queue state, validated terminal events, and provider quota observations.",
+        (
+            "The tables are derived from canonical machine-readable statistics state, deterministic queue state, "
+            "validated terminal events, and provider quota observations."
+        ),
         "",
-        "The current desired universe is 39 canonical pages × 2 LLM check agents × 25 configured provider-model slots = 1,950 tasks. Historical obsolete and retired identities remain stored, so total records may be higher.",
+        (
+            "The current desired universe is 39 canonical pages × 2 LLM check agents × 25 configured "
+            "provider-model slots = 1,950 tasks. Historical obsolete and retired identities remain stored, "
+            "so total records may be higher."
+        ),
         "",
         f"Statistics collection started on: `{collection_start_utc}`",
         "",
         "Counts shown on this page only include executions recorded since that start time.",
         "",
-        "Rows retained in the current statistics state but outside the configured, non-retired registry are shown as `inactive`.",
+        (
+            "Rows retained in the current statistics state but outside the configured, non-retired registry "
+            "are shown as `inactive`."
+        ),
         "",
         f"Last generated: `{generated_at}`",
         "",
@@ -749,13 +810,17 @@ def render_markdown(state: dict[str, Any]) -> str:
         "obsolete",
     ):
         lines.append(f"| `{key}` | {int(queue.get(key, 0) or 0)} |")
-
     lines.extend(
         [
             "",
             "## Provider–model outcomes",
             "",
-            "| Provider | Model | Status | Configuration | Execution | Lifecycle | Called | Provider attempts | Valid | Zero-signal valid | Valid with signals | Validator rejections | Provider failures | Quota deferrals | Policy blocks | Execution-config blocks | Temporarily unavailable | Runner failures |",
+            (
+                "| Provider | Model | Status | Configuration | Execution | Lifecycle | Called | Provider attempts | "
+                "Valid | Zero-signal valid | Valid with signals | Validator rejections | Provider failures | "
+                "Quota deferrals | Policy blocks | Execution-config blocks | Temporarily unavailable | "
+                "Runner failures |"
+            ),
             "|---|---|---|---|---|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|",
         ]
     )
@@ -787,13 +852,15 @@ def render_markdown(state: dict[str, Any]) -> str:
             )
             + " |"
         )
-
     lines.extend(
         [
             "",
             "## Current slot progress",
             "",
-            "| Provider | Model | Completed | Desired | Completion | Oldest pending | Last success | Last attempt | Last quota observation |",
+            (
+                "| Provider | Model | Completed | Desired | Completion | Oldest pending | Last success | "
+                "Last attempt | Last quota observation |"
+            ),
             "|---|---|---:|---:|---:|---|---|---|---|",
         ]
     )
@@ -817,7 +884,6 @@ def render_markdown(state: dict[str, Any]) -> str:
             )
             + " |"
         )
-
     lines.extend(
         [
             "",
@@ -842,48 +908,85 @@ def render_markdown(state: dict[str, Any]) -> str:
             )
             + " |"
         )
-
     lines.extend(
         [
             "",
             "## Status derivation and accuracy",
             "",
-            "- `Status` is derived from the hidden configured-slot snapshot: configured, non-retired models are `active`; any other retained model row is `inactive`.",
+            (
+                "- `Status` is derived from the configured-slot snapshot in "
+                "`data/phase-2/statistics-state.json`: configured, non-retired models are `active`; "
+                "any other retained model row is `inactive`."
+            ),
             "- Execution outcome counters include only events recorded in the current statistics epoch.",
-            "- Provider-attempt totals for the current statistics epoch are locally counted from validated terminal events.",
-            "- Queue completion and age fields are derived from `task-state.json`; configuration and lifecycle come from the registry; execution status comes from runtime quota state when present.",
-            "- Token values are provider-reported when available and then locally summed. `unknown` is distinct from a reported value of zero.",
-            "- Quota state is best-known capacity, not a guarantee. Provenance marks observations as provider-reported, locally counted, configured, inferred, or unknown, and `estimated: true` explicitly identifies estimates such as remaining capacity.",
+            (
+                "- Provider-attempt totals for the current statistics epoch are locally counted from "
+                "validated terminal events."
+            ),
+            (
+                "- Queue completion and age fields are derived from `task-state.json`; configuration and lifecycle "
+                "come from the registry; execution status comes from runtime quota state when present."
+            ),
+            (
+                "- Token values are provider-reported when available and then locally summed. "
+                "`unknown` is distinct from a reported value of zero."
+            ),
+            (
+                "- Quota state is best-known capacity, not a guarantee. Provenance marks observations as "
+                "provider-reported, locally counted, configured, inferred, or unknown, and `estimated: true` "
+                "explicitly identifies estimates such as remaining capacity."
+            ),
             "",
             "## Storage strategy and limitations",
             "",
-            "The human-readable tables are rendered from hidden JSON state stored in this Markdown file. Durable task results and publication payloads are stored separately under `data/phase-2/`.",
+            (
+                "The canonical machine-readable statistics state is stored in "
+                "`data/phase-2/statistics-state.json`. This Markdown page is derived output and does not embed "
+                "the state payload."
+            ),
             "",
-            "The collector aggregator commits this page with task state, quota state, and durable results after each run that changes repository state.",
+            (
+                "The collector aggregator commits the statistics state and this rendered page with task state, "
+                "quota state, and durable results after each run that changes repository state."
+            ),
             "",
-            "Push conflicts are handled by fetching the latest branch and idempotently reapplying the same validated terminal events before a bounded retry.",
+            (
+                "Push conflicts are handled by fetching the latest branch and idempotently reapplying the same "
+                "validated terminal events before a bounded retry."
+            ),
             "",
-            "The hidden state stores legacy batch-event keys and queue attempt IDs for de-duplication. This prevents accidental double-counting but means the Markdown file grows over time.",
+            (
+                "The canonical statistics state retains legacy batch-event keys and queue attempt IDs for "
+                "de-duplication. Historical compaction or reconstruction is handled separately from this "
+                "storage split."
+            ),
             "",
-            "This page does not store secrets, raw prompts, raw completions, or provider response bodies.",
-            "",
-            STATE_START,
-            json.dumps(state, indent=2, sort_keys=True),
-            STATE_END,
+            (
+                "Neither the statistics state nor this page stores secrets, raw prompts, raw completions, "
+                "or provider response bodies."
+            ),
             "",
             "---",
             "",
-            "← Previous: [Execution and Operations](execution-and-operations.md) | [Phase 2 index](index.md) | Next: [Prompts and Status](prompts-and-status.md) →",
+            (
+                "← Previous: [Execution and Operations](execution-and-operations.md) | "
+                "[Phase 2 index](index.md) | Next: [Prompts and Status](prompts-and-status.md) →"
+            ),
             "",
         ]
     )
-    return "\n".join(lines)
+    rendered = "\n".join(lines)
+    if STATE_START in rendered:
+        raise AssertionError("Rendered statistics Markdown must not embed machine-readable state.")
+    return rendered
 
 
 def update_statistics_page(args: argparse.Namespace) -> int:
     active_specs = parse_provider_model_specs(args.provider_model_specs)
     summary_runs = parse_batch_summary(Path(args.summary))
-    state = load_state(Path(args.statistics_page))
+    statistics_page = Path(args.statistics_page)
+    statistics_state = Path(args.statistics_state)
+    state = load_state(statistics_state, legacy_statistics_page=statistics_page)
     added, ignored = apply_summary_runs(
         state=state,
         active_specs=active_specs,
@@ -899,9 +1002,8 @@ def update_statistics_page(args: argparse.Namespace) -> int:
     if args.dry_run:
         print(rendered)
     else:
-        statistics_page = Path(args.statistics_page)
-        statistics_page.parent.mkdir(parents=True, exist_ok=True)
-        statistics_page.write_text(rendered, encoding="utf-8")
+        write_state(statistics_state, state)
+        _atomic_write_text(statistics_page, rendered)
     print(f"Processed model-run statistics events: added={added}, ignored={ignored}")
     return 0
 
@@ -922,9 +1024,16 @@ def write_self_test_summary(
                 "",
                 "## Runs",
                 "",
-                "| # | Status | Check status | Issue status | Page | Agent | Provider | Model | Output | Log | Message |",
+                (
+                    "| # | Status | Check status | Issue status | Page | Agent | Provider | Model | "
+                    "Output | Log | Message |"
+                ),
                 "|---:|---|---|---|---|---|---|---|---|---|---|",
-                f"| 1 | `{overall_status}` | `{check_status}` | `{issue_status}` | `docs/stereotypes/classes/event.md` | `page-hygiene-checker` | `{provider}` | `{model}` | `.tmp/out.md` | `.tmp/out.log` | test |",
+                (
+                    f"| 1 | `{overall_status}` | `{check_status}` | `{issue_status}` | "
+                    f"`docs/stereotypes/classes/event.md` | `page-hygiene-checker` | `{provider}` | `{model}` | "
+                    "`.tmp/out.md` | `.tmp/out.log` | test |"
+                ),
                 "",
             ]
         ),
@@ -937,6 +1046,7 @@ def run_self_test() -> int:
         root = Path(tmp_dir)
         summary = root / "batch-summary.md"
         page = root / "model-run-statistics.md"
+        state_path = root / "statistics-state.json"
         specs = DEFAULT_PROVIDER_MODEL_SPECS
 
         def run_case(
@@ -958,6 +1068,7 @@ def run_self_test() -> int:
             ns = argparse.Namespace(
                 summary=str(summary),
                 statistics_page=str(page),
+                statistics_state=str(state_path),
                 provider_model_specs=specs,
                 run_id=run_id,
                 run_attempt="1",
@@ -974,8 +1085,7 @@ def run_self_test() -> int:
         run_case("rejected", "rejected", "skipped", "openrouter", "nvidia/nemotron-3-ultra-550b-a55b:free", "2")
         run_case("provider_failed", "provider_failed", "skipped", "openrouter", "poolside/laguna-m.1:free", "3")
         run_case("failed", "ok", "failed", "gemini", "gemini-3.1-flash-lite", "4")
-
-        state = load_state(page)
+        state = load_state(state_path)
         legacy = state["models"]["legacy-provider:legacy-model"]
         nemotron = state["models"]["openrouter:nvidia/nemotron-3-ultra-550b-a55b:free"]
         laguna = state["models"]["openrouter:poolside/laguna-m.1:free"]
@@ -990,33 +1100,34 @@ def run_self_test() -> int:
         assert gemini["last_issue_status"] == "failed"
         assert state["collection_start_utc"] == "2026-06-28T00:00:00Z"
         assert "Statistics collection started on: `2026-06-28T00:00:00Z`" in rendered
-        assert (
-            "Rows retained in the current statistics state but outside the configured, non-retired registry are shown as `inactive`"
-            in rendered
-        )
         assert "| `legacy-provider` | `legacy-model` | `inactive` |" in rendered
-        assert "openrouter:nvidia/nemotron-3-ultra-550b-a55b:free" in state["models"]
+        assert STATE_START not in rendered
         assert len(state["active_rotation"]) == 25
         assert sum(spec["provider"] == "sambanova" for spec in state["active_rotation"]) == 6
         assert sum(spec["provider"] == "groq" for spec in state["active_rotation"]) == 3
         assert sum(spec["provider"] == "gemini" for spec in state["active_rotation"]) == 7
         assert sum(spec["provider"] == "openrouter" for spec in state["active_rotation"]) == 9
         assert model_record_status(laguna, active_keys) == "inactive"
-    print(
-        "Self-test passed: counters increment, duplicate events are ignored, issue-manager failures do not invalidate model output, inactive historical models are retained, collection start is persisted, and OpenRouter colon model IDs are preserved."
-    )
+    print("Self-test passed: canonical JSON state is durable and Markdown is derived output.")
     return 0
 
 
 def parse_args() -> argparse.Namespace:
-    parser = argparse.ArgumentParser(description="Update Phase 2 model run statistics Markdown page.")
+    parser = argparse.ArgumentParser(
+        description="Update Phase 2 model run statistics state and rendered Markdown page."
+    )
     parser.add_argument(
         "--summary", default=str(DEFAULT_SUMMARY_PATH), help="Path to run_check_batch.py summary Markdown."
     )
     parser.add_argument(
         "--statistics-page",
         default=str(DEFAULT_STATISTICS_PAGE),
-        help="Markdown documentation page that stores the rendered table and hidden JSON state.",
+        help="Derived Markdown documentation page.",
+    )
+    parser.add_argument(
+        "--statistics-state",
+        default=str(DEFAULT_STATISTICS_STATE),
+        help="Canonical machine-readable statistics state JSON.",
     )
     parser.add_argument(
         "--provider-model-specs",
@@ -1029,7 +1140,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--event-name", default="local", help="GitHub event name stored in state metadata.")
     parser.add_argument("--commit-sha", default="", help="Commit SHA stored in state metadata.")
     parser.add_argument("--timestamp-utc", default="", help="Optional fixed UTC timestamp for tests.")
-    parser.add_argument("--dry-run", action="store_true", help="Print the rendered Markdown instead of writing it.")
+    parser.add_argument("--dry-run", action="store_true", help="Print rendered Markdown without writing state or page.")
     parser.add_argument("--self-test", action="store_true", help="Run built-in smoke tests without provider calls.")
     return parser.parse_args()
 
