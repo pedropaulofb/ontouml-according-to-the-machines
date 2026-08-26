@@ -1,5 +1,26 @@
 {
   "attempts": {
+    "014402e70415d38ed5a1f2dc5bd8ba63d92f3ad7838792e4fead8e37d12b45df": {
+      "attempt_id": "014402e70415d38ed5a1f2dc5bd8ba63d92f3ad7838792e4fead8e37d12b45df",
+      "failure_kind": null,
+      "first_observed_at": "2026-08-26T08:50:44Z",
+      "identity": {
+        "active_signal_snapshot_sha256": "67e08a94c328a9fbf22944901d75b1d86c78afc63cd17253b131ae07e5a83c45",
+        "agent": "language-style-checker",
+        "identity_version": "resolver-attempt-v1",
+        "issue_number": 552,
+        "model": "gemini-3.6-flash",
+        "page_content_sha256": "1f15dadd98804f89e9ad828135fcfa23651ab2feb531dced8a70d460836d82aa",
+        "provider": "gemini",
+        "request_config_sha256": "8d725453ac2bdf188d45e178b6e591cec53edf137925af9ff43cbef68e48e804",
+        "resolver_prompt_sha256": "9c2be8b13a251b4db3ac495d6f6397eee32e13d16c25705ade83b40752aaa0c6",
+        "resolver_validator_version": "resolver-plan-validator-v1.2.3"
+      },
+      "last_event_id": "01787734244663016945-19529497-f5a4-4e7b-b425-dbcb7135c8d9",
+      "last_observed_at": "2026-08-26T08:50:44Z",
+      "request_sent": true,
+      "status": "completed"
+    },
     "02078ea907fe65b840b56dc803d9371b656680bf3a191e4489793c1116c26fa1": {
       "attempt_id": "02078ea907fe65b840b56dc803d9371b656680bf3a191e4489793c1116c26fa1",
       "failure_kind": "provider_unavailable",
@@ -609,6 +630,27 @@
       "request_sent": true,
       "status": "completed"
     },
+    "e67497b86040330943c0a348477104fa265ae9e5f9ac7b4172c8e8ae9a348714": {
+      "attempt_id": "e67497b86040330943c0a348477104fa265ae9e5f9ac7b4172c8e8ae9a348714",
+      "failure_kind": "provider_unavailable",
+      "first_observed_at": "2026-08-26T08:50:34Z",
+      "identity": {
+        "active_signal_snapshot_sha256": "67e08a94c328a9fbf22944901d75b1d86c78afc63cd17253b131ae07e5a83c45",
+        "agent": "language-style-checker",
+        "identity_version": "resolver-attempt-v1",
+        "issue_number": 552,
+        "model": "gemini-3.5-flash",
+        "page_content_sha256": "1f15dadd98804f89e9ad828135fcfa23651ab2feb531dced8a70d460836d82aa",
+        "provider": "gemini",
+        "request_config_sha256": "36fbc458b5923b456b7a90508601d2126d566e63e67532f4a4dce0d050d1aa23",
+        "resolver_prompt_sha256": "9c2be8b13a251b4db3ac495d6f6397eee32e13d16c25705ade83b40752aaa0c6",
+        "resolver_validator_version": "resolver-plan-validator-v1.2.3"
+      },
+      "last_event_id": "01787734234257160560-0495c46c-4911-4caa-a821-dc258a91fce6",
+      "last_observed_at": "2026-08-26T08:50:34Z",
+      "request_sent": false,
+      "status": "not_called"
+    },
     "e79daf0712cfd3b1460df742a6f4b8c87dfcfc24400ef3b7f40eb6d8f3694081": {
       "attempt_id": "e79daf0712cfd3b1460df742a6f4b8c87dfcfc24400ef3b7f40eb6d8f3694081",
       "failure_kind": "provider_unavailable",
@@ -673,7 +715,7 @@
       "status": "completed"
     }
   },
-  "last_updated_at": "2026-08-26T04:44:29Z",
+  "last_updated_at": "2026-08-26T08:50:44Z",
   "processed_event_ids": [
     "01787230640667959865-ba0709d0-2953-4c6f-9930-d4e21deeccdf",
     "01787243962617734894-0d4c925d-a269-4b44-88d4-3f141f935eb2",
@@ -716,7 +758,9 @@
     "01787676188985389584-6169c2d1-470c-4818-b485-110e761a562f",
     "01787690049242790226-b6d200ec-7c03-43b5-b63b-143892035177",
     "01787708336463364977-8aa55edd-a2c3-49d5-a7f9-0d22bf5183f0",
-    "01787719469475737206-f9601dc8-f3b5-4e9a-99b0-fefe05068098"
+    "01787719469475737206-f9601dc8-f3b5-4e9a-99b0-fefe05068098",
+    "01787734234257160560-0495c46c-4911-4caa-a821-dc258a91fce6",
+    "01787734244663016945-19529497-f5a4-4e7b-b425-dbcb7135c8d9"
   ],
   "schema_version": 1
 }
