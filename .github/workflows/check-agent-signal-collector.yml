@@ -584,6 +584,9 @@ jobs:
             --branch "$GITHUB_REF_NAME" \
             --commit-message "chore(phase-2): aggregate provider results" \
             --add data/phase-2 \
+            --add ":(exclude,glob)data/phase-2/results/**/*.json" \
+            --add ":(exclude,glob)data/phase-2/publications/**" \
+            --add ":(exclude,glob)data/phase-2/rejected-events/**" \
             --add docs/methodology/phases/phase-2/model-run-statistics.md \
             -- \
             python "{worktree}/scripts/phase-2/aggregate_task_results.py" aggregate \
