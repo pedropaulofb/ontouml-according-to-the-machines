@@ -4,7 +4,7 @@
     "daily_period_start": "2026-08-27",
     "source": "configured"
   },
-  "last_updated_at": "2026-08-27T14:26:53Z",
+  "last_updated_at": "2026-08-27T22:03:41Z",
   "processed_event_ids": [
     "01787044575385241714-da20d73c-26ec-462c-a1d4-198de5477b38",
     "01787044578572383222-966719cd-7fa5-46a3-a0d6-3a110180d3b5",
@@ -2022,13 +2022,14 @@
     "01787840770649282331-20f464c3-c4a2-4fd8-8445-f17ec542bb56",
     "01787840773543185514-da4723f9-7802-4613-994c-251642375b7a",
     "01787840809393183939-d583b3ab-6f0c-4721-bbb1-b0cfad59b7b7",
-    "01787840813972924224-a0824cb0-b46d-43a1-a6d8-3dfb07b121aa"
+    "01787840813972924224-a0824cb0-b46d-43a1-a6d8-3dfb07b121aa",
+    "01787868221687219822-6ae5b673-d5fe-46a3-a384-fdb0eaa40791"
   ],
   "provider_blocks": {},
   "quota_groups": {
     "gemini-project": {
       "input_tokens_used_day_local": 79812,
-      "last_updated_at": "2026-08-27T14:26:13Z",
+      "last_updated_at": "2026-08-27T22:03:41Z",
       "output_tokens_used_day_local": 7416,
       "provenance": {
         "input_tokens_used_day_local": {
@@ -2063,7 +2064,7 @@
         },
         "requests_used_day_local": {
           "estimated": false,
-          "observed_at": "2026-08-27T14:26:13Z",
+          "observed_at": "2026-08-27T22:03:41Z",
           "source": "locally-counted"
         },
         "reset_at": {
@@ -2102,7 +2103,7 @@
       "requests_limit_day": null,
       "requests_limit_minute": null,
       "requests_remaining_minute": null,
-      "requests_used_day_local": 19,
+      "requests_used_day_local": 20,
       "reset_at": null,
       "retry_not_before": null,
       "scope": "project",
@@ -2544,7 +2545,7 @@
     },
     "gemini:gemini-3.6-flash": {
       "input_tokens_used_day_local": 9824,
-      "last_updated_at": "2026-08-27T08:28:56Z",
+      "last_updated_at": "2026-08-27T22:03:41Z",
       "output_tokens_used_day_local": 693,
       "provenance": {
         "input_tokens_used_day_local": {
@@ -2579,7 +2580,7 @@
         },
         "requests_used_day_local": {
           "estimated": false,
-          "observed_at": "2026-08-27T08:28:56Z",
+          "observed_at": "2026-08-27T22:03:41Z",
           "source": "locally-counted"
         },
         "reset_at": {
@@ -2618,7 +2619,7 @@
       "requests_limit_day": null,
       "requests_limit_minute": null,
       "requests_remaining_minute": null,
-      "requests_used_day_local": 1,
+      "requests_used_day_local": 2,
       "reset_at": null,
       "retry_not_before": "2026-08-22T08:44:59Z",
       "scope": "model",
@@ -4589,15 +4590,15 @@
     },
     "gemini:gemini-3.6-flash": {
       "authorized_recheck_task_id": null,
-      "block_reason": null,
-      "block_scope": null,
-      "last_updated_at": "2026-08-22T08:02:28Z",
+      "block_reason": "provider_unavailable",
+      "block_scope": "slot",
+      "last_updated_at": "2026-08-27T22:03:41Z",
       "last_validation_at": null,
       "last_validation_result": null,
       "model": "gemini-3.6-flash",
       "provider": "gemini",
-      "retry_not_before": null,
-      "status": "eligible",
+      "retry_not_before": "2026-08-27T23:03:41Z",
+      "status": "temporarily_unavailable",
       "validation_required": false
     },
     "gemini:gemini-3.7-flash": {
