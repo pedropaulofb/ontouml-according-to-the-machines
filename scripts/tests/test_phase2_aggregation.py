@@ -16,6 +16,7 @@ if str(PHASE2_SCRIPTS) not in sys.path:
     sys.path.insert(0, str(PHASE2_SCRIPTS))
 
 import aggregate_task_results as aggregator  # noqa: E402
+import event_history  # noqa: E402
 import provider_model_registry  # noqa: E402
 import quota_state  # noqa: E402
 import state_writer  # noqa: E402
@@ -173,10 +174,18 @@ class ResultAggregationTests(AggregationFixture):
             updated = tasks["tasks"][record["task_id"]]
             self.assertEqual(updated["status"], "completed")
             self.assertEqual(updated["publication"]["status"], "not_required")
-            self.assertTrue((root / updated["result_record"]["event_path"]).is_file())
+            self.assertIsNone(updated["result_record"]["event_path"])
             self.assertTrue((root / updated["result_record"]["validated_output_path"]).is_file())
+            legacy_event_path, _output_path = aggregator._durable_paths(root, aggregator.DEFAULT_RESULT_ROOT, event)
+            self.assertFalse(legacy_event_path.exists())
             self.assertEqual(updated["result_record"]["attempt_id"], event["attempt_id"])
-            self.assertEqual(updated["result_record"]["source_event_sha256"], aggregator._canonical_sha256(event))
+            source_sha256 = aggregator._canonical_sha256(event)
+            self.assertEqual(updated["result_record"]["source_event_sha256"], source_sha256)
+            history = event_history.load_terminal_events(root / aggregator.DEFAULT_HISTORY_ROOT)
+            self.assertEqual(len(history), 1)
+            self.assertEqual(history[0]["attempt_id"], event["attempt_id"])
+            self.assertEqual(history[0]["aggregation"]["source_event_sha256"], source_sha256)
+            self.assertEqual(history[0]["output_artifact"], updated["result_record"]["validated_output_path"])
             self.assertEqual(counts["applied"], 1)
 
     def test_publication_failure_retries_without_reapplying_the_terminal_event(self) -> None:
@@ -206,15 +215,15 @@ class ResultAggregationTests(AggregationFixture):
             self.assertEqual(counts["applied"], 0)
             self.assertEqual(retried_tasks["tasks"][record["task_id"]]["publication"]["status"], "published")
 
-    def test_duplicate_delivery_is_idempotent_without_durable_event_file(self) -> None:
+    def test_duplicate_delivery_is_idempotent_without_result_json_file(self) -> None:
         record = self.leased_task()
         event = self.event(record)
         with tempfile.TemporaryDirectory() as temporary:
             root = Path(temporary)
             self.write_transport(root / "artifacts", event)
             tasks, quota, _counts, _events = self.run_aggregate(root, self.state_with(record))
-            durable_event_path = root / tasks["tasks"][record["task_id"]]["result_record"]["event_path"]
-            durable_event_path.unlink()
+            legacy_event_path, _output_path = aggregator._durable_paths(root, aggregator.DEFAULT_RESULT_ROOT, event)
+            self.assertFalse(legacy_event_path.exists())
 
             tasks_again, _quota, counts, accepted = aggregator.aggregate(
                 repo_root=root,
@@ -227,8 +236,9 @@ class ResultAggregationTests(AggregationFixture):
             self.assertEqual(counts["duplicate"], 1)
             self.assertEqual(accepted, [])
             self.assertEqual(tasks_again, tasks)
+            self.assertEqual(len(event_history.load_terminal_events(root / aggregator.DEFAULT_HISTORY_ROOT)), 1)
 
-    def test_conflicting_replay_uses_state_identity_without_durable_event_file(self) -> None:
+    def test_conflicting_replay_uses_state_identity_without_result_json_file(self) -> None:
         record = self.leased_task()
         event = self.event(record)
         with tempfile.TemporaryDirectory() as temporary:
@@ -236,8 +246,8 @@ class ResultAggregationTests(AggregationFixture):
             artifacts = root / "artifacts"
             self.write_transport(artifacts, event)
             tasks, quota, _counts, _events = self.run_aggregate(root, self.state_with(record))
-            durable_event_path = root / tasks["tasks"][record["task_id"]]["result_record"]["event_path"]
-            durable_event_path.unlink()
+            legacy_event_path, _output_path = aggregator._durable_paths(root, aggregator.DEFAULT_RESULT_ROOT, event)
+            self.assertFalse(legacy_event_path.exists())
 
             conflicting = copy.deepcopy(event)
             conflicting["attempt_finished_at"] = "2026-08-17T12:00:01Z"
@@ -266,8 +276,18 @@ class ResultAggregationTests(AggregationFixture):
             legacy_tasks = copy.deepcopy(tasks)
             legacy_tasks["schema_version"] = task_state.LEGACY_TASK_STATE_SCHEMA_VERSION
             result_record = legacy_tasks["tasks"][record["task_id"]]["result_record"]
+            source_sha256 = result_record.pop("source_event_sha256")
             result_record.pop("attempt_id")
-            result_record.pop("source_event_sha256")
+            legacy_event_path, _output_path = aggregator._durable_paths(root, aggregator.DEFAULT_RESULT_ROOT, event)
+            legacy_event_path.parent.mkdir(parents=True, exist_ok=True)
+            legacy_event = copy.deepcopy(event)
+            legacy_event["output_artifact"] = result_record["validated_output_path"]
+            legacy_event["aggregation"] = {
+                "source_event_sha256": source_sha256,
+                "transport_filename": f"{event['attempt_id']}.json",
+            }
+            legacy_event_path.write_text(json.dumps(legacy_event), encoding="utf-8")
+            result_record["event_path"] = legacy_event_path.relative_to(root).as_posix()
 
             tasks_again, _quota, counts, accepted = aggregator.aggregate(
                 repo_root=root,
@@ -341,7 +361,11 @@ class ResultAggregationTests(AggregationFixture):
             updated = tasks["tasks"][record["task_id"]]
             self.assertEqual(updated["status"], "pending")
             self.assertIsNone(updated["lease"])
-            self.assertTrue((root / updated["result_record"]["event_path"]).is_file())
+            self.assertIsNone(updated["result_record"]["event_path"])
+            legacy_event_path, _output_path = aggregator._durable_paths(root, aggregator.DEFAULT_RESULT_ROOT, event)
+            self.assertFalse(legacy_event_path.exists())
+            history = event_history.load_terminal_events(root / aggregator.DEFAULT_HISTORY_ROOT)
+            self.assertEqual([value["attempt_id"] for value in history], [event["attempt_id"]])
             self.assertEqual(counts["applied"], 1)
             self.assertEqual(len(accepted), 1)
 
@@ -465,13 +489,20 @@ class ResultAggregationTests(AggregationFixture):
             tasks, _quota, counts, _events = self.run_aggregate(root, self.state_with(record))
 
             updated = tasks["tasks"][record["task_id"]]
-            durable_event_path = root / updated["result_record"]["event_path"]
-            durable_event = json.loads(durable_event_path.read_text(encoding="utf-8"))
-            durable_output_path = root / durable_event["output_artifact"]
+            legacy_event_path, durable_output_path = aggregator._durable_paths(
+                root,
+                aggregator.DEFAULT_RESULT_ROOT,
+                event,
+            )
+            history = event_history.load_terminal_events(root / aggregator.DEFAULT_HISTORY_ROOT)
+            self.assertEqual(len(history), 1)
+            durable_event = history[0]
             durable_bytes = durable_output_path.read_bytes()
 
             self.assertEqual(counts["applied"], 1)
+            self.assertFalse(legacy_event_path.exists())
             self.assertTrue(durable_output_path.name.endswith(".invalid.md"))
+            self.assertEqual(durable_event["output_artifact"], durable_output_path.relative_to(root).as_posix())
             self.assertEqual(durable_bytes, expected_bytes)
             self.assertTrue(durable_bytes.endswith(b"   "))
             self.assertEqual(durable_event["output_sha256"], expected_sha256)

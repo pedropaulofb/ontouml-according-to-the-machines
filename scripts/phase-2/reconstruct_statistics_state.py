@@ -2,10 +2,11 @@
 """Reconstruct and verify Phase 2 statistics from durable result events.
 
 This verifier is intentionally read-only with respect to the repository. It
-rebuilds reconstructible statistics in a temporary directory from durable
-``data/phase-2/results/**/*.json`` terminal events plus the task, quota, and
-provider-model state from the commit that last wrote the canonical
-``data/phase-2/statistics-state.json`` snapshot.
+rebuilds reconstructible statistics in a temporary directory from historical
+``data/phase-2/results/**/*.json`` terminal events plus compact terminal-event
+history ledgers, together with the task, quota, and provider-model state from
+the commit that last wrote the canonical ``data/phase-2/statistics-state.json``
+snapshot.
 """
 
 from __future__ import annotations
@@ -23,6 +24,7 @@ if str(SCRIPT_DIRECTORY) not in sys.path:
     sys.path.insert(0, str(SCRIPT_DIRECTORY))
 
 from aggregate_task_results import AggregationError, validate_terminal_event  # noqa: E402
+from event_history import EventHistoryError, load_terminal_events  # noqa: E402
 from provider_model_registry import DEFAULT_REGISTRY_PATH, ProviderModelRegistry, load_registry  # noqa: E402
 from provider_runtime import parse_timestamp  # noqa: E402
 from quota_state import DEFAULT_STATE_PATH as DEFAULT_QUOTA_STATE_PATH  # noqa: E402
@@ -39,6 +41,7 @@ from update_model_run_statistics import write_state as write_statistics_state  #
 
 DEFAULT_TASK_STATE_PATH = Path("data/phase-2/task-state.json")
 DEFAULT_RESULT_ROOT = Path("data/phase-2/results")
+DEFAULT_HISTORY_ROOT = Path("data/phase-2/history")
 
 RECONSTRUCTED_TOP_LEVEL_FIELDS = (
     "schema_version",
@@ -195,19 +198,20 @@ def load_snapshot_context(
     return snapshot_commit, registry, task_state, quota_state, canonical
 
 
-def verify_result_tree_matches_snapshot(
+def verify_evidence_tree_matches_snapshot(
     *,
     repo_root: Path,
     snapshot_commit: str,
-    result_root: Path,
+    evidence_root: Path,
+    description: str,
 ) -> None:
-    """Reject result evidence that is newer or locally modified versus the stats snapshot."""
-    result_path = _resolve(repo_root, result_root)
-    relative = _repo_relative(repo_root, result_path).as_posix()
+    """Reject durable evidence newer or locally modified versus the statistics snapshot."""
+    evidence_path = _resolve(repo_root, evidence_root)
+    relative = _repo_relative(repo_root, evidence_path).as_posix()
     status = _git_text(repo_root, "status", "--porcelain", "--", relative).strip()
     if status:
         raise ReconstructionError(
-            "Durable result files contain uncommitted changes; reconstruction requires committed evidence only."
+            f"Durable {description} contains uncommitted changes; reconstruction requires committed evidence only."
         )
     ancestry = subprocess.run(
         ["git", "-C", str(repo_root), "merge-base", "--is-ancestor", snapshot_commit, "HEAD"],
@@ -221,19 +225,42 @@ def verify_result_tree_matches_snapshot(
             "The statistics snapshot commit is not an ancestor of HEAD; cannot establish "
             "a safe reconstruction baseline."
         )
-    changed = _git_text(
-        repo_root,
-        "diff",
-        "--name-only",
-        f"{snapshot_commit}..HEAD",
-        "--",
-        relative,
-    ).strip()
+    changed = _git_text(repo_root, "diff", "--name-only", f"{snapshot_commit}..HEAD", "--", relative).strip()
     if changed:
         raise ReconstructionError(
-            "Durable result files changed after the latest statistics-state commit; "
+            f"Durable {description} changed after the latest statistics-state commit; "
             "refresh statistics before reconstruction."
         )
+
+
+def verify_result_tree_matches_snapshot(
+    *,
+    repo_root: Path,
+    snapshot_commit: str,
+    result_root: Path,
+) -> None:
+    """Reject historical result evidence newer or locally modified versus the statistics snapshot."""
+    verify_evidence_tree_matches_snapshot(
+        repo_root=repo_root,
+        snapshot_commit=snapshot_commit,
+        evidence_root=result_root,
+        description="result evidence",
+    )
+
+
+def verify_history_tree_matches_snapshot(
+    *,
+    repo_root: Path,
+    snapshot_commit: str,
+    history_root: Path,
+) -> None:
+    """Reject compact history evidence newer or locally modified versus the statistics snapshot."""
+    verify_evidence_tree_matches_snapshot(
+        repo_root=repo_root,
+        snapshot_commit=snapshot_commit,
+        evidence_root=history_root,
+        description="history evidence",
+    )
 
 
 def _read_json_object(path: Path) -> dict[str, Any]:
@@ -280,6 +307,55 @@ def load_result_events(
         events.append(event)
 
     return events, len(paths)
+
+
+def load_history_events(
+    history_root: Path,
+    registry: ProviderModelRegistry,
+) -> list[dict[str, Any]]:
+    """Load and validate compact durable terminal-event history."""
+    try:
+        values = load_terminal_events(history_root)
+    except EventHistoryError as exc:
+        raise ReconstructionError(f"Invalid terminal-event history: {exc}") from exc
+
+    events: list[dict[str, Any]] = []
+    for value in values:
+        try:
+            events.append(validate_terminal_event(value, registry))
+        except (AggregationError, ValueError) as exc:
+            raise ReconstructionError(f"Invalid terminal-event history record: {exc}") from exc
+    return events
+
+
+def _event_semantics(event: Mapping[str, Any]) -> dict[str, Any]:
+    normalized = {key: value for key, value in event.items() if key != "aggregation"}
+    aggregation = event.get("aggregation")
+    normalized["source_event_sha256"] = (
+        aggregation.get("source_event_sha256") if isinstance(aggregation, Mapping) else None
+    )
+    return normalized
+
+
+def merge_durable_events(
+    result_events: Sequence[Mapping[str, Any]],
+    history_events: Sequence[Mapping[str, Any]],
+) -> list[dict[str, Any]]:
+    """Merge historical JSON and compact-ledger evidence without double counting attempts."""
+    merged: dict[str, dict[str, Any]] = {}
+    for source, events in (("result JSON", result_events), ("terminal history", history_events)):
+        for raw_event in events:
+            event = dict(raw_event)
+            attempt_id = str(event.get("attempt_id") or "")
+            if not attempt_id:
+                raise ReconstructionError(f"{source} event is missing attempt_id.")
+            previous = merged.get(attempt_id)
+            if previous is not None:
+                if _event_semantics(previous) != _event_semantics(event):
+                    raise ReconstructionError(f"Conflicting durable evidence for attempt_id={attempt_id}.")
+                continue
+            merged[attempt_id] = event
+    return list(merged.values())
 
 
 def filter_collection_window(
@@ -408,6 +484,7 @@ def verify(
     quota_state_path: Path,
     statistics_state_path: Path,
     result_root: Path,
+    history_root: Path,
 ) -> dict[str, int | str]:
     """Reconstruct and verify statistics from repository-local durable evidence."""
     snapshot_commit, registry, task_state, quota_state, canonical = load_snapshot_context(
@@ -422,7 +499,14 @@ def verify(
         snapshot_commit=snapshot_commit,
         result_root=result_root,
     )
-    events, result_files = load_result_events(_resolve(repo_root, result_root), registry)
+    verify_history_tree_matches_snapshot(
+        repo_root=repo_root,
+        snapshot_commit=snapshot_commit,
+        history_root=history_root,
+    )
+    result_events, result_files = load_result_events(_resolve(repo_root, result_root), registry)
+    history_events = load_history_events(_resolve(repo_root, history_root), registry)
+    events = merge_durable_events(result_events, history_events)
     counted_events, historical_events_excluded = filter_collection_window(
         events,
         canonical.get("collection_start_utc"),
@@ -446,6 +530,7 @@ def verify(
     return {
         "snapshot_commit": snapshot_commit,
         "result_files": result_files,
+        "history_events": len(history_events),
         "terminal_events": len(counted_events),
         "historical_events_excluded": historical_events_excluded,
         "models": len(canonical_models) if isinstance(canonical_models, dict) else 0,
@@ -463,6 +548,7 @@ def parse_args(argv: Sequence[str] | None = None) -> argparse.Namespace:
     parser.add_argument("--quota-state", default=str(DEFAULT_QUOTA_STATE_PATH))
     parser.add_argument("--statistics-state", default=str(DEFAULT_STATISTICS_STATE))
     parser.add_argument("--result-root", default=str(DEFAULT_RESULT_ROOT))
+    parser.add_argument("--history-root", default=str(DEFAULT_HISTORY_ROOT))
     return parser.parse_args(argv)
 
 
@@ -477,6 +563,7 @@ def main(argv: Sequence[str] | None = None) -> int:
             quota_state_path=Path(args.quota_state),
             statistics_state_path=Path(args.statistics_state),
             result_root=Path(args.result_root),
+            history_root=Path(args.history_root),
         )
     except (OSError, ReconstructionError, ValueError) as exc:
         print(f"ERROR: {exc}", file=sys.stderr)
@@ -486,6 +573,7 @@ def main(argv: Sequence[str] | None = None) -> int:
         "Statistics reconstruction verification: "
         f"snapshot_commit={summary['snapshot_commit']}; "
         f"result_files={summary['result_files']}; "
+        f"history_events={summary['history_events']}; "
         f"terminal_events={summary['terminal_events']}; "
         f"historical_events_excluded={summary['historical_events_excluded']}; "
         f"models={summary['models']}; "

@@ -13,6 +13,7 @@ PHASE2_SCRIPTS = REPO_ROOT / "scripts/phase-2"
 if str(PHASE2_SCRIPTS) not in sys.path:
     sys.path.insert(0, str(PHASE2_SCRIPTS))
 
+import event_history  # noqa: E402
 import reconstruct_statistics_state as reconstruction  # noqa: E402
 import update_model_run_statistics as statistics  # noqa: E402
 
@@ -99,6 +100,42 @@ class StatisticsReconstructionTests(unittest.TestCase):
             self.assertEqual(len(events), 1)
             self.assertEqual(events[0]["attempt_id"], "attempt-1")
 
+    def test_load_history_events_validates_compact_ledger(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            expected = self.event()
+            event_history.append_terminal_event(root, expected)
+            events = reconstruction.load_history_events(root, DummyRegistry())
+            self.assertEqual(len(events), 1)
+            self.assertEqual(events[0]["attempt_id"], "attempt-1")
+
+    def test_merge_durable_events_deduplicates_equivalent_overlap(self) -> None:
+        result_event = self.event()
+        result_event["aggregation"] = {
+            "source_event_sha256": "b" * 64,
+            "transport_filename": "attempt-1.json",
+        }
+        history_event = copy.deepcopy(result_event)
+        history_event["aggregation"] = {"source_event_sha256": "b" * 64}
+        merged = reconstruction.merge_durable_events([result_event], [history_event])
+        self.assertEqual(len(merged), 1)
+        self.assertEqual(merged[0]["attempt_id"], "attempt-1")
+
+    def test_merge_durable_events_rejects_conflicting_overlap(self) -> None:
+        result_event = self.event()
+        history_event = copy.deepcopy(result_event)
+        history_event["signal_count"] = 2
+        with self.assertRaises(reconstruction.ReconstructionError):
+            reconstruction.merge_durable_events([result_event], [history_event])
+
+    def test_merge_durable_events_rejects_conflicting_source_identity(self) -> None:
+        result_event = self.event()
+        result_event["aggregation"] = {"source_event_sha256": "b" * 64}
+        history_event = copy.deepcopy(result_event)
+        history_event["aggregation"] = {"source_event_sha256": "c" * 64}
+        with self.assertRaises(reconstruction.ReconstructionError):
+            reconstruction.merge_durable_events([result_event], [history_event])
+
     def test_collection_window_excludes_pre_start_and_includes_boundary(self) -> None:
         before = self.event(attempt_id="before")
         before["attempt_finished_at"] = "2026-08-20T08:43:59Z"
@@ -151,6 +188,7 @@ class StatisticsReconstructionTests(unittest.TestCase):
             subprocess.run(["git", "config", "user.name", "Test"], cwd=root, check=True)
             statistics_path = root / "data/phase-2/statistics-state.json"
             result_path = root / "data/phase-2/results/task-1/attempt-1.json"
+            history_path = root / "data/phase-2/history/terminal-events-2026-08.ndjson"
             task_path = root / "data/phase-2/task-state.json"
             for path, value in (
                 (statistics_path, {"schema_version": 2}),
@@ -159,6 +197,8 @@ class StatisticsReconstructionTests(unittest.TestCase):
             ):
                 path.parent.mkdir(parents=True, exist_ok=True)
                 path.write_text(json.dumps(value), encoding="utf-8")
+            history_path.parent.mkdir(parents=True, exist_ok=True)
+            history_path.write_text('{"attempt_id":"attempt-1"}\n', encoding="utf-8")
             subprocess.run(["git", "add", "."], cwd=root, check=True)
             subprocess.run(["git", "commit", "-qm", "statistics snapshot"], cwd=root, check=True)
             snapshot = subprocess.check_output(
@@ -181,6 +221,39 @@ class StatisticsReconstructionTests(unittest.TestCase):
                 snapshot_commit=snapshot,
                 result_root=Path("data/phase-2/results"),
             )
+            reconstruction.verify_history_tree_matches_snapshot(
+                repo_root=root,
+                snapshot_commit=snapshot,
+                history_root=Path("data/phase-2/history"),
+            )
+
+    def test_snapshot_verification_rejects_later_history_commit(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            subprocess.run(["git", "init", "-q"], cwd=root, check=True)
+            subprocess.run(["git", "config", "user.email", "test@example.com"], cwd=root, check=True)
+            subprocess.run(["git", "config", "user.name", "Test"], cwd=root, check=True)
+            statistics_path = root / "data/phase-2/statistics-state.json"
+            statistics_path.parent.mkdir(parents=True, exist_ok=True)
+            statistics_path.write_text('{"schema_version":2}', encoding="utf-8")
+            subprocess.run(["git", "add", "."], cwd=root, check=True)
+            subprocess.run(["git", "commit", "-qm", "statistics snapshot"], cwd=root, check=True)
+            snapshot = subprocess.check_output(
+                ["git", "rev-parse", "HEAD"], cwd=root, text=True, encoding="utf-8"
+            ).strip()
+
+            history_path = root / "data/phase-2/history/terminal-events-2026-08.ndjson"
+            history_path.parent.mkdir(parents=True, exist_ok=True)
+            history_path.write_text('{"attempt_id":"attempt-1"}\n', encoding="utf-8")
+            subprocess.run(["git", "add", history_path.relative_to(root).as_posix()], cwd=root, check=True)
+            subprocess.run(["git", "commit", "-qm", "history only"], cwd=root, check=True)
+
+            with self.assertRaises(reconstruction.ReconstructionError):
+                reconstruction.verify_history_tree_matches_snapshot(
+                    repo_root=root,
+                    snapshot_commit=snapshot,
+                    history_root=Path("data/phase-2/history"),
+                )
 
     def test_reconstruction_rejects_legacy_batch_counters(self) -> None:
         canonical = self.reconstructed_state()

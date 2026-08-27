@@ -21,7 +21,11 @@ SCRIPT_DIRECTORY = Path(__file__).resolve().parent
 if str(SCRIPT_DIRECTORY) not in sys.path:
     sys.path.insert(0, str(SCRIPT_DIRECTORY))
 
-from event_history import EventHistoryError, append_rejections  # noqa: E402
+from event_history import (  # noqa: E402
+    EventHistoryError,
+    append_rejections,
+    append_terminal_events,
+)
 from provider_model_registry import DEFAULT_REGISTRY_PATH, ProviderModelRegistry, load_registry  # noqa: E402
 from provider_runtime import format_timestamp, parse_timestamp, utc_now  # noqa: E402
 from quota_state import (  # noqa: E402
@@ -309,10 +313,11 @@ def _durable_paths(
     result_root: Path,
     event: Mapping[str, Any],
 ) -> tuple[Path, Path]:
+    """Return the legacy JSON path and retained Markdown path for one attempt."""
     directory = repo_root / result_root / str(event["task_id"])
-    event_path = directory / f"{event['attempt_id']}.json"
+    legacy_event_path = directory / f"{event['attempt_id']}.json"
     suffix = ".invalid.md" if event["outcome"] == "validator_rejected" else ".md"
-    return event_path, directory / f"{event['attempt_id']}{suffix}"
+    return legacy_event_path, directory / f"{event['attempt_id']}{suffix}"
 
 
 def _existing_source_hash(path: Path) -> str | None:
@@ -350,27 +355,29 @@ def _persist_terminal_event(
     transport: TransportEvent,
     event: Mapping[str, Any],
     task: dict[str, Any],
-) -> tuple[str, bool]:
-    durable_event_path, durable_output_path = _durable_paths(repo_root, result_root, event)
-    relative_event_path = durable_event_path.relative_to(repo_root).as_posix()
+) -> tuple[str, bool, dict[str, Any] | None]:
+    legacy_event_path, durable_output_path = _durable_paths(repo_root, result_root, event)
+    relative_legacy_event_path = legacy_event_path.relative_to(repo_root).as_posix()
     stored_identity = _stored_result_identity(task)
     if stored_identity is not None and stored_identity[0] == event["attempt_id"]:
         if stored_identity[1] != transport.source_sha256:
             raise AggregationError("Persisted task result identity conflicts with the terminal event.")
-        if durable_event_path.exists():
-            existing_hash = _existing_source_hash(durable_event_path)
+        if legacy_event_path.exists():
+            existing_hash = _existing_source_hash(legacy_event_path)
             if existing_hash != stored_identity[1]:
                 raise AggregationError("Persisted task state and durable terminal event disagree.")
-        return "duplicate", False
+        return "duplicate", False, None
 
-    existing_hash = _existing_source_hash(durable_event_path)
+    existing_hash = _existing_source_hash(legacy_event_path)
     if existing_hash is not None and existing_hash != transport.source_sha256:
         raise AggregationError("A distinct terminal event already exists for the same task attempt.")
-    legacy_already_applied = stored_identity is None and task["result_record"].get("event_path") == relative_event_path
+    legacy_already_applied = (
+        stored_identity is None and task["result_record"].get("event_path") == relative_legacy_event_path
+    )
     if legacy_already_applied:
         if existing_hash != transport.source_sha256:
             raise AggregationError("Persisted task state and durable terminal event disagree.")
-        return "duplicate", False
+        return "duplicate", False, None
     identity = task.get("identity", {})
     if identity.get("provider") != event["provider"] or identity.get("model") != event["model"]:
         raise AggregationError("Terminal event provider-model identity does not match its task.")
@@ -391,9 +398,7 @@ def _persist_terminal_event(
     durable_event["output_artifact"] = output_relative
     durable_event["aggregation"] = {
         "source_event_sha256": transport.source_sha256,
-        "transport_filename": transport.path.name,
     }
-    _atomic_write_json(durable_event_path, durable_event)
 
     timestamp = str(event["attempt_finished_at"])
     task["updated_at"] = timestamp
@@ -402,7 +407,7 @@ def _persist_terminal_event(
     task["result_record"] = {
         "attempt_id": event["attempt_id"],
         "source_event_sha256": transport.source_sha256,
-        "event_path": relative_event_path,
+        "event_path": None,
         "output_sha256": event.get("output_sha256"),
         "validated_output_path": output_relative if event["outcome"] == "valid" else None,
     }
@@ -448,7 +453,7 @@ def _persist_terminal_event(
     else:
         task["status"] = "pending"
         task["publication"]["status"] = "not_started"
-    return "applied", True
+    return "applied", True, durable_event
 
 
 def issue_manager_publisher(repo_root: Path, repository: str) -> Publisher:
@@ -540,6 +545,7 @@ def aggregate(
         "actionable_rejected": 0,
     }
     accepted_events: list[dict[str, Any]] = []
+    durable_terminal_events: list[dict[str, Any]] = []
     actionable_rejections: list[dict[str, Any]] = []
     effective_timestamp = timestamp or format_timestamp(utc_now())
     transport_events, transport_rejections = load_transport_events(artifact_root)
@@ -571,7 +577,7 @@ def aggregate(
             task = updated_tasks["tasks"].get(event["task_id"])
             if not isinstance(task, dict):
                 raise AggregationError("Terminal event references an unknown task ID.")
-            disposition, changed = _persist_terminal_event(
+            disposition, changed, durable_event = _persist_terminal_event(
                 repo_root=repo_root,
                 result_root=result_root,
                 publication_root=publication_root,
@@ -582,7 +588,10 @@ def aggregate(
             )
             counts[disposition] += 1
             if changed:
+                if durable_event is None:
+                    raise AggregationError("Applied terminal event did not produce a durable history record.")
                 accepted_events.append(event)
+                durable_terminal_events.append(durable_event)
         except StaleReplay:
             counts["rejected"] += 1
             counts["stale_replay"] += 1
@@ -590,6 +599,12 @@ def aggregate(
             actionable_rejections.append(_rejection_record(transport, transport.path, str(exc), effective_timestamp))
             counts["rejected"] += 1
             counts["actionable_rejected"] += 1
+
+    if durable_terminal_events:
+        try:
+            append_terminal_events(repo_root / history_root, durable_terminal_events)
+        except EventHistoryError as exc:
+            raise AggregationError(f"Could not persist terminal event history: {exc}") from exc
 
     if actionable_rejections:
         try:
