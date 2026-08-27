@@ -238,23 +238,6 @@ def resolve_output_artifact(event: TransportEvent, artifact_root: Path) -> Path:
     raise AggregationError(f"Output artifact is missing from the worker transport: {reference.as_posix()}.")
 
 
-def _atomic_write_json(path: Path, value: Mapping[str, Any]) -> None:
-    path.parent.mkdir(parents=True, exist_ok=True)
-    with tempfile.NamedTemporaryFile(
-        mode="w",
-        encoding="utf-8",
-        newline="\n",
-        dir=path.parent,
-        prefix=f".{path.name}.",
-        suffix=".tmp",
-        delete=False,
-    ) as temporary_file:
-        json.dump(value, temporary_file, ensure_ascii=False, indent=2, sort_keys=True)
-        temporary_file.write("\n")
-        temporary_path = Path(temporary_file.name)
-    os.replace(temporary_path, path)
-
-
 def _atomic_copy(source: Path, target: Path) -> None:
     target.parent.mkdir(parents=True, exist_ok=True)
     with tempfile.NamedTemporaryFile(dir=target.parent, prefix=f".{target.name}.", suffix=".tmp", delete=False) as out:
@@ -420,19 +403,9 @@ def _persist_terminal_event(
     }
     if outcome == "valid":
         task["status"] = "completed"
-        payload_path = repo_root / publication_root / f"{task['task_id']}.json"
-        payload = {
-            "schema_version": 1,
-            "task_id": task["task_id"],
-            "attempt_id": event["attempt_id"],
-            "signal_count": event["signal_count"],
-            "output_sha256": event["output_sha256"],
-            "validated_output_path": output_relative,
-        }
-        _atomic_write_json(payload_path, payload)
         task["publication"] = {
             "status": "pending",
-            "payload_path": payload_path.relative_to(repo_root).as_posix(),
+            "payload_path": None,
             "last_attempt_at": None,
             "last_error": None,
         }

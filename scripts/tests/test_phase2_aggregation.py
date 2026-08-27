@@ -174,6 +174,8 @@ class ResultAggregationTests(AggregationFixture):
             updated = tasks["tasks"][record["task_id"]]
             self.assertEqual(updated["status"], "completed")
             self.assertEqual(updated["publication"]["status"], "not_required")
+            self.assertIsNone(updated["publication"]["payload_path"])
+            self.assertFalse((root / "data/phase-2/publications").exists())
             self.assertIsNone(updated["result_record"]["event_path"])
             self.assertTrue((root / updated["result_record"]["validated_output_path"]).is_file())
             legacy_event_path, _output_path = aggregator._durable_paths(root, aggregator.DEFAULT_RESULT_ROOT, event)
@@ -201,6 +203,8 @@ class ResultAggregationTests(AggregationFixture):
             )
             self.assertEqual(tasks["tasks"][record["task_id"]]["status"], "completed")
             self.assertEqual(tasks["tasks"][record["task_id"]]["publication"]["status"], "retry_due")
+            self.assertIsNone(tasks["tasks"][record["task_id"]]["publication"]["payload_path"])
+            self.assertFalse((root / "data/phase-2/publications").exists())
             empty = root / "empty-artifacts"
             retried_tasks, _quota, counts, accepted = aggregator.aggregate(
                 repo_root=root,
@@ -214,6 +218,7 @@ class ResultAggregationTests(AggregationFixture):
             self.assertEqual(accepted, [])
             self.assertEqual(counts["applied"], 0)
             self.assertEqual(retried_tasks["tasks"][record["task_id"]]["publication"]["status"], "published")
+            self.assertIsNone(retried_tasks["tasks"][record["task_id"]]["publication"]["payload_path"])
 
     def test_duplicate_delivery_is_idempotent_without_result_json_file(self) -> None:
         record = self.leased_task()
