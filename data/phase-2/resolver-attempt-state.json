@@ -378,6 +378,27 @@
       "request_sent": true,
       "status": "completed"
     },
+    "74a1c43ec90c1a461d320abf99d5bb96ad7a6be8c48360f7105760fb150f6665": {
+      "attempt_id": "74a1c43ec90c1a461d320abf99d5bb96ad7a6be8c48360f7105760fb150f6665",
+      "failure_kind": null,
+      "first_observed_at": "2026-08-27T08:28:58Z",
+      "identity": {
+        "active_signal_snapshot_sha256": "e6df2a76a8eca3a99d3a68b56bc4253ecab63967081153e09065b70ceff2ff03",
+        "agent": "page-hygiene-checker",
+        "identity_version": "resolver-attempt-v1",
+        "issue_number": 585,
+        "model": "gemini-3.6-flash",
+        "page_content_sha256": "080f734e2b1924d92dc9d3d2a83958d507a15f82596854591176793077bcd586",
+        "provider": "gemini",
+        "request_config_sha256": "8d725453ac2bdf188d45e178b6e591cec53edf137925af9ff43cbef68e48e804",
+        "resolver_prompt_sha256": "029414e0b2497bc9ea0bfe5462a678a37cbf900c9870393d56b6699bce38648b",
+        "resolver_validator_version": "resolver-plan-validator-v1.2.3"
+      },
+      "last_event_id": "01787819338574997478-d00599d0-ad23-4852-9c09-52c1f345daaa",
+      "last_observed_at": "2026-08-27T08:28:58Z",
+      "request_sent": true,
+      "status": "completed"
+    },
     "75d2ca804e8ee55789e2dd4a40833f4c60bf17f740e66a3e6af479fba2fd239a": {
       "attempt_id": "75d2ca804e8ee55789e2dd4a40833f4c60bf17f740e66a3e6af479fba2fd239a",
       "failure_kind": "execution_configuration_block",
@@ -501,6 +522,27 @@
       },
       "last_event_id": "01787719469475737206-f9601dc8-f3b5-4e9a-99b0-fefe05068098",
       "last_observed_at": "2026-08-26T04:44:29Z",
+      "request_sent": false,
+      "status": "not_called"
+    },
+    "a2f83e24d95cad5463e2005973716048d79e0df934fd958e78b850d203db4619": {
+      "attempt_id": "a2f83e24d95cad5463e2005973716048d79e0df934fd958e78b850d203db4619",
+      "failure_kind": "provider_unavailable",
+      "first_observed_at": "2026-08-27T08:28:44Z",
+      "identity": {
+        "active_signal_snapshot_sha256": "e6df2a76a8eca3a99d3a68b56bc4253ecab63967081153e09065b70ceff2ff03",
+        "agent": "page-hygiene-checker",
+        "identity_version": "resolver-attempt-v1",
+        "issue_number": 585,
+        "model": "gemini-3.5-flash",
+        "page_content_sha256": "080f734e2b1924d92dc9d3d2a83958d507a15f82596854591176793077bcd586",
+        "provider": "gemini",
+        "request_config_sha256": "36fbc458b5923b456b7a90508601d2126d566e63e67532f4a4dce0d050d1aa23",
+        "resolver_prompt_sha256": "029414e0b2497bc9ea0bfe5462a678a37cbf900c9870393d56b6699bce38648b",
+        "resolver_validator_version": "resolver-plan-validator-v1.2.3"
+      },
+      "last_event_id": "01787819324635510175-21280a9e-5161-4202-a804-14082da1df47",
+      "last_observed_at": "2026-08-27T08:28:44Z",
       "request_sent": false,
       "status": "not_called"
     },
@@ -841,7 +883,7 @@
       "status": "completed"
     }
   },
-  "last_updated_at": "2026-08-26T22:56:54Z",
+  "last_updated_at": "2026-08-27T08:28:58Z",
   "processed_event_ids": [
     "01787230640667959865-ba0709d0-2953-4c6f-9930-d4e21deeccdf",
     "01787243962617734894-0d4c925d-a269-4b44-88d4-3f141f935eb2",
@@ -892,7 +934,9 @@
     "01787763090665894104-81c1d29b-6ba3-439c-b4b8-d0a5bc9ed70f",
     "01787763112026519550-a76d22e1-d891-4dd9-8846-f8f3b38ae0ee",
     "01787784997087401254-32c6112b-a216-4d25-9d48-dcf170d8ea5c",
-    "01787785014270789657-f5b787fa-5cb5-441f-8082-5ee5a9fba2c7"
+    "01787785014270789657-f5b787fa-5cb5-441f-8082-5ee5a9fba2c7",
+    "01787819324635510175-21280a9e-5161-4202-a804-14082da1df47",
+    "01787819338574997478-d00599d0-ad23-4852-9c09-52c1f345daaa"
   ],
   "schema_version": 1
 }
