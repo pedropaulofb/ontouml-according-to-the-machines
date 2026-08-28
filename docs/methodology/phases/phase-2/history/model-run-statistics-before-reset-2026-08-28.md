@@ -1,6 +1,6 @@
 # Phase 2 — Model Run Statistics
 
-← Previous: [Execution and Operations](execution-and-operations.md) | [Phase 2 index](index.md) | Next: [Prompts and Status](prompts-and-status.md) →
+← Previous: [Execution and Operations](../execution-and-operations.md) | [Phase 2 index](../index.md) | Next: [Prompts and Status](../prompts-and-status.md) →
 
 This page presents cumulative execution statistics and the current queue snapshot for the scheduled Phase 2 check-agent signal collector.
 
@@ -156,4 +156,4 @@ Neither the statistics state nor this page stores secrets, raw prompts, raw comp
 
 ---
 
-← Previous: [Execution and Operations](execution-and-operations.md) | [Phase 2 index](index.md) | Next: [Prompts and Status](prompts-and-status.md) →
+← Previous: [Execution and Operations](../execution-and-operations.md) | [Phase 2 index](../index.md) | Next: [Prompts and Status](../prompts-and-status.md) →

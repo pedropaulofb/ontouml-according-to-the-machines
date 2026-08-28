@@ -182,6 +182,43 @@ Signal collection reconciles 39 canonical pages × 2 LLM check agents × 25 conf
 
 There is no current dedicated manual or automated closure prompt for `page-structure-checker`; page-structure issues remain subject to direct maintainer review and normal PR review.
 
+### Persistence architecture
+
+Current Phase 2 persistence is intentionally divided into five layers:
+
+```text
+1. Operational state
+   data/phase-2/task-state.json
+   data/phase-2/quota-state.json
+   data/phase-2/resolver-attempt-state.json
+
+2. Statistical state
+   data/phase-2/statistics-state.json
+   docs/methodology/phases/phase-2/model-run-statistics.md  (derived presentation)
+
+3. Machine event history
+   data/phase-2/history/terminal-events-YYYY-MM.ndjson
+   data/phase-2/history/rejections-YYYY-MM.ndjson
+
+4. Retained human/audit outputs
+   data/phase-2/results/<task-id>/<attempt-id>.md
+   data/phase-2/results/<task-id>/<attempt-id>.invalid.md
+
+5. Transient execution and recovery artifacts
+   .tmp/phase-2/**
+   GitHub Actions artifacts
+```
+
+The current architecture does **not** create the former per-attempt result JSON store, publication-payload JSON store, or per-rejection JSON store:
+
+```text
+data/phase-2/results/**/*.json
+data/phase-2/publications/*.json
+data/phase-2/rejected-events/*.json
+```
+
+Task-state schema v2 carries durable terminal-event identity through `result_record.attempt_id` and `result_record.source_event_sha256`. Publication lifecycle remains part of each task record, and publication retries reuse the retained validated Markdown rather than a duplicate publication-payload file. Monthly NDJSON ledgers provide compact machine history.
+
 ### Implemented files and artifacts
 
 ```text
@@ -209,7 +246,9 @@ scripts/phase-2/quota_state.py
 scripts/phase-2/task_scheduler.py
 scripts/phase-2/provider_worker.py
 scripts/phase-2/aggregate_task_results.py
+scripts/phase-2/event_history.py
 scripts/phase-2/state_writer.py
+scripts/phase-2/update_model_run_statistics.py
 scripts/phase-2/free_policy.py
 scripts/phase-2/check_agents/page_structure_checker.py
 scripts/phase-2/providers/__init__.py
@@ -222,6 +261,9 @@ config/phase-2/provider-models.json
 data/phase-2/task-state.json
 data/phase-2/quota-state.json
 data/phase-2/resolver-attempt-state.json
+data/phase-2/statistics-state.json
+data/phase-2/history/
+data/phase-2/results/
 ```
 
 Non-canonical or legacy-support artifacts may also exist:
@@ -259,6 +301,8 @@ The current implementation can:
 - run page × check agent × model batches for one selected provider through `run_check_batch.py`;
 - reconcile and schedule the 1,950-task content-addressed queue by eligibility, age, provider capacity, and quota state;
 - isolate provider workers and aggregate replayable terminal events into durable operational state;
+- persist compact monthly terminal-event and actionable-rejection history;
+- retain validated and validator-rejected Markdown needed for audit and publication recovery without creating per-attempt JSON records;
 - run the collector in `plan`, `simulate`, `generate`, `dry-run`, or `post` mode;
 - write per-run logs and a batch summary under `.tmp/phase-2/`;
 - derive deterministic page-plus-agent issue titles;
@@ -420,7 +464,7 @@ permissions:
 
 ## Generated output policy
 
-Generated Phase 2 outputs are not source files and must not be committed.
+Transient Phase 2 execution and diagnostic outputs are not source files and must not be committed. These include local runner output, worker transport, work plans, batch logs, and resolver diagnostic artifacts under `.tmp/phase-2/`, plus local `issue-comment*.md` files.
 
 Generated local and CI outputs include paths such as:
 
@@ -437,12 +481,14 @@ issue-comment.md
 issue-comment.invalid.md
 ```
 
-The repository ignores these outputs with:
+The repository ignores these transient outputs with:
 
 ```text
 .tmp/
 issue-comment*.md
 ```
+
+By contrast, canonical operational state, compact event history, statistics state and its derived statistics page, and retained validated/audit Markdown under `data/phase-2/results/` are intentionally tracked durable artifacts. Their generated nature does not make them transient.
 
 Resolver branches and pull requests are repository artifacts, not generated local output. They are intentionally created only when the resolver accepts at least one exact local edit and the deterministic page-structure check passes.
 

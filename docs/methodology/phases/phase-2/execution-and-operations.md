@@ -18,14 +18,14 @@ The production path is:
 
 ```text
 reconcile desired identities
-→ recover expired leases from retained terminal events
+→ recover expired leases from retained workflow artifacts when available
 → reserve resolver-priority capacity
 → select eligible work by age and quota state
 → persist leases and provider plans
 → run isolated provider workers
 → aggregate validated terminal events
 → publish valid signals
-→ persist task, quota, result, publication, and statistics state
+→ persist operational state, retained Markdown, compact history, and statistics state
 ```
 
 The canonical workflows are:
@@ -34,6 +34,43 @@ The canonical workflows are:
 .github/workflows/check-agent-signal-collector.yml
 .github/workflows/phase-2-signal-resolver.yml
 ```
+
+### Persistent-state and artifact model
+
+Current Phase 2 persistence is divided into five layers:
+
+```text
+1. Operational state
+   data/phase-2/task-state.json
+   data/phase-2/quota-state.json
+   data/phase-2/resolver-attempt-state.json
+
+2. Statistical state
+   data/phase-2/statistics-state.json
+   docs/methodology/phases/phase-2/model-run-statistics.md  (derived presentation)
+
+3. Machine event history
+   data/phase-2/history/terminal-events-YYYY-MM.ndjson
+   data/phase-2/history/rejections-YYYY-MM.ndjson
+
+4. Retained human/audit output
+   data/phase-2/results/<task-id>/<attempt-id>.md
+   data/phase-2/results/<task-id>/<attempt-id>.invalid.md
+
+5. Transient execution and recovery transport
+   .tmp/phase-2/**
+   GitHub Actions artifacts
+```
+
+The current architecture does not create new per-attempt result JSON files, publication-payload JSON files, or per-rejection JSON files under these former stores:
+
+```text
+data/phase-2/results/**/*.json
+data/phase-2/publications/*.json
+data/phase-2/rejected-events/*.json
+```
+
+Task-state schema v2 stores durable terminal-event identity through `result_record.attempt_id` and `result_record.source_event_sha256`. Publication lifecycle is stored in each task's `publication` object. A publication retry reuses `result_record.validated_output_path`; it does not require a duplicate publication-payload file. `event_history.py` stores compact monthly terminal-event and actionable-rejection ledgers.
 
 ## Prerequisites
 
@@ -209,7 +246,7 @@ The scheduler:
 - allows one controlled endpoint-availability recheck after cooldown;
 - emits no provider call when no eligible task exists.
 
-Provider workers revalidate the lease commit, task identity, and quota eligibility immediately before a call. They emit replayable terminal events instead of directly editing shared state. The aggregator is the only component that completes queue tasks, persists results, publishes issue comments, and refreshes statistics.
+Provider workers revalidate the lease commit, task identity, and quota eligibility immediately before a call. They emit replayable terminal events instead of directly editing shared state. The aggregator is the only component that completes queue tasks, persists retained output/history, publishes issue comments, and refreshes statistics.
 
 ### Filtered production dispatch
 
@@ -263,7 +300,15 @@ Worker outcomes are `valid`, `validator_rejected`, `provider_failure`, or `not_c
 - `provider_failure` changes task and quota state according to the classified error.
 - `not_called` proves zero provider attempts and may safely return a recovered lease to pending only after aggregation.
 
-Publication is downstream from task completion. A valid result with signals can be completed even if its GitHub issue update must be retried. Durable results live under `data/phase-2/results`; publication state lives under `data/phase-2/publications`.
+Publication is downstream from task completion. A valid result with signals can be completed even if its GitHub issue update must be retried.
+
+After successful aggregation:
+
+- durable terminal-event identity is recorded in task-state schema v2 (`attempt_id` and `source_event_sha256`);
+- the machine event is appended to the appropriate monthly NDJSON terminal-event ledger;
+- validated or validator-rejected Markdown needed for audit/publication is retained under `data/phase-2/results/`;
+- publication status remains inside `task-state.json`;
+- no per-attempt result JSON or separate publication-payload JSON is written.
 
 Retry publication without another LLM call:
 
@@ -271,13 +316,15 @@ Retry publication without another LLM call:
 python scripts/phase-2/aggregate_task_results.py retry-publication --repo-root . --repository OWNER/REPOSITORY
 ```
 
+The retry reads the retained `validated_output_path` from task state rather than a duplicate publication payload.
+
 Replay retained worker artifacts without publishing while diagnosing:
 
 ```bash
 python scripts/phase-2/aggregate_task_results.py aggregate --repo-root . --artifact-root PATH/TO/WORKER-ARTIFACTS --no-publish
 ```
 
-That aggregate command mutates local task, quota, result, publication, and statistics files. Run it only on a recovery branch, inspect the diff, and commit the audited result. Production uses `state_writer.py` so the same idempotent mutation is reapplied to the latest remote branch after conflicts.
+That aggregate command can mutate local task state, quota state, retained Markdown, compact history, statistics state, and the derived statistics page. Run it only on a recovery branch, inspect the diff, and commit the audited result. Production uses `state_writer.py` so the same idempotent mutation is reapplied to the latest remote branch after conflicts.
 
 ## Automated resolver
 
@@ -292,11 +339,13 @@ Production defaults:
 
 The Gemini `gemini-3.6-flash` fallback runs only for a recognized primary Gemini provider-unavailability failure. An invalid plan, quota block, policy block, authentication/configuration error, or other failure does not trigger it. Primary and fallback calls use the shared quota state. Persisted content-addressed resolver attempts prevent an unchanged terminal attempt from being repeated.
 
-Resolver dry-run still makes a real provider call, generates and validates a plan, and writes local artifacts, but it does not edit the page or write to GitHub:
+Resolver dry-run still makes a real provider call, generates and validates a plan, and writes local artifacts, but it does not edit the page or write resolver issue/PR changes to GitHub:
 
 ```bash
 python scripts/phase-2/resolve_signal_issue.py --repo OWNER/REPOSITORY --issue ISSUE_NUMBER --provider gemini --model gemini-3.6-flash --max-completion-tokens 6000 --provider-max-attempts 1 --dry-run
 ```
+
+When the GitHub Actions resolver workflow performs that real dry-run call, its always-running state writer may still persist quota observations. `resolve_signal_issue.py --dry-run` suppresses resolver-attempt event emission, so the dry run does not add a terminal resolver-attempt record.
 
 Preflight checks whether eligible resolver work should reserve a shared slot and makes no provider call:
 
@@ -360,7 +409,7 @@ Never reset a counter simply because the provider rejected a call. Correct only 
 
 ### Rebuild and rollback
 
-`task_reconciler.py reconcile` deterministically rebuilds desired identities from the registry, canonical pages, agents, prompts, validators, and request configuration while preserving existing historical records. Result events are still required to reconstruct outcomes; do not delete task, result, publication, quota, or resolver-attempt state during recovery.
+`task_reconciler.py reconcile` deterministically rebuilds desired identities from the registry, canonical pages, agents, prompts, validators, and request configuration while preserving existing historical records. Do not delete canonical task, quota, statistics, resolver-attempt, compact-history, or retained validated-output state during recovery. Recent unaggregated terminal events may need to be recovered from retained GitHub Actions artifacts; once an event is aggregated, task-state schema v2 and the compact history ledger provide durable identity/history without a per-attempt JSON file.
 
 To stop calls during an incident, disable the collector and resolver schedules or the affected workflow. Preserve all operational state and artifacts. Rollback must not reactivate retired providers or a paid route.
 

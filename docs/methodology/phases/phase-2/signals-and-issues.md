@@ -270,18 +270,19 @@ This issue may be resolved manually or by later resolution tooling.
 
 Phase 2 supports stable comment identity.
 
-Stable identity fields:
+For the two content-addressed LLM check agents, current stable identity fields are:
 
 ```text
 page
 agent
 provider
 model
-prompt
-commit
+task_id
 ```
 
-The issue manager inserts a hidden marker into the posted comment:
+The `task_id` is the full content-addressed Phase 2 task identifier. It already captures the agent-scoped page content, prompt identity, validator version, provider/model slot, request configuration, and segmentation profile. The global repository commit SHA remains visible in run metadata for traceability but does not determine the current LLM comment identity.
+
+The issue manager inserts a hidden marker into the posted LLM comment:
 
 ```markdown
 <!-- check-signal-comment
@@ -289,14 +290,15 @@ page: <reviewed page>
 agent: <agent>
 provider: <provider>
 model: <model>
-prompt: <prompt>
-commit: <commit SHA>
+task_id: <full task SHA-256>
 -->
 ```
 
+For backward compatibility, `issue_manager.py` can still recognize the legacy marker form based on `page`, `agent`, `provider`, `model`, `prompt`, and `commit`. That legacy form is not the current identity contract for `page-hygiene-checker` or `language-style-checker` comments.
+
 If a comment with the same stable identity already exists in the target issue, the system updates the existing comment instead of posting a new one.
 
-If the commit SHA changes, a new comment may be posted because the reviewed page content may have changed.
+An unrelated commit SHA change does not create a new content-addressed LLM comment identity. A relevant input or configuration change changes the task identity and therefore creates a distinct review identity.
 
 ---
 

@@ -17,6 +17,8 @@
 
 > This accepted RFC was validated against the repository before implementation. Repository-grounded adaptations are documented by the staged commits; its normative requirements are otherwise unchanged.
 
+> **Post-cutover amendment:** This RFC was amended on 2026-08-28 after production cutover. The original text below is preserved as the accepted historical design record. See [Post-cutover amendment — 2026-08-28](#post-cutover-amendment-2026-08-28); where it conflicts with an original requirement, the amendment controls.
+
 ---
 
 ## 1. Purpose
@@ -2897,3 +2899,119 @@ Cerebras account email notices supplied through the user’s connected Gmail est
 The recommended implementation prompt should instruct the implementation conversation to:
 
 > After this RFC is marked `Accepted`, validate it against the current repository. Report only definite repository incompatibilities or blockers. Do not reopen accepted design decisions without a demonstrated contradiction. If no blocker exists, implement the RFC in `feat/phase-2-recalibration` using one draft pull request and staged commits. Preserve all existing Phase 2 output contracts and deterministic safety behavior. Enforce the free-only invariant in production and every test mode, coordinate signal and resolver calls through shared quota state, persist attempt-identified leases before queued provider calls, require replayable results or durable not-called evidence before releasing expired leases, persist replayable validated results before relying on LLM-free publication retries, run the complete test and provider-compatibility plan, do not merge test state as production state, and document every justified deviation from the RFC before merge.
+
+---
+
+# Post-cutover amendment — 2026-08-28
+
+## Amendment status and authority
+
+| Field | Value |
+|---|---|
+| Status | **Accepted amendment** |
+| Amendment date | 2026-08-28 |
+| Amends | [RFC and Implementation Plan: Phase 2 Quota-Aware Multi-Provider Recalibration](recalibration-rfc.md) |
+| Implementation status | Recalibration cutover complete; amended architecture active on `main` |
+
+This amendment preserves the original RFC as the historical accepted design record and supersedes only the requirements identified below. If an original RFC requirement conflicts with this amendment, this amendment controls. All other RFC requirements remain in force.
+
+### 1. Resolver fallback and shared-slot priority
+
+This section supersedes the original RFC requirements that designate Groq `openai/gpt-oss-120b` as the scheduled resolver fallback and as the second resolver-priority shared slot.
+
+The scheduled resolver sequence is:
+
+```text
+primary:  gemini:gemini-3.5-flash
+fallback: gemini:gemini-3.6-flash
+```
+
+The fallback is attempted once only after recognized primary Gemini provider unavailability. Invalid plans and other failure classes do not trigger it. The fallback is model-diverse, not provider-diverse.
+
+The two provider-model slots reserved from signal generation while eligible resolver work exists are therefore:
+
+```text
+gemini:gemini-3.5-flash
+gemini:gemini-3.6-flash
+```
+
+When no eligible resolver work exists, their remaining free capacity remains available to signal generation.
+
+### 2. Task-state schema and durable result identity
+
+This section supersedes the original concrete `task-state.json` schema-v1 requirement.
+
+Current task state uses schema version `2`. For an aggregated terminal attempt, durable result identity is carried by the task record, including:
+
+```text
+result_record.attempt_id
+result_record.source_event_sha256
+result_record.output_sha256
+result_record.validated_output_path
+```
+
+`result_record.event_path` remains a compatibility/recovery field and is normally `null` after successful aggregation. Duplicate detection and durable identity do not depend on a permanent per-attempt result JSON file.
+
+Publication remains a lifecycle nested in task state. `publication.payload_path` is a legacy compatibility field and is normally `null`; LLM-free publication retry uses the retained validated Markdown referenced by `validated_output_path`.
+
+### 3. Durable persistence and compact event history
+
+This section supersedes original concrete storage requirements that imply a permanent one-file-per-terminal-event result store or a separate pending-publication payload store. The underlying RFC durability, auditability, idempotency, and LLM-free publication-retry requirements remain in force.
+
+Current Phase 2 persistence has five layers:
+
+```text
+1. Operational state
+   data/phase-2/task-state.json
+   data/phase-2/quota-state.json
+   data/phase-2/resolver-attempt-state.json
+
+2. Statistical state
+   data/phase-2/statistics-state.json
+
+3. Machine event history
+   data/phase-2/history/terminal-events-YYYY-MM.ndjson
+   data/phase-2/history/rejections-YYYY-MM.ndjson
+
+4. Retained human/audit outputs
+   data/phase-2/results/<task-id>/<attempt-id>.md
+   data/phase-2/results/<task-id>/<attempt-id>.invalid.md
+
+5. Transient execution and recovery transport
+   .tmp/phase-2/**
+   GitHub Actions artifacts
+```
+
+After aggregation, terminal-event history is stored in deterministic monthly NDJSON ledgers and terminal identity is also represented in task-state schema v2. Validated or rejected Markdown needed for audit or publication is retained. GitHub Actions artifacts remain transport/recovery material and are not the sole durable post-aggregation reference.
+
+Current operation does not create the former stores:
+
+```text
+data/phase-2/results/**/*.json
+data/phase-2/publications/*.json
+data/phase-2/rejected-events/*.json
+```
+
+### 4. Statistics collection epoch
+
+This section supersedes the original requirement that existing aggregate execution counters must never be reset.
+
+On 2026-08-28, the pre-reset rendered statistics page was archived and the live statistics state began a new collection epoch at:
+
+```text
+2026-08-28T08:14:33Z
+```
+
+The reset zeroed live execution/token counters and statistical event identities while preserving the current provider/model configuration and queue snapshot. The pre-reset statistics page remains historical evidence at:
+
+```text
+docs/methodology/phases/phase-2/history/model-run-statistics-before-reset-2026-08-28.md
+```
+
+Current model-run statistics therefore report execution counts only for the active collection epoch. The requirement to preserve retired/inactive model visibility and historical evidence remains in force.
+
+### 5. Post-cutover storage migration
+
+On 2026-08-28, task-state references to legacy result-event and publication-payload paths were normalized, the obsolete per-event/per-attempt JSON stores were removed from the current tree, and the compact persistence architecture above became the canonical post-cutover design. Existing Git history was intentionally retained rather than rewritten.
+
+The original Stage 9 validation and cutover work is complete. Current operation uses the queue-managed collector and automated resolver described by the Phase 2 topical documentation and executable repository state.

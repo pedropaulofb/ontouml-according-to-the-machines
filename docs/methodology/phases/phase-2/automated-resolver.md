@@ -344,7 +344,6 @@ Current resolver prompt metadata as emitted by `resolve_signal_issue.py`:
 | `page-hygiene-checker` | `resolve-page-hygiene-signal-issue-v1.2.2` | `Phase 2 automated resolver: page-hygiene signals v1.2.2` |
 | `language-style-checker` | `resolve-language-style-signal-issue-v1.2.2` | `Phase 2 automated resolver: language-style signals v1.2.2` |
 
-
 Legacy bullet-style resolver log entries are removed for the same issue when the resolver applies accepted edits.
 
 ### Resolver auto-merge behavior
@@ -376,14 +375,13 @@ Dry-run mode:
 - parses the JSON plan;
 - normalizes harmless schema drift and derives `overall_decision` from signal-group decisions;
 - validates the JSON plan;
-- writes the resolver plan artifact;
+- writes resolver diagnostic/plan artifacts under `.tmp/phase-2/resolver`;
 - prints the plan;
-- does not modify files;
-- does not create a branch;
-- does not create a pull request;
-- does not comment on or close the issue.
+- does not edit the reviewed canonical page;
+- does not create a resolver branch or pull request;
+- does not comment on or close the source issue.
 
-The scheduled resolver workflow applies the same primary-provider and fallback-provider sequence in dry-run mode when manually dispatched with `dry_run: true`; GitHub write actions remain disabled by the resolver script after successful plan validation.
+The scheduled resolver workflow applies the same primary-provider and fallback-provider sequence in dry-run mode when manually dispatched with `dry_run: true`. Because dry-run still makes a real provider call, the workflow may persist quota observations through its always-running state-writer step. `resolve_signal_issue.py --dry-run` suppresses resolver-attempt event emission, so the dry run does not add a terminal resolver-attempt record. Those quota-state updates are distinct from page, branch, pull-request, or issue mutation.
 
 ### Resolver workflow
 
@@ -414,7 +412,7 @@ Manual dispatch inputs:
 | `issue` | Issue number or URL. Empty means oldest eligible open issue. |
 | `provider` | Primary workflow provider: `gemini` or `groq`; default `gemini`. The fixed fallback always uses Gemini. |
 | `model` | Primary provider model; default `gemini-3.5-flash`. |
-| `dry_run` | Generate and validate a resolution plan without GitHub writes. |
+| `dry_run` | Generate and validate a resolution plan without page, branch, pull-request, or issue mutation; operational quota/attempt state may still be persisted because a real provider call occurs. |
 
 Workflow permissions:
 

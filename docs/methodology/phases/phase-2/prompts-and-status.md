@@ -255,7 +255,7 @@ Completed:
 - `run_check_batch.py` can keep validation rejections nonfatal when `--allow-rejected-check-outputs` is used;
 - `run_check_batch.py` can keep transient provider-side availability failures nonfatal when `--allow-provider-failures` is used while keeping actionable provider failures fatal;
 - `issue_manager.py` implements page-plus-agent issue routing;
-- `issue_manager.py` implements stable comment identity;
+- `issue_manager.py` implements current LLM stable comment identity with page, agent, provider, model, and content-addressed `task_id`, while retaining the older prompt/commit marker only for backward compatibility;
 - `issue_manager.py` updates matching existing comments instead of posting duplicates;
 - `.github/workflows/check-agent-signal-collector.yml` runs scheduled quota-aware LLM check-agent collection;
 - the scheduled signal-collector workflow grants `contents: write` and `issues: write`;
@@ -264,7 +264,10 @@ Completed:
 - the configured signal queue contains 25 provider-model slots across SambaNova, Groq, Gemini, and OpenRouter;
 - reconciliation produces 1,950 desired tasks from 39 pages, two LLM agents, and those 25 slots;
 - configured signal-generation requests use the registry's per-slot completion cap, currently 3,000 tokens for all slots;
-- generated output paths are ignored by `.gitignore`;
+- transient generated runner, transport, work-plan, batch, and diagnostic outputs are ignored through `.gitignore`, while canonical state, compact history, statistics, and retained audit Markdown are intentionally tracked;
+- task-state schema v2 stores durable terminal-event identity without requiring per-attempt result JSON files;
+- machine event history is retained in monthly NDJSON ledgers under `data/phase-2/history/`;
+- publication retries use retained validated Markdown rather than separate publication-payload JSON files;
 - the two archived manual issue-review and resolution prompts remain available for `page-hygiene-checker` and `language-style-checker` issues;
 - the absence of a dedicated `page-structure-checker` closure prompt is documented as intentional;
 - `resolve-page-hygiene-signal-issue-v1.2.2.md` exists as the automated resolver prompt for `page-hygiene-checker` issues;
@@ -303,6 +306,7 @@ Post-cutover status:
 - Post-cutover validation passed for the provider-model registry, task state, quota state, and resolver-attempt state.
 - Both scheduled Phase 2 workflows are enabled.
 - No operational recovery was required during cutover.
+- On 2026-08-28, the previous statistics page was archived, live model-run statistics started a new collection epoch, task state was normalized to remove legacy artifact-path references, and the legacy per-attempt result, publication-payload, and rejection JSON stores were removed from the current tree. Existing Git history was deliberately retained.
 
 Deferred outside Phase 2:
 
@@ -333,7 +337,7 @@ Phase 2 can be considered complete when:
 - generated comments are structured according to each agent contract and pass validation before posting;
 - all provider/model outputs for the same page and agent are routed to the same issue;
 - repeated runs update existing comments when the stable identity is unchanged;
-- generated outputs remain uncommitted;
+- transient generated runner, transport, work-plan, batch, and diagnostic outputs remain uncommitted, while canonical durable state/history/statistics/audit outputs are tracked according to the Phase 2 persistence policy;
 - small batch execution works locally;
 - page-structure CI blocks structural regressions;
 - quota-aware scheduled LLM execution operates over all 1,950 desired tasks across the 25 configured SambaNova, Groq, Gemini, and OpenRouter slots;
@@ -359,7 +363,7 @@ Phase 2 can be considered complete when:
 - Gemini runs use reduced-thinking configuration to improve strict-format output reliability.
 - Issue routing is one GitHub issue per page and check agent.
 - Different providers and models executed by the same agent for the same page create comments in the same issue.
-- Stable comment identity is implemented with page, agent, provider, model, prompt, and commit.
+- Current content-addressed LLM comment identity is implemented with page, agent, provider, model, and `task_id`; the earlier prompt-and-commit marker remains only for backward compatibility.
 - Matching existing comments are updated instead of duplicated.
 - Manual signal-review and issue-resolution support is documented for `page-hygiene-checker` and `language-style-checker` through two archived ChatGPT prompts.
 - The planned `page-structure-checker` closure prompt was discarded; deterministic page-structure signals remain subject to direct maintainer review.
@@ -377,6 +381,7 @@ Phase 2 can be considered complete when:
 - Accepted automated resolver edits are logged as rows in the `Generation and Review Log` table.
 - Automated resolver PRs are updated by rebase and configured for squash auto-merge after required checks pass.
 - Automated resolver source issues are commented on and closed after resolver completion.
+- The 2026-08-28 storage cutover replaced legacy per-attempt/per-rejection JSON persistence with task-state v2 durable event identity, compact monthly NDJSON history, retained Markdown, and a fresh statistics collection baseline while preserving the pre-reset statistics page as historical documentation.
 - Conceptual validation, source-faithfulness validation, cross-page semantic comparison, and OntoUML/UFO semantic validation remain outside Phase 2.
 
 ---
