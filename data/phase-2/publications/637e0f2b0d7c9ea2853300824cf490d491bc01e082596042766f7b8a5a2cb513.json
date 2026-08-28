@@ -1,8 +1,0 @@
-{
-  "attempt_id": "b8a0ef3eac8c0d90b092a2e100743cdabf05a8e46018968b99d88dde4803e09a",
-  "output_sha256": "10db2f1501985fff20bc1fd6f1467a415af2d0e4b55e4c67755e45e0da1e5009",
-  "schema_version": 1,
-  "signal_count": 0,
-  "task_id": "637e0f2b0d7c9ea2853300824cf490d491bc01e082596042766f7b8a5a2cb513",
-  "validated_output_path": "data/phase-2/results/637e0f2b0d7c9ea2853300824cf490d491bc01e082596042766f7b8a5a2cb513/b8a0ef3eac8c0d90b092a2e100743cdabf05a8e46018968b99d88dde4803e09a.md"
-}

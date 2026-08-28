@@ -1,6 +1,0 @@
-{
-  "reason": "Terminal event does not match the task's current persisted lease.",
-  "schema_version": 1,
-  "source_filename": "399f9bed7f37933e5b95c58101632b953addd41432490c23fad3633d50d53ce9.json",
-  "source_sha256": "f6442816b4f5b33a002acabf2c0ae0bc1d227e4d5897dcc29f81b03f873efa7e"
-}
