@@ -625,8 +625,8 @@
         "resolver_prompt_sha256": "9c2be8b13a251b4db3ac495d6f6397eee32e13d16c25705ade83b40752aaa0c6",
         "resolver_validator_version": "resolver-plan-validator-v1.2.3"
       },
-      "last_event_id": "01787955208605397089-0da16724-2a24-4a01-b9fd-16c0f63e42f9",
-      "last_observed_at": "2026-08-28T22:13:28Z",
+      "last_event_id": "01787986656827678490-aacdcd0b-3438-4db5-a417-64fb4a7f7b97",
+      "last_observed_at": "2026-08-29T06:57:36Z",
       "request_sent": false,
       "status": "not_called"
     },
@@ -925,7 +925,7 @@
       "status": "completed"
     }
   },
-  "last_updated_at": "2026-08-28T22:13:28Z",
+  "last_updated_at": "2026-08-29T06:57:36Z",
   "processed_event_ids": [
     "01787230640667959865-ba0709d0-2953-4c6f-9930-d4e21deeccdf",
     "01787243962617734894-0d4c925d-a269-4b44-88d4-3f141f935eb2",
@@ -981,7 +981,8 @@
     "01787819338574997478-d00599d0-ad23-4852-9c09-52c1f345daaa",
     "01787868185822475262-b943a655-6df0-495f-b7ec-f7d05e281d54",
     "01787868221687794310-e796ab74-e307-435d-bcca-fca33cbab090",
-    "01787955208605397089-0da16724-2a24-4a01-b9fd-16c0f63e42f9"
+    "01787955208605397089-0da16724-2a24-4a01-b9fd-16c0f63e42f9",
+    "01787986656827678490-aacdcd0b-3438-4db5-a417-64fb4a7f7b97"
   ],
   "schema_version": 1
 }
