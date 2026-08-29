@@ -14,7 +14,7 @@ Counts shown on this page only include executions recorded since that start time
 
 Rows retained in the current statistics state but outside the configured, non-retired registry are shown as `inactive`.
 
-Last generated: `2026-08-29T15:10:53Z`
+Last generated: `2026-08-29T18:42:43Z`
 
 ## Queue snapshot
 
@@ -24,12 +24,12 @@ Last generated: `2026-08-29T15:10:53Z`
 | `pending` | 1432 |
 | `leased` | 0 |
 | `completed` | 460 |
-| `retry_due` | 2 |
+| `retry_due` | 0 |
 | `quota_deferred` | 7 |
 | `temporarily_unavailable` | 1 |
 | `policy_blocked` | 0 |
 | `execution_configuration_blocked` | 0 |
-| `rejection_blocked` | 47 |
+| `rejection_blocked` | 49 |
 | `ambiguous_attempt_blocked` | 1 |
 | `retired` | 540 |
 | `obsolete` | 3633 |
@@ -38,7 +38,7 @@ Last generated: `2026-08-29T15:10:53Z`
 
 | Provider | Model | Status | Configuration | Execution | Lifecycle | Called | Provider attempts | Valid | Zero-signal valid | Valid with signals | Validator rejections | Provider failures | Quota deferrals | Policy blocks | Execution-config blocks | Temporarily unavailable | Runner failures |
 |---|---|---|---|---|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|
-| `gemini` | `gemini-2.5-flash` | `active` | `configured` | `eligible` | `stable` | 14 | 15 | 7 | 0 | 7 | 5 | 2 | 1 | 0 | 0 | 1 | 0 |
+| `gemini` | `gemini-2.5-flash` | `active` | `configured` | `eligible` | `stable` | 16 | 17 | 7 | 0 | 7 | 7 | 2 | 1 | 0 | 0 | 1 | 0 |
 | `gemini` | `gemini-2.5-flash-lite` | `inactive` | `retired` | `eligible` | `stable` | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | `gemini` | `gemini-2.5-pro` | `inactive` | `retired` | `eligible` | `stable` | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | `gemini` | `gemini-3-flash-preview` | `active` | `configured` | `eligible` | `preview` | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
@@ -50,61 +50,61 @@ Last generated: `2026-08-29T15:10:53Z`
 | `groq` | `openai/gpt-oss-120b` | `active` | `configured` | `blocked_execution_configuration` | `production` | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | `groq` | `openai/gpt-oss-20b` | `active` | `configured` | `blocked_execution_configuration` | `production` | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | `groq` | `qwen/qwen3.6-27b` | `active` | `configured` | `blocked_execution_configuration` | `preview` | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
-| `openrouter` | `google/gemma-4-26b-a4b-it:free` | `active` | `configured` | `eligible` | `free-variant` | 4 | 4 | 0 | 0 | 0 | 0 | 4 | 4 | 0 | 0 | 0 | 0 |
+| `openrouter` | `google/gemma-4-26b-a4b-it:free` | `active` | `configured` | `eligible` | `free-variant` | 5 | 5 | 0 | 0 | 0 | 0 | 5 | 5 | 0 | 0 | 0 | 0 |
 | `openrouter` | `google/gemma-4-31b-it:free` | `active` | `configured` | `eligible` | `free-variant` | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | `openrouter` | `inclusionai/ling-3.0-flash:free` | `inactive` | `retired` | `eligible` | `free-variant` | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | `openrouter` | `nvidia/nemotron-3-super-120b-a12b:free` | `active` | `configured` | `blocked_execution_configuration` | `free-variant` | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
-| `openrouter` | `nvidia/nemotron-3-ultra-550b-a55b:free` | `active` | `configured` | `temporarily_unavailable` | `free-variant` | 4 | 8 | 0 | 0 | 0 | 0 | 4 | 0 | 0 | 0 | 4 | 0 |
+| `openrouter` | `nvidia/nemotron-3-ultra-550b-a55b:free` | `active` | `configured` | `temporarily_unavailable` | `free-variant` | 5 | 10 | 0 | 0 | 0 | 0 | 5 | 0 | 0 | 0 | 5 | 0 |
 | `openrouter` | `nvidia/nemotron-3.5-lightning:free` | `active` | `configured` | `eligible` | `free-variant` | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | `openrouter` | `nvidia/nemotron-nano-9b-v2:free` | `active` | `configured` | `eligible` | `free-variant` | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | `openrouter` | `openai/gpt-oss-20b:free` | `active` | `configured` | `eligible` | `free-variant` | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | `openrouter` | `poolside/laguna-s-2.1:free` | `active` | `configured` | `eligible` | `free-variant` | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | `openrouter` | `poolside/laguna-xs-2.1:free` | `active` | `configured` | `eligible` | `free-variant` | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
-| `sambanova` | `DeepSeek-V3.1` | `active` | `configured` | `eligible` | `production` | 4 | 4 | 0 | 0 | 0 | 0 | 4 | 4 | 0 | 0 | 0 | 0 |
-| `sambanova` | `DeepSeek-V3.2` | `active` | `configured` | `eligible` | `preview` | 4 | 4 | 0 | 0 | 0 | 0 | 4 | 4 | 0 | 0 | 0 | 0 |
-| `sambanova` | `Meta-Llama-3.3-70B-Instruct` | `active` | `configured` | `eligible` | `production` | 4 | 4 | 0 | 0 | 0 | 0 | 4 | 4 | 0 | 0 | 0 | 0 |
-| `sambanova` | `MiniMax-M2.7` | `active` | `configured` | `eligible` | `production` | 4 | 4 | 0 | 0 | 0 | 0 | 4 | 4 | 0 | 0 | 0 | 0 |
-| `sambanova` | `gemma-4-31B-it` | `active` | `configured` | `eligible` | `preview` | 4 | 4 | 0 | 0 | 0 | 0 | 4 | 4 | 0 | 0 | 0 | 0 |
-| `sambanova` | `gpt-oss-120b` | `active` | `configured` | `eligible` | `production` | 4 | 4 | 0 | 0 | 0 | 0 | 4 | 4 | 0 | 0 | 0 | 0 |
+| `sambanova` | `DeepSeek-V3.1` | `active` | `configured` | `eligible` | `production` | 5 | 5 | 0 | 0 | 0 | 0 | 5 | 5 | 0 | 0 | 0 | 0 |
+| `sambanova` | `DeepSeek-V3.2` | `active` | `configured` | `eligible` | `preview` | 5 | 5 | 0 | 0 | 0 | 0 | 5 | 5 | 0 | 0 | 0 | 0 |
+| `sambanova` | `Meta-Llama-3.3-70B-Instruct` | `active` | `configured` | `eligible` | `production` | 5 | 5 | 0 | 0 | 0 | 0 | 5 | 5 | 0 | 0 | 0 | 0 |
+| `sambanova` | `MiniMax-M2.7` | `active` | `configured` | `eligible` | `production` | 5 | 5 | 0 | 0 | 0 | 0 | 5 | 5 | 0 | 0 | 0 | 0 |
+| `sambanova` | `gemma-4-31B-it` | `active` | `configured` | `eligible` | `preview` | 5 | 5 | 0 | 0 | 0 | 0 | 5 | 5 | 0 | 0 | 0 | 0 |
+| `sambanova` | `gpt-oss-120b` | `active` | `configured` | `eligible` | `production` | 5 | 5 | 0 | 0 | 0 | 0 | 5 | 5 | 0 | 0 | 0 | 0 |
 
 ## Current slot progress
 
 | Provider | Model | Completed | Desired | Completion | Oldest pending | Last success | Last attempt | Last quota observation |
 |---|---|---:|---:|---:|---|---|---|---|
-| `gemini` | `gemini-2.5-flash` | 69 | 78 | 88.46% | 3d 6h | `2026-08-29T15:09:38Z` | `2026-08-29T15:09:48Z` | `2026-08-29T15:09:47Z` |
-| `gemini` | `gemini-2.5-flash-lite` | 0 | 0 | 0.00% |  |  |  | `2026-08-29T15:09:47Z` |
-| `gemini` | `gemini-2.5-pro` | 0 | 0 | 0.00% |  |  |  | `2026-08-29T15:09:47Z` |
-| `gemini` | `gemini-3-flash-preview` | 77 | 78 | 98.72% |  |  |  | `2026-08-29T15:09:47Z` |
-| `gemini` | `gemini-3.1-flash-lite` | 71 | 78 | 91.03% |  |  |  | `2026-08-29T15:09:47Z` |
-| `gemini` | `gemini-3.5-flash` | 12 | 78 | 15.38% | 12d 15h |  |  | `2026-08-29T15:09:47Z` |
-| `gemini` | `gemini-3.5-flash-lite` | 77 | 78 | 98.72% |  |  |  | `2026-08-29T15:09:47Z` |
-| `gemini` | `gemini-3.6-flash` | 40 | 78 | 51.28% | 3d 6h |  |  | `2026-08-29T15:09:47Z` |
-| `gemini` | `gemini-3.7-flash` | 37 | 78 | 47.44% | 11d 2h |  |  | `2026-08-29T15:09:47Z` |
-| `groq` | `openai/gpt-oss-120b` | 8 | 78 | 10.26% | 12d 15h |  |  | `2026-08-24T20:36:14Z` |
-| `groq` | `openai/gpt-oss-20b` | 7 | 78 | 8.97% | 12d 15h |  |  | `2026-08-24T20:36:14Z` |
-| `groq` | `qwen/qwen3.6-27b` | 8 | 78 | 10.26% | 12d 15h |  |  | `2026-08-24T20:36:14Z` |
-| `openrouter` | `google/gemma-4-26b-a4b-it:free` | 1 | 78 | 1.28% | 12d 15h |  | `2026-08-29T15:09:59Z` | `2026-08-29T15:09:59Z` |
-| `openrouter` | `google/gemma-4-31b-it:free` | 1 | 78 | 1.28% | 12d 15h |  | `2026-08-29T15:09:59Z` | `2026-08-29T15:09:59Z` |
-| `openrouter` | `inclusionai/ling-3.0-flash:free` | 0 | 0 | 0.00% |  |  |  | `2026-08-29T15:09:59Z` |
-| `openrouter` | `nvidia/nemotron-3-super-120b-a12b:free` | 0 | 78 | 0.00% | 9d 23h |  |  | `2026-08-29T15:09:59Z` |
-| `openrouter` | `nvidia/nemotron-3-ultra-550b-a55b:free` | 0 | 78 | 0.00% | 9d 23h |  | `2026-08-29T15:09:54Z` | `2026-08-29T15:09:59Z` |
-| `openrouter` | `nvidia/nemotron-3.5-lightning:free` | 1 | 78 | 1.28% | 10d 5h |  | `2026-08-29T15:09:59Z` | `2026-08-29T15:09:59Z` |
-| `openrouter` | `nvidia/nemotron-nano-9b-v2:free` | 0 | 78 | 0.00% | 12d 15h |  | `2026-08-29T15:09:59Z` | `2026-08-29T15:09:59Z` |
-| `openrouter` | `openai/gpt-oss-20b:free` | 1 | 78 | 1.28% | 12d 15h |  | `2026-08-29T15:09:59Z` | `2026-08-29T15:09:59Z` |
-| `openrouter` | `poolside/laguna-s-2.1:free` | 1 | 78 | 1.28% | 12d 15h |  | `2026-08-29T15:09:59Z` | `2026-08-29T15:09:59Z` |
-| `openrouter` | `poolside/laguna-xs-2.1:free` | 1 | 78 | 1.28% | 12d 15h |  | `2026-08-29T15:09:59Z` | `2026-08-29T15:09:59Z` |
-| `sambanova` | `DeepSeek-V3.1` | 0 | 78 | 0.00% | 12d 15h |  | `2026-08-29T15:09:39Z` | `2026-08-29T15:09:39Z` |
-| `sambanova` | `DeepSeek-V3.2` | 0 | 78 | 0.00% | 12d 15h |  | `2026-08-29T15:09:39Z` | `2026-08-29T15:09:39Z` |
-| `sambanova` | `Meta-Llama-3.3-70B-Instruct` | 0 | 78 | 0.00% | 12d 15h |  | `2026-08-29T15:09:39Z` | `2026-08-29T15:09:39Z` |
-| `sambanova` | `MiniMax-M2.7` | 10 | 78 | 12.82% | 3d 6h |  | `2026-08-29T15:09:39Z` | `2026-08-29T15:09:39Z` |
-| `sambanova` | `gemma-4-31B-it` | 38 | 78 | 48.72% | 3d 6h |  | `2026-08-29T15:09:39Z` | `2026-08-29T15:09:39Z` |
-| `sambanova` | `gpt-oss-120b` | 0 | 78 | 0.00% | 12d 15h |  | `2026-08-29T15:09:39Z` | `2026-08-29T15:09:39Z` |
+| `gemini` | `gemini-2.5-flash` | 69 | 78 | 88.46% |  | `2026-08-29T15:09:38Z` | `2026-08-29T18:41:50Z` | `2026-08-29T18:41:50Z` |
+| `gemini` | `gemini-2.5-flash-lite` | 0 | 0 | 0.00% |  |  |  | `2026-08-29T18:41:50Z` |
+| `gemini` | `gemini-2.5-pro` | 0 | 0 | 0.00% |  |  |  | `2026-08-29T18:41:50Z` |
+| `gemini` | `gemini-3-flash-preview` | 77 | 78 | 98.72% |  |  |  | `2026-08-29T18:41:50Z` |
+| `gemini` | `gemini-3.1-flash-lite` | 71 | 78 | 91.03% |  |  |  | `2026-08-29T18:41:50Z` |
+| `gemini` | `gemini-3.5-flash` | 12 | 78 | 15.38% | 12d 18h |  |  | `2026-08-29T18:41:50Z` |
+| `gemini` | `gemini-3.5-flash-lite` | 77 | 78 | 98.72% |  |  |  | `2026-08-29T18:41:50Z` |
+| `gemini` | `gemini-3.6-flash` | 40 | 78 | 51.28% | 3d 10h |  |  | `2026-08-29T18:41:50Z` |
+| `gemini` | `gemini-3.7-flash` | 37 | 78 | 47.44% | 11d 6h |  |  | `2026-08-29T18:41:50Z` |
+| `groq` | `openai/gpt-oss-120b` | 8 | 78 | 10.26% | 12d 18h |  |  | `2026-08-24T20:36:14Z` |
+| `groq` | `openai/gpt-oss-20b` | 7 | 78 | 8.97% | 12d 18h |  |  | `2026-08-24T20:36:14Z` |
+| `groq` | `qwen/qwen3.6-27b` | 8 | 78 | 10.26% | 12d 18h |  |  | `2026-08-24T20:36:14Z` |
+| `openrouter` | `google/gemma-4-26b-a4b-it:free` | 1 | 78 | 1.28% | 12d 18h |  | `2026-08-29T18:42:07Z` | `2026-08-29T18:42:07Z` |
+| `openrouter` | `google/gemma-4-31b-it:free` | 1 | 78 | 1.28% | 12d 18h |  | `2026-08-29T18:42:07Z` | `2026-08-29T18:42:07Z` |
+| `openrouter` | `inclusionai/ling-3.0-flash:free` | 0 | 0 | 0.00% |  |  |  | `2026-08-29T18:42:07Z` |
+| `openrouter` | `nvidia/nemotron-3-super-120b-a12b:free` | 0 | 78 | 0.00% | 10d 2h |  |  | `2026-08-29T18:42:07Z` |
+| `openrouter` | `nvidia/nemotron-3-ultra-550b-a55b:free` | 0 | 78 | 0.00% | 10d 2h |  | `2026-08-29T18:42:02Z` | `2026-08-29T18:42:07Z` |
+| `openrouter` | `nvidia/nemotron-3.5-lightning:free` | 1 | 78 | 1.28% | 10d 9h |  | `2026-08-29T18:42:07Z` | `2026-08-29T18:42:07Z` |
+| `openrouter` | `nvidia/nemotron-nano-9b-v2:free` | 0 | 78 | 0.00% | 12d 18h |  | `2026-08-29T18:42:07Z` | `2026-08-29T18:42:07Z` |
+| `openrouter` | `openai/gpt-oss-20b:free` | 1 | 78 | 1.28% | 12d 18h |  | `2026-08-29T18:42:07Z` | `2026-08-29T18:42:07Z` |
+| `openrouter` | `poolside/laguna-s-2.1:free` | 1 | 78 | 1.28% | 12d 18h |  | `2026-08-29T18:42:07Z` | `2026-08-29T18:42:07Z` |
+| `openrouter` | `poolside/laguna-xs-2.1:free` | 1 | 78 | 1.28% | 12d 18h |  | `2026-08-29T18:42:07Z` | `2026-08-29T18:42:07Z` |
+| `sambanova` | `DeepSeek-V3.1` | 0 | 78 | 0.00% | 12d 18h |  | `2026-08-29T18:41:50Z` | `2026-08-29T18:41:50Z` |
+| `sambanova` | `DeepSeek-V3.2` | 0 | 78 | 0.00% | 12d 18h |  | `2026-08-29T18:41:50Z` | `2026-08-29T18:41:50Z` |
+| `sambanova` | `Meta-Llama-3.3-70B-Instruct` | 0 | 78 | 0.00% | 12d 18h |  | `2026-08-29T18:41:50Z` | `2026-08-29T18:41:50Z` |
+| `sambanova` | `MiniMax-M2.7` | 10 | 78 | 12.82% | 3d 10h |  | `2026-08-29T18:41:50Z` | `2026-08-29T18:41:50Z` |
+| `sambanova` | `gemma-4-31B-it` | 38 | 78 | 48.72% | 3d 10h |  | `2026-08-29T18:41:50Z` | `2026-08-29T18:41:50Z` |
+| `sambanova` | `gpt-oss-120b` | 0 | 78 | 0.00% | 12d 18h |  | `2026-08-29T18:41:50Z` | `2026-08-29T18:41:50Z` |
 
 ## Token observations
 
 | Provider | Model | Input tokens | Output tokens | Reasoning tokens | Cached tokens |
 |---|---|---:|---:|---:|---:|
-| `gemini` | `gemini-2.5-flash` | 56304 | 6299 | `unknown` | 8166 |
+| `gemini` | `gemini-2.5-flash` | 66287 | 7281 | `unknown` | 8166 |
 | `gemini` | `gemini-2.5-flash-lite` | `unknown` | `unknown` | `unknown` | `unknown` |
 | `gemini` | `gemini-2.5-pro` | `unknown` | `unknown` | `unknown` | `unknown` |
 | `gemini` | `gemini-3-flash-preview` | `unknown` | `unknown` | `unknown` | `unknown` |
