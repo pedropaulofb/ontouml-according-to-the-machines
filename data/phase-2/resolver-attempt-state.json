@@ -625,8 +625,8 @@
         "resolver_prompt_sha256": "9c2be8b13a251b4db3ac495d6f6397eee32e13d16c25705ade83b40752aaa0c6",
         "resolver_validator_version": "resolver-plan-validator-v1.2.3"
       },
-      "last_event_id": "01788129609509951603-88830dd5-5bc8-4412-8588-50b5e90e0d03",
-      "last_observed_at": "2026-08-30T22:40:09Z",
+      "last_event_id": "01788153662731346855-0c712a13-3458-461d-9184-93b62edb28c6",
+      "last_observed_at": "2026-08-31T05:21:02Z",
       "request_sent": false,
       "status": "not_called"
     },
@@ -925,7 +925,7 @@
       "status": "completed"
     }
   },
-  "last_updated_at": "2026-08-30T22:40:09Z",
+  "last_updated_at": "2026-08-31T05:21:02Z",
   "processed_event_ids": [
     "01787230640667959865-ba0709d0-2953-4c6f-9930-d4e21deeccdf",
     "01787243962617734894-0d4c925d-a269-4b44-88d4-3f141f935eb2",
@@ -989,7 +989,8 @@
     "01788066804588887392-63a9f60c-3dd5-4d14-b5c6-c0a15f6e2d9c",
     "01788097594274865399-0d71ad92-6e59-4698-b76c-fd16b5750faf",
     "01788117413046093665-ce05f177-526e-4aca-afde-2b6153afd086",
-    "01788129609509951603-88830dd5-5bc8-4412-8588-50b5e90e0d03"
+    "01788129609509951603-88830dd5-5bc8-4412-8588-50b5e90e0d03",
+    "01788153662731346855-0c712a13-3458-461d-9184-93b62edb28c6"
   ],
   "schema_version": 1
 }
