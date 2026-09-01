@@ -304,10 +304,12 @@ jobs:
             echo "::error::Resolver capacity is required but no provider-model spec was identified."
             exit 1
           fi
-          echo "candidate=$candidate" >> "$GITHUB_OUTPUT"
-          echo "executable=$executable" >> "$GITHUB_OUTPUT"
-          echo "capacity_required=$capacity_required" >> "$GITHUB_OUTPUT"
-          echo "capacity_specs=$capacity_specs" >> "$GITHUB_OUTPUT"
+          {
+            echo "candidate=$candidate"
+            echo "executable=$executable"
+            echo "capacity_required=$capacity_required"
+            echo "capacity_specs=$capacity_specs"
+          } >> "$GITHUB_OUTPUT"
 
       - name: Reconcile and persist leases
         id: scheduler
