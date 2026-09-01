@@ -196,14 +196,20 @@ class ResultAggregationTests(AggregationFixture):
         with tempfile.TemporaryDirectory() as temporary:
             root = Path(temporary)
             self.write_transport(root / "artifacts", event)
-            tasks, quota, _counts, _events = self.run_aggregate(
+            tasks, quota, first_counts, _events = self.run_aggregate(
                 root,
                 self.state_with(record),
-                publisher=lambda _task, _output: aggregator.PublicationResult("retry_due", "temporary failure"),
+                publisher=lambda _task, _output: aggregator.PublicationResult(
+                    "retry_due",
+                    "temporary failure",
+                    "publication_failed",
+                ),
             )
             self.assertEqual(tasks["tasks"][record["task_id"]]["status"], "completed")
             self.assertEqual(tasks["tasks"][record["task_id"]]["publication"]["status"], "retry_due")
             self.assertIsNone(tasks["tasks"][record["task_id"]]["publication"]["payload_path"])
+            self.assertEqual(first_counts["publication_failed"], 1)
+            self.assertNotIn("publication_publication_failed", first_counts)
             self.assertFalse((root / "data/phase-2/publications").exists())
             empty = root / "empty-artifacts"
             retried_tasks, _quota, counts, accepted = aggregator.aggregate(
@@ -219,6 +225,20 @@ class ResultAggregationTests(AggregationFixture):
             self.assertEqual(counts["applied"], 0)
             self.assertEqual(retried_tasks["tasks"][record["task_id"]]["publication"]["status"], "published")
             self.assertIsNone(retried_tasks["tasks"][record["task_id"]]["publication"]["payload_path"])
+
+    def test_publication_outcome_name_is_not_accepted_as_a_task_status(self) -> None:
+        record = self.leased_task()
+        event = self.event(record)
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            self.write_transport(root / "artifacts", event)
+
+            with self.assertRaisesRegex(aggregator.AggregationError, "unsupported status"):
+                self.run_aggregate(
+                    root,
+                    self.state_with(record),
+                    publisher=lambda _task, _output: aggregator.PublicationResult("new_issue_created"),
+                )
 
     def test_duplicate_delivery_is_idempotent_without_result_json_file(self) -> None:
         record = self.leased_task()

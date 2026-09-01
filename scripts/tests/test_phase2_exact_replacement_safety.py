@@ -1326,6 +1326,7 @@ class ResolverExactReplacementTests(unittest.TestCase):
                         side_effect=lambda path: "Current text.\n" if str(path) == issue.reviewed_page else "prompt",
                     ),
                     mock.patch.object(resolver, "resolver_output_dir", return_value=output_dir),
+                    mock.patch.object(resolver, "resolver_slot_status", return_value=(True, "eligible", None)),
                     mock.patch.object(resolver, "call_provider", return_value=json.dumps(plan)),
                     mock.patch.object(resolver, "comment_and_close") as close,
                     mock.patch.object(resolver, "create_pr") as create_pr,
@@ -1395,6 +1396,7 @@ class ResolverExactReplacementTests(unittest.TestCase):
                         ),
                     ),
                     mock.patch.object(resolver, "resolver_output_dir", return_value=output_dir),
+                    mock.patch.object(resolver, "resolver_slot_status", return_value=(True, "eligible", None)),
                     mock.patch.object(resolver, "call_provider", return_value=json.dumps(plan)),
                     mock.patch.object(resolver, "comment_and_close") as close,
                     mock.patch.object(resolver, "create_pr") as create_pr,
@@ -1470,6 +1472,7 @@ class ResolverExactReplacementTests(unittest.TestCase):
                         ),
                     ),
                     mock.patch.object(resolver, "resolver_output_dir", return_value=output_dir),
+                    mock.patch.object(resolver, "resolver_slot_status", return_value=(True, "eligible", None)),
                     mock.patch.object(resolver, "call_provider", return_value=json.dumps(plan)),
                     mock.patch.object(resolver, "run_structure_check"),
                     mock.patch.object(

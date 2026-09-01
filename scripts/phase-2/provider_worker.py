@@ -147,7 +147,7 @@ def validate_assignment(
             provider=provider,
             model=slot.model,
             task_id=task_id,
-            resolver_work_pending=False,
+            resolver_capacity_required=False,
             now=now,
         )
         if not eligible:

@@ -837,10 +837,12 @@ def main() -> int:
                     "Updated existing candidate signal comment "
                     f"#{matching_comment.comment_id} on issue #{existing_issue.number}"
                 )
+                print("publication_outcome=existing_comment_updated")
                 return 0
 
             post_issue_comment(args.repo, existing_issue.number, issue_comment_body)
             print(f"Posted candidate signal comment to issue #{existing_issue.number}")
+            print("publication_outcome=existing_issue_commented")
             return 0
 
         print(f"No open issue found for: {issue_title}")
@@ -848,6 +850,7 @@ def main() -> int:
         if metadata.signal_count == 0 and not args.post_empty:
             print("Signal count is 0.")
             print("Skipped issue creation by default.")
+            print("publication_outcome=zero_signal_no_publication")
             return 0
 
         created_issue = create_issue(
@@ -861,6 +864,7 @@ def main() -> int:
 
         post_issue_comment(args.repo, created_issue.number, issue_comment_body)
         print(f"Posted candidate signal comment to issue #{created_issue.number}")
+        print("publication_outcome=new_issue_created")
 
         return 0
 

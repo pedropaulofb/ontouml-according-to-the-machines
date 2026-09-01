@@ -79,15 +79,14 @@ class ResolverProviderTests(unittest.TestCase):
             'run_resolver "$fallback_provider" "$fallback_model"',
             workflow,
         )
-        self.assertIn('if [[ "$provider" != "gemini" ]]; then', workflow)
-        self.assertIn(
-            'if [[ "$provider" == "$fallback_provider" && "$model" == "$fallback_model" ]]; then',
-            workflow,
-        )
-        self.assertIn("a duplicate provider call is not allowed", workflow)
-        self.assertIn("provider_unavailable_issue_number()", workflow)
+        self.assertIn('if [[ "$provider" != "gemini" ||', workflow)
+        self.assertIn('"$provider" == "$fallback_provider" && "$model" == "$fallback_model"', workflow)
+        self.assertIn("Structured outcome requested a fallback", workflow)
+        self.assertNotIn("provider_unavailable_issue_number()", workflow)
+        self.assertIn("fallback_executable", workflow)
+        self.assertIn("outcome.json", workflow)
         self.assertNotIn("Running Cerebras fallback", workflow)
-        self.assertIn("Running Gemini fallback once", workflow)
+        self.assertIn("Running eligible Gemini fallback once", workflow)
         self.assertNotIn("Running Groq fallback", workflow)
         self.assertIn("PHASE2_RESOLVER_ATTEMPT_EVENT_DIR", workflow)
         self.assertIn("--add data/phase-2/resolver-attempt-state.json", workflow)

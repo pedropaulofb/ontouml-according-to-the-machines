@@ -99,7 +99,7 @@ class QuotaStateTests(unittest.TestCase):
         model: str,
         *,
         task_id: str | None = None,
-        resolver_work_pending: bool = False,
+        resolver_capacity_required: bool = False,
         now: datetime = NOW,
     ) -> bool:
         eligible, _ = quota_state.slot_eligibility(
@@ -107,7 +107,7 @@ class QuotaStateTests(unittest.TestCase):
             provider=provider,
             model=model,
             task_id=task_id,
-            resolver_work_pending=resolver_work_pending,
+            resolver_capacity_required=resolver_capacity_required,
             now=now,
         )
         return eligible
@@ -594,7 +594,7 @@ class QuotaStateTests(unittest.TestCase):
                 max_completion_tokens=None,
                 quota_state_path=state_path,
                 quota_event_directory=event_directory,
-                resolver_work_pending=False,
+                resolver_capacity_required=False,
             )
         self.assertFalse(eligible)
         self.assertEqual(reason, "blocked_provider_policy")
@@ -760,7 +760,7 @@ class QuotaStateTests(unittest.TestCase):
                 self.state,
                 "gemini",
                 "gemini-3.5-flash",
-                resolver_work_pending=True,
+                resolver_capacity_required=True,
             )
         )
         self.assertFalse(
@@ -768,7 +768,7 @@ class QuotaStateTests(unittest.TestCase):
                 self.state,
                 "gemini",
                 "gemini-3.6-flash",
-                resolver_work_pending=True,
+                resolver_capacity_required=True,
             )
         )
         self.assertTrue(
@@ -776,7 +776,7 @@ class QuotaStateTests(unittest.TestCase):
                 self.state,
                 "gemini",
                 "gemini-3.5-flash-lite",
-                resolver_work_pending=True,
+                resolver_capacity_required=True,
             )
         )
         self.assertTrue(
@@ -784,7 +784,7 @@ class QuotaStateTests(unittest.TestCase):
                 self.state,
                 "groq",
                 "openai/gpt-oss-120b",
-                resolver_work_pending=True,
+                resolver_capacity_required=True,
             )
         )
         self.assertTrue(self.eligible(self.state, "gemini", "gemini-3.5-flash"))

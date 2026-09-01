@@ -257,6 +257,162 @@ class ResolverAttemptTests(unittest.TestCase):
         state, _counts = resolver_attempt_state.aggregate_events(initial, [event])
         self.assertFalse(resolver_attempt_state.attempt_is_blocked(state, context.identity))
 
+    def test_completed_prior_attempt_is_skipped_for_the_next_eligible_issue(self) -> None:
+        first_context = self.context()
+        second_issue = resolver.IssueSnapshot(
+            **{
+                **self.issue.__dict__,
+                "number": 43,
+                "url": "https://github.com/example/repository/issues/43",
+                "reviewed_page": "docs/stereotypes/classes/second-example.md",
+            }
+        )
+        second_context = resolver.build_resolver_attempt_context(
+            issue=second_issue,
+            page_text=self.page,
+            prompt="Resolver prompt.",
+            active_comments=self.active,
+            provider="gemini",
+            model="gemini-3.5-flash",
+            max_completion_tokens=8000,
+            max_attempts=1,
+        )
+        state = self.state_with_attempt(first_context, status="completed", failure_kind=None)
+
+        with (
+            mock.patch.object(resolver, "open_signal_issue_candidates", return_value=[42, 43]),
+            mock.patch.object(resolver, "read_issue", side_effect=[self.issue, second_issue]),
+            mock.patch.object(resolver, "attempt_context_for_issue", side_effect=[first_context, second_context]),
+            mock.patch.object(resolver, "load_resolver_attempt_state", return_value=state),
+            mock.patch.object(resolver, "load_task_state", return_value={"tasks": {}}),
+            mock.patch.object(
+                resolver,
+                "resolver_slot_status",
+                side_effect=[(True, "eligible", None), (True, "eligible", None)],
+            ),
+        ):
+            eligibility = resolver.evaluate_resolver_work("example/repository", now=NOW)
+
+        self.assertTrue(eligibility.candidate_exists)
+        self.assertEqual(eligibility.issue_number, 43)
+        self.assertTrue(eligibility.primary_executable)
+
+    def test_changed_signal_snapshot_is_executable_after_prior_invalid_attempt(self) -> None:
+        original = self.context()
+        changed = self.context(
+            active=(
+                resolver.ActiveSignalComment(
+                    comment_id="100",
+                    task_id="a" * 64,
+                    provider="gemini",
+                    model="gemini-3.5-flash",
+                    body="Changed active signal body.",
+                ),
+            )
+        )
+        state = self.state_with_attempt(
+            original,
+            status="plan_invalid",
+            failure_kind="plan_validation_failure",
+        )
+
+        with (
+            mock.patch.object(resolver, "open_signal_issue_candidates", return_value=[42]),
+            mock.patch.object(resolver, "read_issue", return_value=self.issue),
+            mock.patch.object(resolver, "attempt_context_for_issue", return_value=changed),
+            mock.patch.object(resolver, "load_resolver_attempt_state", return_value=state),
+            mock.patch.object(resolver, "load_task_state", return_value={"tasks": {}}),
+            mock.patch.object(
+                resolver,
+                "resolver_slot_status",
+                side_effect=[(True, "eligible", None), (True, "eligible", None)],
+            ),
+        ):
+            eligibility = resolver.evaluate_resolver_work("example/repository", now=NOW)
+
+        self.assertTrue(eligibility.candidate_exists)
+        self.assertEqual(eligibility.issue_number, 42)
+        self.assertTrue(eligibility.primary_executable)
+
+    def test_custom_primary_request_configuration_is_part_of_evaluated_identity(self) -> None:
+        custom = self.context(max_tokens=9000)
+        with (
+            mock.patch.object(resolver, "open_signal_issue_candidates", return_value=[42]),
+            mock.patch.object(resolver, "read_issue", return_value=self.issue),
+            mock.patch.object(resolver, "attempt_context_for_issue", return_value=custom) as build_context,
+            mock.patch.object(
+                resolver,
+                "load_resolver_attempt_state",
+                return_value=resolver_attempt_state.build_initial_state(timestamp=TIMESTAMP),
+            ),
+            mock.patch.object(resolver, "load_task_state", return_value={"tasks": {}}),
+            mock.patch.object(
+                resolver,
+                "resolver_slot_status",
+                side_effect=[(True, "eligible", None), (True, "eligible", None)],
+            ),
+        ):
+            eligibility = resolver.evaluate_resolver_work(
+                "example/repository",
+                now=NOW,
+                primary_max_completion_tokens=9000,
+                primary_max_attempts=2,
+            )
+
+        self.assertTrue(eligibility.primary_executable)
+        self.assertEqual(eligibility.primary_context, custom)
+        self.assertEqual(build_context.call_args.kwargs["max_completion_tokens"], 9000)
+        self.assertEqual(build_context.call_args.kwargs["max_attempts"], 2)
+
+    def test_manual_gemini_36_selection_remains_a_direct_primary_route(self) -> None:
+        context = self.context(provider="gemini", model="gemini-3.6-flash", max_tokens=6000)
+        args = argparse.Namespace(
+            repo="example/repository",
+            issue="42",
+            provider="gemini",
+            model="gemini-3.6-flash",
+            max_completion_tokens=6000,
+            provider_max_attempts=1,
+            dry_run=True,
+            branch_prefix="phase-2/auto-resolve",
+            attempt_state="unused.json",
+            preflight_only=False,
+            fallback_used=False,
+        )
+        plan = {"overall_decision": "no_accepted_changes", "issue_comment": "No changes."}
+
+        with tempfile.TemporaryDirectory() as temporary:
+            output = Path(temporary)
+            with (
+                mock.patch.object(resolver, "parse_args", return_value=args),
+                mock.patch.object(resolver, "resolver_output_dir", return_value=output),
+                mock.patch.object(
+                    resolver,
+                    "load_resolver_attempt_state",
+                    return_value=resolver_attempt_state.build_initial_state(timestamp=TIMESTAMP),
+                ),
+                mock.patch.object(resolver, "load_task_state", return_value={"tasks": {}}),
+                mock.patch.object(resolver, "read_issue", return_value=self.issue),
+                mock.patch.object(resolver, "attempt_context_for_issue", return_value=context),
+                mock.patch.object(resolver, "resolver_slot_status", return_value=(True, "eligible", None)),
+                mock.patch.object(resolver, "evaluate_resolver_work") as canonical_eligibility,
+                mock.patch.object(resolver, "call_provider", return_value=json.dumps(plan)) as provider_call,
+                mock.patch.object(resolver, "normalize_rejected_group_edits", return_value=0),
+                mock.patch.object(resolver, "validate_plan_structure_before_revalidation"),
+                mock.patch.object(resolver, "demote_invalid_accepted_groups", return_value=[]),
+                mock.patch.object(resolver, "normalize_overall_decision", return_value=None),
+                mock.patch.object(resolver, "validate_plan"),
+            ):
+                result = resolver.main()
+            outcome = json.loads((output / "outcome.json").read_text(encoding="utf-8"))
+
+        self.assertEqual(result, 0)
+        canonical_eligibility.assert_not_called()
+        provider_call.assert_called_once()
+        self.assertEqual(outcome["outcome"], "deferred")
+        self.assertTrue(outcome["request_sent"])
+        self.assertFalse(outcome["fallback_used"])
+
     def test_unchanged_invalid_plan_is_skipped_without_provider_or_fallback(self) -> None:
         context = self.context()
         state = self.state_with_attempt(
@@ -276,20 +432,33 @@ class ResolverAttemptTests(unittest.TestCase):
             attempt_state="unused.json",
             preflight_only=False,
         )
-        with (
-            mock.patch.object(resolver, "parse_args", return_value=args),
-            mock.patch.object(resolver, "load_resolver_attempt_state", return_value=state),
-            mock.patch.object(resolver, "load_task_state", return_value={"tasks": {}}),
-            mock.patch.object(resolver, "read_issue", return_value=self.issue),
-            mock.patch.object(resolver, "attempt_context_for_issue", return_value=context),
-            mock.patch.object(resolver, "_fallback_remains_eligible") as fallback,
-            mock.patch.object(resolver, "call_provider") as provider_call,
-        ):
-            result = resolver.main()
+        eligibility = resolver.ResolverEligibility(
+            candidate_exists=False,
+            issue_number=None,
+            primary_executable=False,
+            fallback_executable=False,
+            capacity_required=False,
+            reserved_specs=(),
+            retry_not_before=None,
+            reason_codes=("no_candidate",),
+        )
+        with tempfile.TemporaryDirectory() as temporary:
+            output = Path(temporary)
+            with (
+                mock.patch.object(resolver, "parse_args", return_value=args),
+                mock.patch.object(resolver, "load_resolver_attempt_state", return_value=state),
+                mock.patch.object(resolver, "load_task_state", return_value={"tasks": {}}),
+                mock.patch.object(resolver, "evaluate_resolver_work", return_value=eligibility),
+                mock.patch.object(resolver, "resolver_output_dir", return_value=output),
+                mock.patch.object(resolver, "call_provider") as provider_call,
+            ):
+                result = resolver.main()
+            outcome = json.loads((output / "outcome.json").read_text(encoding="utf-8"))
 
         self.assertEqual(result, 0)
         provider_call.assert_not_called()
-        fallback.assert_not_called()
+        self.assertEqual(outcome["outcome"], "no_candidate")
+        self.assertFalse(outcome["request_sent"])
 
     def test_unchanged_unavailable_primary_signals_fallback_without_duplicate_call(self) -> None:
         context = self.context()
@@ -310,27 +479,87 @@ class ResolverAttemptTests(unittest.TestCase):
             attempt_state="unused.json",
             preflight_only=False,
         )
+        eligibility = resolver.ResolverEligibility(
+            candidate_exists=True,
+            issue_number=42,
+            primary_executable=False,
+            fallback_executable=True,
+            capacity_required=True,
+            reserved_specs=("gemini:gemini-3.6-flash",),
+            retry_not_before=None,
+            reason_codes=("provider_temporarily_unavailable",),
+            primary_context=context,
+        )
         with tempfile.TemporaryDirectory() as temporary:
             output = Path(temporary)
             with (
                 mock.patch.object(resolver, "parse_args", return_value=args),
                 mock.patch.object(resolver, "load_resolver_attempt_state", return_value=state),
                 mock.patch.object(resolver, "load_task_state", return_value={"tasks": {}}),
-                mock.patch.object(resolver, "read_issue", return_value=self.issue),
-                mock.patch.object(resolver, "attempt_context_for_issue", return_value=context),
-                mock.patch.object(resolver, "_fallback_remains_eligible", return_value=True),
+                mock.patch.object(resolver, "evaluate_resolver_work", return_value=eligibility),
                 mock.patch.object(resolver, "resolver_output_dir", return_value=output),
                 mock.patch.object(resolver, "call_provider") as provider_call,
             ):
                 result = resolver.main()
+            outcome = json.loads((output / "outcome.json").read_text(encoding="utf-8"))
 
-            provider_error = (output / "issue-42-provider-error.txt").read_text(encoding="utf-8")
-
-        self.assertEqual(result, 1)
+        self.assertEqual(result, 0)
         provider_call.assert_not_called()
-        self.assertIn("provider_error_kind=provider_unavailable", provider_error)
-        self.assertIn("no duplicate primary-model call was made", provider_error)
-        self.assertIn("configured Gemini fallback remains eligible", provider_error)
+        self.assertEqual(outcome["outcome"], "deferred")
+        self.assertFalse(outcome["request_sent"])
+        self.assertTrue(outcome["fallback_executable"])
+
+    def test_incident_state_defers_without_provider_call_issue_resolution_or_pr(self) -> None:
+        context = self.context()
+        args = argparse.Namespace(
+            repo="example/repository",
+            issue="42",
+            provider="gemini",
+            model="gemini-3.5-flash",
+            max_completion_tokens=8000,
+            provider_max_attempts=1,
+            dry_run=False,
+            branch_prefix="phase-2/auto-resolve",
+            attempt_state="unused.json",
+            preflight_only=False,
+            fallback_used=False,
+        )
+        eligibility = resolver.ResolverEligibility(
+            candidate_exists=True,
+            issue_number=42,
+            primary_executable=False,
+            fallback_executable=False,
+            capacity_required=False,
+            reserved_specs=(),
+            retry_not_before=None,
+            reason_codes=("primary_slot_recheck_required", "fallback_not_eligible"),
+            primary_context=context,
+        )
+
+        with tempfile.TemporaryDirectory() as temporary:
+            output = Path(temporary)
+            with (
+                mock.patch.object(resolver, "parse_args", return_value=args),
+                mock.patch.object(resolver, "load_resolver_attempt_state", return_value={"attempts": {}}),
+                mock.patch.object(resolver, "load_task_state", return_value={"tasks": {}}),
+                mock.patch.object(resolver, "evaluate_resolver_work", return_value=eligibility),
+                mock.patch.object(resolver, "resolver_output_dir", return_value=output),
+                mock.patch.object(resolver, "call_provider") as provider_call,
+                mock.patch.object(resolver, "create_pr") as create_pr,
+                mock.patch.object(resolver, "comment_and_close") as close_issue,
+            ):
+                result = resolver.main()
+            outcome = json.loads((output / "outcome.json").read_text(encoding="utf-8"))
+
+        self.assertEqual(result, 0)
+        provider_call.assert_not_called()
+        create_pr.assert_not_called()
+        close_issue.assert_not_called()
+        self.assertEqual(outcome["outcome"], "deferred")
+        self.assertEqual(outcome["reason_code"], "primary_slot_recheck_required")
+        self.assertFalse(outcome["request_sent"])
+        self.assertFalse(outcome["issue_resolved"])
+        self.assertIsNone(outcome["pr_url"])
 
     def test_fallback_eligibility_uses_gemini_36_request_identity(self) -> None:
         primary = self.context()

@@ -26,6 +26,7 @@ provider_worker = importlib.import_module("provider_worker")
 quota_state = importlib.import_module("quota_state")
 registry_module = importlib.import_module("provider_model_registry")
 resolver = importlib.import_module("resolve_signal_issue")
+resolver_attempt_state = importlib.import_module("resolver_attempt_state")
 task_scheduler = importlib.import_module("task_scheduler")
 task_reconciler = importlib.import_module("task_reconciler")
 task_state_module = importlib.import_module("task_state")
@@ -166,7 +167,7 @@ class SchedulerSelectionTests(unittest.TestCase):
         self.assertEqual(len(first[slot.provider]["assignments"]), 1)
         self.assertEqual(second[slot.provider]["assignments"], [])
 
-    def test_shared_resolver_slots_are_withheld_only_when_work_is_pending(self) -> None:
+    def test_only_the_resolver_capacity_spec_is_withheld(self) -> None:
         self.assertEqual(
             task_scheduler.SHARED_RESOLVER_SPECS,
             {("gemini", "gemini-3.5-flash"), ("gemini", "gemini-3.6-flash")},
@@ -177,7 +178,8 @@ class SchedulerSelectionTests(unittest.TestCase):
                 assert shared is not None
                 _tasks, plans = self.build(
                     [task_record(shared.provider, shared.model, "page.md")],
-                    resolver_work_pending=True,
+                    resolver_capacity_required=True,
+                    resolver_reserved_specs={shared.spec},
                 )
                 self.assertEqual(plans[provider]["assignments"], [])
 
@@ -531,20 +533,50 @@ class ResolverAndWorkflowTests(unittest.TestCase):
     def setUpClass(cls) -> None:
         cls.registry = registry_module.load_registry(REGISTRY_PATH)
 
-    def preflight(self, quota: dict[str, object], issue=1) -> bool:
+    def eligibility(
+        self,
+        quota: dict[str, object],
+        issue=1,
+        attempt_state: dict[str, object] | None = None,
+    ) -> resolver.ResolverEligibility:
+        issue_snapshot = resolver.IssueSnapshot(
+            number=1,
+            title="Check signal: language-style-checker: classes/example",
+            body="",
+            state="OPEN",
+            url="https://github.com/example/repository/issues/1",
+            agent="language-style-checker",
+            reviewed_page="docs/stereotypes/classes/example.md",
+            comments=[],
+        )
+        primary = resolver.build_resolver_attempt_context(
+            issue=issue_snapshot,
+            page_text="Current page.\n",
+            prompt="Resolver prompt.\n",
+            active_comments=(resolver.ActiveSignalComment("1", "a" * 64, "gemini", "gemini-3.5-flash", "Signal."),),
+            provider="gemini",
+            model="gemini-3.5-flash",
+            max_completion_tokens=8000,
+            max_attempts=1,
+        )
         with (
             mock.patch.object(resolver, "open_signal_issue_candidates", return_value=[] if issue is None else [issue]),
-            mock.patch.object(resolver, "read_issue", return_value=mock.sentinel.issue),
-            mock.patch.object(resolver, "attempt_context_for_issue", return_value=mock.Mock(identity={})),
-            mock.patch.object(resolver, "attempt_record", return_value=None),
-            mock.patch.object(resolver, "_fallback_remains_eligible", return_value=True),
-            mock.patch.object(resolver, "load_resolver_attempt_state", return_value={"attempts": {}}),
+            mock.patch.object(resolver, "read_issue", return_value=issue_snapshot),
+            mock.patch.object(resolver, "attempt_context_for_issue", return_value=primary),
+            mock.patch.object(
+                resolver,
+                "load_resolver_attempt_state",
+                return_value=attempt_state or resolver_attempt_state.build_initial_state(timestamp=TIMESTAMP),
+            ),
             mock.patch.object(resolver, "load_task_state", return_value={"tasks": {}}),
             mock.patch.object(resolver, "load_registry", return_value=self.registry),
             mock.patch.object(resolver, "load_quota_state", return_value=quota),
             mock.patch.object(resolver, "load_event_files", return_value=[]),
         ):
-            return resolver.eligible_resolver_work_exists("owner/repo", now=NOW)
+            return resolver.evaluate_resolver_work("owner/repo", now=NOW)
+
+    def preflight(self, quota: dict[str, object], issue=1) -> bool:
+        return self.eligibility(quota, issue=issue).capacity_required
 
     def test_no_open_issue_means_no_resolver_capacity_reservation(self) -> None:
         quota = quota_state.build_initial_state(self.registry, timestamp=TIMESTAMP)
@@ -567,6 +599,40 @@ class ResolverAndWorkflowTests(unittest.TestCase):
         runtime["status"] = "temporarily_unavailable"
         runtime["retry_not_before"] = "2026-08-12T15:00:00Z"
         self.assertTrue(self.preflight(quota))
+
+    def test_incident_state_is_deferred_without_capacity_or_provider_call(self) -> None:
+        quota = quota_state.build_initial_state(self.registry, timestamp=TIMESTAMP)
+        primary_runtime = quota["runtime_slots"]["gemini:gemini-3.5-flash"]
+        primary_runtime["status"] = "temporarily_unavailable"
+        primary_runtime["retry_not_before"] = "2026-08-12T13:00:00Z"
+        eligibility = self.eligibility(quota)
+        fallback = eligibility.fallback_context
+        assert fallback is not None
+        attempt_state = resolver_attempt_state.build_initial_state(timestamp=TIMESTAMP)
+        attempt_state, _counts = resolver_attempt_state.aggregate_events(
+            attempt_state,
+            [
+                {
+                    "schema_version": resolver_attempt_state.SCHEMA_VERSION,
+                    "event_id": "fallback-provider-failure",
+                    "attempt_id": fallback.attempt_id,
+                    "observed_at": TIMESTAMP,
+                    "identity": fallback.identity,
+                    "status": "provider_failure",
+                    "request_sent": True,
+                    "failure_kind": "provider_unavailable",
+                }
+            ],
+        )
+
+        incident = self.eligibility(quota, attempt_state=attempt_state)
+
+        self.assertTrue(incident.candidate_exists)
+        self.assertFalse(incident.primary_executable)
+        self.assertFalse(incident.fallback_executable)
+        self.assertFalse(incident.capacity_required)
+        self.assertIn("primary_slot_recheck_required", incident.reason_codes)
+        self.assertIn("fallback_not_eligible", incident.reason_codes)
 
     def test_workflows_enforce_durable_leases_and_shared_state_writer(self) -> None:
         collector = (REPO_ROOT / ".github/workflows/check-agent-signal-collector.yml").read_text(encoding="utf-8")

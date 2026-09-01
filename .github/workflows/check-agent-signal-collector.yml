@@ -293,9 +293,21 @@ jobs:
           set -euo pipefail
           result="$(python scripts/phase-2/resolve_signal_issue.py --repo "$GITHUB_REPOSITORY" --preflight-only)"
           echo "$result"
-          pending="$(printf '%s\n' "$result" | sed -n 's/^resolver_work_pending=//p' | tail -1)"
-          [[ "$pending" == "true" || "$pending" == "false" ]] || { echo "::error::Invalid resolver preflight output."; exit 1; }
-          echo "pending=$pending" >> "$GITHUB_OUTPUT"
+          candidate="$(printf '%s\n' "$result" | sed -n 's/^resolver_candidate_exists=//p' | tail -1)"
+          executable="$(printf '%s\n' "$result" | sed -n 's/^resolver_executable_now=//p' | tail -1)"
+          capacity_required="$(printf '%s\n' "$result" | sed -n 's/^resolver_capacity_required=//p' | tail -1)"
+          capacity_specs="$(printf '%s\n' "$result" | sed -n 's/^resolver_capacity_specs=//p' | tail -1)"
+          [[ "$candidate" == "true" || "$candidate" == "false" ]] || { echo "::error::Invalid resolver candidate preflight output."; exit 1; }
+          [[ "$executable" == "true" || "$executable" == "false" ]] || { echo "::error::Invalid resolver execution preflight output."; exit 1; }
+          [[ "$capacity_required" == "true" || "$capacity_required" == "false" ]] || { echo "::error::Invalid resolver capacity preflight output."; exit 1; }
+          if [[ "$capacity_required" == "true" && -z "$capacity_specs" ]]; then
+            echo "::error::Resolver capacity is required but no provider-model spec was identified."
+            exit 1
+          fi
+          echo "candidate=$candidate" >> "$GITHUB_OUTPUT"
+          echo "executable=$executable" >> "$GITHUB_OUTPUT"
+          echo "capacity_required=$capacity_required" >> "$GITHUB_OUTPUT"
+          echo "capacity_specs=$capacity_specs" >> "$GITHUB_OUTPUT"
 
       - name: Reconcile and persist leases
         id: scheduler
@@ -308,7 +320,8 @@ jobs:
           SPECS_INPUT: ${{ github.event.inputs.provider_model_specs }}
           MAX_TASKS_INPUT: ${{ github.event.inputs.max_tasks_per_provider }}
           EXECUTION_BUDGET_INPUT: ${{ github.event.inputs.execution_budget_seconds }}
-          RESOLVER_WORK_PENDING: ${{ steps.resolver_preflight.outputs.pending }}
+          RESOLVER_CAPACITY_REQUIRED: ${{ steps.resolver_preflight.outputs.capacity_required }}
+          RESOLVER_CAPACITY_SPECS: ${{ steps.resolver_preflight.outputs.capacity_specs }}
         run: |
           set -euo pipefail
 
@@ -325,7 +338,12 @@ jobs:
           while IFS= read -r agent; do [[ -n "$agent" ]] && filter_args+=(--agent "$agent"); done < <(printf '%s' "${AGENTS_INPUT:-}" | tr ',' '\n' | sed 's/^[[:space:]]*//;s/[[:space:]]*$//' | sed '/^$/d')
           while IFS= read -r spec; do [[ -n "$spec" ]] && filter_args+=(--provider-model-spec "$spec"); done < <(printf '%s' "${SPECS_INPUT:-}" | tr ',' '\n' | sed 's/^[[:space:]]*//;s/[[:space:]]*$//' | sed '/^$/d')
           resolver_args=()
-          [[ "$RESOLVER_WORK_PENDING" == "true" ]] && resolver_args+=(--resolver-work-pending)
+          if [[ "$RESOLVER_CAPACITY_REQUIRED" == "true" ]]; then
+            resolver_args+=(--resolver-capacity-required)
+            while IFS= read -r spec; do
+              [[ -n "$spec" ]] && resolver_args+=(--resolver-reserved-spec "$spec")
+            done < <(printf '%s' "${RESOLVER_CAPACITY_SPECS:-}" | tr ',' '\n' | sed '/^$/d')
+          fi
 
           if [[ "$scheduler_command" == "lease" && -z "${PHASE2_AUTOMATION_TOKEN:-}" ]]; then
             echo "::error::Missing required repository secret: PHASE2_AUTOMATION_TOKEN"

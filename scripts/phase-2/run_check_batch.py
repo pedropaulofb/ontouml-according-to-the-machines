@@ -179,7 +179,7 @@ def parse_args() -> argparse.Namespace:
         help="Persistent best-known quota state used by the pre-call eligibility guard.",
     )
     parser.add_argument(
-        "--resolver-work-pending",
+        "--resolver-capacity-required",
         action="store_true",
         help="Withhold the two shared resolver provider-model slots from signal calls.",
     )
@@ -627,7 +627,7 @@ def pre_call_eligibility(
     max_completion_tokens: int | None,
     quota_state_path: Path,
     quota_event_directory: Path,
-    resolver_work_pending: bool,
+    resolver_capacity_required: bool,
 ) -> tuple[bool, str]:
     task_id = build_planned_task_id(
         planned=planned,
@@ -644,7 +644,7 @@ def pre_call_eligibility(
         provider=planned.provider,
         model=planned.model,
         task_id=task_id,
-        resolver_work_pending=resolver_work_pending,
+        resolver_capacity_required=resolver_capacity_required,
         now=datetime.now(timezone.utc),
     )
 
@@ -951,7 +951,7 @@ def main() -> int:
                 max_completion_tokens=args.max_completion_tokens,
                 quota_state_path=Path(args.quota_state),
                 quota_event_directory=quota_event_directory,
-                resolver_work_pending=args.resolver_work_pending,
+                resolver_capacity_required=args.resolver_capacity_required,
             )
         except (OSError, QuotaStateError, ValueError) as exc:
             print(f"ERROR: Could not evaluate pre-call quota eligibility: {exc}", file=sys.stderr)

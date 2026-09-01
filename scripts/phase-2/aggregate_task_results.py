@@ -69,6 +69,7 @@ class TransportEvent:
 class PublicationResult:
     status: str
     diagnostic: str | None = None
+    outcome: str | None = None
 
 
 Publisher = Callable[[Mapping[str, Any], Path], PublicationResult]
@@ -449,10 +450,31 @@ def issue_manager_publisher(repo_root: Path, repository: str) -> Publisher:
         )
         diagnostic = "\n".join(part.strip() for part in (completed.stdout, completed.stderr) if part.strip())
         if completed.returncode != 0:
-            return PublicationResult("retry_due", diagnostic[:1000] or "issue manager failed")
-        if "Skipped issue creation by default." in completed.stdout:
-            return PublicationResult("not_required")
-        return PublicationResult("published")
+            return PublicationResult(
+                "retry_due",
+                diagnostic[:1000] or "issue manager failed",
+                "publication_failed",
+            )
+        outcome_lines = [
+            line.split("=", 1)[1].strip()
+            for line in completed.stdout.splitlines()
+            if line.startswith("publication_outcome=")
+        ]
+        if len(outcome_lines) != 1 or outcome_lines[0] not in {
+            "new_issue_created",
+            "existing_issue_commented",
+            "existing_comment_updated",
+            "zero_signal_no_publication",
+        }:
+            return PublicationResult(
+                "retry_due",
+                "issue manager did not emit one valid publication outcome",
+                "publication_failed",
+            )
+        outcome = outcome_lines[0]
+        if outcome == "zero_signal_no_publication":
+            return PublicationResult("not_required", outcome=outcome)
+        return PublicationResult("published", outcome=outcome)
 
     return publish
 
@@ -464,7 +486,16 @@ def retry_publications(
     publisher: Publisher,
     timestamp: str,
 ) -> dict[str, int]:
-    counts = {"published": 0, "not_required": 0, "retry_due": 0}
+    counts = {
+        "published": 0,
+        "not_required": 0,
+        "retry_due": 0,
+        "new_issue_created": 0,
+        "existing_issue_commented": 0,
+        "existing_comment_updated": 0,
+        "zero_signal_no_publication": 0,
+        "publication_failed": 0,
+    }
     for task in sorted(task_state["tasks"].values(), key=lambda value: value["task_id"]):
         publication = task["publication"]
         if task["status"] != "completed" or publication["status"] not in {"pending", "retry_due"}:
@@ -475,6 +506,7 @@ def retry_publications(
             publication["last_attempt_at"] = timestamp
             publication["last_error"] = "validated output path is missing"
             counts["retry_due"] += 1
+            counts["publication_failed"] += 1
             continue
         output_path = repo_root / output_reference
         if not output_path.is_file() or _file_sha256(output_path) != task["result_record"].get("output_sha256"):
@@ -482,15 +514,20 @@ def retry_publications(
             publication["last_attempt_at"] = timestamp
             publication["last_error"] = "validated output artifact is missing or corrupted"
             counts["retry_due"] += 1
+            counts["publication_failed"] += 1
             continue
         result = publisher(task, output_path)
-        if result.status not in counts:
+        if result.status not in {"published", "not_required", "retry_due"}:
             raise AggregationError(f"Publisher returned unsupported status: {result.status}.")
         publication["status"] = result.status
         publication["last_attempt_at"] = timestamp
         publication["last_error"] = result.diagnostic if result.status == "retry_due" else None
         task["updated_at"] = timestamp
         counts[result.status] += 1
+        if result.outcome is not None:
+            if result.outcome not in counts:
+                raise AggregationError(f"Publisher returned unsupported outcome: {result.outcome}.")
+            counts[result.outcome] += 1
     return counts
 
 
@@ -597,7 +634,8 @@ def aggregate(
             timestamp=effective_timestamp,
         )
         for key, value in publication_counts.items():
-            counts[f"publication_{key}"] = value
+            output_key = key if key == "publication_failed" else f"publication_{key}"
+            counts[output_key] = value
     validate_task_state(updated_tasks)
     return updated_tasks, updated_quota, counts, accepted_events
 

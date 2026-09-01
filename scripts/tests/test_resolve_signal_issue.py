@@ -225,6 +225,170 @@ class OverallDecisionNormalizationTests(unittest.TestCase):
             self.assertFalse((output_dir / "issue-218-plan-error.txt").exists())
 
 
+class ResolverOutcomeLifecycleTests(unittest.TestCase):
+    def run_completion(
+        self,
+        *,
+        accepted_changes: bool,
+        fallback_used: bool = False,
+    ) -> tuple[dict[str, object], mock.Mock, mock.Mock]:
+        with tempfile.TemporaryDirectory() as temporary:
+            output_dir = Path(temporary)
+            page_path = output_dir / "example.md"
+            page_path.write_text("Current page.\n", encoding="utf-8")
+            issue = resolver.IssueSnapshot(
+                number=300,
+                title="Check signal: language-style-checker: classes/example",
+                body="",
+                state="OPEN",
+                url="https://github.com/example/repository/issues/300",
+                agent="language-style-checker",
+                reviewed_page=str(page_path),
+                comments=[],
+            )
+            provider = "gemini"
+            model = "gemini-3.6-flash" if fallback_used else "gemini-3.5-flash"
+            max_completion_tokens = 6000 if fallback_used else 8000
+            context = resolver.build_resolver_attempt_context(
+                issue=issue,
+                page_text="Current page.\n",
+                prompt="Resolver prompt.\n",
+                active_comments=(resolver.ActiveSignalComment("1", "c" * 64, "gemini", "gemini-3.5-flash", "Signal."),),
+                provider=provider,
+                model=model,
+                max_completion_tokens=max_completion_tokens,
+                max_attempts=1,
+            )
+            eligibility = resolver.ResolverEligibility(
+                candidate_exists=True,
+                issue_number=300,
+                primary_executable=not fallback_used,
+                fallback_executable=fallback_used,
+                capacity_required=True,
+                reserved_specs=(f"{provider}:{model}",),
+                retry_not_before=None,
+                reason_codes=(),
+                primary_context=None if fallback_used else context,
+                fallback_context=context if fallback_used else None,
+            )
+            args = argparse.Namespace(
+                repo="example/repository",
+                issue="300",
+                provider=provider,
+                model=model,
+                max_completion_tokens=max_completion_tokens,
+                provider_max_attempts=1,
+                dry_run=False,
+                branch_prefix="phase-2/auto-resolve",
+                attempt_state="unused.json",
+                preflight_only=False,
+                fallback_used=fallback_used,
+            )
+            plan = {
+                "overall_decision": "accepted_changes" if accepted_changes else "no_accepted_changes",
+                "issue_comment": "Resolved at {{PR_URL}}." if accepted_changes else "Resolved without changes.",
+            }
+            create_pr = mock.Mock(return_value="https://github.com/example/repository/pull/301")
+            provider_call = mock.Mock(return_value=json.dumps(plan))
+            with (
+                mock.patch.object(resolver, "parse_args", return_value=args),
+                mock.patch.object(resolver, "resolver_output_dir", return_value=output_dir),
+                mock.patch.object(resolver, "load_resolver_attempt_state", return_value={"attempts": {}}),
+                mock.patch.object(resolver, "load_task_state", return_value={"tasks": {}}),
+                mock.patch.object(resolver, "evaluate_resolver_work", return_value=eligibility),
+                mock.patch.object(resolver, "call_provider", provider_call),
+                mock.patch.object(resolver, "normalize_rejected_group_edits", return_value=0),
+                mock.patch.object(resolver, "validate_plan_structure_before_revalidation"),
+                mock.patch.object(resolver, "demote_invalid_accepted_groups", return_value=[]),
+                mock.patch.object(resolver, "normalize_overall_decision", return_value=None),
+                mock.patch.object(resolver, "validate_plan"),
+                mock.patch.object(resolver, "apply_edits", return_value="Updated page.\n"),
+                mock.patch.object(resolver, "run_structure_check"),
+                mock.patch.object(resolver, "create_pr", create_pr),
+                mock.patch.object(resolver, "update_pr_branch"),
+                mock.patch.object(resolver, "enable_pr_auto_merge"),
+                mock.patch.object(resolver, "comment_and_close"),
+                mock.patch.object(resolver, "write_resolver_attempt_event"),
+            ):
+                result = resolver.main()
+            self.assertEqual(result, 0)
+            outcome = json.loads((output_dir / "outcome.json").read_text(encoding="utf-8"))
+        return outcome, create_pr, provider_call
+
+    def test_no_open_issue_emits_no_candidate_without_provider_call(self) -> None:
+        eligibility = resolver.ResolverEligibility(
+            candidate_exists=False,
+            issue_number=None,
+            primary_executable=False,
+            fallback_executable=False,
+            capacity_required=False,
+            reserved_specs=(),
+            retry_not_before=None,
+            reason_codes=("no_candidate",),
+        )
+        args = argparse.Namespace(
+            repo="example/repository",
+            issue=None,
+            provider="gemini",
+            model="gemini-3.5-flash",
+            max_completion_tokens=8000,
+            provider_max_attempts=1,
+            dry_run=False,
+            branch_prefix="phase-2/auto-resolve",
+            attempt_state="unused.json",
+            preflight_only=False,
+            fallback_used=False,
+        )
+        with tempfile.TemporaryDirectory() as temporary:
+            output_dir = Path(temporary)
+            with (
+                mock.patch.object(resolver, "parse_args", return_value=args),
+                mock.patch.object(resolver, "resolver_output_dir", return_value=output_dir),
+                mock.patch.object(resolver, "load_resolver_attempt_state", return_value={"attempts": {}}),
+                mock.patch.object(resolver, "load_task_state", return_value={"tasks": {}}),
+                mock.patch.object(resolver, "evaluate_resolver_work", return_value=eligibility),
+                mock.patch.object(resolver, "call_provider") as provider_call,
+            ):
+                result = resolver.main()
+            outcome = json.loads((output_dir / "outcome.json").read_text(encoding="utf-8"))
+
+        self.assertEqual(result, 0)
+        provider_call.assert_not_called()
+        self.assertEqual(outcome["outcome"], "no_candidate")
+        self.assertFalse(outcome["candidate_exists"])
+        self.assertFalse(outcome["request_sent"])
+
+    def test_provider_plan_without_accepted_edits_completes_without_pr(self) -> None:
+        outcome, create_pr, provider_call = self.run_completion(accepted_changes=False)
+
+        self.assertEqual(outcome["outcome"], "completed_no_changes")
+        self.assertTrue(outcome["request_sent"])
+        self.assertTrue(outcome["issue_resolved"])
+        self.assertIsNone(outcome["pr_url"])
+        create_pr.assert_not_called()
+        provider_call.assert_called_once()
+
+    def test_valid_accepted_edits_reach_existing_pr_creation_path(self) -> None:
+        outcome, create_pr, provider_call = self.run_completion(accepted_changes=True)
+
+        self.assertEqual(outcome["outcome"], "completed_changes")
+        self.assertTrue(outcome["request_sent"])
+        self.assertTrue(outcome["issue_resolved"])
+        self.assertEqual(outcome["pr_url"], "https://github.com/example/repository/pull/301")
+        create_pr.assert_called_once()
+        provider_call.assert_called_once()
+
+    def test_eligible_fallback_reaches_provider_and_pr_path(self) -> None:
+        outcome, create_pr, provider_call = self.run_completion(accepted_changes=True, fallback_used=True)
+
+        self.assertEqual(outcome["outcome"], "completed_changes")
+        self.assertEqual(outcome["model"], "gemini-3.6-flash")
+        self.assertTrue(outcome["fallback_used"])
+        self.assertTrue(outcome["request_sent"])
+        provider_call.assert_called_once()
+        create_pr.assert_called_once()
+
+
 class PullRequestReuseTests(unittest.TestCase):
     def test_create_pr_reuses_existing_open_pr_for_deterministic_branch(self) -> None:
         issue = resolver.IssueSnapshot(

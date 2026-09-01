@@ -268,7 +268,8 @@ def build_provider_work_plans(
     lease_seconds: int = DEFAULT_LEASE_SECONDS,
     execution_budget_seconds: int = DEFAULT_EXECUTION_BUDGET_SECONDS,
     max_tasks_per_provider: int = 0,
-    resolver_work_pending: bool = False,
+    resolver_capacity_required: bool = False,
+    resolver_reserved_specs: set[str] | None = None,
     pages: set[str] | None = None,
     agents: set[str] | None = None,
     specs: set[str] | None = None,
@@ -280,6 +281,7 @@ def build_provider_work_plans(
     pages = pages or set()
     agents = agents or set()
     specs = specs or set()
+    resolver_reserved_specs = resolver_reserved_specs or set()
     configured_specs = {slot.spec for slot in registry.configured_slots}
     unknown_specs = specs - configured_specs
     if unknown_specs:
@@ -287,6 +289,11 @@ def build_provider_work_plans(
     unknown_agents = agents - {agent for slot in registry.configured_slots for agent in slot.agents}
     if unknown_agents:
         raise SchedulerError(f"Unknown agent filter(s): {', '.join(sorted(unknown_agents))}.")
+    unknown_reserved_specs = resolver_reserved_specs - configured_specs
+    if unknown_reserved_specs:
+        raise SchedulerError(
+            f"Unknown resolver-reserved provider-model spec(s): {', '.join(sorted(unknown_reserved_specs))}."
+        )
 
     timestamp = format_timestamp(now)
     reset_daily_counters_if_due(quota_state, timestamp=timestamp)
@@ -353,8 +360,11 @@ def build_provider_work_plans(
                     provider=slot.provider,
                     model=slot.model,
                     task_id=task["task_id"],
-                    resolver_work_pending=resolver_work_pending
-                    and (slot.provider, slot.model) in SHARED_RESOLVER_SPECS,
+                    resolver_capacity_required=(
+                        resolver_capacity_required
+                        and slot.spec in resolver_reserved_specs
+                        and (slot.provider, slot.model) in SHARED_RESOLVER_SPECS
+                    ),
                     now=now,
                 )
                 capacity = _slot_capacity(slot, quota_state, remaining_by_group, now=now)
@@ -442,7 +452,8 @@ def parse_args(argv: Sequence[str] | None = None) -> argparse.Namespace:
     parser.add_argument("--lease-seconds", type=int, default=DEFAULT_LEASE_SECONDS)
     parser.add_argument("--execution-budget-seconds", type=int, default=DEFAULT_EXECUTION_BUDGET_SECONDS)
     parser.add_argument("--max-tasks-per-provider", type=int, default=0)
-    parser.add_argument("--resolver-work-pending", action="store_true")
+    parser.add_argument("--resolver-capacity-required", action="store_true")
+    parser.add_argument("--resolver-reserved-spec", action="append", default=[])
     parser.add_argument("--page", action="append", default=[])
     parser.add_argument("--agent", action="append", default=[])
     parser.add_argument("--provider-model-spec", action="append", default=[])
@@ -501,7 +512,8 @@ def main(argv: Sequence[str] | None = None) -> int:
             lease_seconds=args.lease_seconds,
             execution_budget_seconds=args.execution_budget_seconds,
             max_tasks_per_provider=args.max_tasks_per_provider,
-            resolver_work_pending=args.resolver_work_pending,
+            resolver_capacity_required=args.resolver_capacity_required,
+            resolver_reserved_specs=parse_csv_values(args.resolver_reserved_spec),
             pages=parse_csv_values(args.page),
             agents=parse_csv_values(args.agent),
             specs=parse_csv_values(args.provider_model_spec),

@@ -133,6 +133,7 @@ jobs:
             local run_issue="${3:-${ISSUE_INPUT:-}}"
             local run_label="${4:-primary}"
             local run_max_completion_tokens="${5:-8000}"
+            local run_fallback_used="${6:-false}"
 
             local run_issue_label="oldest eligible open issue"
             if [[ -n "$run_issue" ]]; then
@@ -156,48 +157,57 @@ jobs:
               run_args+=(--dry-run)
             fi
 
+            if [[ "$run_fallback_used" == "true" ]]; then
+              run_args+=(--fallback-used)
+            fi
+
+            rm -f .tmp/phase-2/resolver/outcome.json
             PHASE2_CALL_SOURCE="resolver-${run_label}" \
               python scripts/phase-2/resolve_signal_issue.py "${run_args[@]}" --provider-max-attempts 1
           }
 
-          provider_unavailable_issue_number() {
-            local output_dir=".tmp/phase-2/resolver"
-            local marker_pattern="503|ServiceUnavailable|service_unavailable|provider_unavailable|status.*unavailable|temporarily unavailable|server disconnected|disconnected without sending a response"
+          require_outcome() {
+            local outcome_file="$1"
+            [[ -f "$outcome_file" ]] || { echo "::error::Resolver did not emit its structured outcome."; return 1; }
+            jq -e '
+              .schema_version == 1 and
+              (.outcome | IN("completed_changes", "completed_no_changes", "no_candidate", "deferred", "failed")) and
+              (.candidate_exists | type == "boolean") and
+              (.request_sent | type == "boolean") and
+              (.fallback_executable | type == "boolean") and
+              (.issue_resolved | type == "boolean")
+            ' "$outcome_file" > /dev/null
+          }
 
-            [[ -d "$output_dir" ]] || return 1
-
-            local error_file
-            for error_file in "$output_dir"/issue-*-provider-error.txt; do
-              [[ -e "$error_file" ]] || continue
-              if grep -qiE "$marker_pattern" "$error_file"; then
-                local filename
-                local issue_number
-                filename="$(basename "$error_file")"
-                issue_number="${filename#issue-}"
-                issue_number="${issue_number%-provider-error.txt}"
-                if [[ "$issue_number" =~ ^[0-9]+$ ]]; then
-                  printf '%s\n' "$issue_number"
-                  return 0
-                fi
-              fi
-            done
-
-            return 1
+          append_outcome_summary() {
+            local outcome_file="$1"
+            local label="$2"
+            {
+              echo "### Phase 2 resolver ${label} outcome"
+              echo
+              echo "| Field | Value |"
+              echo "|---|---|"
+              echo "| Resolver outcome | $(jq -r '.outcome' "$outcome_file") |"
+              echo "| Candidate issue | $(jq -r '.issue_number // "none"' "$outcome_file") |"
+              echo "| Provider/model | $(jq -r '(.provider + ":" + .model)' "$outcome_file") |"
+              echo "| Provider request sent | $(jq -r '.request_sent' "$outcome_file") |"
+              echo "| Reason code | $(jq -r '.reason_code // "none"' "$outcome_file") |"
+              echo "| Fallback used | $(jq -r '.fallback_used' "$outcome_file") |"
+              echo "| Fallback executable | $(jq -r '.fallback_executable' "$outcome_file") |"
+              echo "| Issue resolved | $(jq -r '.issue_resolved' "$outcome_file") |"
+              echo "| PR created or reused | $(jq -r '.pr_url // "none"' "$outcome_file") |"
+              echo "| Next eligible retry | $(jq -r '.retry_not_before // "none"' "$outcome_file") |"
+              echo
+            } >> "$GITHUB_STEP_SUMMARY"
           }
 
           preserve_primary_provider_error_artifacts() {
             local output_dir=".tmp/phase-2/resolver"
-            local preserved_count=0
             local error_file
-
             for error_file in "$output_dir"/issue-*-provider-error.txt; do
               [[ -e "$error_file" ]] || continue
               cp "$error_file" "${error_file%-provider-error.txt}-primary-provider-error.txt"
-              rm -f "$error_file"
-              preserved_count=$((preserved_count + 1))
             done
-
-            echo "::notice::Preserved ${preserved_count} primary provider-error artifact(s) for post-run inspection."
           }
 
           rm -rf .tmp/phase-2/resolver
@@ -212,48 +222,119 @@ jobs:
             fi
             preflight_output="$(python scripts/phase-2/resolve_signal_issue.py "${preflight_args[@]}")"
             printf '%s\n' "$preflight_output"
-            if grep -q "pending=false" <<<"$preflight_output"; then
-              echo "::notice::Scheduled resolver deferred: no eligible resolver work under current quota/runtime state."
+            candidate="$(printf '%s\n' "$preflight_output" | sed -n 's/^resolver_candidate_exists=//p' | tail -1)"
+            executable="$(printf '%s\n' "$preflight_output" | sed -n 's/^resolver_executable_now=//p' | tail -1)"
+            capacity_required="$(printf '%s\n' "$preflight_output" | sed -n 's/^resolver_capacity_required=//p' | tail -1)"
+            fallback_executable="$(printf '%s\n' "$preflight_output" | sed -n 's/^resolver_fallback_executable=//p' | tail -1)"
+            issue_number="$(printf '%s\n' "$preflight_output" | sed -n 's/^resolver_issue_number=//p' | tail -1)"
+            reason_codes="$(printf '%s\n' "$preflight_output" | sed -n 's/^resolver_reason_codes=//p' | tail -1)"
+            retry_not_before="$(printf '%s\n' "$preflight_output" | sed -n 's/^resolver_retry_not_before=//p' | tail -1)"
+            [[ "$candidate" == "true" || "$candidate" == "false" ]] || { echo "::error::Invalid resolver candidate preflight output."; exit 1; }
+            [[ "$executable" == "true" || "$executable" == "false" ]] || { echo "::error::Invalid resolver execution preflight output."; exit 1; }
+            [[ "$capacity_required" == "true" || "$capacity_required" == "false" ]] || { echo "::error::Invalid resolver capacity preflight output."; exit 1; }
+            [[ "$fallback_executable" == "true" || "$fallback_executable" == "false" ]] || { echo "::error::Invalid resolver fallback preflight output."; exit 1; }
+            if [[ "$executable" == "false" ]]; then
+              preflight_outcome="no_candidate"
+              [[ "$candidate" == "true" ]] && preflight_outcome="deferred"
+              {
+                echo "### Phase 2 resolver preflight"
+                echo
+                echo "| Field | Value |"
+                echo "|---|---|"
+                echo "| Resolver outcome | ${preflight_outcome} |"
+                echo "| Candidate exists | ${candidate} |"
+                echo "| Candidate issue | ${issue_number:-none} |"
+                echo "| Executable now | ${executable} |"
+                echo "| Capacity required | ${capacity_required} |"
+                echo "| Provider/model | ${provider}:${model} |"
+                echo "| Provider request sent | false |"
+                echo "| Reason code | ${reason_codes:-none} |"
+                echo "| Fallback used | false |"
+                echo "| Fallback executable | ${fallback_executable} |"
+                echo "| Issue resolved | false |"
+                echo "| PR created or reused | none |"
+                echo "| Next eligible retry | ${retry_not_before:-none} |"
+              } >> "$GITHUB_STEP_SUMMARY"
+              if [[ "$candidate" == "true" ]]; then
+                echo "::warning::Scheduled resolver deferred with unresolved candidate #${issue_number:-unknown}: reasons=${reason_codes:-unknown}; retry_not_before=${retry_not_before:-none}."
+              else
+                echo "::notice::Scheduled resolver idle: no active resolver candidate exists."
+              fi
               exit 0
             fi
           fi
 
+          primary_exit_code=0
           if run_resolver "$provider" "$model" "${ISSUE_INPUT:-}" "primary" "8000"; then
-            echo "::notice::Primary resolver attempt succeeded: provider=${provider}; model=${model}; fallback_used=false"
-            exit 0
+            primary_exit_code=0
           else
             primary_exit_code=$?
-            echo "::warning::Primary resolver attempt failed with exit code ${primary_exit_code}: provider=${provider}; model=${model}. Checking fallback eligibility."
           fi
+          outcome_file=".tmp/phase-2/resolver/outcome.json"
+          require_outcome "$outcome_file"
+          append_outcome_summary "$outcome_file" "primary"
+          primary_outcome="$(jq -r '.outcome' "$outcome_file")"
+          primary_request_sent="$(jq -r '.request_sent' "$outcome_file")"
+          fallback_executable="$(jq -r '.fallback_executable' "$outcome_file")"
+          fallback_issue="$(jq -r '.issue_number // empty' "$outcome_file")"
 
-          fallback_issue=""
+          case "$primary_outcome" in
+            completed_changes|completed_no_changes)
+              echo "::notice::Primary resolver completed: outcome=${primary_outcome}; provider=${provider}; model=${model}; fallback_used=false"
+              exit 0
+              ;;
+            no_candidate)
+              echo "::notice::Resolver idle: no active candidate exists."
+              exit 0
+              ;;
+            failed)
+              echo "::error::Primary resolver failed: provider=${provider}; model=${model}."
+              [[ "$primary_exit_code" -ne 0 ]] && exit "$primary_exit_code" || exit 1
+              ;;
+            deferred)
+              ;;
+          esac
 
-          if [[ "$provider" != "gemini" ]]; then
-            echo "::error::Fallback skipped: provider=${provider}; fallback is only configured for primary Gemini resolver runs."
-            exit "$primary_exit_code"
-          fi
-
-          if ! fallback_issue="$(provider_unavailable_issue_number)"; then
-            echo "::error::Fallback skipped: primary failure did not match provider-unavailability markers, or no provider-error artifact was produced."
-            exit "$primary_exit_code"
-          fi
-
-          if [[ "$provider" == "$fallback_provider" && "$model" == "$fallback_model" ]]; then
-            echo "::error::Fallback skipped: selected primary provider/model already matches the configured fallback, so a duplicate provider call is not allowed."
-            exit "$primary_exit_code"
-          fi
-
-          echo "::warning::Primary Gemini resolver model failed with provider unavailability for issue #${fallback_issue}. Running Gemini fallback once: ${fallback_model}"
-          preserve_primary_provider_error_artifacts
-
-          if run_resolver "$fallback_provider" "$fallback_model" "${ISSUE_INPUT:-$fallback_issue}" "fallback" "$fallback_max_completion_tokens"; then
-            echo "::notice::Fallback resolver attempt succeeded: provider=${fallback_provider}; model=${fallback_model}; fallback_used=true; issue=${ISSUE_INPUT:-$fallback_issue}"
+          if [[ "$fallback_executable" != "true" ]]; then
+            if [[ "$dry_run" == "true" ]]; then
+              echo "::notice::Resolver dry run completed without resolving the issue."
+            else
+              echo "::warning::Resolver deferred without completing resolution; issue=${fallback_issue:-none}; request_sent=${primary_request_sent}."
+            fi
             exit 0
+          fi
+          if [[ "$provider" != "gemini" || "$provider" == "$fallback_provider" && "$model" == "$fallback_model" ]]; then
+            echo "::error::Structured outcome requested a fallback for an unsupported primary provider/model."
+            exit 1
+          fi
+          [[ "$fallback_issue" =~ ^[0-9]+$ ]] || { echo "::error::Fallback outcome did not identify a candidate issue."; exit 1; }
+
+          echo "::warning::Primary resolution deferred for issue #${fallback_issue}. Running eligible Gemini fallback once: ${fallback_model}"
+          cp "$outcome_file" .tmp/phase-2/resolver/primary-outcome.json
+          preserve_primary_provider_error_artifacts
+          fallback_exit_code=0
+          if run_resolver "$fallback_provider" "$fallback_model" "$fallback_issue" "fallback" "$fallback_max_completion_tokens" "true"; then
+            fallback_exit_code=0
           else
             fallback_exit_code=$?
-            echo "::error::Fallback resolver attempt failed with exit code ${fallback_exit_code}: provider=${fallback_provider}; model=${fallback_model}; issue=${ISSUE_INPUT:-$fallback_issue}"
-            exit "$fallback_exit_code"
           fi
+          require_outcome "$outcome_file"
+          append_outcome_summary "$outcome_file" "fallback"
+          fallback_outcome="$(jq -r '.outcome' "$outcome_file")"
+          case "$fallback_outcome" in
+            completed_changes|completed_no_changes)
+              echo "::notice::Fallback resolver completed: outcome=${fallback_outcome}; provider=${fallback_provider}; model=${fallback_model}; issue=${fallback_issue}"
+              exit 0
+              ;;
+            no_candidate|deferred)
+              echo "::warning::Fallback resolver did not complete a resolution: outcome=${fallback_outcome}; provider=${fallback_provider}; model=${fallback_model}; issue=${fallback_issue}"
+              exit 0
+              ;;
+            failed)
+              echo "::error::Fallback resolver failed: provider=${fallback_provider}; model=${fallback_model}; issue=${fallback_issue}"
+              [[ "$fallback_exit_code" -ne 0 ]] && exit "$fallback_exit_code" || exit 1
+              ;;
+          esac
 
       - name: Persist resolver quota state
         if: always()

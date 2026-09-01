@@ -211,6 +211,66 @@ class LegacyProviderBlockRepairTests(unittest.TestCase):
         self.assertEqual(first, [slot_id])
         self.assertEqual(second, [])
 
+    def test_clears_only_the_audited_obsolete_recheck_authorization(self) -> None:
+        slot_id, task_id = next(iter(repair_module.LEGACY_STALE_RECHECK_AUTHORIZATIONS.items()))
+        provider, model = slot_id.split(":", 1)
+        state = {
+            "runtime_slots": {
+                slot_id: {
+                    "provider": provider,
+                    "model": model,
+                    "status": "temporarily_unavailable",
+                    "authorized_recheck_task_id": task_id,
+                }
+            }
+        }
+        task_state = {
+            "tasks": {
+                task_id: {
+                    "task_id": task_id,
+                    "identity": {"provider": provider, "model": model},
+                    "status": "obsolete",
+                    "lease": None,
+                }
+            }
+        }
+
+        first = repair_module.repair_stale_recheck_authorizations(state, task_state)
+        second = repair_module.repair_stale_recheck_authorizations(state, task_state)
+
+        self.assertEqual(first, [slot_id])
+        self.assertEqual(second, [])
+        self.assertIsNone(state["runtime_slots"][slot_id]["authorized_recheck_task_id"])
+
+    def test_preserves_recheck_authorization_for_a_nonobsolete_task(self) -> None:
+        slot_id, task_id = next(iter(repair_module.LEGACY_STALE_RECHECK_AUTHORIZATIONS.items()))
+        provider, model = slot_id.split(":", 1)
+        state = {
+            "runtime_slots": {
+                slot_id: {
+                    "provider": provider,
+                    "model": model,
+                    "status": "temporarily_unavailable",
+                    "authorized_recheck_task_id": task_id,
+                }
+            }
+        }
+        task_state = {
+            "tasks": {
+                task_id: {
+                    "task_id": task_id,
+                    "identity": {"provider": provider, "model": model},
+                    "status": "pending",
+                    "lease": None,
+                }
+            }
+        }
+
+        repaired = repair_module.repair_stale_recheck_authorizations(state, task_state)
+
+        self.assertEqual(repaired, [])
+        self.assertEqual(state["runtime_slots"][slot_id]["authorized_recheck_task_id"], task_id)
+
     def test_repairs_the_two_originating_task_records_to_correct_failure_kinds(self) -> None:
         task_ids = set(repair_module.LEGACY_TASK_RECLASSIFICATIONS)
         task_state = {"tasks": {task_id: self.blocked_task(task_id) for task_id in task_ids}}
@@ -278,8 +338,15 @@ class ResolverWorkflowRegressionTests(unittest.TestCase):
         self.assertIn('--task-state "{worktree}/data/phase-2/task-state.json"', workflow)
         self.assertIn('if [[ "$GITHUB_EVENT_NAME" == "schedule" ]]; then', workflow)
         self.assertIn("--preflight-only", workflow)
-        self.assertIn("pending=false", workflow)
+        self.assertIn("resolver_executable_now", workflow)
+        self.assertIn("resolver_capacity_required", workflow)
+        self.assertIn("outcome.json", workflow)
+        self.assertNotIn("Fallback resolver attempt succeeded", workflow)
         self.assertIn("Scheduled resolver deferred", workflow)
+        self.assertIn("| Provider request sent | false |", workflow)
+        self.assertIn("| Fallback executable | ${fallback_executable} |", workflow)
+        self.assertIn("request_sent=${primary_request_sent}", workflow)
+        self.assertIn("preserve_primary_provider_error_artifacts", workflow)
 
     def test_manual_dry_run_does_not_run_state_repair_writer(self) -> None:
         workflow = (REPO_ROOT / ".github" / "workflows" / "phase-2-signal-resolver.yml").read_text(encoding="utf-8")

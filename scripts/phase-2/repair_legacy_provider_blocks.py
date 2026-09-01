@@ -19,6 +19,14 @@ LEGACY_PROVIDER_POLICY_INCIDENTS: dict[str, str] = {
     "groq": "2026-08-20T09:52:12Z",
 }
 
+# This recheck authorization survived after its task was reconciled to
+# `obsolete`, so no later task could acquire the one permitted slot recheck.
+# Matching the exact slot and task identity keeps the recovery narrow and
+# preserves every real quota observation and resolver-attempt record.
+LEGACY_STALE_RECHECK_AUTHORIZATIONS: dict[str, str] = {
+    "gemini:gemini-3.5-flash": "5da64a6a04362cf9612afaee88eeac814a99f1cc3440522d392382a9782d963a",
+}
+
 # The Groq incident originated from a deterministic request-size/configuration
 # failure on this slot. The other Groq slots were poisoned only because the old
 # classifier incorrectly promoted the failure to provider scope.
@@ -160,6 +168,42 @@ def repair_legacy_task_blocks(task_state: dict[str, Any]) -> list[str]:
     return sorted(repaired)
 
 
+def repair_stale_recheck_authorizations(
+    state: dict[str, Any],
+    task_state: dict[str, Any],
+) -> list[str]:
+    """Clear only audited recheck locks whose exact source task is obsolete."""
+    runtime_slots = state.get("runtime_slots")
+    tasks = task_state.get("tasks")
+    if not isinstance(runtime_slots, dict) or not isinstance(tasks, dict):
+        return []
+    repaired: list[str] = []
+    for slot_id, task_id in LEGACY_STALE_RECHECK_AUTHORIZATIONS.items():
+        runtime = runtime_slots.get(slot_id)
+        task = tasks.get(task_id)
+        if not isinstance(runtime, dict) or not isinstance(task, dict):
+            continue
+        provider, model = slot_id.split(":", 1)
+        identity = task.get("identity")
+        if not isinstance(identity, dict):
+            continue
+        if not (
+            runtime.get("provider") == provider
+            and runtime.get("model") == model
+            and runtime.get("status") == "temporarily_unavailable"
+            and runtime.get("authorized_recheck_task_id") == task_id
+            and task.get("task_id") == task_id
+            and task.get("status") == "obsolete"
+            and task.get("lease") is None
+            and identity.get("provider") == provider
+            and identity.get("model") == model
+        ):
+            continue
+        runtime["authorized_recheck_task_id"] = None
+        repaired.append(slot_id)
+    return sorted(repaired)
+
+
 def write_state(path: Path, state: dict[str, Any]) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     temporary_path: Path | None = None
@@ -213,16 +257,19 @@ def main(argv: Sequence[str] | None = None) -> int:
 
     repaired_slots = repair_legacy_provider_blocks(state)
     repaired_tasks = repair_legacy_task_blocks(task_state)
+    repaired_rechecks = repair_stale_recheck_authorizations(state, task_state)
     if args.check:
         print(
             "Legacy provider runtime repair check: "
             f"runtime_matches={len(repaired_slots)}; runtime_slots={','.join(repaired_slots) or 'none'}; "
-            f"task_matches={len(repaired_tasks)}; tasks={','.join(repaired_tasks) or 'none'}."
+            f"task_matches={len(repaired_tasks)}; tasks={','.join(repaired_tasks) or 'none'}; "
+            f"stale_recheck_matches={len(repaired_rechecks)}; "
+            f"stale_recheck_slots={','.join(repaired_rechecks) or 'none'}."
         )
         return 0
 
     try:
-        if repaired_slots:
+        if repaired_slots or repaired_rechecks:
             write_state(state_path, state)
         if repaired_tasks:
             write_state(task_state_path, task_state)
@@ -233,7 +280,9 @@ def main(argv: Sequence[str] | None = None) -> int:
     print(
         "Legacy provider runtime repair: "
         f"runtime_repaired={len(repaired_slots)}; runtime_slots={','.join(repaired_slots) or 'none'}; "
-        f"tasks_repaired={len(repaired_tasks)}; tasks={','.join(repaired_tasks) or 'none'}."
+        f"tasks_repaired={len(repaired_tasks)}; tasks={','.join(repaired_tasks) or 'none'}; "
+        f"stale_rechecks_repaired={len(repaired_rechecks)}; "
+        f"stale_recheck_slots={','.join(repaired_rechecks) or 'none'}."
     )
     return 0
 

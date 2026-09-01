@@ -674,7 +674,7 @@ def slot_eligibility(
     provider: str,
     model: str,
     task_id: str | None,
-    resolver_work_pending: bool,
+    resolver_capacity_required: bool,
     now: datetime,
 ) -> tuple[bool, str]:
     spec = f"{provider}:{model}"
@@ -693,7 +693,7 @@ def slot_eligibility(
         group = state["quota_groups"][group_id]
         if group["status"] == "deferred_quota" and _cooldown_active(group["retry_not_before"], now):
             return False, f"quota-group-deferred:{group_id}"
-    if resolver_work_pending and (provider, model) in SHARED_RESOLVER_SPECS:
+    if resolver_capacity_required and (provider, model) in SHARED_RESOLVER_SPECS:
         return False, "reserved-for-eligible-resolver-work"
     return True, "eligible-recheck" if runtime["status"] == "temporarily_unavailable" else "eligible"
 
@@ -759,7 +759,7 @@ def parse_args(argv: Sequence[str] | None = None) -> argparse.Namespace:
     parser.add_argument("--provider")
     parser.add_argument("--model")
     parser.add_argument("--task-id")
-    parser.add_argument("--resolver-work-pending", action="store_true")
+    parser.add_argument("--resolver-capacity-required", action="store_true")
     parser.add_argument("--timestamp")
     parser.add_argument("--openrouter-request-limit-day", type=int, default=50)
     return parser.parse_args(argv)
@@ -858,7 +858,7 @@ def main(argv: Sequence[str] | None = None) -> int:
             provider=args.provider,
             model=args.model,
             task_id=args.task_id,
-            resolver_work_pending=args.resolver_work_pending,
+            resolver_capacity_required=args.resolver_capacity_required,
             now=now,
         )
         print(f"eligible={str(eligible).lower()}; reason={reason}")

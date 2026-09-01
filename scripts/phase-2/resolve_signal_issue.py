@@ -39,7 +39,7 @@ from provider_model_registry import (  # noqa: E402
     load_registry,
     require_executable_slot,
 )
-from provider_runtime import record_provider_event, record_provider_failure  # noqa: E402
+from provider_runtime import parse_timestamp, record_provider_event, record_provider_failure  # noqa: E402
 from quota_state import (  # noqa: E402
     DEFAULT_EVENT_DIRECTORY,
     DEFAULT_STATE_PATH,
@@ -121,6 +121,19 @@ RESOLVER_FALLBACK_MAX_COMPLETION_TOKENS = 6000
 RESOLVER_VALIDATOR_VERSION = "resolver-plan-validator-v1.2.3"
 RESOLVER_REQUEST_CONFIG_VERSION = "resolver-request-v1"
 DEFAULT_TASK_STATE_PATH = Path("data/phase-2/task-state.json")
+RESOLVER_OUTCOME_SCHEMA_VERSION = 1
+RESOLVER_OUTCOMES = {
+    "completed_changes",
+    "completed_no_changes",
+    "no_candidate",
+    "deferred",
+    "failed",
+}
+TEMPORARY_SLOT_REASONS = {
+    "slot-cooldown",
+    "slot-recheck-required",
+    "provider-blocked-pending-audited-validation",
+}
 
 
 class ResolverError(RuntimeError):
@@ -183,6 +196,22 @@ class ResolverAttemptContext:
     attempt_id: str
 
 
+@dataclass(frozen=True)
+class ResolverEligibility:
+    """Canonical preflight and execution view of the oldest active resolver candidate."""
+
+    candidate_exists: bool
+    issue_number: int | None
+    primary_executable: bool
+    fallback_executable: bool
+    capacity_required: bool
+    reserved_specs: tuple[str, ...]
+    retry_not_before: str | None
+    reason_codes: tuple[str, ...]
+    primary_context: ResolverAttemptContext | None = None
+    fallback_context: ResolverAttemptContext | None = None
+
+
 def positive_int(value: str) -> int:
     try:
         parsed = int(value)
@@ -229,7 +258,12 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument(
         "--preflight-only",
         action="store_true",
-        help="Report whether eligible resolver work should reserve either shared provider-model slot.",
+        help="Report canonical resolver candidate, execution, and capacity eligibility.",
+    )
+    parser.add_argument(
+        "--fallback-used",
+        action="store_true",
+        help=argparse.SUPPRESS,
     )
     return parser.parse_args()
 
@@ -728,28 +762,52 @@ def call_provider(
     raise ResolverError(f"Unsupported provider: {provider}")  # pragma: no cover - guarded above.
 
 
+def resolver_slot_status(
+    provider: str,
+    model: str,
+    *,
+    now: datetime | None = None,
+) -> tuple[bool, str, str | None]:
+    try:
+        check_at = now or datetime.now(timezone.utc)
+        registry = load_registry(DEFAULT_REGISTRY_PATH)
+        quota = load_quota_state(DEFAULT_STATE_PATH, registry)
+        pending_events = load_event_files(Path(os.getenv("PHASE2_QUOTA_EVENT_DIR", str(DEFAULT_EVENT_DIRECTORY))))
+        if pending_events:
+            quota, _ = aggregate_events(quota, pending_events, registry)
+        eligible, reason = slot_eligibility(
+            quota,
+            provider=provider,
+            model=model,
+            task_id=None,
+            resolver_capacity_required=False,
+            now=check_at,
+        )
+        retry_not_before = None
+        if reason in {"slot-cooldown", "slot-recheck-required"}:
+            value = quota["runtime_slots"][f"{provider}:{model}"].get("retry_not_before")
+            retry_not_before = str(value) if value else None
+        elif reason.startswith("quota-group-deferred:"):
+            group_id = reason.split(":", 1)[1]
+            value = quota["quota_groups"][group_id].get("retry_not_before")
+            retry_not_before = str(value) if value else None
+        if retry_not_before:
+            parsed_retry = parse_timestamp(retry_not_before)
+            if parsed_retry <= check_at:
+                retry_not_before = None
+        return eligible, reason, retry_not_before
+    except (OSError, QuotaStateError, ValueError) as exc:
+        raise ResolverError(f"Could not evaluate resolver quota eligibility: {exc}") from exc
+
+
 def resolver_slot_eligibility(
     provider: str,
     model: str,
     *,
     now: datetime | None = None,
 ) -> tuple[bool, str]:
-    try:
-        registry = load_registry(DEFAULT_REGISTRY_PATH)
-        quota = load_quota_state(DEFAULT_STATE_PATH, registry)
-        pending_events = load_event_files(Path(os.getenv("PHASE2_QUOTA_EVENT_DIR", str(DEFAULT_EVENT_DIRECTORY))))
-        if pending_events:
-            quota, _ = aggregate_events(quota, pending_events, registry)
-        return slot_eligibility(
-            quota,
-            provider=provider,
-            model=model,
-            task_id=None,
-            resolver_work_pending=False,
-            now=now or datetime.now(timezone.utc),
-        )
-    except (OSError, QuotaStateError, ValueError) as exc:
-        raise ResolverError(f"Could not evaluate resolver quota eligibility: {exc}") from exc
+    eligible, reason, _retry_not_before = resolver_slot_status(provider, model, now=now)
+    return eligible, reason
 
 
 def attempt_context_for_issue(
@@ -801,50 +859,150 @@ def _fallback_remains_eligible(
     return eligible
 
 
-def eligible_resolver_work_exists(repo: str, *, now: datetime | None = None) -> bool:
-    """Return whether active, non-duplicate work should reserve a shared slot."""
+def _attempt_block_reason(record: Mapping[str, Any] | None, *, fallback: bool) -> str | None:
+    if not record or record.get("status") not in BLOCKING_ATTEMPT_STATUSES:
+        return None
+    if fallback:
+        return "fallback_not_eligible"
+    if record.get("status") == "provider_failure" and record.get("failure_kind") == "provider_unavailable":
+        return "provider_temporarily_unavailable"
+    return "attempt_already_active"
+
+
+def _slot_reason_code(reason: str, *, primary: bool) -> str:
+    if reason == "slot-recheck-required":
+        return "primary_slot_recheck_required" if primary else "fallback_not_eligible"
+    if reason == "slot-cooldown" or reason.startswith("quota-group-deferred:"):
+        return "quota_retry_not_before"
+    if reason == "provider-blocked-pending-audited-validation":
+        return "runtime_validation_required"
+    if reason in {"blocked_provider_policy", "blocked_execution_configuration"}:
+        return "runtime_validation_required"
+    return "provider_temporarily_unavailable"
+
+
+def evaluate_resolver_work(
+    repo: str,
+    *,
+    issue: int | None = None,
+    now: datetime | None = None,
+    attempt_state_path: Path = DEFAULT_RESOLVER_ATTEMPT_STATE_PATH,
+    primary_max_completion_tokens: int = 8000,
+    primary_max_attempts: int = 1,
+    fallback_max_completion_tokens: int = RESOLVER_FALLBACK_MAX_COMPLETION_TOKENS,
+    fallback_max_attempts: int = 1,
+) -> ResolverEligibility:
+    """Evaluate the oldest active candidate once for both preflight and execution."""
     check_at = now or datetime.now(timezone.utc)
     try:
-        attempt_state = load_resolver_attempt_state(DEFAULT_RESOLVER_ATTEMPT_STATE_PATH)
+        attempt_state = load_resolver_attempt_state(attempt_state_path)
         task_state = load_task_state(DEFAULT_TASK_STATE_PATH)
         primary_provider, primary_model = RESOLVER_PRIMARY_SPEC
-        for number in open_signal_issue_candidates(repo):
-            issue = read_issue(repo, number)
-            context = attempt_context_for_issue(
-                issue=issue,
+        fallback_provider, fallback_model = RESOLVER_FALLBACK_SPEC
+        candidate_numbers = [issue] if issue is not None else open_signal_issue_candidates(repo)
+        for number in candidate_numbers:
+            issue_snapshot = read_issue(repo, number)
+            primary_context = attempt_context_for_issue(
+                issue=issue_snapshot,
                 provider=primary_provider,
                 model=primary_model,
-                max_completion_tokens=8000,
-                max_attempts=1,
+                max_completion_tokens=primary_max_completion_tokens,
+                max_attempts=primary_max_attempts,
                 task_state=task_state,
             )
-            if context is None:
+            if primary_context is None:
                 continue
-            primary_record = attempt_record(attempt_state, context.identity)
+            primary_record = attempt_record(attempt_state, primary_context.identity)
             if primary_record and primary_record["status"] in {"plan_invalid", "execution_failure", "completed"}:
                 continue
-            if primary_record and primary_record["status"] == "provider_failure":
-                if primary_record.get("failure_kind") != "provider_unavailable":
-                    continue
-                if _fallback_remains_eligible(
-                    context=context,
-                    attempt_state=attempt_state,
-                    now=check_at,
-                ):
-                    return True
-                continue
-            primary_eligible, primary_reason = resolver_slot_eligibility(primary_provider, primary_model, now=check_at)
-            if primary_eligible:
-                return True
-            if primary_reason in {"slot-cooldown", "slot-recheck-required"} and _fallback_remains_eligible(
-                context=context,
-                attempt_state=attempt_state,
-                now=check_at,
+            if (
+                primary_record
+                and primary_record["status"] == "provider_failure"
+                and primary_record.get("failure_kind") != "provider_unavailable"
             ):
-                return True
-        return False
+                continue
+            fallback_context = build_resolver_attempt_context(
+                issue=primary_context.issue,
+                page_text=primary_context.page_text,
+                prompt=primary_context.prompt,
+                active_comments=primary_context.active_comments,
+                provider=fallback_provider,
+                model=fallback_model,
+                max_completion_tokens=fallback_max_completion_tokens,
+                max_attempts=fallback_max_attempts,
+            )
+            fallback_record = attempt_record(attempt_state, fallback_context.identity)
+            primary_block_reason = _attempt_block_reason(primary_record, fallback=False)
+            fallback_block_reason = _attempt_block_reason(fallback_record, fallback=True)
+            primary_slot_eligible, primary_slot_reason, primary_retry = resolver_slot_status(
+                primary_provider,
+                primary_model,
+                now=check_at,
+            )
+            fallback_slot_eligible, fallback_slot_reason, fallback_retry = resolver_slot_status(
+                fallback_provider,
+                fallback_model,
+                now=check_at,
+            )
+            primary_executable = primary_block_reason is None and primary_slot_eligible
+            primary_temporarily_unavailable = (
+                primary_block_reason == "provider_temporarily_unavailable"
+                or primary_slot_reason in TEMPORARY_SLOT_REASONS
+                or primary_slot_reason.startswith("quota-group-deferred:")
+            )
+            fallback_executable = (
+                not primary_executable
+                and primary_temporarily_unavailable
+                and fallback_block_reason is None
+                and fallback_slot_eligible
+            )
+            reasons: list[str] = []
+            if primary_block_reason is not None:
+                reasons.append(primary_block_reason)
+            elif not primary_slot_eligible:
+                reasons.append(_slot_reason_code(primary_slot_reason, primary=True))
+            if not primary_executable and not fallback_executable:
+                if fallback_block_reason is not None:
+                    reasons.append(fallback_block_reason)
+                elif primary_temporarily_unavailable and not fallback_slot_eligible:
+                    reasons.append(_slot_reason_code(fallback_slot_reason, primary=False))
+                else:
+                    reasons.append("fallback_not_eligible")
+            reserved_specs: list[str] = []
+            if primary_executable:
+                reserved_specs.append(f"{primary_provider}:{primary_model}")
+            if fallback_executable:
+                reserved_specs.append(f"{fallback_provider}:{fallback_model}")
+            retries = [value for value in (primary_retry, fallback_retry) if value]
+            return ResolverEligibility(
+                candidate_exists=True,
+                issue_number=number,
+                primary_executable=primary_executable,
+                fallback_executable=fallback_executable,
+                capacity_required=bool(reserved_specs),
+                reserved_specs=tuple(reserved_specs),
+                retry_not_before=min(retries) if retries else None,
+                reason_codes=tuple(dict.fromkeys(reasons)),
+                primary_context=primary_context,
+                fallback_context=fallback_context,
+            )
+        return ResolverEligibility(
+            candidate_exists=False,
+            issue_number=None,
+            primary_executable=False,
+            fallback_executable=False,
+            capacity_required=False,
+            reserved_specs=(),
+            retry_not_before=None,
+            reason_codes=("no_candidate",),
+        )
     except (OSError, QuotaStateError, ValueError) as exc:
         raise ResolverError(f"Could not evaluate resolver preflight eligibility: {exc}") from exc
+
+
+def eligible_resolver_work_exists(repo: str, *, now: datetime | None = None) -> bool:
+    """Compatibility wrapper for callers that only need the capacity decision."""
+    return evaluate_resolver_work(repo, now=now).capacity_required
 
 
 def parse_json(text: str) -> dict[str, Any]:
@@ -1846,70 +2004,220 @@ def write_json_artifact(output_dir: Path, filename: str, value: Any) -> None:
     (output_dir / filename).write_text(json.dumps(value, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
 
 
+def write_resolver_outcome(
+    output_dir: Path,
+    *,
+    outcome: str,
+    issue_number_value: int | None,
+    candidate_exists: bool,
+    request_sent: bool,
+    provider: str,
+    model: str,
+    reason_code: str | None,
+    retry_not_before: str | None,
+    pr_url: str | None,
+    fallback_used: bool,
+    fallback_executable: bool,
+    issue_resolved: bool,
+) -> dict[str, Any]:
+    if outcome not in RESOLVER_OUTCOMES:
+        raise ResolverError(f"Unsupported resolver outcome: {outcome}.")
+    if not request_sent and outcome in {"completed_changes", "completed_no_changes"}:
+        raise ResolverError("A completed resolver outcome requires a provider request.")
+    if outcome == "no_candidate" and candidate_exists:
+        raise ResolverError("A no_candidate resolver outcome cannot report an active candidate.")
+    if outcome in {"completed_changes", "completed_no_changes"} and not issue_resolved:
+        raise ResolverError("A completed resolver outcome requires a resolved issue.")
+    payload = {
+        "schema_version": RESOLVER_OUTCOME_SCHEMA_VERSION,
+        "outcome": outcome,
+        "issue_number": issue_number_value,
+        "candidate_exists": candidate_exists,
+        "request_sent": request_sent,
+        "provider": provider,
+        "model": model,
+        "reason_code": reason_code,
+        "retry_not_before": retry_not_before,
+        "pr_url": pr_url,
+        "fallback_used": fallback_used,
+        "fallback_executable": fallback_executable,
+        "issue_resolved": issue_resolved,
+    }
+    write_json_artifact(output_dir, "outcome.json", payload)
+    print(
+        "resolver_outcome="
+        f"{outcome}; issue={issue_number_value or 'none'}; request_sent={str(request_sent).lower()}; "
+        f"reason={reason_code or 'none'}"
+    )
+    return payload
+
+
+def print_resolver_preflight(eligibility: ResolverEligibility) -> None:
+    values = {
+        "resolver_candidate_exists": eligibility.candidate_exists,
+        "resolver_executable_now": eligibility.primary_executable or eligibility.fallback_executable,
+        "resolver_capacity_required": eligibility.capacity_required,
+        "resolver_primary_executable": eligibility.primary_executable,
+        "resolver_fallback_executable": eligibility.fallback_executable,
+    }
+    for key, value in values.items():
+        print(f"{key}={str(value).lower()}")
+    print(f"resolver_issue_number={eligibility.issue_number or ''}")
+    print(f"resolver_capacity_specs={','.join(eligibility.reserved_specs)}")
+    print(f"resolver_retry_not_before={eligibility.retry_not_before or ''}")
+    print(f"resolver_reason_codes={','.join(eligibility.reason_codes)}")
+
+
 def main() -> int:
     args = parse_args()
+    output_dir: Path | None = None
+    selected_issue_number: int | None = None
+    candidate_exists = False
+    request_sent = False
     try:
         if getattr(args, "preflight_only", False):
-            pending = eligible_resolver_work_exists(args.repo)
-            print(f"resolver_work_pending={str(pending).lower()}")
+            target_issue = issue_number(args.issue) if getattr(args, "issue", None) else None
+            eligibility = evaluate_resolver_work(
+                args.repo,
+                issue=target_issue,
+                attempt_state_path=Path(getattr(args, "attempt_state", str(DEFAULT_RESOLVER_ATTEMPT_STATE_PATH))),
+            )
+            print_resolver_preflight(eligibility)
             return 0
+        output_dir = resolver_output_dir()
+        (output_dir / "outcome.json").unlink(missing_ok=True)
         attempt_state_path = Path(getattr(args, "attempt_state", str(DEFAULT_RESOLVER_ATTEMPT_STATE_PATH)))
         attempt_state = load_resolver_attempt_state(attempt_state_path)
         task_state = load_task_state(DEFAULT_TASK_STATE_PATH)
-        candidate_numbers = [issue_number(args.issue)] if args.issue else open_signal_issue_candidates(args.repo)
         context: ResolverAttemptContext | None = None
-        replay_fallback = False
-        for number in candidate_numbers:
-            issue = read_issue(args.repo, number)
-            candidate = attempt_context_for_issue(
-                issue=issue,
+        fallback_executable = False
+        retry_not_before: str | None = None
+        deferred_reason = "fallback_not_eligible"
+        target_issue = issue_number(args.issue) if getattr(args, "issue", None) else None
+        selected_spec = (args.provider, args.model)
+        orchestrated_fallback = selected_spec == RESOLVER_FALLBACK_SPEC and getattr(args, "fallback_used", False)
+        if selected_spec == RESOLVER_PRIMARY_SPEC or orchestrated_fallback:
+            eligibility_kwargs: dict[str, int] = {}
+            if selected_spec == RESOLVER_PRIMARY_SPEC:
+                eligibility_kwargs = {
+                    "primary_max_completion_tokens": args.max_completion_tokens,
+                    "primary_max_attempts": args.provider_max_attempts,
+                }
+            else:
+                eligibility_kwargs = {
+                    "fallback_max_completion_tokens": args.max_completion_tokens,
+                    "fallback_max_attempts": args.provider_max_attempts,
+                }
+            eligibility = evaluate_resolver_work(
+                args.repo,
+                issue=target_issue,
+                attempt_state_path=attempt_state_path,
+                **eligibility_kwargs,
+            )
+            candidate_exists = eligibility.candidate_exists
+            selected_issue_number = eligibility.issue_number
+            fallback_executable = eligibility.fallback_executable
+            retry_not_before = eligibility.retry_not_before
+            deferred_reason = eligibility.reason_codes[0] if eligibility.reason_codes else "fallback_not_eligible"
+            if not candidate_exists:
+                write_resolver_outcome(
+                    output_dir,
+                    outcome="no_candidate",
+                    issue_number_value=None,
+                    candidate_exists=False,
+                    request_sent=False,
+                    provider=args.provider,
+                    model=args.model,
+                    reason_code="no_candidate",
+                    retry_not_before=None,
+                    pr_url=None,
+                    fallback_used=getattr(args, "fallback_used", False),
+                    fallback_executable=False,
+                    issue_resolved=False,
+                )
+                return 0
+            route_executable = (
+                eligibility.primary_executable
+                if selected_spec == RESOLVER_PRIMARY_SPEC
+                else eligibility.fallback_executable
+            )
+            context = (
+                eligibility.primary_context if selected_spec == RESOLVER_PRIMARY_SPEC else eligibility.fallback_context
+            )
+            if not route_executable:
+                if selected_spec == RESOLVER_FALLBACK_SPEC:
+                    deferred_reason = "fallback_not_eligible"
+                    fallback_executable = False
+                write_resolver_outcome(
+                    output_dir,
+                    outcome="deferred",
+                    issue_number_value=selected_issue_number,
+                    candidate_exists=True,
+                    request_sent=False,
+                    provider=args.provider,
+                    model=args.model,
+                    reason_code=deferred_reason,
+                    retry_not_before=retry_not_before,
+                    pr_url=None,
+                    fallback_used=getattr(args, "fallback_used", False),
+                    fallback_executable=fallback_executable,
+                    issue_resolved=False,
+                )
+                return 0
+        else:
+            candidate_numbers = [target_issue] if target_issue is not None else open_signal_issue_candidates(args.repo)
+            for number in candidate_numbers:
+                issue_snapshot = read_issue(args.repo, number)
+                candidate = attempt_context_for_issue(
+                    issue=issue_snapshot,
+                    provider=args.provider,
+                    model=args.model,
+                    max_completion_tokens=args.max_completion_tokens,
+                    max_attempts=args.provider_max_attempts,
+                    task_state=task_state,
+                )
+                if candidate is None:
+                    continue
+                candidate_exists = True
+                selected_issue_number = number
+                record = attempt_record(attempt_state, candidate.identity)
+                if record and record["status"] in BLOCKING_ATTEMPT_STATUSES:
+                    deferred_reason = _attempt_block_reason(record, fallback=False) or "attempt_already_active"
+                    break
+                eligible, slot_reason, retry_not_before = resolver_slot_status(args.provider, args.model)
+                if not eligible:
+                    deferred_reason = _slot_reason_code(slot_reason, primary=True)
+                    break
+                context = candidate
+                break
+        if context is None:
+            write_resolver_outcome(
+                output_dir,
+                outcome="deferred" if candidate_exists else "no_candidate",
+                issue_number_value=selected_issue_number,
+                candidate_exists=candidate_exists,
+                request_sent=False,
                 provider=args.provider,
                 model=args.model,
-                max_completion_tokens=args.max_completion_tokens,
-                max_attempts=args.provider_max_attempts,
-                task_state=task_state,
+                reason_code=deferred_reason if candidate_exists else "no_candidate",
+                retry_not_before=retry_not_before,
+                pr_url=None,
+                fallback_used=getattr(args, "fallback_used", False),
+                fallback_executable=False,
+                issue_resolved=False,
             )
-            if candidate is None:
-                continue
-            record = attempt_record(attempt_state, candidate.identity)
-            if record and record["status"] in BLOCKING_ATTEMPT_STATUSES:
-                if (
-                    (args.provider, args.model) == RESOLVER_PRIMARY_SPEC
-                    and record["status"] == "provider_failure"
-                    and record.get("failure_kind") == "provider_unavailable"
-                    and _fallback_remains_eligible(
-                        context=candidate,
-                        attempt_state=attempt_state,
-                        now=datetime.now(timezone.utc),
-                    )
-                ):
-                    context = candidate
-                    replay_fallback = True
-                    break
-                continue
-            context = candidate
-            break
-        if context is None:
-            print("No active, non-duplicate Phase 2 resolver attempt is currently eligible. No provider call was made.")
             return 0
         issue = context.issue
+        selected_issue_number = issue.number
+        candidate_exists = True
         page_path = Path(issue.reviewed_page)
         page_text = context.page_text
         prompt = context.prompt
-        output_dir = resolver_output_dir()
         write_json_artifact(
             output_dir,
             f"issue-{issue.number}-{args.provider}-attempt-identity.json",
             {"attempt_id": context.attempt_id, "identity": context.identity},
         )
-        if replay_fallback:
-            message = (
-                "provider_error_kind=provider_unavailable: the unchanged Gemini primary attempt already failed "
-                "for recognized provider unavailability; no duplicate primary-model call was made and the "
-                "configured Gemini fallback remains eligible."
-            )
-            write_text_artifact(output_dir, f"issue-{issue.number}-provider-error.txt", message)
-            raise ResolverError(message)
         try:
             raw = call_provider(
                 args.provider,
@@ -1919,7 +2227,9 @@ def main() -> int:
                 args.max_completion_tokens,
                 args.provider_max_attempts,
             )
+            request_sent = True
         except ProviderAttemptError as exc:
+            request_sent = exc.request_sent
             write_text_artifact(output_dir, f"issue-{issue.number}-provider-error.txt", str(exc))
             if not args.dry_run:
                 write_resolver_attempt_event(
@@ -1928,6 +2238,34 @@ def main() -> int:
                     request_sent=exc.request_sent,
                     failure_kind=exc.failure_kind,
                 )
+            if exc.failure_kind in {"provider_unavailable", "rate_or_quota_limited"}:
+                fallback_now_executable = False
+                if selected_spec == RESOLVER_PRIMARY_SPEC:
+                    fallback_now_executable = _fallback_remains_eligible(
+                        context=context,
+                        attempt_state=attempt_state,
+                        now=datetime.now(timezone.utc),
+                    )
+                write_resolver_outcome(
+                    output_dir,
+                    outcome="deferred",
+                    issue_number_value=issue.number,
+                    candidate_exists=True,
+                    request_sent=exc.request_sent,
+                    provider=args.provider,
+                    model=args.model,
+                    reason_code=(
+                        "provider_temporarily_unavailable"
+                        if exc.failure_kind == "provider_unavailable"
+                        else "quota_retry_not_before"
+                    ),
+                    retry_not_before=retry_not_before,
+                    pr_url=None,
+                    fallback_used=getattr(args, "fallback_used", False),
+                    fallback_executable=fallback_now_executable,
+                    issue_resolved=False,
+                )
+                return 0
             raise
         except ResolverError as exc:
             write_text_artifact(output_dir, f"issue-{issue.number}-provider-error.txt", str(exc))
@@ -1991,7 +2329,23 @@ def main() -> int:
         output_path.write_text(json.dumps(plan, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
         if args.dry_run:
             print(json.dumps(plan, indent=2, ensure_ascii=False))
+            write_resolver_outcome(
+                output_dir,
+                outcome="deferred",
+                issue_number_value=issue.number,
+                candidate_exists=True,
+                request_sent=True,
+                provider=args.provider,
+                model=args.model,
+                reason_code="dry_run",
+                retry_not_before=None,
+                pr_url=None,
+                fallback_used=getattr(args, "fallback_used", False),
+                fallback_executable=False,
+                issue_resolved=False,
+            )
             return 0
+        pr_url: str | None = None
         try:
             if plan["overall_decision"] == "accepted_changes":
                 updated = apply_edits(page_text, plan)
@@ -2018,8 +2372,39 @@ def main() -> int:
             request_sent=True,
             failure_kind=None,
         )
+        write_resolver_outcome(
+            output_dir,
+            outcome=("completed_changes" if plan["overall_decision"] == "accepted_changes" else "completed_no_changes"),
+            issue_number_value=issue.number,
+            candidate_exists=True,
+            request_sent=True,
+            provider=args.provider,
+            model=args.model,
+            reason_code=None,
+            retry_not_before=None,
+            pr_url=pr_url,
+            fallback_used=getattr(args, "fallback_used", False),
+            fallback_executable=False,
+            issue_resolved=True,
+        )
         return 0
     except (OSError, ResolverError, ValueError) as exc:
+        if output_dir is not None and not (output_dir / "outcome.json").exists():
+            write_resolver_outcome(
+                output_dir,
+                outcome="failed",
+                issue_number_value=selected_issue_number,
+                candidate_exists=candidate_exists,
+                request_sent=request_sent,
+                provider=getattr(args, "provider", "unknown"),
+                model=getattr(args, "model", "unknown"),
+                reason_code="unexpected_failure",
+                retry_not_before=None,
+                pr_url=None,
+                fallback_used=getattr(args, "fallback_used", False),
+                fallback_executable=False,
+                issue_resolved=False,
+            )
         print(f"error: {exc}", file=sys.stderr)
         return 1
 
