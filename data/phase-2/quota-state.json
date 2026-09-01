@@ -4767,10 +4767,10 @@
       "validation_required": false
     },
     "gemini:gemini-3.5-flash": {
-      "authorized_recheck_task_id": null,
+      "authorized_recheck_task_id": "05157b54d2a562a8748f1f23604563b0f55e62c365af57854b4cb73192c36338",
       "block_reason": "provider_unavailable",
       "block_scope": "slot",
-      "last_updated_at": "2026-08-26T08:06:30Z",
+      "last_updated_at": "2026-09-01T07:45:45Z",
       "last_validation_at": null,
       "last_validation_result": null,
       "model": "gemini-3.5-flash",
@@ -4897,10 +4897,10 @@
       "validation_required": true
     },
     "openrouter:nvidia/nemotron-3-ultra-550b-a55b:free": {
-      "authorized_recheck_task_id": null,
+      "authorized_recheck_task_id": "c22ce0275e443acdb681d087663bae21885e83cfeb27b7309e01cf0116f04ac8",
       "block_reason": "provider_unavailable",
       "block_scope": "slot",
-      "last_updated_at": "2026-09-01T05:02:49Z",
+      "last_updated_at": "2026-09-01T07:45:45Z",
       "last_validation_at": "2026-08-19T09:20:00Z",
       "last_validation_result": "passed",
       "model": "nvidia/nemotron-3-ultra-550b-a55b:free",

@@ -1,5 +1,5 @@
 {
-  "last_reconciled_at": "2026-09-01T05:00:56Z",
+  "last_reconciled_at": "2026-09-01T07:45:45Z",
   "queue_generation": "phase-2-recalibration-v1",
   "registry_sha256": "456e184dcbb45c67f6a48efb8d59830ac56149c2ff4c88d738a45d28d05d4442",
   "schema_version": 2,
@@ -5929,7 +5929,7 @@
       "validation_rejection_count": 0
     },
     "05157b54d2a562a8748f1f23604563b0f55e62c365af57854b4cb73192c36338": {
-      "attempt_count": 0,
+      "attempt_count": 1,
       "created_at": "2026-08-26T08:32:55Z",
       "identity": {
         "agent": "page-hygiene-checker",
@@ -5944,9 +5944,16 @@
         "segmentation_profile": "full-page-v1",
         "validator_version": "check-signal-schema-v1"
       },
-      "last_attempt_at": null,
+      "last_attempt_at": "2026-09-01T07:45:45Z",
       "last_outcome": null,
-      "lease": null,
+      "lease": {
+        "attempt_id": "e30d734bba502a3b8cb522d8da26a08ef84a50d6efb8ae27c1a796aba7e92167",
+        "attempt_number": 1,
+        "expires_at": "2026-09-01T08:45:45Z",
+        "leased_at": "2026-09-01T07:45:45Z",
+        "worker_id": "gemini",
+        "workflow_run_id": "33483635264-1"
+      },
       "publication": {
         "last_attempt_at": null,
         "last_error": null,
@@ -5964,9 +5971,9 @@
       "source_metadata": {
         "repository_commit_sha": "21a6e9cefb5f21b60e467478c10156afa330c9ac"
       },
-      "status": "pending",
+      "status": "leased",
       "task_id": "05157b54d2a562a8748f1f23604563b0f55e62c365af57854b4cb73192c36338",
-      "updated_at": "2026-08-26T08:32:55Z",
+      "updated_at": "2026-09-01T07:45:45Z",
       "validation_rejection_count": 0
     },
     "051aa744ddc35c92510cb613eab8c0b2ab5fa505b2d7b25d4e8ad03e521593dc": {
@@ -152149,7 +152156,7 @@
       "validation_rejection_count": 0
     },
     "9546850c660a60d4ed8390f19f0bd8e6e35629737a5592620afa25b3afbf0396": {
-      "attempt_count": 29,
+      "attempt_count": 30,
       "created_at": "2026-08-26T08:32:55Z",
       "identity": {
         "agent": "page-hygiene-checker",
@@ -152164,14 +152171,21 @@
         "segmentation_profile": "full-page-v1",
         "validator_version": "check-signal-schema-v1"
       },
-      "last_attempt_at": "2026-09-01T05:00:56Z",
+      "last_attempt_at": "2026-09-01T07:45:45Z",
       "last_outcome": {
         "attempt_id": "ff1a39d2090cbe4563f53b77f492d2105aaf853d1b56c3f41240bbb73dbaab29",
         "finished_at": "2026-09-01T05:01:47Z",
         "kind": "rate_or_quota_limited",
         "provider_attempts": 1
       },
-      "lease": null,
+      "lease": {
+        "attempt_id": "df11efaa253a6888f800a8db0b2cec0d78b11a059359b8bc43aef5ab6f3d10de",
+        "attempt_number": 30,
+        "expires_at": "2026-09-01T08:45:45Z",
+        "leased_at": "2026-09-01T07:45:45Z",
+        "worker_id": "sambanova",
+        "workflow_run_id": "33483635264-1"
+      },
       "publication": {
         "last_attempt_at": null,
         "last_error": null,
@@ -152189,9 +152203,9 @@
       "source_metadata": {
         "repository_commit_sha": "21a6e9cefb5f21b60e467478c10156afa330c9ac"
       },
-      "status": "deferred_quota",
+      "status": "leased",
       "task_id": "9546850c660a60d4ed8390f19f0bd8e6e35629737a5592620afa25b3afbf0396",
-      "updated_at": "2026-09-01T05:01:47Z",
+      "updated_at": "2026-09-01T07:45:45Z",
       "validation_rejection_count": 0
     },
     "954d395ac31936b6ba5599f250dac2f91b38a7615899fe1b67aa198351a55442": {
@@ -196937,7 +196951,7 @@
       "validation_rejection_count": 2
     },
     "c22ce0275e443acdb681d087663bae21885e83cfeb27b7309e01cf0116f04ac8": {
-      "attempt_count": 0,
+      "attempt_count": 1,
       "created_at": "2026-08-26T08:32:55Z",
       "identity": {
         "agent": "page-hygiene-checker",
@@ -196952,9 +196966,16 @@
         "segmentation_profile": "full-page-v1",
         "validator_version": "check-signal-schema-v1"
       },
-      "last_attempt_at": null,
+      "last_attempt_at": "2026-09-01T07:45:45Z",
       "last_outcome": null,
-      "lease": null,
+      "lease": {
+        "attempt_id": "db60ce40f025734447c6fee3471c82c1d0da4ff8f9ddc0104ca8ec56393ff8b4",
+        "attempt_number": 1,
+        "expires_at": "2026-09-01T08:45:45Z",
+        "leased_at": "2026-09-01T07:45:45Z",
+        "worker_id": "openrouter",
+        "workflow_run_id": "33483635264-1"
+      },
       "publication": {
         "last_attempt_at": null,
         "last_error": null,
@@ -196972,9 +196993,9 @@
       "source_metadata": {
         "repository_commit_sha": "21a6e9cefb5f21b60e467478c10156afa330c9ac"
       },
-      "status": "pending",
+      "status": "leased",
       "task_id": "c22ce0275e443acdb681d087663bae21885e83cfeb27b7309e01cf0116f04ac8",
-      "updated_at": "2026-08-26T08:32:55Z",
+      "updated_at": "2026-09-01T07:45:45Z",
       "validation_rejection_count": 0
     },
     "c22df1b7d53d33afe48bf7eafda62d9856adca6e7c6b7995f2affa67b51ae76b": {
