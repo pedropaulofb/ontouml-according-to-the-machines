@@ -4,7 +4,7 @@
     "daily_period_start": "2026-09-01",
     "source": "configured"
   },
-  "last_updated_at": "2026-09-01T13:27:50Z",
+  "last_updated_at": "2026-09-01T19:28:45Z",
   "processed_event_ids": [
     "01787044575385241714-da20d73c-26ec-462c-a1d4-198de5477b38",
     "01787044578572383222-966719cd-7fa5-46a3-a0d6-3a110180d3b5",
@@ -2233,13 +2233,14 @@
     "01788248783140524266-37fe7caa-1ccc-4701-afd9-1830a7319bf4",
     "01788248793679752968-17dde66d-3786-4639-a127-0e4ae7e8d8d1",
     "01788248993860129823-956ab823-161c-40b1-a715-83352d8cafb8",
-    "01788269270948074623-7c12b052-018e-4e05-aff2-dec8a42b13e9"
+    "01788269270948074623-7c12b052-018e-4e05-aff2-dec8a42b13e9",
+    "01788290925477639220-a2d8ad9a-cb62-438e-89e7-df4cb9a8d8c1"
   ],
   "provider_blocks": {},
   "quota_groups": {
     "gemini-project": {
       "input_tokens_used_day_local": 24648,
-      "last_updated_at": "2026-09-01T13:27:50Z",
+      "last_updated_at": "2026-09-01T19:28:45Z",
       "output_tokens_used_day_local": 3183,
       "provenance": {
         "input_tokens_used_day_local": {
@@ -2274,7 +2275,7 @@
         },
         "requests_used_day_local": {
           "estimated": false,
-          "observed_at": "2026-09-01T13:27:50Z",
+          "observed_at": "2026-09-01T19:28:45Z",
           "source": "locally-counted"
         },
         "reset_at": {
@@ -2313,7 +2314,7 @@
       "requests_limit_day": null,
       "requests_limit_minute": null,
       "requests_remaining_minute": null,
-      "requests_used_day_local": 3,
+      "requests_used_day_local": 4,
       "reset_at": null,
       "retry_not_before": null,
       "scope": "project",
@@ -2583,7 +2584,7 @@
     },
     "gemini:gemini-3.5-flash": {
       "input_tokens_used_day_local": 24648,
-      "last_updated_at": "2026-09-01T13:27:50Z",
+      "last_updated_at": "2026-09-01T19:28:45Z",
       "output_tokens_used_day_local": 3183,
       "provenance": {
         "input_tokens_used_day_local": {
@@ -2618,7 +2619,7 @@
         },
         "requests_used_day_local": {
           "estimated": false,
-          "observed_at": "2026-09-01T13:27:50Z",
+          "observed_at": "2026-09-01T19:28:45Z",
           "source": "locally-counted"
         },
         "reset_at": {
@@ -2657,7 +2658,7 @@
       "requests_limit_day": null,
       "requests_limit_minute": null,
       "requests_remaining_minute": null,
-      "requests_used_day_local": 3,
+      "requests_used_day_local": 4,
       "reset_at": null,
       "retry_not_before": null,
       "scope": "model",
