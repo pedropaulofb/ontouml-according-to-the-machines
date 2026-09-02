@@ -134,6 +134,7 @@ TRANSIENT_MARKERS = (
     "timed out",
     "connection error",
     "connection reset",
+    "server disconnected",
     "too busy",
     "overloaded",
     "capacity",

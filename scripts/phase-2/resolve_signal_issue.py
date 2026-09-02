@@ -94,6 +94,7 @@ REASON_CODES = {
 ISSUE_TITLE_RE = re.compile(r"^Check signal: (?P<agent>[a-z0-9-]+): (?P<page>[^\s]+)$")
 GENERATION_REVIEW_LOG_HEADING = "## Generation and Review Log"
 GENERATION_REVIEW_LOG_HEADER = "| Date | Phase | Agent | Action | Prompt ID | Prompt Title | Inputs | Notes |"
+GENERATION_REVIEW_LOG_SEPARATOR = "| --- | --- | --- | --- | --- | --- | --- | --- |"
 GENERATION_REVIEW_LOG_SEPARATOR_RE = re.compile(
     r"^\|\s*-+\s*\|\s*-+\s*\|\s*-+\s*\|\s*-+\s*\|\s*-+\s*\|\s*-+\s*\|\s*-+\s*\|\s*-+\s*\|\s*$"
 )
@@ -118,7 +119,7 @@ JSON_SYSTEM_INSTRUCTION = (
 RESOLVER_PRIMARY_SPEC = ("gemini", "gemini-3.5-flash")
 RESOLVER_FALLBACK_SPEC = ("gemini", "gemini-3.6-flash")
 RESOLVER_FALLBACK_MAX_COMPLETION_TOKENS = 6000
-RESOLVER_VALIDATOR_VERSION = "resolver-plan-validator-v1.2.3"
+RESOLVER_VALIDATOR_VERSION = "resolver-plan-validator-v1.2.4"
 RESOLVER_REQUEST_CONFIG_VERSION = "resolver-request-v1"
 DEFAULT_TASK_STATE_PATH = Path("data/phase-2/task-state.json")
 RESOLVER_OUTCOME_SCHEMA_VERSION = 1
@@ -1785,15 +1786,38 @@ def remove_legacy_auto_resolver_log_lines(page_text: str, plan: dict[str, Any]) 
 def append_generation_review_log_row(page_text: str, plan: dict[str, Any]) -> str:
     row = render_generation_review_log_row(plan)
     updated = remove_legacy_auto_resolver_log_lines(page_text, plan)
+    lines = updated.rstrip("\n").splitlines()
+    heading_indices = [index for index, line in enumerate(lines) if line.strip() == GENERATION_REVIEW_LOG_HEADING]
+    if len(heading_indices) != 1:
+        raise ResolverError(f"Expected exactly one Generation and Review Log heading; found {len(heading_indices)}.")
     if row in updated:
         return updated
-    lines = updated.rstrip("\n").splitlines()
     header_index: int | None = None
     for index, line in enumerate(lines):
         if line.strip() == GENERATION_REVIEW_LOG_HEADER:
             header_index = index
     if header_index is None:
-        raise ResolverError("Generation and Review Log table header was not found.")
+        if "<!-- skeleton-page -->" not in updated:
+            raise ResolverError("Generation and Review Log table header was not found.")
+        heading_index = heading_indices[0]
+        section_end = len(lines)
+        for index in range(heading_index + 1, len(lines)):
+            if re.match(r"^#{1,2}(?:\s+|$)", lines[index].strip()):
+                section_end = index
+                break
+        section_text = "\n".join(lines[heading_index + 1 : section_end])
+        meaningful_section_text = re.sub(r"<!--.*?-->", "", section_text, flags=re.DOTALL).strip()
+        if meaningful_section_text:
+            raise ResolverError(
+                "Generation and Review Log table header was not found in the nonempty skeleton section."
+            )
+        lines[heading_index + 1 : heading_index + 1] = [
+            "",
+            GENERATION_REVIEW_LOG_HEADER,
+            GENERATION_REVIEW_LOG_SEPARATOR,
+            row,
+        ]
+        return "\n".join(lines).rstrip() + "\n"
     separator_index = header_index + 1
     if separator_index >= len(lines) or not GENERATION_REVIEW_LOG_SEPARATOR_RE.match(lines[separator_index].strip()):
         raise ResolverError("Generation and Review Log table separator row was not found.")

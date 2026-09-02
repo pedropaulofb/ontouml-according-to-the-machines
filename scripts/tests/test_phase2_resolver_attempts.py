@@ -113,6 +113,26 @@ class ResolverAttemptTests(unittest.TestCase):
         self.assertNotEqual(original.attempt_id, changed_request.attempt_id)
         self.assertNotEqual(changed_page.attempt_id, changed_signal.attempt_id)
 
+    def test_validator_version_reenables_known_blocked_issues_without_deleting_history(self) -> None:
+        state = resolver_attempt_state.load_state(REPO_ROOT / "data/phase-2/resolver-attempt-state.json")
+        old_attempt_ids = (
+            "d494e0c7a67449db1f5380ecc1e2b6c05ac86ac238d13091cbd7b0108993ac95",
+            "2f171b14a00e6c4d7b3ccf6f354af99f068603190079ff64be99ba55dade7027",
+        )
+
+        self.assertEqual(resolver.RESOLVER_VALIDATOR_VERSION, "resolver-plan-validator-v1.2.4")
+        for old_attempt_id in old_attempt_ids:
+            with self.subTest(old_attempt_id=old_attempt_id):
+                old_record = state["attempts"][old_attempt_id]
+                self.assertEqual(old_record["identity"]["resolver_validator_version"], "resolver-plan-validator-v1.2.3")
+                new_identity = dict(old_record["identity"])
+                new_identity["resolver_validator_version"] = resolver.RESOLVER_VALIDATOR_VERSION
+                new_attempt_id = resolver_attempt_state.attempt_id_for(new_identity)
+
+                self.assertNotEqual(new_attempt_id, old_attempt_id)
+                self.assertNotIn(new_attempt_id, state["attempts"])
+                self.assertIn(old_attempt_id, state["attempts"])
+
     def test_paginated_issue_search_keeps_all_matching_candidates(self) -> None:
         response = [
             {

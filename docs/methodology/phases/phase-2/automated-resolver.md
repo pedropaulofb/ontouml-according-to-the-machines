@@ -337,6 +337,8 @@ Accepted automated edits create a `Generation and Review Log` table row with thi
 | <date> | Phase 2 | Phase 2 automated resolver | Signal resolution | <resolver-prompt-id> | <resolver-prompt-title> | GitHub issue #<issue-number> | Applied accepted <agent> signal edits through automated Phase 2 resolution; not a conceptual or source-faithfulness validation. |
 ```
 
+If a valid page marked `<!-- skeleton-page -->` has exactly one otherwise empty `Generation and Review Log` section, the resolver initializes the canonical table header and separator before appending the row. A missing table on a non-skeleton page, duplicate review-log headings, or nonempty malformed section still stops resolution before the page is written.
+
 Current resolver prompt metadata as emitted by `resolve_signal_issue.py`:
 
 | Check agent | Prompt ID | Prompt title |

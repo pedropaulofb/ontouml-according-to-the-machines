@@ -43,6 +43,7 @@ from task_reconciler import (  # noqa: E402
     build_desired_task_identities,
     current_commit_sha,
     reconcile_task_state,
+    validate_desired_state,
 )
 from task_state import load_task_state, validate_task_state, write_task_state  # noqa: E402
 
@@ -492,6 +493,7 @@ def main(argv: Sequence[str] | None = None) -> int:
                 timestamp=format_timestamp(now),
                 source_commit_sha=commit_sha,
             )
+            validate_desired_state(persistent_tasks, desired, registry_sha256)
             print(
                 f"Reconciled Phase 2 task state: desired_tasks={len(desired)}; added={counts['added']}; "
                 f"preserved={counts['preserved']}; obsolete={counts['obsolete']}; retired={counts['retired']}."

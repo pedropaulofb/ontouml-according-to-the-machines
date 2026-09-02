@@ -267,7 +267,6 @@ jobs:
         run: |
           python scripts/phase-2/provider_model_registry.py validate
           python scripts/phase-2/provider_model_registry.py list-specs > /dev/null
-          python scripts/phase-2/task_reconciler.py validate
           python scripts/phase-2/quota_state.py validate
           python -m py_compile scripts/phase-2/task_scheduler.py scripts/phase-2/provider_worker.py
 

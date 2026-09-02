@@ -178,7 +178,7 @@ Check signal: page-hygiene-checker: classes/event
 
 The current implementation includes check execution, output validation, page-plus-agent issue routing, duplicate-control for comments, content-addressed quota-aware collection through SambaNova, Groq, Gemini, and OpenRouter, archived manual signal-review prompts for the two LLM-based check agents, automated signal-resolution prompts for those check agents, deterministic patch application, PR creation, branch update by rebase, squash auto-merge enablement, issue closure, and a one-shot Gemini `gemini-3.6-flash` fallback for recognized primary Gemini resolver unavailability.
 
-Signal collection reconciles 39 canonical pages × 2 LLM check agents × 25 configured provider-model slots into 1,950 desired tasks. The global repository SHA is traceability metadata rather than completion identity, so unrelated commits do not repeat completed work.
+Signal collection reconciles 39 canonical pages × 2 LLM check agents × 25 configured provider-model slots into 1,950 desired tasks. Each collector run reconciles the desired task state, validates the reconciled state, and only then leases work. The global repository SHA is traceability metadata rather than completion identity, so unrelated commits do not repeat completed work.
 
 There is no current dedicated manual or automated closure prompt for `page-structure-checker`; page-structure issues remain subject to direct maintainer review and normal PR review.
 

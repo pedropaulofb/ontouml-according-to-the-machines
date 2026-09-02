@@ -13,7 +13,8 @@ import unittest
 from pathlib import Path
 from unittest import mock
 
-MODULE_PATH = Path(__file__).resolve().parents[1] / "phase-2" / "resolve_signal_issue.py"
+REPO_ROOT = Path(__file__).resolve().parents[2]
+MODULE_PATH = REPO_ROOT / "scripts" / "phase-2" / "resolve_signal_issue.py"
 MODULE_NAME = "phase_2_resolve_signal_issue"
 SPEC = importlib.util.spec_from_file_location(MODULE_NAME, MODULE_PATH)
 if SPEC is None or SPEC.loader is None:
@@ -21,6 +22,15 @@ if SPEC is None or SPEC.loader is None:
 resolver = importlib.util.module_from_spec(SPEC)
 sys.modules[MODULE_NAME] = resolver
 SPEC.loader.exec_module(resolver)
+
+CHECKER_PATH = REPO_ROOT / "scripts" / "phase-2" / "check_agents" / "page_structure_checker.py"
+CHECKER_NAME = "phase_2_page_structure_checker"
+CHECKER_SPEC = importlib.util.spec_from_file_location(CHECKER_NAME, CHECKER_PATH)
+if CHECKER_SPEC is None or CHECKER_SPEC.loader is None:
+    raise RuntimeError(f"Could not load page-structure checker module from {CHECKER_PATH}")
+page_structure_checker = importlib.util.module_from_spec(CHECKER_SPEC)
+sys.modules[CHECKER_NAME] = page_structure_checker
+CHECKER_SPEC.loader.exec_module(page_structure_checker)
 
 
 class OverallDecisionNormalizationTests(unittest.TestCase):
@@ -387,6 +397,152 @@ class ResolverOutcomeLifecycleTests(unittest.TestCase):
         self.assertTrue(outcome["request_sent"])
         provider_call.assert_called_once()
         create_pr.assert_called_once()
+
+    def test_provider_unavailability_defers_and_exposes_existing_fallback(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            output_dir = Path(temporary)
+            issue = resolver.IssueSnapshot(
+                number=588,
+                title="Check signal: language-style-checker: classes/role-mixin",
+                body="",
+                state="OPEN",
+                url="https://github.com/example/repository/issues/588",
+                agent="language-style-checker",
+                reviewed_page="docs/stereotypes/classes/role-mixin.md",
+                comments=[],
+            )
+            context = resolver.build_resolver_attempt_context(
+                issue=issue,
+                page_text="Current page.\n",
+                prompt="Resolver prompt.\n",
+                active_comments=(resolver.ActiveSignalComment("1", "c" * 64, "gemini", "gemini-3.5-flash", "Signal."),),
+                provider="gemini",
+                model="gemini-3.5-flash",
+                max_completion_tokens=8000,
+                max_attempts=1,
+            )
+            eligibility = resolver.ResolverEligibility(
+                candidate_exists=True,
+                issue_number=588,
+                primary_executable=True,
+                fallback_executable=False,
+                capacity_required=True,
+                reserved_specs=("gemini:gemini-3.5-flash",),
+                retry_not_before=None,
+                reason_codes=(),
+                primary_context=context,
+            )
+            args = argparse.Namespace(
+                repo="example/repository",
+                issue="588",
+                provider="gemini",
+                model="gemini-3.5-flash",
+                max_completion_tokens=8000,
+                provider_max_attempts=1,
+                dry_run=False,
+                branch_prefix="phase-2/auto-resolve",
+                attempt_state="unused.json",
+                preflight_only=False,
+                fallback_used=False,
+            )
+            provider_error = resolver.ProviderAttemptError(
+                "Server disconnected without sending a response.",
+                failure_kind="provider_unavailable",
+                request_sent=True,
+            )
+            with (
+                mock.patch.object(resolver, "parse_args", return_value=args),
+                mock.patch.object(resolver, "resolver_output_dir", return_value=output_dir),
+                mock.patch.object(resolver, "load_resolver_attempt_state", return_value={"attempts": {}}),
+                mock.patch.object(resolver, "load_task_state", return_value={"tasks": {}}),
+                mock.patch.object(resolver, "evaluate_resolver_work", return_value=eligibility),
+                mock.patch.object(resolver, "call_provider", side_effect=provider_error) as provider_call,
+                mock.patch.object(resolver, "_fallback_remains_eligible", return_value=True) as fallback_check,
+                mock.patch.object(resolver, "write_resolver_attempt_event") as write_event,
+            ):
+                result = resolver.main()
+            outcome = json.loads((output_dir / "outcome.json").read_text(encoding="utf-8"))
+
+        self.assertEqual(result, 0)
+        provider_call.assert_called_once()
+        fallback_check.assert_called_once()
+        write_event.assert_called_once()
+        self.assertEqual(outcome["outcome"], "deferred")
+        self.assertEqual(outcome["reason_code"], "provider_temporarily_unavailable")
+        self.assertTrue(outcome["request_sent"])
+        self.assertTrue(outcome["fallback_executable"])
+        self.assertFalse(outcome["issue_resolved"])
+
+
+class SkeletonReviewLogTests(unittest.TestCase):
+    def accepted_plan(self) -> dict[str, object]:
+        return {
+            "issue_number": 589,
+            "agent": "language-style-checker",
+            "signal_groups": [
+                {
+                    "decision": "accept",
+                    "edits": [
+                        {
+                            "current_text": "The stereotype profile is not yet available.",
+                            "proposed_text": "The stereotype profile is unavailable.",
+                        },
+                        {
+                            "current_text": "Examples are not yet available.",
+                            "proposed_text": "Examples are unavailable.",
+                        },
+                    ],
+                }
+            ],
+        }
+
+    def test_issue_589_skeleton_initializes_table_and_applies_edits_once(self) -> None:
+        page = (REPO_ROOT / "docs/stereotypes/classes/historical-role-mixin.md").read_text(encoding="utf-8")
+        plan = self.accepted_plan()
+
+        updated = resolver.apply_edits(page, plan)
+
+        self.assertIn("<!-- skeleton-page -->", updated)
+        self.assertIn("The stereotype profile is unavailable.", updated)
+        self.assertIn("Examples are unavailable.", updated)
+        self.assertEqual(updated.count(resolver.GENERATION_REVIEW_LOG_HEADER), 1)
+        self.assertEqual(updated.count(resolver.GENERATION_REVIEW_LOG_SEPARATOR), 1)
+        self.assertEqual(updated.count("GitHub issue #589"), 1)
+        self.assertEqual(page_structure_checker.collect_signals(updated), [])
+        self.assertEqual(resolver.append_generation_review_log_row(updated, plan), updated)
+
+    def test_existing_canonical_table_behavior_is_unchanged(self) -> None:
+        existing_row = "| 2026-08-01 | Phase 2 | Existing agent | Existing action | prompt | title | input | notes |"
+        page = (
+            "# Example\n\n"
+            "## Generation and Review Log\n\n"
+            f"{resolver.GENERATION_REVIEW_LOG_HEADER}\n"
+            f"{resolver.GENERATION_REVIEW_LOG_SEPARATOR}\n"
+            f"{existing_row}\n"
+        )
+
+        updated = resolver.append_generation_review_log_row(page, self.accepted_plan())
+
+        self.assertIn(existing_row, updated)
+        self.assertEqual(updated.count("GitHub issue #589"), 1)
+
+    def test_non_skeleton_page_without_table_still_fails(self) -> None:
+        page = "# Example\n\n## Generation and Review Log\n"
+
+        with self.assertRaisesRegex(resolver.ResolverError, "table header was not found"):
+            resolver.append_generation_review_log_row(page, self.accepted_plan())
+
+    def test_nonempty_skeleton_review_log_section_still_fails(self) -> None:
+        page = "# Example\n\n<!-- skeleton-page -->\n\n## Generation and Review Log\n\nMalformed content.\n"
+
+        with self.assertRaisesRegex(resolver.ResolverError, "nonempty skeleton section"):
+            resolver.append_generation_review_log_row(page, self.accepted_plan())
+
+    def test_multiple_review_log_headings_still_fail(self) -> None:
+        page = "# Example\n\n<!-- skeleton-page -->\n\n## Generation and Review Log\n\n## Generation and Review Log\n"
+
+        with self.assertRaisesRegex(resolver.ResolverError, "Expected exactly one"):
+            resolver.append_generation_review_log_row(page, self.accepted_plan())
 
 
 class PullRequestReuseTests(unittest.TestCase):

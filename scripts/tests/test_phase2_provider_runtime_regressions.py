@@ -95,6 +95,29 @@ class ProviderFailureClassificationRegressionTests(unittest.TestCase):
         self.assertEqual(failure.kind, "provider_policy_block")
         self.assertEqual(failure.scope, "provider")
 
+    def test_gemini_server_disconnect_is_provider_unavailable(self) -> None:
+        failure = provider_runtime.classify_provider_failure(
+            provider="gemini",
+            model="gemini-3.5-flash",
+            exc=RuntimeError("Server disconnected without sending a response."),
+            now=self.now,
+        )
+
+        self.assertEqual(failure.kind, "provider_unavailable")
+        self.assertEqual(failure.scope, "slot")
+        self.assertTrue(failure.retryable_immediately)
+
+    def test_unrelated_provider_exception_remains_unknown(self) -> None:
+        failure = provider_runtime.classify_provider_failure(
+            provider="gemini",
+            model="gemini-3.5-flash",
+            exc=RuntimeError("Unexpected response framing failure."),
+            now=self.now,
+        )
+
+        self.assertEqual(failure.kind, "unknown_provider_error")
+        self.assertFalse(failure.retryable_immediately)
+
 
 class LegacyProviderBlockRepairTests(unittest.TestCase):
     def blocked_runtime(self, slot_id: str, timestamp: str) -> dict[str, object]:

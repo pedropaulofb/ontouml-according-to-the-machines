@@ -218,6 +218,38 @@ class SchedulerSelectionTests(unittest.TestCase):
 
 
 class SchedulerCliStateNeutralityTests(unittest.TestCase):
+    def test_reconciled_state_is_validated_before_planning(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            task_state_path = Path(temporary) / "task-state.json"
+            shutil.copy2(REPO_ROOT / "data/phase-2/task-state.json", task_state_path)
+            work_plan_root = Path(temporary) / "work-plans"
+            validation_error = task_reconciler.TaskReconciliationError("invalid reconciled state")
+
+            with (
+                mock.patch.object(task_scheduler, "validate_desired_state", side_effect=validation_error) as validate,
+                mock.patch.object(task_scheduler, "build_provider_work_plans") as build_plans,
+            ):
+                result = task_scheduler.main(
+                    [
+                        "plan",
+                        "--repo-root",
+                        str(REPO_ROOT),
+                        "--task-state",
+                        str(task_state_path),
+                        "--workflow-run-id",
+                        "validation-order-workflow",
+                        "--reconcile",
+                        "--timestamp",
+                        TIMESTAMP,
+                        "--work-plan-root",
+                        str(work_plan_root),
+                    ]
+                )
+
+        self.assertEqual(result, 2)
+        validate.assert_called_once()
+        build_plans.assert_not_called()
+
     def test_nonlease_reconciliation_does_not_write_persistent_state(self) -> None:
         for command in ("plan", "simulate"):
             with self.subTest(command=command), tempfile.TemporaryDirectory() as temporary:
@@ -639,6 +671,7 @@ class ResolverAndWorkflowTests(unittest.TestCase):
         resolver_workflow = (REPO_ROOT / ".github/workflows/phase-2-signal-resolver.yml").read_text(encoding="utf-8")
         self.assertIn('cron: "7,27,47 * * * *"', collector)
         self.assertIn('task_scheduler.py" lease', collector)
+        self.assertNotIn("python scripts/phase-2/task_reconciler.py validate", collector)
         self.assertIn("--lease-commit-sha", collector)
         self.assertIn("ref: ${{ needs.lease-and-plan.outputs.lease_sha }}", collector)
         self.assertIn("aggregate_task_results.py", collector)

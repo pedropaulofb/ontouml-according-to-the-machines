@@ -148,12 +148,60 @@ class TaskReconciliationTests(unittest.TestCase):
         self.assertEqual(len(desired), 1950)
         self.assertEqual(len(set(desired)), 1950)
 
+    def test_changed_page_reconciles_fifty_tasks_once(self) -> None:
+        registry_sha = task_identity.sha256_text(REGISTRY_PATH.read_text(encoding="utf-8"))
+        configured_specs = {(slot.provider, slot.model) for slot in self.registry.configured_slots}
+        before = task_reconciler.build_desired_task_identities(repo_root=REPO_ROOT, registry=self.registry)
+        initial, _counts = task_reconciler.reconcile_task_state(
+            existing_state=None,
+            desired_identities=before,
+            registry_sha256=registry_sha,
+            configured_specs=configured_specs,
+            timestamp=TIMESTAMP,
+            source_commit_sha=None,
+        )
+        target_page = "docs/stereotypes/classes/historical-role.md"
+        after: dict[str, dict[str, str]] = {}
+        for task_id, identity in before.items():
+            changed_identity = copy.deepcopy(identity)
+            if identity["page"] == target_page:
+                changed_identity["content_sha256"] = "f" * 64
+                task_id = task_identity.task_id_for(changed_identity)
+            after[task_id] = changed_identity
+
+        reconciled, counts = task_reconciler.reconcile_task_state(
+            existing_state=initial,
+            desired_identities=after,
+            registry_sha256=registry_sha,
+            configured_specs=configured_specs,
+            timestamp="2026-08-13T00:00:00Z",
+            source_commit_sha=None,
+        )
+
+        self.assertEqual(counts, {"added": 50, "obsolete": 50, "retired": 0, "preserved": 1900})
+        self.assertEqual(
+            sum(reconciled["tasks"][task_id]["status"] not in {"obsolete", "retired"} for task_id in after),
+            1950,
+        )
+        task_reconciler.validate_desired_state(reconciled, after, registry_sha)
+
+        stable, second_counts = task_reconciler.reconcile_task_state(
+            existing_state=reconciled,
+            desired_identities=after,
+            registry_sha256=registry_sha,
+            configured_specs=configured_specs,
+            timestamp="2026-08-14T00:00:00Z",
+            source_commit_sha=None,
+        )
+        self.assertEqual(second_counts, {"added": 0, "obsolete": 0, "retired": 0, "preserved": 1950})
+        self.assertEqual(stable["tasks"], reconciled["tasks"])
+
     def test_checked_in_state_has_1950_desired_tasks_and_retired_history(self) -> None:
         desired = task_reconciler.build_desired_task_identities(repo_root=REPO_ROOT, registry=self.registry)
         state = task_state.load_task_state(TASK_STATE_PATH)
         registry_sha = task_identity.sha256_text(REGISTRY_PATH.read_text(encoding="utf-8"))
         task_reconciler.validate_desired_state(state, desired, registry_sha)
-        self.assertEqual(len(state["tasks"]), 6123)
+        self.assertEqual(len(state["tasks"]), 6173)
         self.assertEqual(len(desired), 1950)
         self.assertEqual(
             sum(record["status"] == "retired" for record in state["tasks"].values()),
