@@ -8,17 +8,17 @@ A Collective is unified by a relation that determines a maximal collection of me
 
 Collective differs from Quantity because its parts need not be of the same kind as the whole and because it is not characterized by infinite divisibility. One source formally places collectives among the disjoint categories that partition substantials, alongside objects and quantities. Another source introduces Collective as a concrete specialization of Substance Sortal and characterizes Collective Kinds according to the ontological nature of their instances.
 
-The supplied sources distinguish extensional and non-extensional treatments of Collective. A Collective may be modeled so that it does not necessarily obey an extensional identity principle: depending on the conceptualization, it need not be identical merely to the sum of its current members. In the source that assigns Collective the meta-attribute `isExtensional`, an extensional Collective treats all parts as essential, so changing or destroying any part terminates the existence of that Collective; essential member-collection parthood is supported only when the whole is an extensional Collective.
+Sources distinguish extensional and non-extensional treatments of Collective. A Collective may be modeled so that it does not necessarily obey an extensional identity principle: depending on the conceptualization, it need not be identical merely to the sum of its current members. In the source that assigns Collective the meta-attribute `isExtensional`, an extensional Collective treats all parts as essential, so changing or destroying any part terminates the existence of that Collective; essential member-collection parthood is supported only when the whole is an extensional Collective.
 
-One supplied source analyzes a possible interpretation of powertype instances as collectives or mereological sums of instances of an associated type. Under that interpretation, the collective corresponds to the population or extension of a lower-level type, with membership determined by instantiation of that type. The same source rejects this as insufficient for the stable identity of a powertype instance, because a mereological sum has extensional identity and depends on the existence of its members. In that account, collectives are relevant as manifestation-level embodiments or populations, not as the stable identity of the powertype instance itself.
+One source analyzes a possible interpretation of powertype instances as collectives or mereological sums of instances of an associated type. Under that interpretation, the collective corresponds to the population or extension of a lower-level type, with membership determined by instantiation of that type. The same source rejects this as insufficient for the stable identity of a powertype instance, because a mereological sum has extensional identity and depends on the existence of its members. In that account, collectives are relevant as manifestation-level embodiments or populations, not as the stable identity of the powertype instance itself.
 
 ## Stereotype Profile
 
-The stereotype profile is currently unavailable.
+The stereotype profile is not provided.
 
 ## Examples
 
-Examples are currently unavailable.
+Examples are not provided.
 
 ## References
 
@@ -48,3 +48,4 @@ Examples are currently unavailable.
 | 2026-07-14 | Phase 2 | Phase 2 automated resolver | Signal resolution | resolve-language-style-signal-issue-v1.2.2 | Phase 2 automated resolver: language-style signals v1.2.2 | GitHub issue #241 | Applied accepted language-style-checker signal edits through automated Phase 2 resolution; not a conceptual or source-faithfulness validation. |
 | 2026-07-28 | Phase 2 | Phase 2 automated resolver | Signal resolution | resolve-language-style-signal-issue-v1.2.2 | Phase 2 automated resolver: language-style signals v1.2.2 | GitHub issue #362 | Applied accepted language-style-checker signal edits through automated Phase 2 resolution; not a conceptual or source-faithfulness validation. |
 | 2026-08-15 | Phase 2 | Phase 2 automated resolver | Signal resolution | resolve-language-style-signal-issue-v1.2.2 | Phase 2 automated resolver: language-style signals v1.2.2 | GitHub issue #535 | Applied accepted language-style-checker signal edits through automated Phase 2 resolution; not a conceptual or source-faithfulness validation. |
+| 2026-08-24 | Phase 2 | Phase 2 automated resolver | Signal resolution | resolve-language-style-signal-issue-v1.2.2 | Phase 2 automated resolver: language-style signals v1.2.2 | GitHub issue #574 | Applied accepted language-style-checker signal edits through automated Phase 2 resolution; not a conceptual or source-faithfulness validation. |
