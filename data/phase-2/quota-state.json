@@ -5048,10 +5048,10 @@
       "validation_required": false
     },
     "gemini:gemini-3.5-flash": {
-      "authorized_recheck_task_id": null,
+      "authorized_recheck_task_id": "3d289bf09cffd90a1ade589b0c769274dd3952444cb5fa393ca7df1a196dbd02",
       "block_reason": "provider_unavailable",
       "block_scope": "slot",
-      "last_updated_at": "2026-09-03T18:49:19Z",
+      "last_updated_at": "2026-09-03T21:40:31Z",
       "last_validation_at": null,
       "last_validation_result": null,
       "model": "gemini-3.5-flash",
@@ -5074,10 +5074,10 @@
       "validation_required": false
     },
     "gemini:gemini-3.6-flash": {
-      "authorized_recheck_task_id": null,
+      "authorized_recheck_task_id": "422a83b28481a808a57d8017f8eabeda1b05f7fbfdbb4eeecb30317e7fe8f3b4",
       "block_reason": "provider_unavailable",
       "block_scope": "slot",
-      "last_updated_at": "2026-09-03T18:50:06Z",
+      "last_updated_at": "2026-09-03T21:40:31Z",
       "last_validation_at": null,
       "last_validation_result": null,
       "model": "gemini-3.6-flash",
@@ -5178,10 +5178,10 @@
       "validation_required": true
     },
     "openrouter:nvidia/nemotron-3-ultra-550b-a55b:free": {
-      "authorized_recheck_task_id": null,
+      "authorized_recheck_task_id": "2c4707d83993c1193bc2ab2ba61b07c5d62dd3bb10430dd6df4747009a0c32eb",
       "block_reason": "provider_unavailable",
       "block_scope": "slot",
-      "last_updated_at": "2026-09-03T18:51:03Z",
+      "last_updated_at": "2026-09-03T21:40:31Z",
       "last_validation_at": "2026-08-19T09:20:00Z",
       "last_validation_result": "passed",
       "model": "nvidia/nemotron-3-ultra-550b-a55b:free",
@@ -5285,7 +5285,7 @@
       "authorized_recheck_task_id": "7626f8c2f2e7d547738f893ffb6adc5cd5560849f054a7f9c486c3d0b6802735",
       "block_reason": "provider_unavailable",
       "block_scope": "slot",
-      "last_updated_at": "2026-09-03T18:48:21Z",
+      "last_updated_at": "2026-09-03T21:40:31Z",
       "last_validation_at": null,
       "last_validation_result": null,
       "model": "Meta-Llama-3.3-70B-Instruct",
@@ -5324,7 +5324,7 @@
       "authorized_recheck_task_id": "032a1af630b79e0304128bdd3a63d7af4b06f151b5174880cb678de58bdfed25",
       "block_reason": "provider_unavailable",
       "block_scope": "slot",
-      "last_updated_at": "2026-09-03T18:48:21Z",
+      "last_updated_at": "2026-09-03T21:40:31Z",
       "last_validation_at": null,
       "last_validation_result": null,
       "model": "gpt-oss-120b",
