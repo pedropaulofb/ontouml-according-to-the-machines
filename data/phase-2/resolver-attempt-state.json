@@ -1176,6 +1176,27 @@
       "request_sent": true,
       "status": "completed"
     },
+    "de5fd8b19797ea5d9cd24a5cbb2159cec6fcdf5040ff7d0c67cadc2702b4337d": {
+      "attempt_id": "de5fd8b19797ea5d9cd24a5cbb2159cec6fcdf5040ff7d0c67cadc2702b4337d",
+      "failure_kind": null,
+      "first_observed_at": "2026-09-05T18:09:58Z",
+      "identity": {
+        "active_signal_snapshot_sha256": "c6713bc1829d438d819e4dd0811cea9b845235d739f7d27a6453f5ff2ee6acf7",
+        "agent": "page-hygiene-checker",
+        "identity_version": "resolver-attempt-v1",
+        "issue_number": 601,
+        "model": "gemini-3.5-flash",
+        "page_content_sha256": "01e1fd1f2a201ddff8e16db645c9bfed127e5998726392bd90e2617ad00dca9e",
+        "provider": "gemini",
+        "request_config_sha256": "36fbc458b5923b456b7a90508601d2126d566e63e67532f4a4dce0d050d1aa23",
+        "resolver_prompt_sha256": "029414e0b2497bc9ea0bfe5462a678a37cbf900c9870393d56b6699bce38648b",
+        "resolver_validator_version": "resolver-plan-validator-v1.2.4"
+      },
+      "last_event_id": "01788631798035759005-685f599d-7cd6-4497-a9cc-9c506eb298d3",
+      "last_observed_at": "2026-09-05T18:09:58Z",
+      "request_sent": true,
+      "status": "completed"
+    },
     "e120fcb1b7902558467739962c7e5521f25215d96136f3785fd67037a0dabafc": {
       "attempt_id": "e120fcb1b7902558467739962c7e5521f25215d96136f3785fd67037a0dabafc",
       "failure_kind": "provider_unavailable",
@@ -1366,7 +1387,7 @@
       "status": "completed"
     }
   },
-  "last_updated_at": "2026-09-05T15:04:51Z",
+  "last_updated_at": "2026-09-05T18:09:58Z",
   "processed_event_ids": [
     "01787230640667959865-ba0709d0-2953-4c6f-9930-d4e21deeccdf",
     "01787243962617734894-0d4c925d-a269-4b44-88d4-3f141f935eb2",
@@ -1456,7 +1477,8 @@
     "01788548446617770086-008a53b5-b7e2-4c2c-8cb0-6c303fa89ebd",
     "01788560384132213293-a42b0b9a-5e72-4c37-b82c-474fac0e508a",
     "01788608947787978813-e2846026-d959-480e-b95d-dc2bd0b887a2",
-    "01788620691246739150-0237b829-5da7-4b64-a930-554818e0b59f"
+    "01788620691246739150-0237b829-5da7-4b64-a930-554818e0b59f",
+    "01788631798035759005-685f599d-7cd6-4497-a9cc-9c506eb298d3"
   ],
   "schema_version": 1
 }
