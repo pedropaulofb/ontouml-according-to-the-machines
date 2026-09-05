@@ -14,7 +14,7 @@ Counts shown on this page only include executions recorded since that start time
 
 Rows retained in the current statistics state but outside the configured, non-retired registry are shown as `inactive`.
 
-Last generated: `2026-09-05T10:19:22Z`
+Last generated: `2026-09-05T10:21:37Z`
 
 ## Queue snapshot
 
@@ -88,7 +88,7 @@ Last generated: `2026-09-05T10:19:22Z`
 | `openrouter` | `inclusionai/ling-3.0-flash:free` | 0 | 0 | 0.00% |  |  |  | `2026-09-05T10:16:57Z` |
 | `openrouter` | `nvidia/nemotron-3-super-120b-a12b:free` | 0 | 78 | 0.00% | 16d 18h |  |  | `2026-09-05T10:16:57Z` |
 | `openrouter` | `nvidia/nemotron-3-ultra-550b-a55b:free` | 0 | 78 | 0.00% | 16d 18h |  | `2026-09-05T10:16:53Z` | `2026-09-05T10:16:57Z` |
-| `openrouter` | `nvidia/nemotron-3.5-lightning:free` | 1 | 78 | 1.28% | 17d 0h |  | `2026-09-05T10:16:58Z` | `2026-09-05T10:16:57Z` |
+| `openrouter` | `nvidia/nemotron-3.5-lightning:free` | 1 | 78 | 1.28% | 17d 1h |  | `2026-09-05T10:16:58Z` | `2026-09-05T10:16:57Z` |
 | `openrouter` | `nvidia/nemotron-nano-9b-v2:free` | 0 | 78 | 0.00% | 19d 10h |  | `2026-09-05T10:16:58Z` | `2026-09-05T10:16:57Z` |
 | `openrouter` | `openai/gpt-oss-20b:free` | 1 | 78 | 1.28% | 19d 10h |  | `2026-09-05T10:16:58Z` | `2026-09-05T10:16:57Z` |
 | `openrouter` | `poolside/laguna-s-2.1:free` | 1 | 78 | 1.28% | 19d 10h |  | `2026-09-05T10:16:58Z` | `2026-09-05T10:16:57Z` |
