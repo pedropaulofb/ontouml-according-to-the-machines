@@ -4,7 +4,7 @@
     "daily_period_start": "2026-09-05",
     "source": "configured"
   },
-  "last_updated_at": "2026-09-05T18:09:56Z",
+  "last_updated_at": "2026-09-05T18:12:08Z",
   "processed_event_ids": [
     "01787044575385241714-da20d73c-26ec-462c-a1d4-198de5477b38",
     "01787044578572383222-966719cd-7fa5-46a3-a0d6-3a110180d3b5",
@@ -2683,7 +2683,14 @@
     "01788623980101873946-3b718917-4be3-4ef7-88e2-530499d4db37",
     "01788624035518014671-5233f6c2-a20c-4c3c-a63c-eee8ce55e9ca",
     "01788624039743916502-a95729a2-26ee-421f-8d97-e4ba0b22970f",
-    "01788631796325463066-d506e891-e677-48cf-a931-d5b33b0bd67c"
+    "01788631796325463066-d506e891-e677-48cf-a931-d5b33b0bd67c",
+    "01788631898987265013-3da662f9-8db6-45e9-a031-09ee2e6cf2ef",
+    "01788631899014550506-696e68cd-d3d6-4866-8a2e-f4401284604b",
+    "01788631899025728542-30ca18b8-caab-4f27-b9a7-98fdb0d4f27c",
+    "01788631899193289457-224080f3-0ede-41a9-80bb-d0db19d9a66b",
+    "01788631908107577152-4b1b6730-c2f6-4da3-8c40-664defdc5d12",
+    "01788631923614155531-cc329171-ff64-47f8-b243-657f8b3d93a9",
+    "01788631928669534642-e2c930d0-097d-44ef-9121-d0277b5681ba"
   ],
   "provider_blocks": {},
   "quota_groups": {
@@ -3721,7 +3728,7 @@
     },
     "openrouter-free-account": {
       "input_tokens_used_day_local": 0,
-      "last_updated_at": "2026-09-05T16:00:39Z",
+      "last_updated_at": "2026-09-05T18:12:08Z",
       "output_tokens_used_day_local": 0,
       "provenance": {
         "input_tokens_used_day_local": {
@@ -3736,7 +3743,7 @@
         },
         "remaining_estimate": {
           "estimated": true,
-          "observed_at": "2026-09-05T16:00:39Z",
+          "observed_at": "2026-09-05T18:12:08Z",
           "source": "inferred"
         },
         "requests_limit_day": {
@@ -3756,7 +3763,7 @@
         },
         "requests_used_day_local": {
           "estimated": false,
-          "observed_at": "2026-09-05T16:00:39Z",
+          "observed_at": "2026-09-05T18:12:08Z",
           "source": "locally-counted"
         },
         "reset_at": {
@@ -3766,12 +3773,12 @@
         },
         "retry_not_before": {
           "estimated": false,
-          "observed_at": "2026-09-05T16:00:39Z",
+          "observed_at": "2026-09-05T18:12:08Z",
           "source": "inferred"
         },
         "status": {
           "estimated": false,
-          "observed_at": "2026-09-05T16:00:39Z",
+          "observed_at": "2026-09-05T18:12:08Z",
           "source": "provider-reported"
         },
         "tokens_limit_minute": {
@@ -3791,13 +3798,13 @@
         }
       },
       "provider": "openrouter",
-      "remaining_estimate": 38,
+      "remaining_estimate": 35,
       "requests_limit_day": 50,
       "requests_limit_minute": null,
       "requests_remaining_minute": null,
-      "requests_used_day_local": 12,
+      "requests_used_day_local": 15,
       "reset_at": null,
-      "retry_not_before": "2026-09-05T17:00:39Z",
+      "retry_not_before": "2026-09-05T19:12:08Z",
       "scope": "account",
       "source": "provider-reported",
       "status": "deferred_quota",
@@ -3807,7 +3814,7 @@
     },
     "openrouter:google/gemma-4-26b-a4b-it:free": {
       "input_tokens_used_day_local": 0,
-      "last_updated_at": "2026-09-05T16:00:39Z",
+      "last_updated_at": "2026-09-05T18:12:08Z",
       "output_tokens_used_day_local": 0,
       "provenance": {
         "input_tokens_used_day_local": {
@@ -3842,7 +3849,7 @@
         },
         "requests_used_day_local": {
           "estimated": false,
-          "observed_at": "2026-09-05T16:00:39Z",
+          "observed_at": "2026-09-05T18:12:08Z",
           "source": "locally-counted"
         },
         "reset_at": {
@@ -3881,7 +3888,7 @@
       "requests_limit_day": null,
       "requests_limit_minute": null,
       "requests_remaining_minute": null,
-      "requests_used_day_local": 4,
+      "requests_used_day_local": 5,
       "reset_at": null,
       "retry_not_before": null,
       "scope": "model",
@@ -4065,7 +4072,7 @@
     },
     "openrouter:nvidia/nemotron-3-ultra-550b-a55b:free": {
       "input_tokens_used_day_local": 0,
-      "last_updated_at": "2026-09-05T16:00:35Z",
+      "last_updated_at": "2026-09-05T18:12:03Z",
       "output_tokens_used_day_local": 0,
       "provenance": {
         "input_tokens_used_day_local": {
@@ -4100,7 +4107,7 @@
         },
         "requests_used_day_local": {
           "estimated": false,
-          "observed_at": "2026-09-05T16:00:35Z",
+          "observed_at": "2026-09-05T18:12:03Z",
           "source": "locally-counted"
         },
         "reset_at": {
@@ -4139,7 +4146,7 @@
       "requests_limit_day": null,
       "requests_limit_minute": null,
       "requests_remaining_minute": null,
-      "requests_used_day_local": 8,
+      "requests_used_day_local": 10,
       "reset_at": null,
       "retry_not_before": null,
       "scope": "model",
@@ -4581,7 +4588,7 @@
     },
     "sambanova-account": {
       "input_tokens_used_day_local": 0,
-      "last_updated_at": "2026-09-05T15:59:00Z",
+      "last_updated_at": "2026-09-05T18:11:39Z",
       "output_tokens_used_day_local": 0,
       "provenance": {
         "input_tokens_used_day_local": {
@@ -4616,7 +4623,7 @@
         },
         "requests_used_day_local": {
           "estimated": false,
-          "observed_at": "2026-09-05T15:59:00Z",
+          "observed_at": "2026-09-05T18:11:39Z",
           "source": "locally-counted"
         },
         "reset_at": {
@@ -4655,7 +4662,7 @@
       "requests_limit_day": null,
       "requests_limit_minute": null,
       "requests_remaining_minute": null,
-      "requests_used_day_local": 16,
+      "requests_used_day_local": 20,
       "reset_at": null,
       "retry_not_before": null,
       "scope": "account",
@@ -4667,7 +4674,7 @@
     },
     "sambanova:DeepSeek-V3.1": {
       "input_tokens_used_day_local": 0,
-      "last_updated_at": "2026-09-05T15:59:00Z",
+      "last_updated_at": "2026-09-05T18:11:38Z",
       "output_tokens_used_day_local": 0,
       "provenance": {
         "input_tokens_used_day_local": {
@@ -4702,7 +4709,7 @@
         },
         "requests_used_day_local": {
           "estimated": false,
-          "observed_at": "2026-09-05T15:59:00Z",
+          "observed_at": "2026-09-05T18:11:38Z",
           "source": "locally-counted"
         },
         "reset_at": {
@@ -4712,12 +4719,12 @@
         },
         "retry_not_before": {
           "estimated": false,
-          "observed_at": "2026-09-05T15:59:00Z",
+          "observed_at": "2026-09-05T18:11:38Z",
           "source": "inferred"
         },
         "status": {
           "estimated": false,
-          "observed_at": "2026-09-05T15:59:00Z",
+          "observed_at": "2026-09-05T18:11:38Z",
           "source": "provider-reported"
         },
         "tokens_limit_minute": {
@@ -4741,9 +4748,9 @@
       "requests_limit_day": null,
       "requests_limit_minute": null,
       "requests_remaining_minute": null,
-      "requests_used_day_local": 4,
+      "requests_used_day_local": 5,
       "reset_at": null,
-      "retry_not_before": "2026-09-05T16:59:00Z",
+      "retry_not_before": "2026-09-05T19:11:38Z",
       "scope": "model",
       "source": "provider-reported",
       "status": "deferred_quota",
@@ -4753,7 +4760,7 @@
     },
     "sambanova:DeepSeek-V3.2": {
       "input_tokens_used_day_local": 0,
-      "last_updated_at": "2026-09-05T15:59:00Z",
+      "last_updated_at": "2026-09-05T18:11:39Z",
       "output_tokens_used_day_local": 0,
       "provenance": {
         "input_tokens_used_day_local": {
@@ -4788,7 +4795,7 @@
         },
         "requests_used_day_local": {
           "estimated": false,
-          "observed_at": "2026-09-05T15:59:00Z",
+          "observed_at": "2026-09-05T18:11:39Z",
           "source": "locally-counted"
         },
         "reset_at": {
@@ -4798,12 +4805,12 @@
         },
         "retry_not_before": {
           "estimated": false,
-          "observed_at": "2026-09-05T15:59:00Z",
+          "observed_at": "2026-09-05T18:11:39Z",
           "source": "inferred"
         },
         "status": {
           "estimated": false,
-          "observed_at": "2026-09-05T15:59:00Z",
+          "observed_at": "2026-09-05T18:11:39Z",
           "source": "provider-reported"
         },
         "tokens_limit_minute": {
@@ -4827,9 +4834,9 @@
       "requests_limit_day": null,
       "requests_limit_minute": null,
       "requests_remaining_minute": null,
-      "requests_used_day_local": 4,
+      "requests_used_day_local": 5,
       "reset_at": null,
-      "retry_not_before": "2026-09-05T16:59:00Z",
+      "retry_not_before": "2026-09-05T19:11:39Z",
       "scope": "model",
       "source": "provider-reported",
       "status": "deferred_quota",
@@ -4839,7 +4846,7 @@
     },
     "sambanova:Meta-Llama-3.3-70B-Instruct": {
       "input_tokens_used_day_local": 0,
-      "last_updated_at": "2026-09-05T15:59:00Z",
+      "last_updated_at": "2026-09-05T18:11:39Z",
       "output_tokens_used_day_local": 0,
       "provenance": {
         "input_tokens_used_day_local": {
@@ -4874,7 +4881,7 @@
         },
         "requests_used_day_local": {
           "estimated": false,
-          "observed_at": "2026-09-05T15:59:00Z",
+          "observed_at": "2026-09-05T18:11:39Z",
           "source": "locally-counted"
         },
         "reset_at": {
@@ -4884,12 +4891,12 @@
         },
         "retry_not_before": {
           "estimated": false,
-          "observed_at": "2026-09-05T15:59:00Z",
+          "observed_at": "2026-09-05T18:11:39Z",
           "source": "inferred"
         },
         "status": {
           "estimated": false,
-          "observed_at": "2026-09-05T15:59:00Z",
+          "observed_at": "2026-09-05T18:11:39Z",
           "source": "provider-reported"
         },
         "tokens_limit_minute": {
@@ -4913,9 +4920,9 @@
       "requests_limit_day": null,
       "requests_limit_minute": null,
       "requests_remaining_minute": null,
-      "requests_used_day_local": 4,
+      "requests_used_day_local": 5,
       "reset_at": null,
-      "retry_not_before": "2026-09-05T16:59:00Z",
+      "retry_not_before": "2026-09-05T19:11:39Z",
       "scope": "model",
       "source": "provider-reported",
       "status": "deferred_quota",
@@ -5097,7 +5104,7 @@
     },
     "sambanova:gpt-oss-120b": {
       "input_tokens_used_day_local": 0,
-      "last_updated_at": "2026-09-05T15:59:00Z",
+      "last_updated_at": "2026-09-05T18:11:39Z",
       "output_tokens_used_day_local": 0,
       "provenance": {
         "input_tokens_used_day_local": {
@@ -5132,7 +5139,7 @@
         },
         "requests_used_day_local": {
           "estimated": false,
-          "observed_at": "2026-09-05T15:59:00Z",
+          "observed_at": "2026-09-05T18:11:39Z",
           "source": "locally-counted"
         },
         "reset_at": {
@@ -5142,12 +5149,12 @@
         },
         "retry_not_before": {
           "estimated": false,
-          "observed_at": "2026-09-05T15:59:00Z",
+          "observed_at": "2026-09-05T18:11:39Z",
           "source": "inferred"
         },
         "status": {
           "estimated": false,
-          "observed_at": "2026-09-05T15:59:00Z",
+          "observed_at": "2026-09-05T18:11:39Z",
           "source": "provider-reported"
         },
         "tokens_limit_minute": {
@@ -5171,9 +5178,9 @@
       "requests_limit_day": null,
       "requests_limit_minute": null,
       "requests_remaining_minute": null,
-      "requests_used_day_local": 4,
+      "requests_used_day_local": 5,
       "reset_at": null,
-      "retry_not_before": "2026-09-05T16:59:00Z",
+      "retry_not_before": "2026-09-05T19:11:39Z",
       "scope": "model",
       "source": "provider-reported",
       "status": "deferred_quota",
@@ -5353,15 +5360,15 @@
       "validation_required": true
     },
     "openrouter:nvidia/nemotron-3-ultra-550b-a55b:free": {
-      "authorized_recheck_task_id": "2c4707d83993c1193bc2ab2ba61b07c5d62dd3bb10430dd6df4747009a0c32eb",
+      "authorized_recheck_task_id": null,
       "block_reason": "provider_unavailable",
       "block_scope": "slot",
-      "last_updated_at": "2026-09-05T18:11:02Z",
+      "last_updated_at": "2026-09-05T18:12:03Z",
       "last_validation_at": "2026-08-19T09:20:00Z",
       "last_validation_result": "passed",
       "model": "nvidia/nemotron-3-ultra-550b-a55b:free",
       "provider": "openrouter",
-      "retry_not_before": "2026-09-05T17:00:35Z",
+      "retry_not_before": "2026-09-05T19:12:03Z",
       "status": "temporarily_unavailable",
       "validation_required": false
     },
