@@ -34,8 +34,7 @@ Examples are currently unavailable.
 
 ### Consulted Sources
 
-- Guizzardi, G. (2005). Ontological Foundations for Structural Conceptual Models. PhD thesis, University of Twente. Scope: Chapter 5.
-- Guizzardi, G. (2005). Ontological Foundations for Structural Conceptual Models. PhD thesis, University of Twente. Scope: Chapter 8.
+- Guizzardi, G. (2005). Ontological Foundations for Structural Conceptual Models. PhD thesis, University of Twente. Scope: Chapters 5 and 8.
 - Guizzardi, G., Botti Benevides, A., Fonseca, C. M., Porello, D., Almeida, J. P. A., & Prince Sales, T. (2022). UFO: Unified foundational ontology. Applied ontology, 17(1), 167-210. Scope: full document.
 - Guizzardi, G., Almeida, J. P., Guarino, N., & Carvalho, V. A. (2015). Towards an ontological analysis of powertypes. In Proceedings of the Joint Ontology Workshops 2015 Episode 1: The Argentine Winter of Ontology co-located with the 24th International Joint Conference on Artificial Intelligence (IJCAI 2015); Buenos Aires, Argentina, July 25-27, 2015 (Vol. 1517). RWTH. Scope: full document.
 
@@ -48,3 +47,4 @@ Examples are currently unavailable.
 | 2026-07-14 | Phase 2 | Phase 2 automated resolver | Signal resolution | resolve-language-style-signal-issue-v1.2.2 | Phase 2 automated resolver: language-style signals v1.2.2 | GitHub issue #241 | Applied accepted language-style-checker signal edits through automated Phase 2 resolution; not a conceptual or source-faithfulness validation. |
 | 2026-07-28 | Phase 2 | Phase 2 automated resolver | Signal resolution | resolve-language-style-signal-issue-v1.2.2 | Phase 2 automated resolver: language-style signals v1.2.2 | GitHub issue #362 | Applied accepted language-style-checker signal edits through automated Phase 2 resolution; not a conceptual or source-faithfulness validation. |
 | 2026-08-15 | Phase 2 | Phase 2 automated resolver | Signal resolution | resolve-language-style-signal-issue-v1.2.2 | Phase 2 automated resolver: language-style signals v1.2.2 | GitHub issue #535 | Applied accepted language-style-checker signal edits through automated Phase 2 resolution; not a conceptual or source-faithfulness validation. |
+| 2026-09-06 | Phase 2 | Phase 2 automated resolver | Signal resolution | resolve-page-hygiene-signal-issue-v1.2.2 | Phase 2 automated resolver: page-hygiene signals v1.2.2 | GitHub issue #604 | Applied accepted page-hygiene-checker signal edits through automated Phase 2 resolution; not a conceptual or source-faithfulness validation. |
