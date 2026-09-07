@@ -1281,6 +1281,27 @@
       "request_sent": true,
       "status": "provider_failure"
     },
+    "da9ca5bb46333ad156d1d638c86f81bb7022964f3cb767bea80cb7bf5d7f2f86": {
+      "attempt_id": "da9ca5bb46333ad156d1d638c86f81bb7022964f3cb767bea80cb7bf5d7f2f86",
+      "failure_kind": "provider_unavailable",
+      "first_observed_at": "2026-09-07T19:52:14Z",
+      "identity": {
+        "active_signal_snapshot_sha256": "accf5efac95c00a6316b4dc433074b2d95c8dfb47ed0d799615dbac6b6c8920b",
+        "agent": "language-style-checker",
+        "identity_version": "resolver-attempt-v1",
+        "issue_number": 609,
+        "model": "gemini-3.6-flash",
+        "page_content_sha256": "c9167df757ea353c36775ca0c3b4684d69d08ae516a657ef0e8a9ad2002a6194",
+        "provider": "gemini",
+        "request_config_sha256": "8d725453ac2bdf188d45e178b6e591cec53edf137925af9ff43cbef68e48e804",
+        "resolver_prompt_sha256": "9c2be8b13a251b4db3ac495d6f6397eee32e13d16c25705ade83b40752aaa0c6",
+        "resolver_validator_version": "resolver-plan-validator-v1.2.4"
+      },
+      "last_event_id": "01788810734666666200-6e5a2d62-3efd-4abb-a03f-57e11eac5d2c",
+      "last_observed_at": "2026-09-07T19:52:14Z",
+      "request_sent": true,
+      "status": "provider_failure"
+    },
     "dd0ce0467d00801845b1fb4904f4913db3a935da631f708dce5a58925f516ced": {
       "attempt_id": "dd0ce0467d00801845b1fb4904f4913db3a935da631f708dce5a58925f516ced",
       "failure_kind": "provider_unavailable",
@@ -1555,7 +1576,7 @@
       "status": "completed"
     }
   },
-  "last_updated_at": "2026-09-07T14:13:01Z",
+  "last_updated_at": "2026-09-07T19:52:14Z",
   "processed_event_ids": [
     "01787230640667959865-ba0709d0-2953-4c6f-9930-d4e21deeccdf",
     "01787243962617734894-0d4c925d-a269-4b44-88d4-3f141f935eb2",
@@ -1654,7 +1675,8 @@
     "01788718778274549363-b1fdbf5f-7429-4b1e-aba6-afd9ad8231e5",
     "01788732377724539873-2c36c24f-888f-4a1b-8ce8-61b05613bf3e",
     "01788755043301213001-031f0d08-5d25-4f08-95db-ff01dc550b06",
-    "01788790381287523534-15579857-b870-420b-865f-5c095a1aa587"
+    "01788790381287523534-15579857-b870-420b-865f-5c095a1aa587",
+    "01788810734666666200-6e5a2d62-3efd-4abb-a03f-57e11eac5d2c"
   ],
   "schema_version": 1
 }
