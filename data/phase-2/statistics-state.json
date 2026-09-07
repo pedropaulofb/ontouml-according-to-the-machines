@@ -127,7 +127,7 @@
     }
   ],
   "collection_start_utc": "2026-08-28T08:14:33Z",
-  "generated_at": "2026-09-07T12:51:22Z",
+  "generated_at": "2026-09-07T18:15:36Z",
   "models": {
     "gemini:gemini-2.5-flash": {
       "cached_tokens": 8166,
@@ -147,7 +147,7 @@
       "last_event_name": "",
       "last_issue_status": "",
       "last_overall_status": "",
-      "last_quota_observation": "2026-09-07T04:24:01Z",
+      "last_quota_observation": "2026-09-07T14:12:59Z",
       "last_run_attempt": "",
       "last_run_id": "",
       "last_run_utc": "2026-09-02T15:18:32Z",
@@ -196,7 +196,7 @@
       "last_event_name": "",
       "last_issue_status": "",
       "last_overall_status": "",
-      "last_quota_observation": "2026-09-07T04:24:01Z",
+      "last_quota_observation": "2026-09-07T14:12:59Z",
       "last_run_attempt": "",
       "last_run_id": "",
       "last_run_utc": "",
@@ -245,7 +245,7 @@
       "last_event_name": "",
       "last_issue_status": "",
       "last_overall_status": "",
-      "last_quota_observation": "2026-09-07T04:24:01Z",
+      "last_quota_observation": "2026-09-07T14:12:59Z",
       "last_run_attempt": "",
       "last_run_id": "",
       "last_run_utc": "",
@@ -294,7 +294,7 @@
       "last_event_name": "",
       "last_issue_status": "",
       "last_overall_status": "",
-      "last_quota_observation": "2026-09-07T04:24:01Z",
+      "last_quota_observation": "2026-09-07T14:12:59Z",
       "last_run_attempt": "",
       "last_run_id": "",
       "last_run_utc": "2026-09-02T15:18:39Z",
@@ -343,7 +343,7 @@
       "last_event_name": "",
       "last_issue_status": "",
       "last_overall_status": "",
-      "last_quota_observation": "2026-09-07T04:24:01Z",
+      "last_quota_observation": "2026-09-07T14:12:59Z",
       "last_run_attempt": "",
       "last_run_id": "",
       "last_run_utc": "2026-09-02T15:10:49Z",
@@ -392,7 +392,7 @@
       "last_event_name": "",
       "last_issue_status": "",
       "last_overall_status": "",
-      "last_quota_observation": "2026-09-07T04:24:01Z",
+      "last_quota_observation": "2026-09-07T14:12:59Z",
       "last_run_attempt": "",
       "last_run_id": "",
       "last_run_utc": "2026-09-05T12:54:18Z",
@@ -441,7 +441,7 @@
       "last_event_name": "",
       "last_issue_status": "",
       "last_overall_status": "",
-      "last_quota_observation": "2026-09-07T04:24:01Z",
+      "last_quota_observation": "2026-09-07T14:12:59Z",
       "last_run_attempt": "",
       "last_run_id": "",
       "last_run_utc": "2026-09-02T15:18:28Z",
@@ -490,7 +490,7 @@
       "last_event_name": "",
       "last_issue_status": "",
       "last_overall_status": "",
-      "last_quota_observation": "2026-09-07T04:24:01Z",
+      "last_quota_observation": "2026-09-07T14:12:59Z",
       "last_run_attempt": "",
       "last_run_id": "",
       "last_run_utc": "2026-09-04T11:15:59Z",
@@ -539,14 +539,14 @@
       "last_event_name": "",
       "last_issue_status": "",
       "last_overall_status": "",
-      "last_quota_observation": "2026-09-07T04:24:01Z",
+      "last_quota_observation": "2026-09-07T14:12:59Z",
       "last_run_attempt": "",
       "last_run_id": "",
       "last_run_utc": "",
       "last_success": "",
       "lifecycle_status": "stable",
       "model": "gemini-3.7-flash",
-      "oldest_pending_age_seconds": 1729282,
+      "oldest_pending_age_seconds": 1748736,
       "output_tokens": null,
       "output_tokens_known_events": 0,
       "policy_blocks": 0,
@@ -595,7 +595,7 @@
       "last_success": "",
       "lifecycle_status": "production",
       "model": "openai/gpt-oss-120b",
-      "oldest_pending_age_seconds": 1860682,
+      "oldest_pending_age_seconds": 1880136,
       "output_tokens": null,
       "output_tokens_known_events": 0,
       "policy_blocks": 0,
@@ -644,7 +644,7 @@
       "last_success": "",
       "lifecycle_status": "production",
       "model": "openai/gpt-oss-20b",
-      "oldest_pending_age_seconds": 1860682,
+      "oldest_pending_age_seconds": 1880136,
       "output_tokens": null,
       "output_tokens_known_events": 0,
       "policy_blocks": 0,
@@ -693,7 +693,7 @@
       "last_success": "",
       "lifecycle_status": "preview",
       "model": "qwen/qwen3.6-27b",
-      "oldest_pending_age_seconds": 1860682,
+      "oldest_pending_age_seconds": 1880136,
       "output_tokens": null,
       "output_tokens_known_events": 0,
       "policy_blocks": 0,
@@ -720,7 +720,7 @@
     "openrouter:google/gemma-4-26b-a4b-it:free": {
       "cached_tokens": null,
       "cached_tokens_known_events": 0,
-      "called": 57,
+      "called": 58,
       "completion_percentage": 1.28,
       "configuration_status": "configured",
       "current_completed_tasks": 1,
@@ -729,28 +729,28 @@
       "execution_status": "eligible",
       "input_tokens": null,
       "input_tokens_known_events": 0,
-      "invalid": 57,
-      "last_attempt": "2026-09-07T12:50:43Z",
+      "invalid": 58,
+      "last_attempt": "2026-09-07T18:14:54Z",
       "last_check_status": "provider_failed",
       "last_event_name": "",
       "last_issue_status": "",
       "last_overall_status": "",
-      "last_quota_observation": "2026-09-07T12:50:43Z",
+      "last_quota_observation": "2026-09-07T18:14:54Z",
       "last_run_attempt": "",
       "last_run_id": "",
-      "last_run_utc": "2026-09-07T12:50:43Z",
+      "last_run_utc": "2026-09-07T18:14:54Z",
       "last_success": "",
       "lifecycle_status": "free-variant",
       "model": "google/gemma-4-26b-a4b-it:free",
-      "oldest_pending_age_seconds": 1860682,
+      "oldest_pending_age_seconds": 1880136,
       "output_tokens": null,
       "output_tokens_known_events": 0,
       "policy_blocks": 0,
       "provider": "openrouter",
       "provider_attempts_accuracy": "mixed-inferred-and-locally-counted",
-      "provider_failed": 57,
-      "provider_failures": 57,
-      "quota_deferrals": 57,
+      "provider_failed": 58,
+      "provider_failures": 58,
+      "quota_deferrals": 58,
       "reasoning_tokens": null,
       "reasoning_tokens_known_events": 0,
       "rejected": 0,
@@ -758,8 +758,8 @@
       "runner_failures": 0,
       "spec": "openrouter:google/gemma-4-26b-a4b-it:free",
       "temporarily_unavailable_events": 0,
-      "total_called": 57,
-      "total_provider_attempts": 57,
+      "total_called": 58,
+      "total_provider_attempts": 58,
       "valid": 0,
       "valid_outputs": 0,
       "valid_outputs_with_signals": 0,
@@ -779,19 +779,19 @@
       "input_tokens": null,
       "input_tokens_known_events": 0,
       "invalid": 0,
-      "last_attempt": "2026-09-07T12:50:43Z",
+      "last_attempt": "2026-09-07T18:14:54Z",
       "last_check_status": "",
       "last_event_name": "",
       "last_issue_status": "",
       "last_overall_status": "",
-      "last_quota_observation": "2026-09-07T12:50:43Z",
+      "last_quota_observation": "2026-09-07T18:14:54Z",
       "last_run_attempt": "",
       "last_run_id": "",
-      "last_run_utc": "2026-09-07T12:50:43Z",
+      "last_run_utc": "2026-09-07T18:14:54Z",
       "last_success": "",
       "lifecycle_status": "free-variant",
       "model": "google/gemma-4-31b-it:free",
-      "oldest_pending_age_seconds": 1860682,
+      "oldest_pending_age_seconds": 1880136,
       "output_tokens": null,
       "output_tokens_known_events": 0,
       "policy_blocks": 0,
@@ -833,7 +833,7 @@
       "last_event_name": "",
       "last_issue_status": "",
       "last_overall_status": "",
-      "last_quota_observation": "2026-09-07T12:50:43Z",
+      "last_quota_observation": "2026-09-07T18:14:54Z",
       "last_run_attempt": "",
       "last_run_id": "",
       "last_run_utc": "",
@@ -882,14 +882,14 @@
       "last_event_name": "",
       "last_issue_status": "",
       "last_overall_status": "",
-      "last_quota_observation": "2026-09-07T12:50:43Z",
+      "last_quota_observation": "2026-09-07T18:14:54Z",
       "last_run_attempt": "",
       "last_run_id": "",
       "last_run_utc": "",
       "last_success": "",
       "lifecycle_status": "free-variant",
       "model": "nvidia/nemotron-3-super-120b-a12b:free",
-      "oldest_pending_age_seconds": 1630300,
+      "oldest_pending_age_seconds": 1649754,
       "output_tokens": null,
       "output_tokens_known_events": 0,
       "policy_blocks": 0,
@@ -916,7 +916,7 @@
     "openrouter:nvidia/nemotron-3-ultra-550b-a55b:free": {
       "cached_tokens": null,
       "cached_tokens_known_events": 0,
-      "called": 58,
+      "called": 59,
       "completion_percentage": 0.0,
       "configuration_status": "configured",
       "current_completed_tasks": 0,
@@ -925,27 +925,27 @@
       "execution_status": "temporarily_unavailable",
       "input_tokens": null,
       "input_tokens_known_events": 0,
-      "invalid": 58,
-      "last_attempt": "2026-09-07T12:50:38Z",
+      "invalid": 59,
+      "last_attempt": "2026-09-07T18:14:50Z",
       "last_check_status": "provider_failed",
       "last_event_name": "",
       "last_issue_status": "",
       "last_overall_status": "",
-      "last_quota_observation": "2026-09-07T12:50:43Z",
+      "last_quota_observation": "2026-09-07T18:14:54Z",
       "last_run_attempt": "",
       "last_run_id": "",
-      "last_run_utc": "2026-09-07T12:50:38Z",
+      "last_run_utc": "2026-09-07T18:14:50Z",
       "last_success": "",
       "lifecycle_status": "free-variant",
       "model": "nvidia/nemotron-3-ultra-550b-a55b:free",
-      "oldest_pending_age_seconds": 1630300,
+      "oldest_pending_age_seconds": 1649754,
       "output_tokens": null,
       "output_tokens_known_events": 0,
       "policy_blocks": 0,
       "provider": "openrouter",
       "provider_attempts_accuracy": "mixed-inferred-and-locally-counted",
-      "provider_failed": 58,
-      "provider_failures": 58,
+      "provider_failed": 59,
+      "provider_failures": 59,
       "quota_deferrals": 0,
       "reasoning_tokens": null,
       "reasoning_tokens_known_events": 0,
@@ -953,9 +953,9 @@
       "runner_failed": 0,
       "runner_failures": 0,
       "spec": "openrouter:nvidia/nemotron-3-ultra-550b-a55b:free",
-      "temporarily_unavailable_events": 58,
-      "total_called": 58,
-      "total_provider_attempts": 115,
+      "temporarily_unavailable_events": 59,
+      "total_called": 59,
+      "total_provider_attempts": 117,
       "valid": 0,
       "valid_outputs": 0,
       "valid_outputs_with_signals": 0,
@@ -975,19 +975,19 @@
       "input_tokens": null,
       "input_tokens_known_events": 0,
       "invalid": 0,
-      "last_attempt": "2026-09-07T12:50:43Z",
+      "last_attempt": "2026-09-07T18:14:54Z",
       "last_check_status": "",
       "last_event_name": "",
       "last_issue_status": "",
       "last_overall_status": "",
-      "last_quota_observation": "2026-09-07T12:50:43Z",
+      "last_quota_observation": "2026-09-07T18:14:54Z",
       "last_run_attempt": "",
       "last_run_id": "",
-      "last_run_utc": "2026-09-07T12:50:43Z",
+      "last_run_utc": "2026-09-07T18:14:54Z",
       "last_success": "",
       "lifecycle_status": "free-variant",
       "model": "nvidia/nemotron-3.5-lightning:free",
-      "oldest_pending_age_seconds": 1654282,
+      "oldest_pending_age_seconds": 1673736,
       "output_tokens": null,
       "output_tokens_known_events": 0,
       "policy_blocks": 0,
@@ -1024,19 +1024,19 @@
       "input_tokens": null,
       "input_tokens_known_events": 0,
       "invalid": 0,
-      "last_attempt": "2026-09-07T12:50:43Z",
+      "last_attempt": "2026-09-07T18:14:54Z",
       "last_check_status": "",
       "last_event_name": "",
       "last_issue_status": "",
       "last_overall_status": "",
-      "last_quota_observation": "2026-09-07T12:50:43Z",
+      "last_quota_observation": "2026-09-07T18:14:54Z",
       "last_run_attempt": "",
       "last_run_id": "",
-      "last_run_utc": "2026-09-07T12:50:43Z",
+      "last_run_utc": "2026-09-07T18:14:54Z",
       "last_success": "",
       "lifecycle_status": "free-variant",
       "model": "nvidia/nemotron-nano-9b-v2:free",
-      "oldest_pending_age_seconds": 1860682,
+      "oldest_pending_age_seconds": 1880136,
       "output_tokens": null,
       "output_tokens_known_events": 0,
       "policy_blocks": 0,
@@ -1073,19 +1073,19 @@
       "input_tokens": null,
       "input_tokens_known_events": 0,
       "invalid": 0,
-      "last_attempt": "2026-09-07T12:50:43Z",
+      "last_attempt": "2026-09-07T18:14:54Z",
       "last_check_status": "",
       "last_event_name": "",
       "last_issue_status": "",
       "last_overall_status": "",
-      "last_quota_observation": "2026-09-07T12:50:43Z",
+      "last_quota_observation": "2026-09-07T18:14:54Z",
       "last_run_attempt": "",
       "last_run_id": "",
-      "last_run_utc": "2026-09-07T12:50:43Z",
+      "last_run_utc": "2026-09-07T18:14:54Z",
       "last_success": "",
       "lifecycle_status": "free-variant",
       "model": "openai/gpt-oss-20b:free",
-      "oldest_pending_age_seconds": 1860682,
+      "oldest_pending_age_seconds": 1880136,
       "output_tokens": null,
       "output_tokens_known_events": 0,
       "policy_blocks": 0,
@@ -1122,19 +1122,19 @@
       "input_tokens": null,
       "input_tokens_known_events": 0,
       "invalid": 0,
-      "last_attempt": "2026-09-07T12:50:43Z",
+      "last_attempt": "2026-09-07T18:14:54Z",
       "last_check_status": "",
       "last_event_name": "",
       "last_issue_status": "",
       "last_overall_status": "",
-      "last_quota_observation": "2026-09-07T12:50:43Z",
+      "last_quota_observation": "2026-09-07T18:14:54Z",
       "last_run_attempt": "",
       "last_run_id": "",
-      "last_run_utc": "2026-09-07T12:50:43Z",
+      "last_run_utc": "2026-09-07T18:14:54Z",
       "last_success": "",
       "lifecycle_status": "free-variant",
       "model": "poolside/laguna-s-2.1:free",
-      "oldest_pending_age_seconds": 1860682,
+      "oldest_pending_age_seconds": 1880136,
       "output_tokens": null,
       "output_tokens_known_events": 0,
       "policy_blocks": 0,
@@ -1171,19 +1171,19 @@
       "input_tokens": null,
       "input_tokens_known_events": 0,
       "invalid": 0,
-      "last_attempt": "2026-09-07T12:50:43Z",
+      "last_attempt": "2026-09-07T18:14:54Z",
       "last_check_status": "",
       "last_event_name": "",
       "last_issue_status": "",
       "last_overall_status": "",
-      "last_quota_observation": "2026-09-07T12:50:43Z",
+      "last_quota_observation": "2026-09-07T18:14:54Z",
       "last_run_attempt": "",
       "last_run_id": "",
-      "last_run_utc": "2026-09-07T12:50:43Z",
+      "last_run_utc": "2026-09-07T18:14:54Z",
       "last_success": "",
       "lifecycle_status": "free-variant",
       "model": "poolside/laguna-xs-2.1:free",
-      "oldest_pending_age_seconds": 1860682,
+      "oldest_pending_age_seconds": 1880136,
       "output_tokens": null,
       "output_tokens_known_events": 0,
       "policy_blocks": 0,
@@ -1210,7 +1210,7 @@
     "sambanova:DeepSeek-V3.1": {
       "cached_tokens": null,
       "cached_tokens_known_events": 0,
-      "called": 57,
+      "called": 58,
       "completion_percentage": 0.0,
       "configuration_status": "configured",
       "current_completed_tasks": 0,
@@ -1219,28 +1219,28 @@
       "execution_status": "eligible",
       "input_tokens": null,
       "input_tokens_known_events": 0,
-      "invalid": 57,
-      "last_attempt": "2026-09-07T12:49:01Z",
+      "invalid": 58,
+      "last_attempt": "2026-09-07T18:14:32Z",
       "last_check_status": "provider_failed",
       "last_event_name": "",
       "last_issue_status": "",
       "last_overall_status": "",
-      "last_quota_observation": "2026-09-07T12:49:01Z",
+      "last_quota_observation": "2026-09-07T18:14:32Z",
       "last_run_attempt": "",
       "last_run_id": "",
-      "last_run_utc": "2026-09-07T12:49:01Z",
+      "last_run_utc": "2026-09-07T18:14:32Z",
       "last_success": "",
       "lifecycle_status": "production",
       "model": "DeepSeek-V3.1",
-      "oldest_pending_age_seconds": 1860682,
+      "oldest_pending_age_seconds": 1880136,
       "output_tokens": null,
       "output_tokens_known_events": 0,
       "policy_blocks": 0,
       "provider": "sambanova",
       "provider_attempts_accuracy": "mixed-inferred-and-locally-counted",
-      "provider_failed": 57,
-      "provider_failures": 57,
-      "quota_deferrals": 57,
+      "provider_failed": 58,
+      "provider_failures": 58,
+      "quota_deferrals": 58,
       "reasoning_tokens": null,
       "reasoning_tokens_known_events": 0,
       "rejected": 0,
@@ -1248,8 +1248,8 @@
       "runner_failures": 0,
       "spec": "sambanova:DeepSeek-V3.1",
       "temporarily_unavailable_events": 0,
-      "total_called": 57,
-      "total_provider_attempts": 57,
+      "total_called": 58,
+      "total_provider_attempts": 58,
       "valid": 0,
       "valid_outputs": 0,
       "valid_outputs_with_signals": 0,
@@ -1259,7 +1259,7 @@
     "sambanova:DeepSeek-V3.2": {
       "cached_tokens": null,
       "cached_tokens_known_events": 0,
-      "called": 57,
+      "called": 58,
       "completion_percentage": 0.0,
       "configuration_status": "configured",
       "current_completed_tasks": 0,
@@ -1268,28 +1268,28 @@
       "execution_status": "temporarily_unavailable",
       "input_tokens": null,
       "input_tokens_known_events": 0,
-      "invalid": 57,
-      "last_attempt": "2026-09-07T12:49:01Z",
+      "invalid": 58,
+      "last_attempt": "2026-09-07T18:14:32Z",
       "last_check_status": "provider_failed",
       "last_event_name": "",
       "last_issue_status": "",
       "last_overall_status": "",
-      "last_quota_observation": "2026-09-07T12:49:01Z",
+      "last_quota_observation": "2026-09-07T18:14:32Z",
       "last_run_attempt": "",
       "last_run_id": "",
-      "last_run_utc": "2026-09-07T12:49:01Z",
+      "last_run_utc": "2026-09-07T18:14:32Z",
       "last_success": "",
       "lifecycle_status": "preview",
       "model": "DeepSeek-V3.2",
-      "oldest_pending_age_seconds": 1860682,
+      "oldest_pending_age_seconds": 1880136,
       "output_tokens": null,
       "output_tokens_known_events": 0,
       "policy_blocks": 0,
       "provider": "sambanova",
       "provider_attempts_accuracy": "mixed-inferred-and-locally-counted",
-      "provider_failed": 57,
-      "provider_failures": 57,
-      "quota_deferrals": 57,
+      "provider_failed": 58,
+      "provider_failures": 58,
+      "quota_deferrals": 58,
       "reasoning_tokens": null,
       "reasoning_tokens_known_events": 0,
       "rejected": 0,
@@ -1297,8 +1297,8 @@
       "runner_failures": 0,
       "spec": "sambanova:DeepSeek-V3.2",
       "temporarily_unavailable_events": 1,
-      "total_called": 57,
-      "total_provider_attempts": 58,
+      "total_called": 58,
+      "total_provider_attempts": 59,
       "valid": 0,
       "valid_outputs": 0,
       "valid_outputs_with_signals": 0,
@@ -1308,7 +1308,7 @@
     "sambanova:Meta-Llama-3.3-70B-Instruct": {
       "cached_tokens": null,
       "cached_tokens_known_events": 0,
-      "called": 57,
+      "called": 58,
       "completion_percentage": 0.0,
       "configuration_status": "configured",
       "current_completed_tasks": 0,
@@ -1317,28 +1317,28 @@
       "execution_status": "temporarily_unavailable",
       "input_tokens": null,
       "input_tokens_known_events": 0,
-      "invalid": 57,
-      "last_attempt": "2026-09-07T12:49:01Z",
+      "invalid": 58,
+      "last_attempt": "2026-09-07T18:14:32Z",
       "last_check_status": "provider_failed",
       "last_event_name": "",
       "last_issue_status": "",
       "last_overall_status": "",
-      "last_quota_observation": "2026-09-07T12:49:01Z",
+      "last_quota_observation": "2026-09-07T18:14:32Z",
       "last_run_attempt": "",
       "last_run_id": "",
-      "last_run_utc": "2026-09-07T12:49:01Z",
+      "last_run_utc": "2026-09-07T18:14:32Z",
       "last_success": "",
       "lifecycle_status": "production",
       "model": "Meta-Llama-3.3-70B-Instruct",
-      "oldest_pending_age_seconds": 1860682,
+      "oldest_pending_age_seconds": 1880136,
       "output_tokens": null,
       "output_tokens_known_events": 0,
       "policy_blocks": 0,
       "provider": "sambanova",
       "provider_attempts_accuracy": "mixed-inferred-and-locally-counted",
-      "provider_failed": 57,
-      "provider_failures": 57,
-      "quota_deferrals": 57,
+      "provider_failed": 58,
+      "provider_failures": 58,
+      "quota_deferrals": 58,
       "reasoning_tokens": null,
       "reasoning_tokens_known_events": 0,
       "rejected": 0,
@@ -1346,8 +1346,8 @@
       "runner_failures": 0,
       "spec": "sambanova:Meta-Llama-3.3-70B-Instruct",
       "temporarily_unavailable_events": 1,
-      "total_called": 57,
-      "total_provider_attempts": 58,
+      "total_called": 58,
+      "total_provider_attempts": 59,
       "valid": 0,
       "valid_outputs": 0,
       "valid_outputs_with_signals": 0,
@@ -1372,7 +1372,7 @@
       "last_event_name": "",
       "last_issue_status": "",
       "last_overall_status": "",
-      "last_quota_observation": "2026-09-07T12:49:01Z",
+      "last_quota_observation": "2026-09-07T18:14:32Z",
       "last_run_attempt": "",
       "last_run_id": "",
       "last_run_utc": "2026-09-02T18:52:29Z",
@@ -1421,7 +1421,7 @@
       "last_event_name": "",
       "last_issue_status": "",
       "last_overall_status": "",
-      "last_quota_observation": "2026-09-07T12:49:01Z",
+      "last_quota_observation": "2026-09-07T18:14:32Z",
       "last_run_attempt": "",
       "last_run_id": "",
       "last_run_utc": "2026-09-02T18:52:39Z",
@@ -1455,7 +1455,7 @@
     "sambanova:gpt-oss-120b": {
       "cached_tokens": null,
       "cached_tokens_known_events": 0,
-      "called": 57,
+      "called": 58,
       "completion_percentage": 0.0,
       "configuration_status": "configured",
       "current_completed_tasks": 0,
@@ -1464,28 +1464,28 @@
       "execution_status": "temporarily_unavailable",
       "input_tokens": null,
       "input_tokens_known_events": 0,
-      "invalid": 57,
-      "last_attempt": "2026-09-07T12:49:01Z",
+      "invalid": 58,
+      "last_attempt": "2026-09-07T18:14:32Z",
       "last_check_status": "provider_failed",
       "last_event_name": "",
       "last_issue_status": "",
       "last_overall_status": "",
-      "last_quota_observation": "2026-09-07T12:49:01Z",
+      "last_quota_observation": "2026-09-07T18:14:32Z",
       "last_run_attempt": "",
       "last_run_id": "",
-      "last_run_utc": "2026-09-07T12:49:01Z",
+      "last_run_utc": "2026-09-07T18:14:32Z",
       "last_success": "",
       "lifecycle_status": "production",
       "model": "gpt-oss-120b",
-      "oldest_pending_age_seconds": 1860682,
+      "oldest_pending_age_seconds": 1880136,
       "output_tokens": null,
       "output_tokens_known_events": 0,
       "policy_blocks": 0,
       "provider": "sambanova",
       "provider_attempts_accuracy": "mixed-inferred-and-locally-counted",
-      "provider_failed": 57,
-      "provider_failures": 57,
-      "quota_deferrals": 57,
+      "provider_failed": 58,
+      "provider_failures": 58,
+      "quota_deferrals": 58,
       "reasoning_tokens": null,
       "reasoning_tokens_known_events": 0,
       "rejected": 0,
@@ -1493,8 +1493,8 @@
       "runner_failures": 0,
       "spec": "sambanova:gpt-oss-120b",
       "temporarily_unavailable_events": 3,
-      "total_called": 57,
-      "total_provider_attempts": 60,
+      "total_called": 58,
+      "total_provider_attempts": 61,
       "valid": 0,
       "valid_outputs": 0,
       "valid_outputs_with_signals": 0,
@@ -1850,6 +1850,12 @@
       "outcome": "not_called",
       "provider": "gemini"
     },
+    "00ddcef899cf6ca29a46125b3872f2f08e35d452be259f63dde02325ae2daab2": {
+      "attempt_finished_at": "2026-09-07T18:14:54Z",
+      "model": "poolside/laguna-xs-2.1:free",
+      "outcome": "not_called",
+      "provider": "openrouter"
+    },
     "00de1174413c7512664fff6c310bd9f7419e1065090e9fc4a2db5cbb91c1a63d": {
       "attempt_finished_at": "2026-08-30T22:41:51Z",
       "model": "gemma-4-31B-it",
@@ -2033,6 +2039,12 @@
     "014be8d455cb46df848df88ad8d9868185b2144b4b9ecd6a8c7c6d9255877604": {
       "attempt_finished_at": "2026-09-05T18:11:39Z",
       "model": "DeepSeek-V3.2",
+      "outcome": "not_called",
+      "provider": "sambanova"
+    },
+    "014c925a8f635c6832f1c773c7b2c6506ca8401cea84fe58a3cda31cf36219f1": {
+      "attempt_finished_at": "2026-09-07T18:14:32Z",
+      "model": "DeepSeek-V3.1",
       "outcome": "not_called",
       "provider": "sambanova"
     },
@@ -2480,6 +2492,12 @@
       "outcome": "not_called",
       "provider": "sambanova"
     },
+    "02773c9ec225146012f48c9412860964479fd977ac56e485cfb796e68d8d44a0": {
+      "attempt_finished_at": "2026-09-07T18:14:32Z",
+      "model": "DeepSeek-V3.1",
+      "outcome": "not_called",
+      "provider": "sambanova"
+    },
     "02777d090206035f12dc014dd9e199c909a8518641b39644218523960526ab0e": {
       "attempt_finished_at": "2026-08-29T10:16:34Z",
       "model": "Meta-Llama-3.3-70B-Instruct",
@@ -2729,6 +2747,12 @@
     "0321e1ed39898b634213a7f054e33006e50738a50f162d3c007c505b21b5e875": {
       "attempt_finished_at": "2026-09-01T00:08:05Z",
       "model": "DeepSeek-V3.2",
+      "outcome": "not_called",
+      "provider": "sambanova"
+    },
+    "032966acbe2b05ff032f94e9bc26cded13ce663568e659f1ccd33265f5a6a1a1": {
+      "attempt_finished_at": "2026-09-07T18:14:32Z",
+      "model": "DeepSeek-V3.1",
       "outcome": "not_called",
       "provider": "sambanova"
     },
@@ -3019,6 +3043,12 @@
       "model": "gpt-oss-120b",
       "outcome": "not_called",
       "provider": "sambanova"
+    },
+    "03ec44a8c30ff5043c2940279b22cbb7e118f8dbe841febb338d9850a8f7f970": {
+      "attempt_finished_at": "2026-09-07T18:14:54Z",
+      "model": "nvidia/nemotron-nano-9b-v2:free",
+      "outcome": "not_called",
+      "provider": "openrouter"
     },
     "03f3b790e010a9ba4aab36ffd3b69d28c06e72755f40de9f7c27e95f8fac2eac": {
       "attempt_finished_at": "2026-09-01T05:01:47Z",
@@ -4916,6 +4946,12 @@
       "outcome": "not_called",
       "provider": "sambanova"
     },
+    "0845df526e3e87b3c5408a6c47b52f30d1b7e5c2751febbd5d56648906734dbd": {
+      "attempt_finished_at": "2026-09-07T18:14:32Z",
+      "model": "DeepSeek-V3.1",
+      "outcome": "not_called",
+      "provider": "sambanova"
+    },
     "084a0dff17fe43590443c813d14f1841ab65e2221e679d4f3934e63ed0d2c54d": {
       "attempt_finished_at": "2026-08-31T15:04:57Z",
       "model": "nvidia/nemotron-nano-9b-v2:free",
@@ -5228,6 +5264,12 @@
       "outcome": "validator_rejected",
       "provider": "sambanova"
     },
+    "090b917ccef76cefe5c3fbe5a967e3ece77385b1350e3f1bc1afa455352f374f": {
+      "attempt_finished_at": "2026-09-07T18:14:32Z",
+      "model": "DeepSeek-V3.1",
+      "outcome": "not_called",
+      "provider": "sambanova"
+    },
     "090e126d9089ba14ab0c081bcbe295aebf2f3098f9a402ea4784381715e2be29": {
       "attempt_finished_at": "2026-09-02T18:50:28Z",
       "model": "gemini-3.5-flash",
@@ -5293,6 +5335,12 @@
       "model": "DeepSeek-V3.2",
       "outcome": "not_called",
       "provider": "sambanova"
+    },
+    "092df8daf74b9a9da757d91b31c4910a14232ddb3dbc4a422f11e5730318ccf9": {
+      "attempt_finished_at": "2026-09-07T18:14:54Z",
+      "model": "google/gemma-4-31b-it:free",
+      "outcome": "not_called",
+      "provider": "openrouter"
     },
     "0933ab4d0588968d78cb04199f459badaf0a97b630bb8af98f367949998895e3": {
       "attempt_finished_at": "2026-08-31T06:58:12Z",
@@ -5611,6 +5659,12 @@
       "model": "openai/gpt-oss-20b:free",
       "outcome": "not_called",
       "provider": "openrouter"
+    },
+    "09f08bdca8373c5db70e9a6303fcf9099cbc14f3424b8311c5e21ae1f87ca118": {
+      "attempt_finished_at": "2026-09-07T18:14:32Z",
+      "model": "Meta-Llama-3.3-70B-Instruct",
+      "outcome": "provider_failure",
+      "provider": "sambanova"
     },
     "09f970ab8e8e6cf0548b1b0b45d00c7a24fccb85a84e462eae7ad797d2a1f6ce": {
       "attempt_finished_at": "2026-09-03T21:41:09Z",
@@ -6227,6 +6281,12 @@
     "0b9333f7ed2fd60312eff562e4b5c110f5aad118b82ceb94aad7639ed0a4d687": {
       "attempt_finished_at": "2026-08-31T00:52:20Z",
       "model": "gemma-4-31B-it",
+      "outcome": "not_called",
+      "provider": "sambanova"
+    },
+    "0b94118fbe4da26b1c3ca71331bb149938b8db138a90649f7f0700f6c9aee07f": {
+      "attempt_finished_at": "2026-09-07T18:14:32Z",
+      "model": "DeepSeek-V3.1",
       "outcome": "not_called",
       "provider": "sambanova"
     },
@@ -6932,6 +6992,12 @@
       "outcome": "not_called",
       "provider": "sambanova"
     },
+    "0d35295885c0d42429b838f2b4645c13ae89d56cd19db3f9b8123932b9ab91a8": {
+      "attempt_finished_at": "2026-09-07T18:14:32Z",
+      "model": "DeepSeek-V3.1",
+      "outcome": "not_called",
+      "provider": "sambanova"
+    },
     "0d3842c578967257a561d22b5ccccfd0280364c97a1263531eb003402d81423b": {
       "attempt_finished_at": "2026-09-04T23:00:19Z",
       "model": "DeepSeek-V3.1",
@@ -7394,6 +7460,12 @@
       "outcome": "not_called",
       "provider": "gemini"
     },
+    "0e7fdbad0125bbf1d4ad32ba364b92a3fac7b12bc32bb3f9c2fb4bb478a69822": {
+      "attempt_finished_at": "2026-09-07T18:14:32Z",
+      "model": "DeepSeek-V3.1",
+      "outcome": "not_called",
+      "provider": "sambanova"
+    },
     "0e8d340307ff0a548f51768b13104745adcea6b0fcfb6227e8b58212bea2b733": {
       "attempt_finished_at": "2026-09-07T06:14:32Z",
       "model": "DeepSeek-V3.1",
@@ -7409,6 +7481,12 @@
     "0e9f25e3cdd3f42490ebfd0088eb37939b61b96f38164683a3ebdb23ac5ca169": {
       "attempt_finished_at": "2026-08-29T10:16:34Z",
       "model": "gemma-4-31B-it",
+      "outcome": "not_called",
+      "provider": "sambanova"
+    },
+    "0ea71bf3ea10bfaa352707a5467f11c9cae2811b611575e8efc88943c3ed7156": {
+      "attempt_finished_at": "2026-09-07T18:14:32Z",
+      "model": "DeepSeek-V3.1",
       "outcome": "not_called",
       "provider": "sambanova"
     },
@@ -10412,6 +10490,12 @@
       "outcome": "not_called",
       "provider": "sambanova"
     },
+    "15b3494a2bd91f66454e2c426915c07d262dd5e37af2f84343886fa944c67b6b": {
+      "attempt_finished_at": "2026-09-07T18:14:54Z",
+      "model": "poolside/laguna-s-2.1:free",
+      "outcome": "not_called",
+      "provider": "openrouter"
+    },
     "15b7af1feb53d62c591aa9b81c728a48ab8c2fa20bcdf6563dcbf5847d5ba0f2": {
       "attempt_finished_at": "2026-09-04T06:05:07Z",
       "model": "DeepSeek-V3.2",
@@ -11054,6 +11138,12 @@
       "outcome": "not_called",
       "provider": "openrouter"
     },
+    "173e00ce325412a49a8ac65e4db3a49389b62eb65750e7a20eb1c394b0186999": {
+      "attempt_finished_at": "2026-09-07T18:14:54Z",
+      "model": "google/gemma-4-31b-it:free",
+      "outcome": "not_called",
+      "provider": "openrouter"
+    },
     "174347293c492cecd067e19a0e951f94a82ae41c573387bfcdd8e578b8604c62": {
       "attempt_finished_at": "2026-09-05T18:12:08Z",
       "model": "google/gemma-4-26b-a4b-it:free",
@@ -11087,6 +11177,12 @@
     "1769f331454885e228d4288f98f702f9c081ceb6ffc82b1d2816490ce4558412": {
       "attempt_finished_at": "2026-08-30T07:06:54Z",
       "model": "DeepSeek-V3.2",
+      "outcome": "not_called",
+      "provider": "sambanova"
+    },
+    "176e58472d9ceaaf8393cd64c86bd1327e2eac836380833ba081689d175608fa": {
+      "attempt_finished_at": "2026-09-07T18:14:32Z",
+      "model": "DeepSeek-V3.1",
       "outcome": "not_called",
       "provider": "sambanova"
     },
@@ -11906,6 +12002,12 @@
       "outcome": "not_called",
       "provider": "sambanova"
     },
+    "1916d679743f6be135641d36c853725cad5730394ef020bcaecdbf9e123432b4": {
+      "attempt_finished_at": "2026-09-07T18:14:54Z",
+      "model": "nvidia/nemotron-nano-9b-v2:free",
+      "outcome": "not_called",
+      "provider": "openrouter"
+    },
     "19199c3560970708d61f9d5f6100b607d0a6b00ae0c60ede9db0a5c80bce5569": {
       "attempt_finished_at": "2026-09-05T15:59:01Z",
       "model": "DeepSeek-V3.2",
@@ -11981,6 +12083,12 @@
     "194906633e118267db4c7b573bf3dc5a2c179bdede6088f4fb783dc592ac3edc": {
       "attempt_finished_at": "2026-09-06T15:39:39Z",
       "model": "google/gemma-4-31b-it:free",
+      "outcome": "not_called",
+      "provider": "openrouter"
+    },
+    "19531229fca2c88b66a4848a69b09172eb3f238aa70038c77cafcff3caab4b1c": {
+      "attempt_finished_at": "2026-09-07T18:14:54Z",
+      "model": "nvidia/nemotron-3.5-lightning:free",
       "outcome": "not_called",
       "provider": "openrouter"
     },
@@ -12181,6 +12289,12 @@
       "model": "DeepSeek-V3.1",
       "outcome": "not_called",
       "provider": "sambanova"
+    },
+    "19b6613ba8f590d9a1da96436c2638d0119e3e43ab43e7edd635108ce74f2486": {
+      "attempt_finished_at": "2026-09-07T18:14:54Z",
+      "model": "google/gemma-4-31b-it:free",
+      "outcome": "not_called",
+      "provider": "openrouter"
     },
     "19bb303b93a5aff6c6851ed6162a1787410787dd0b7889992d51bb3bb9067dd3": {
       "attempt_finished_at": "2026-08-30T01:28:36Z",
@@ -12650,6 +12764,12 @@
       "outcome": "not_called",
       "provider": "sambanova"
     },
+    "1b22d7c11dafb6111e41646cb1bd28af97e5929fc36811605b7c09bf242e5477": {
+      "attempt_finished_at": "2026-09-07T18:14:54Z",
+      "model": "nvidia/nemotron-nano-9b-v2:free",
+      "outcome": "not_called",
+      "provider": "openrouter"
+    },
     "1b230d21bd93eede4c50507aac3e2e00cda45ce918333162a0bf0b6b1142e3bd": {
       "attempt_finished_at": "2026-09-04T15:02:29Z",
       "model": "DeepSeek-V3.2",
@@ -12959,6 +13079,12 @@
     "1bf67cdde1d520cb6397da59a106bab80ad2a270ea9ae992020c388a1b48fcd3": {
       "attempt_finished_at": "2026-08-31T06:57:59Z",
       "model": "Meta-Llama-3.3-70B-Instruct",
+      "outcome": "not_called",
+      "provider": "sambanova"
+    },
+    "1bfc943d0e894162102765addfbd19d6004c8d6c94f11e8f3a68b017e4509589": {
+      "attempt_finished_at": "2026-09-07T18:14:32Z",
+      "model": "DeepSeek-V3.1",
       "outcome": "not_called",
       "provider": "sambanova"
     },
@@ -14666,6 +14792,12 @@
       "outcome": "not_called",
       "provider": "sambanova"
     },
+    "1ff521663d3d30a094c77e72aca9d1ee76ef19db91f8b1910c66af89072b4633": {
+      "attempt_finished_at": "2026-09-07T18:14:32Z",
+      "model": "DeepSeek-V3.1",
+      "outcome": "not_called",
+      "provider": "sambanova"
+    },
     "1ff673f632af661c2ccbbbb542d670bb5ddc95b83e2756a9ea69ef931f325ed5": {
       "attempt_finished_at": "2026-09-05T22:20:39Z",
       "model": "DeepSeek-V3.1",
@@ -15517,6 +15649,12 @@
       "model": "nvidia/nemotron-nano-9b-v2:free",
       "outcome": "not_called",
       "provider": "openrouter"
+    },
+    "223442e3e7f7fc13265070ad4c7443e174798230653cf9fde496349808d97e40": {
+      "attempt_finished_at": "2026-09-07T18:14:32Z",
+      "model": "DeepSeek-V3.1",
+      "outcome": "not_called",
+      "provider": "sambanova"
     },
     "2235ab2c939d50f58083fe3218eaa40c5a93f1f15519e2380de61bf7ce62d0aa": {
       "attempt_finished_at": "2026-09-06T17:43:54Z",
@@ -20036,6 +20174,12 @@
       "outcome": "not_called",
       "provider": "sambanova"
     },
+    "2d682caf130c595d8d968b8cb9fdc3d9b9602e692af882b4a3d7dacbfcfe75c0": {
+      "attempt_finished_at": "2026-09-07T18:14:32Z",
+      "model": "DeepSeek-V3.1",
+      "outcome": "not_called",
+      "provider": "sambanova"
+    },
     "2d6a8475ef3d62ddc24753c664048aaf0ca3ef7a1785f7da9e683671d758877a": {
       "attempt_finished_at": "2026-09-02T18:50:08Z",
       "model": "gpt-oss-120b",
@@ -20227,6 +20371,12 @@
       "model": "gemini-3.5-flash",
       "outcome": "not_called",
       "provider": "gemini"
+    },
+    "2dd8f094d69a871f615b69037fee83c0361749304337294f2da264c5ccc6f421": {
+      "attempt_finished_at": "2026-09-07T18:14:54Z",
+      "model": "poolside/laguna-s-2.1:free",
+      "outcome": "not_called",
+      "provider": "openrouter"
     },
     "2dd93edc8a569470c455785290c0e6d9c1f4686936604df2727f10bc97b25a75": {
       "attempt_finished_at": "2026-08-30T12:50:10Z",
@@ -20867,6 +21017,12 @@
     "2f5c4bbf77b13eb92865c475ae431cf3dedd77a1b2caf995ea7edd6040bb2c47": {
       "attempt_finished_at": "2026-08-31T20:47:03Z",
       "model": "gemma-4-31B-it",
+      "outcome": "not_called",
+      "provider": "sambanova"
+    },
+    "2f5ca508fb79d0fc87d8da8ff3058bb73fffd72723889aa11ac1e61b9491f5a3": {
+      "attempt_finished_at": "2026-09-07T18:14:32Z",
+      "model": "DeepSeek-V3.1",
       "outcome": "not_called",
       "provider": "sambanova"
     },
@@ -21806,6 +21962,12 @@
       "outcome": "not_called",
       "provider": "sambanova"
     },
+    "31aa3323755452c1a0ab1e4d2959834fb82a78710e92cd863d0b094921831c87": {
+      "attempt_finished_at": "2026-09-07T18:14:32Z",
+      "model": "DeepSeek-V3.1",
+      "outcome": "not_called",
+      "provider": "sambanova"
+    },
     "31accc8cb48d3773d86237c507ebadb08c193add0b9ae121771bd46a0e9a9077": {
       "attempt_finished_at": "2026-09-05T10:16:40Z",
       "model": "DeepSeek-V3.1",
@@ -21911,6 +22073,12 @@
     "31f4c4b653a3bac1affad2ecd19bcd8fe695817be90d5c704bc314f9d8dc022c": {
       "attempt_finished_at": "2026-09-06T23:13:55Z",
       "model": "DeepSeek-V3.2",
+      "outcome": "not_called",
+      "provider": "sambanova"
+    },
+    "31faf80f67202c54f04334181487254de7f7456c2270bd242b9d9c2c7b8bcc7c": {
+      "attempt_finished_at": "2026-09-07T18:14:32Z",
+      "model": "DeepSeek-V3.1",
       "outcome": "not_called",
       "provider": "sambanova"
     },
@@ -23192,6 +23360,12 @@
       "outcome": "not_called",
       "provider": "openrouter"
     },
+    "34d5a4aebce673f55580de4b8e4b87b92ec2a3b0a9638be34883e6438c409ef0": {
+      "attempt_finished_at": "2026-09-07T18:14:54Z",
+      "model": "poolside/laguna-xs-2.1:free",
+      "outcome": "not_called",
+      "provider": "openrouter"
+    },
     "34d9ad2817308f6ac384fee768708a0e66351316ab372971c2ef5ea5daafec92": {
       "attempt_finished_at": "2026-09-01T05:01:47Z",
       "model": "DeepSeek-V3.1",
@@ -23371,6 +23545,12 @@
       "model": "DeepSeek-V3.2",
       "outcome": "not_called",
       "provider": "sambanova"
+    },
+    "353af0ef4746ddc87dd38ee631b040d5d9144792c4fca40e2de65ec9c3819d4f": {
+      "attempt_finished_at": "2026-09-07T18:14:54Z",
+      "model": "google/gemma-4-31b-it:free",
+      "outcome": "not_called",
+      "provider": "openrouter"
     },
     "353ee63dc8035c94a6aa50da41b9c8a7d568ab053cc9db1abd709413c47488a6": {
       "attempt_finished_at": "2026-08-30T12:50:10Z",
@@ -25430,6 +25610,12 @@
       "outcome": "not_called",
       "provider": "sambanova"
     },
+    "3a131a003dc7b4228d9082ecaada9273b945cf5ac5302030b8277d11c748d073": {
+      "attempt_finished_at": "2026-09-07T18:14:32Z",
+      "model": "DeepSeek-V3.1",
+      "outcome": "not_called",
+      "provider": "sambanova"
+    },
     "3a1382c2527243634eae289e97a65439112eefcf1a56f41bba6578e98cd2cd80": {
       "attempt_finished_at": "2026-09-06T15:36:43Z",
       "model": "DeepSeek-V3.2",
@@ -25898,6 +26084,12 @@
       "outcome": "not_called",
       "provider": "sambanova"
     },
+    "3b221d137314cc71d228d1efd969fa93871041f8a4991b8f98fe6b654f29eea2": {
+      "attempt_finished_at": "2026-09-07T18:14:32Z",
+      "model": "DeepSeek-V3.1",
+      "outcome": "not_called",
+      "provider": "sambanova"
+    },
     "3b22eff41af2eb672250a83c23776dcd1f911ea82fa11b816362ec4b6047a1e0": {
       "attempt_finished_at": "2026-08-29T18:41:50Z",
       "model": "DeepSeek-V3.1",
@@ -26101,6 +26293,12 @@
       "model": "Meta-Llama-3.3-70B-Instruct",
       "outcome": "not_called",
       "provider": "sambanova"
+    },
+    "3b9e998ea132535781e9aa3ac1c158aac9dc3929505702d1977e62ce6a80544e": {
+      "attempt_finished_at": "2026-09-07T18:14:54Z",
+      "model": "google/gemma-4-26b-a4b-it:free",
+      "outcome": "not_called",
+      "provider": "openrouter"
     },
     "3ba5d900733ce6c616d9f2ae3e960408944789573aed82f63a10f1eea0b4e6aa": {
       "attempt_finished_at": "2026-09-01T05:01:47Z",
@@ -26782,6 +26980,12 @@
     },
     "3d688efb57463960762b745a3c7687aef247b5f7ed4b2576220c52276d4914f7": {
       "attempt_finished_at": "2026-09-03T01:59:08Z",
+      "model": "DeepSeek-V3.1",
+      "outcome": "not_called",
+      "provider": "sambanova"
+    },
+    "3d6a96850bddc97046549262affa43120ec2ad63f0c9c947d96a2c4d05e6c18f": {
+      "attempt_finished_at": "2026-09-07T18:14:32Z",
       "model": "DeepSeek-V3.1",
       "outcome": "not_called",
       "provider": "sambanova"
@@ -30872,6 +31076,12 @@
       "outcome": "not_called",
       "provider": "gemini"
     },
+    "476bdec10c929f42cbaa09fec0c31ea516fd65cba89038ab8c447013fce389b6": {
+      "attempt_finished_at": "2026-09-07T18:14:32Z",
+      "model": "DeepSeek-V3.1",
+      "outcome": "not_called",
+      "provider": "sambanova"
+    },
     "4775c65bf0fbdb53e3205362618f3176a9436dd4b8f018f87c1d5ddd643aab77": {
       "attempt_finished_at": "2026-09-06T17:43:54Z",
       "model": "DeepSeek-V3.1",
@@ -31061,6 +31271,12 @@
     "47c5d0eaaa2cb3d297673607f80a1d587c7646ba8a08f059188ec912a6373b3b": {
       "attempt_finished_at": "2026-08-29T10:16:34Z",
       "model": "gpt-oss-120b",
+      "outcome": "not_called",
+      "provider": "sambanova"
+    },
+    "47c664b5a8c6b13556bbe91e9b383494ce4bc1c3afc234e272e4297ee48082d0": {
+      "attempt_finished_at": "2026-09-07T18:14:32Z",
+      "model": "DeepSeek-V3.1",
       "outcome": "not_called",
       "provider": "sambanova"
     },
@@ -33266,6 +33482,12 @@
       "outcome": "not_called",
       "provider": "sambanova"
     },
+    "4d45b39e8ce2505f7aa8720224f662c48e9eb31e7039b521c3a2adf88c9301e2": {
+      "attempt_finished_at": "2026-09-07T18:14:32Z",
+      "model": "gpt-oss-120b",
+      "outcome": "provider_failure",
+      "provider": "sambanova"
+    },
     "4d46859bd65393cad08e2c123d49d8fdb9b124570e7aad338bcf9dfa5e56eb7f": {
       "attempt_finished_at": "2026-08-31T00:52:20Z",
       "model": "gpt-oss-120b",
@@ -34111,6 +34333,12 @@
       "model": "DeepSeek-V3.2",
       "outcome": "not_called",
       "provider": "sambanova"
+    },
+    "4f5a68103fe79402e29a688024f5ff129d7f5b07065fdfe35e8e71bfecf12aa3": {
+      "attempt_finished_at": "2026-09-07T18:14:54Z",
+      "model": "openai/gpt-oss-20b:free",
+      "outcome": "not_called",
+      "provider": "openrouter"
     },
     "4f5ba104434d39a19cf649d306a47d317ee77c670879600cc448366bd65d86be": {
       "attempt_finished_at": "2026-09-01T05:01:47Z",
@@ -35024,6 +35252,12 @@
       "outcome": "provider_failure",
       "provider": "sambanova"
     },
+    "51ae862f48ae9c8c23e5faa1f144ec7dfaee771fccec6410ea69a8803e4896d0": {
+      "attempt_finished_at": "2026-09-07T18:14:54Z",
+      "model": "openai/gpt-oss-20b:free",
+      "outcome": "not_called",
+      "provider": "openrouter"
+    },
     "51b46aee462e62f0a88abc39f7ed0ee815761efeefb00f4fd367576df3afe999": {
       "attempt_finished_at": "2026-09-03T01:59:08Z",
       "model": "DeepSeek-V3.2",
@@ -35077,6 +35311,12 @@
       "model": "google/gemma-4-31b-it:free",
       "outcome": "not_called",
       "provider": "openrouter"
+    },
+    "51fd311cbbf780088968d19f09a8a7fc077451ea504866898bc47e4df3af9a21": {
+      "attempt_finished_at": "2026-09-07T18:14:32Z",
+      "model": "DeepSeek-V3.1",
+      "outcome": "not_called",
+      "provider": "sambanova"
     },
     "52026d72c039a1e94e6c38a07ac8b36ca556c4bc6f64ef37fbd794308621154a": {
       "attempt_finished_at": "2026-09-07T01:29:37Z",
@@ -35782,6 +36022,12 @@
     },
     "53bf5d65ecff795e46b533fd01f40c2556d92d8eaa619382be759a36a173980a": {
       "attempt_finished_at": "2026-09-01T05:01:47Z",
+      "model": "DeepSeek-V3.1",
+      "outcome": "not_called",
+      "provider": "sambanova"
+    },
+    "53c4f27b2cfb740d6cef77083bc27a928d2a76371f51182ffb5031ba46014fe0": {
+      "attempt_finished_at": "2026-09-07T18:14:32Z",
       "model": "DeepSeek-V3.1",
       "outcome": "not_called",
       "provider": "sambanova"
@@ -37298,6 +37544,12 @@
       "outcome": "not_called",
       "provider": "sambanova"
     },
+    "5781ac1844e07045400322bb4cb19b80bb02568ec9ffb021c25daead59c6528e": {
+      "attempt_finished_at": "2026-09-07T18:14:32Z",
+      "model": "DeepSeek-V3.1",
+      "outcome": "not_called",
+      "provider": "sambanova"
+    },
     "578ca71e64d120155cf7ef792a007f21274cec3bc31084e7501a2eea41e19109": {
       "attempt_finished_at": "2026-08-30T22:41:51Z",
       "model": "DeepSeek-V3.1",
@@ -37327,6 +37579,12 @@
       "model": "google/gemma-4-31b-it:free",
       "outcome": "not_called",
       "provider": "openrouter"
+    },
+    "579f8dbb801cd92a9d200cf2f263cf4f36775e8a51dfe02dcddbd8f6e8b87aa4": {
+      "attempt_finished_at": "2026-09-07T18:14:32Z",
+      "model": "DeepSeek-V3.1",
+      "outcome": "not_called",
+      "provider": "sambanova"
     },
     "57a3d9836700e6424d58d545356c5b2d23b843ede54c6acb5e9341f9ee0db695": {
       "attempt_finished_at": "2026-08-29T10:16:34Z",
@@ -37528,6 +37786,12 @@
     },
     "5817ed12e44f13efbaa2311afbde44b648e138c670499af621bf7b43c475aae1": {
       "attempt_finished_at": "2026-09-04T23:00:19Z",
+      "model": "DeepSeek-V3.1",
+      "outcome": "not_called",
+      "provider": "sambanova"
+    },
+    "58196aa70c075c7c6ac0fe2fb023051efce8a597e5e3e4da81dd009cf5728348": {
+      "attempt_finished_at": "2026-09-07T18:14:32Z",
       "model": "DeepSeek-V3.1",
       "outcome": "not_called",
       "provider": "sambanova"
@@ -39188,6 +39452,12 @@
       "outcome": "not_called",
       "provider": "sambanova"
     },
+    "5c3a6b5844b8c3f3b5b4ca210635b59a909c3464551bdc59c89f39609050f668": {
+      "attempt_finished_at": "2026-09-07T18:14:54Z",
+      "model": "google/gemma-4-31b-it:free",
+      "outcome": "not_called",
+      "provider": "openrouter"
+    },
     "5c3b01b4e428975f0253b189f0513aa8127da8ce44eb087ced1c741668c3f4e2": {
       "attempt_finished_at": "2026-09-04T11:10:58Z",
       "model": "DeepSeek-V3.2",
@@ -39313,6 +39583,12 @@
       "model": "DeepSeek-V3.1",
       "outcome": "not_called",
       "provider": "sambanova"
+    },
+    "5c9993c3a0586adfb237f2829708ad906c83836d287fcc3c1181586e82ee15e3": {
+      "attempt_finished_at": "2026-09-07T18:14:54Z",
+      "model": "openai/gpt-oss-20b:free",
+      "outcome": "not_called",
+      "provider": "openrouter"
     },
     "5ca1b6df0dddbdcd7f7d5c01c217b0f012fd3e898c6f722141fef4b8f37f931c": {
       "attempt_finished_at": "2026-08-30T22:41:51Z",
@@ -40190,6 +40466,12 @@
       "outcome": "not_called",
       "provider": "sambanova"
     },
+    "5ee648be4d10a7b5b368f73e8a5d6765d6eccfb2b6b898ef2ddeb0ef6fd05d46": {
+      "attempt_finished_at": "2026-09-07T18:14:32Z",
+      "model": "DeepSeek-V3.1",
+      "outcome": "not_called",
+      "provider": "sambanova"
+    },
     "5ee6f72621e649754b7a3de459d509cba23ba5a3a01696d101b451280e1be218": {
       "attempt_finished_at": "2026-09-05T15:59:01Z",
       "model": "DeepSeek-V3.2",
@@ -40464,6 +40746,12 @@
       "attempt_finished_at": "2026-08-29T10:16:33Z",
       "model": "gemma-4-31B-it",
       "outcome": "provider_failure",
+      "provider": "sambanova"
+    },
+    "5f9a7a82e03ed0a38c0a76191ef35b3099925ccf4bb0f689db07a8461b45617c": {
+      "attempt_finished_at": "2026-09-07T18:14:32Z",
+      "model": "DeepSeek-V3.1",
+      "outcome": "not_called",
       "provider": "sambanova"
     },
     "5f9ea3513a4f7983db6fb1bbee7d45f4af39d04e8a2120bfb6230ecef5aca5dd": {
@@ -41227,6 +41515,12 @@
       "model": "google/gemma-4-26b-a4b-it:free",
       "outcome": "not_called",
       "provider": "openrouter"
+    },
+    "61a35cd3a656341debd79b5b6b2078963d28e436b4a2ec438e49e12a2859d31f": {
+      "attempt_finished_at": "2026-09-07T18:14:32Z",
+      "model": "DeepSeek-V3.1",
+      "outcome": "not_called",
+      "provider": "sambanova"
     },
     "61a935025fbe52df524556f84067049f702c2d9e075dd35e402cb8da7758bf9c": {
       "attempt_finished_at": "2026-09-05T12:54:08Z",
@@ -42524,6 +42818,12 @@
       "outcome": "not_called",
       "provider": "sambanova"
     },
+    "64db40bb491fae2e7cc333204afe167d561efec652f82f3dd87972fdd2d31822": {
+      "attempt_finished_at": "2026-09-07T18:14:32Z",
+      "model": "DeepSeek-V3.1",
+      "outcome": "not_called",
+      "provider": "sambanova"
+    },
     "64dd6048e2197c4a5d6e08f8e1e65e82a24ffad7b75223f41f5063db4ee6eeea": {
       "attempt_finished_at": "2026-09-05T16:00:39Z",
       "model": "poolside/laguna-xs-2.1:free",
@@ -42883,6 +43183,12 @@
       "model": "google/gemma-4-26b-a4b-it:free",
       "outcome": "not_called",
       "provider": "openrouter"
+    },
+    "65a4eb31d7b8ea492bffe5292eb4f51c61eb72009f28c7ed9c345850affd640d": {
+      "attempt_finished_at": "2026-09-07T18:14:32Z",
+      "model": "DeepSeek-V3.1",
+      "outcome": "not_called",
+      "provider": "sambanova"
     },
     "65a83a246d3eba1942d3435af582c6fb7719e7d01541e01299996bae8e4a23d8": {
       "attempt_finished_at": "2026-08-31T00:52:20Z",
@@ -43988,6 +44294,12 @@
       "outcome": "not_called",
       "provider": "sambanova"
     },
+    "686c7662ae79d0ed741d5b752e1a6789935ec226676c3c8c081d194f7ec3f805": {
+      "attempt_finished_at": "2026-09-07T18:14:32Z",
+      "model": "DeepSeek-V3.1",
+      "outcome": "not_called",
+      "provider": "sambanova"
+    },
     "6874ded35b77924b65b0074c19187cef92cfddc7133397715dae471cbe03506f": {
       "attempt_finished_at": "2026-09-06T12:22:45Z",
       "model": "DeepSeek-V3.1",
@@ -44059,6 +44371,12 @@
       "model": "MiniMax-M2.7",
       "outcome": "not_called",
       "provider": "sambanova"
+    },
+    "688b4dae23801298f043e7082196f1d58e0b2799b7165aa1644b83bd6627ef14": {
+      "attempt_finished_at": "2026-09-07T18:14:54Z",
+      "model": "google/gemma-4-26b-a4b-it:free",
+      "outcome": "not_called",
+      "provider": "openrouter"
     },
     "68939efd6fa9a4fe9aa28af38a50fd4d69c1c23eccb00dfdaca1087e22ef40d7": {
       "attempt_finished_at": "2026-08-30T07:06:54Z",
@@ -45158,6 +45476,12 @@
       "outcome": "not_called",
       "provider": "sambanova"
     },
+    "6b2f01d65ed0fdbe87a8a5bcc204bbecd268802b20c436cc737fd3c180372a6f": {
+      "attempt_finished_at": "2026-09-07T18:14:32Z",
+      "model": "DeepSeek-V3.1",
+      "outcome": "not_called",
+      "provider": "sambanova"
+    },
     "6b3543f9cd25c96439e532d7f9bfbef03d80c474eadd526ab7f986c8bd6aef4c": {
       "attempt_finished_at": "2026-08-30T01:28:08Z",
       "model": "gpt-oss-120b",
@@ -45287,6 +45611,12 @@
     "6b87f6c4481da6666c16a004fdc50ad624cf64af06b8ddf437466a3a2bd5ef3c": {
       "attempt_finished_at": "2026-08-31T20:47:03Z",
       "model": "gemma-4-31B-it",
+      "outcome": "not_called",
+      "provider": "sambanova"
+    },
+    "6b967e0863781e2a5045efd45f2c141fc41f1af0b67b553a3af045d9076326bb": {
+      "attempt_finished_at": "2026-09-07T18:14:32Z",
+      "model": "DeepSeek-V3.1",
       "outcome": "not_called",
       "provider": "sambanova"
     },
@@ -45839,6 +46169,12 @@
     "6cc5eba122cfe0360552bc1de4882610f6f85e81612a89c3f2ebf856abfc7159": {
       "attempt_finished_at": "2026-08-31T20:47:03Z",
       "model": "MiniMax-M2.7",
+      "outcome": "not_called",
+      "provider": "sambanova"
+    },
+    "6cc7f1445c2c9cd7fee51ae544028ab04d5de7fc9ab02707ddb5e0bb3564655e": {
+      "attempt_finished_at": "2026-09-07T18:14:32Z",
+      "model": "DeepSeek-V3.1",
       "outcome": "not_called",
       "provider": "sambanova"
     },
@@ -46544,6 +46880,12 @@
       "outcome": "not_called",
       "provider": "sambanova"
     },
+    "6e7d3d87204fe97d97d3a7dbb7b8a723358aa0761852e2824f927ca002628db3": {
+      "attempt_finished_at": "2026-09-07T18:14:54Z",
+      "model": "nvidia/nemotron-3.5-lightning:free",
+      "outcome": "not_called",
+      "provider": "openrouter"
+    },
     "6e84722d544c7be3776fef20610b34b9d03c11a407d70c840f8ca4c59361016c": {
       "attempt_finished_at": "2026-09-04T06:05:07Z",
       "model": "DeepSeek-V3.1",
@@ -46957,6 +47299,12 @@
       "model": "gemma-4-31B-it",
       "outcome": "not_called",
       "provider": "sambanova"
+    },
+    "6fa2e31c64ce3a5bb195ff5d808ad86e24b624af3abae0ceaeb8df90ad79dcd2": {
+      "attempt_finished_at": "2026-09-07T18:14:54Z",
+      "model": "poolside/laguna-xs-2.1:free",
+      "outcome": "not_called",
+      "provider": "openrouter"
     },
     "6faa8df58ca4cbd7895c1d1f31550f1c43a8a4fe7f49d3a295ab2a56adbde5a8": {
       "attempt_finished_at": "2026-09-06T23:13:55Z",
@@ -48173,6 +48521,12 @@
     "72938aaae0ff103775e963be4c22d00d20e3c678835843ba8a0962a13944a728": {
       "attempt_finished_at": "2026-08-28T21:01:03Z",
       "model": "Meta-Llama-3.3-70B-Instruct",
+      "outcome": "not_called",
+      "provider": "sambanova"
+    },
+    "729477e6dbdf4dd3c4d62096cb2f355a7b9d6a56410f9cff8eb2116b71a89d01": {
+      "attempt_finished_at": "2026-09-07T18:14:32Z",
+      "model": "DeepSeek-V3.1",
       "outcome": "not_called",
       "provider": "sambanova"
     },
@@ -49934,6 +50288,12 @@
       "outcome": "not_called",
       "provider": "openrouter"
     },
+    "76d0dbd017780b1362e0f9942ebae9677d71a22320023388affba07d5cf4767f": {
+      "attempt_finished_at": "2026-09-07T18:14:32Z",
+      "model": "DeepSeek-V3.1",
+      "outcome": "not_called",
+      "provider": "sambanova"
+    },
     "76d1678c6c87726590c969e5d6e6fe4d5f042a5b2173ae7d16b31fe5b28bb505": {
       "attempt_finished_at": "2026-08-31T06:57:59Z",
       "model": "DeepSeek-V3.2",
@@ -50912,6 +51272,12 @@
       "outcome": "not_called",
       "provider": "sambanova"
     },
+    "794e64791f365264a1a49165dd6aad63e2824af88fe985fe56fa84ae3ce56164": {
+      "attempt_finished_at": "2026-09-07T18:14:32Z",
+      "model": "DeepSeek-V3.1",
+      "outcome": "not_called",
+      "provider": "sambanova"
+    },
     "794f935c8546dea0404e75a42d1a9a3936b2ed3b5a5948aa3ce6ecf1eeb54b46": {
       "attempt_finished_at": "2026-08-30T01:28:08Z",
       "model": "DeepSeek-V3.1",
@@ -51106,6 +51472,12 @@
     },
     "79d8c614a8b9852721d48d69798aa4b217e1b34225803563ed0c51dc49cc614d": {
       "attempt_finished_at": "2026-08-28T21:01:03Z",
+      "model": "DeepSeek-V3.1",
+      "outcome": "not_called",
+      "provider": "sambanova"
+    },
+    "79d938e41e372fe7175ed35e2a7f4ee9a0dd50aa105a1498dc82d733b1da9662": {
+      "attempt_finished_at": "2026-09-07T18:14:32Z",
       "model": "DeepSeek-V3.1",
       "outcome": "not_called",
       "provider": "sambanova"
@@ -51469,6 +51841,12 @@
       "model": "DeepSeek-V3.2",
       "outcome": "not_called",
       "provider": "sambanova"
+    },
+    "7ac39bd6b06f6534f5d1fb5e2cd464cef2c4718b3b54394fa35d86a5fc81a6ac": {
+      "attempt_finished_at": "2026-09-07T18:14:54Z",
+      "model": "nvidia/nemotron-nano-9b-v2:free",
+      "outcome": "not_called",
+      "provider": "openrouter"
     },
     "7acb44acf9e2eeeb17f9e661103d0daae3e1520270cc1911e1c955fe2b172100": {
       "attempt_finished_at": "2026-08-31T06:57:59Z",
@@ -52748,6 +53126,12 @@
       "outcome": "not_called",
       "provider": "sambanova"
     },
+    "7dcd96045a8fca17eac4d5acdfce5505a582655169a6c037e7894ac0374a05bd": {
+      "attempt_finished_at": "2026-09-07T18:14:54Z",
+      "model": "google/gemma-4-31b-it:free",
+      "outcome": "not_called",
+      "provider": "openrouter"
+    },
     "7dce3f45869d4023f09f7c2bc627c533420dfe32b1c38521abdbe4477bf0b7bb": {
       "attempt_finished_at": "2026-09-03T15:14:02Z",
       "model": "DeepSeek-V3.2",
@@ -54014,6 +54398,12 @@
       "outcome": "not_called",
       "provider": "sambanova"
     },
+    "80c79a9db72e8df43b550b4d09a335e6b7de1b5ab6ab0eda416c0038de416421": {
+      "attempt_finished_at": "2026-09-07T18:14:50Z",
+      "model": "nvidia/nemotron-nano-9b-v2:free",
+      "outcome": "not_called",
+      "provider": "openrouter"
+    },
     "80cc6d2e84f2402a1cde9cc2318f256f7d4c35104d405adaee399f606dbcb882": {
       "attempt_finished_at": "2026-09-03T23:33:29Z",
       "model": "DeepSeek-V3.1",
@@ -54883,6 +55273,12 @@
       "model": "DeepSeek-V3.2",
       "outcome": "not_called",
       "provider": "sambanova"
+    },
+    "8313272ac53ab3559ddc2bcbd314fcf3b6db8f488142af9961a36158d27c2669": {
+      "attempt_finished_at": "2026-09-07T18:14:54Z",
+      "model": "google/gemma-4-26b-a4b-it:free",
+      "outcome": "not_called",
+      "provider": "openrouter"
     },
     "831fbde616f8158e6f870053678827898159d0778f0a0e749e20eda0430806ef": {
       "attempt_finished_at": "2026-08-31T20:47:03Z",
@@ -56372,6 +56768,12 @@
       "outcome": "provider_failure",
       "provider": "openrouter"
     },
+    "86a64935599c499b821200ffa8d9a89c2d8039b5ac90fbe99c06266d191f3e80": {
+      "attempt_finished_at": "2026-09-07T18:14:54Z",
+      "model": "poolside/laguna-s-2.1:free",
+      "outcome": "not_called",
+      "provider": "openrouter"
+    },
     "86a92e0a9b6417e3ea8ae25074b571b859cf79a3499a0d7983702359cf221a8d": {
       "attempt_finished_at": "2026-08-29T15:09:39Z",
       "model": "DeepSeek-V3.2",
@@ -57014,6 +57416,12 @@
       "outcome": "provider_failure",
       "provider": "sambanova"
     },
+    "87e42112d8b95674a1f2b8132b08d8690f902701e8a7f60e5fe0bc9e39d472af": {
+      "attempt_finished_at": "2026-09-07T18:14:54Z",
+      "model": "poolside/laguna-xs-2.1:free",
+      "outcome": "not_called",
+      "provider": "openrouter"
+    },
     "87f0a2cada51870ead28a5222a04a38c52250512fdbd1c982f503fbace65e9c0": {
       "attempt_finished_at": "2026-09-03T21:41:09Z",
       "model": "DeepSeek-V3.2",
@@ -57157,6 +57565,12 @@
       "model": "MiniMax-M2.7",
       "outcome": "not_called",
       "provider": "sambanova"
+    },
+    "884b23edd81c04d0f1a1178e379bfa0b300eaa0033f1c9d0daecec1f3939483e": {
+      "attempt_finished_at": "2026-09-07T18:14:54Z",
+      "model": "nvidia/nemotron-3.5-lightning:free",
+      "outcome": "not_called",
+      "provider": "openrouter"
     },
     "884eacbb7d68fbf824c072fa967301249880a0f0a5d2bc2e7614173b8fb7fc06": {
       "attempt_finished_at": "2026-09-02T21:45:49Z",
@@ -57494,6 +57908,12 @@
       "outcome": "not_called",
       "provider": "sambanova"
     },
+    "89411b5dd59c0476fa22a59036cf96d9dc010859d1b26d0df8efdc6b42f8219a": {
+      "attempt_finished_at": "2026-09-07T18:14:32Z",
+      "model": "DeepSeek-V3.1",
+      "outcome": "not_called",
+      "provider": "sambanova"
+    },
     "8946dc3cf12e4c798f8e429f446d4f625a652b7fb954dbd4691e93d6c84bd71a": {
       "attempt_finished_at": "2026-08-29T15:09:39Z",
       "model": "DeepSeek-V3.1",
@@ -57787,6 +58207,12 @@
       "model": "poolside/laguna-s-2.1:free",
       "outcome": "not_called",
       "provider": "openrouter"
+    },
+    "8a153dfc529ef9ebae63004b2e5ab02b41804f028ba77762234b2e28129ca5f5": {
+      "attempt_finished_at": "2026-09-07T18:14:32Z",
+      "model": "DeepSeek-V3.1",
+      "outcome": "not_called",
+      "provider": "sambanova"
     },
     "8a24493998fbb413b4a0414e001866cad074b7c3ddd4de5db44c487ba211bc09": {
       "attempt_finished_at": "2026-08-29T03:09:17Z",
@@ -58268,6 +58694,12 @@
       "outcome": "not_called",
       "provider": "sambanova"
     },
+    "8b5176c0128c6dfa3f40722c790f15a6b6548ae6f6b708e3940f692333a88134": {
+      "attempt_finished_at": "2026-09-07T18:14:32Z",
+      "model": "DeepSeek-V3.1",
+      "outcome": "not_called",
+      "provider": "sambanova"
+    },
     "8b5745c3549b7a57a7266d8b58775cc160512fa7f770045525b4becd9a5e8b59": {
       "attempt_finished_at": "2026-09-04T01:23:28Z",
       "model": "DeepSeek-V3.2",
@@ -58586,6 +59018,12 @@
       "outcome": "not_called",
       "provider": "openrouter"
     },
+    "8bfa72df43e682d39336937b191489ec372cb7eb5d082a728bc71f55500706d9": {
+      "attempt_finished_at": "2026-09-07T18:14:32Z",
+      "model": "DeepSeek-V3.1",
+      "outcome": "not_called",
+      "provider": "sambanova"
+    },
     "8bfc3df1b2caf5ac93667b48b75e1df039ef15d069b5430bd9619d1eb6cd9ab2": {
       "attempt_finished_at": "2026-08-30T12:50:10Z",
       "model": "gemma-4-31B-it",
@@ -58903,6 +59341,12 @@
       "model": "gpt-oss-120b",
       "outcome": "not_called",
       "provider": "sambanova"
+    },
+    "8ca8f9ee7bfb977d91864b15ffb3a76f9b5e95aff225b30485e9c4b40b061ddd": {
+      "attempt_finished_at": "2026-09-07T18:14:54Z",
+      "model": "google/gemma-4-26b-a4b-it:free",
+      "outcome": "not_called",
+      "provider": "openrouter"
     },
     "8caa7ffc30889279e65f31452a14c9ab7acd73e7f75628ad2037a3c806e13a52": {
       "attempt_finished_at": "2026-09-02T18:50:08Z",
@@ -59756,6 +60200,12 @@
       "outcome": "not_called",
       "provider": "sambanova"
     },
+    "8e64725350a9b67c555d9bac9f59a6e27f04a8c01b8f5d3ffbe18e9cdfbd7be1": {
+      "attempt_finished_at": "2026-09-07T18:14:54Z",
+      "model": "nvidia/nemotron-nano-9b-v2:free",
+      "outcome": "not_called",
+      "provider": "openrouter"
+    },
     "8e64d9f044165312635bc7fca1d50d85215d5f99157872cab4c040e5752494ca": {
       "attempt_finished_at": "2026-09-04T20:54:25Z",
       "model": "google/gemma-4-31b-it:free",
@@ -59783,6 +60233,12 @@
     "8e727fb46f9b2670e9d081c5785fcc97f84b94946190e45a5dbd9a6bd6a3e065": {
       "attempt_finished_at": "2026-09-05T18:11:39Z",
       "model": "DeepSeek-V3.2",
+      "outcome": "not_called",
+      "provider": "sambanova"
+    },
+    "8e7462df9d71c3908ad2b6978405459e6e069da7985719871bb35e9ef74625d2": {
+      "attempt_finished_at": "2026-09-07T18:14:32Z",
+      "model": "DeepSeek-V3.1",
       "outcome": "not_called",
       "provider": "sambanova"
     },
@@ -60449,6 +60905,12 @@
     "8ffb5283accb6e850171af207477d734c36278e60868b88aa6f04a981a5fbfba": {
       "attempt_finished_at": "2026-08-31T20:47:03Z",
       "model": "gemma-4-31B-it",
+      "outcome": "not_called",
+      "provider": "sambanova"
+    },
+    "8ffc7fc23f6daa5aef038da2888123f4ed704b66f6074678cf874e35ff4e87f7": {
+      "attempt_finished_at": "2026-09-07T18:14:32Z",
+      "model": "DeepSeek-V3.1",
       "outcome": "not_called",
       "provider": "sambanova"
     },
@@ -61247,6 +61709,12 @@
     "92083ee4948a98afcd1d4d25f9433a90befc5841ff34ebe36e1ec4624b67ebc3": {
       "attempt_finished_at": "2026-08-30T12:50:10Z",
       "model": "MiniMax-M2.7",
+      "outcome": "not_called",
+      "provider": "sambanova"
+    },
+    "92099a160f0211bb678495a617855ca5c7121b4f272a47080ea0854e1d100d2b": {
+      "attempt_finished_at": "2026-09-07T18:14:32Z",
+      "model": "DeepSeek-V3.1",
       "outcome": "not_called",
       "provider": "sambanova"
     },
@@ -63842,6 +64310,12 @@
       "outcome": "not_called",
       "provider": "sambanova"
     },
+    "98add8c49e797c11b88236eea70d50f2eb2814a682a6be4f928bb5671cd5eda9": {
+      "attempt_finished_at": "2026-09-07T18:14:54Z",
+      "model": "openai/gpt-oss-20b:free",
+      "outcome": "not_called",
+      "provider": "openrouter"
+    },
     "98b454bf3a7d52ff5b5133b707f9a5e9c63dcf4210dc115196b3c0f9e56672df": {
       "attempt_finished_at": "2026-09-01T05:01:47Z",
       "model": "MiniMax-M2.7",
@@ -64934,6 +65408,12 @@
       "outcome": "valid",
       "provider": "sambanova"
     },
+    "9b36035839bc9278c5cad0c695315dc61104d111794f243f855090a185057260": {
+      "attempt_finished_at": "2026-09-07T18:14:32Z",
+      "model": "DeepSeek-V3.1",
+      "outcome": "not_called",
+      "provider": "sambanova"
+    },
     "9b36f5769549b94e433c9ac982edee582ecc2b9506e406c567d8557ba2416120": {
       "attempt_finished_at": "2026-09-06T08:47:23Z",
       "model": "DeepSeek-V3.1",
@@ -65066,6 +65546,12 @@
       "outcome": "not_called",
       "provider": "sambanova"
     },
+    "9b717406333279b15611eb7f98151b6a3d40f255919ce2ad09bde93a899b1ff2": {
+      "attempt_finished_at": "2026-09-07T18:14:32Z",
+      "model": "DeepSeek-V3.2",
+      "outcome": "provider_failure",
+      "provider": "sambanova"
+    },
     "9b730b4a745e265878328e12240887ad66f6b51f8e1db8c46d7e4833dc6e4017": {
       "attempt_finished_at": "2026-09-05T18:11:39Z",
       "model": "DeepSeek-V3.2",
@@ -65119,6 +65605,12 @@
       "model": "DeepSeek-V3.2",
       "outcome": "not_called",
       "provider": "sambanova"
+    },
+    "9b88ed891ba9c054683bc8f68b25d5bb2b6a99d6c40325f895c87128611e265e": {
+      "attempt_finished_at": "2026-09-07T18:14:54Z",
+      "model": "openai/gpt-oss-20b:free",
+      "outcome": "not_called",
+      "provider": "openrouter"
     },
     "9b8d4deecb2c8adb1dfc92d9b6c83cd8e62dcd456d426e2887815f54130d0cd7": {
       "attempt_finished_at": "2026-08-30T19:55:16Z",
@@ -67604,6 +68096,12 @@
       "outcome": "not_called",
       "provider": "sambanova"
     },
+    "a16f0207b800c6317dfbf093714cf7c63524c3dd229e5d58bb4a489f51426e22": {
+      "attempt_finished_at": "2026-09-07T18:14:32Z",
+      "model": "DeepSeek-V3.1",
+      "outcome": "not_called",
+      "provider": "sambanova"
+    },
     "a17328688619d8ed69016d50d45c17b1071bcc6601dac06794856d9e5dc57052": {
       "attempt_finished_at": "2026-08-31T20:47:23Z",
       "model": "google/gemma-4-31b-it:free",
@@ -67973,6 +68471,12 @@
     "a26a647544f0c26c83c927fb04a110b3ebf0c265901854e74723bfd31e3ca02c": {
       "attempt_finished_at": "2026-08-30T07:06:54Z",
       "model": "DeepSeek-V3.2",
+      "outcome": "not_called",
+      "provider": "sambanova"
+    },
+    "a26cca72d9844c0a1a4277d71ce23f538f2592a9d6aa53fa1345cec09826f974": {
+      "attempt_finished_at": "2026-09-07T18:14:32Z",
+      "model": "DeepSeek-V3.1",
       "outcome": "not_called",
       "provider": "sambanova"
     },
@@ -69074,6 +69578,12 @@
       "outcome": "not_called",
       "provider": "sambanova"
     },
+    "a50aa346b2f0cf43c4be108a2ed62765f7bcc802c6c76082b3106c0a49729624": {
+      "attempt_finished_at": "2026-09-07T18:14:50Z",
+      "model": "nvidia/nemotron-3-ultra-550b-a55b:free",
+      "outcome": "provider_failure",
+      "provider": "openrouter"
+    },
     "a5108815a4468a207635c1ac5e9ef1c2e78ff0aa2beb8ac1d4800733190670f9": {
       "attempt_finished_at": "2026-08-30T07:06:54Z",
       "model": "MiniMax-M2.7",
@@ -69145,6 +69655,12 @@
       "model": "DeepSeek-V3.1",
       "outcome": "not_called",
       "provider": "sambanova"
+    },
+    "a534465202f72765b7c5581198477e47e62147e8e3c710b9790612639f3208c4": {
+      "attempt_finished_at": "2026-09-07T18:14:54Z",
+      "model": "nvidia/nemotron-nano-9b-v2:free",
+      "outcome": "not_called",
+      "provider": "openrouter"
     },
     "a536ccb31dbd38fb32c6e8e8ea7601e5d7458d50212fd7f75100eb4c2674c444": {
       "attempt_finished_at": "2026-09-02T13:25:05Z",
@@ -69517,6 +70033,12 @@
       "model": "Meta-Llama-3.3-70B-Instruct",
       "outcome": "not_called",
       "provider": "sambanova"
+    },
+    "a6064e2e6ce6b814fdd24f2a41d3fdaee30eb3fcb47f6dbf049b615e05bc2fa7": {
+      "attempt_finished_at": "2026-09-07T18:14:54Z",
+      "model": "openai/gpt-oss-20b:free",
+      "outcome": "not_called",
+      "provider": "openrouter"
     },
     "a60969940433d12a97d9ed3a13f9f48c04e52763d40330d7771f616fd4eae5a7": {
       "attempt_finished_at": "2026-08-30T19:55:16Z",
@@ -70946,6 +71468,12 @@
       "outcome": "not_called",
       "provider": "sambanova"
     },
+    "a9589045d44440dde561b8897bec9f59214ec23e664c7b401bb10cd6f16edf53": {
+      "attempt_finished_at": "2026-09-07T18:14:32Z",
+      "model": "DeepSeek-V3.1",
+      "outcome": "not_called",
+      "provider": "sambanova"
+    },
     "a958f06b3e842f7f75d87c8ec0e42cf030ab76755e038e59fa2d65e0007ef799": {
       "attempt_finished_at": "2026-08-29T23:27:42Z",
       "model": "gemma-4-31B-it",
@@ -71276,6 +71804,12 @@
       "outcome": "not_called",
       "provider": "sambanova"
     },
+    "aa4ab3872f9dc4f8b0c711b203164685d8693701663044ef2eda3413e4d665d9": {
+      "attempt_finished_at": "2026-09-07T18:14:32Z",
+      "model": "DeepSeek-V3.1",
+      "outcome": "not_called",
+      "provider": "sambanova"
+    },
     "aa4e5443bfc2cefaa39c2e1f65c5ee34b0842cf3a52a06f363600f29694b6be6": {
       "attempt_finished_at": "2026-09-03T01:59:08Z",
       "model": "DeepSeek-V3.2",
@@ -71419,6 +71953,12 @@
       "model": "DeepSeek-V3.1",
       "outcome": "not_called",
       "provider": "sambanova"
+    },
+    "aabd2ec9b6d4d16842f9255b4701aa8a9e953eecd113264b8895f03dcbaa1cbe": {
+      "attempt_finished_at": "2026-09-07T18:14:54Z",
+      "model": "poolside/laguna-s-2.1:free",
+      "outcome": "not_called",
+      "provider": "openrouter"
     },
     "aabdaa4c1d3b6f88a35c9cb0b4cc5b38f6473b20e5a4d12eeccedf4e9b99af33": {
       "attempt_finished_at": "2026-09-03T01:29:33Z",
@@ -72506,6 +73046,12 @@
       "outcome": "not_called",
       "provider": "openrouter"
     },
+    "ad72cee57d7b1a935c7f333118151231bab9cb7f1429e8dba890fababd06fd70": {
+      "attempt_finished_at": "2026-09-07T18:14:54Z",
+      "model": "google/gemma-4-26b-a4b-it:free",
+      "outcome": "provider_failure",
+      "provider": "openrouter"
+    },
     "ad771b8ca750b3f968c5cda3555fd69e774fa752947f2c23a57ab4a4c856286f": {
       "attempt_finished_at": "2026-08-29T03:09:17Z",
       "model": "gpt-oss-120b",
@@ -72577,6 +73123,12 @@
       "model": "gpt-oss-120b",
       "outcome": "not_called",
       "provider": "sambanova"
+    },
+    "ada79b5de041edb7533e26019fede52698859181bf101e280b464713a96e72a7": {
+      "attempt_finished_at": "2026-09-07T18:14:54Z",
+      "model": "poolside/laguna-s-2.1:free",
+      "outcome": "not_called",
+      "provider": "openrouter"
     },
     "ada98b39bbbecac658bffb031343fd2931a819794344d3268c138adbd32dc055": {
       "attempt_finished_at": "2026-08-30T07:06:54Z",
@@ -73838,6 +74390,12 @@
       "outcome": "not_called",
       "provider": "sambanova"
     },
+    "b0dead2173ac802b8e212471221655f8424f76732908d4594c6b518994cf04dd": {
+      "attempt_finished_at": "2026-09-07T18:14:54Z",
+      "model": "google/gemma-4-26b-a4b-it:free",
+      "outcome": "not_called",
+      "provider": "openrouter"
+    },
     "b0df410b67d81c08f94ae16e2635fdddb9aec4cb40c0de05781ea38b2bc285fa": {
       "attempt_finished_at": "2026-09-06T08:47:23Z",
       "model": "DeepSeek-V3.1",
@@ -73895,6 +74453,12 @@
     "b12094d930862a7b1d794f600f017d90afe85df51d69402175edbc403b421297": {
       "attempt_finished_at": "2026-08-30T01:28:08Z",
       "model": "gpt-oss-120b",
+      "outcome": "not_called",
+      "provider": "sambanova"
+    },
+    "b1274bf9579af8956c4ddbf32ea5f9fd0a44fcff7775b69950baeb81674f3af5": {
+      "attempt_finished_at": "2026-09-07T18:14:32Z",
+      "model": "DeepSeek-V3.1",
       "outcome": "not_called",
       "provider": "sambanova"
     },
@@ -75512,6 +76076,12 @@
       "outcome": "not_called",
       "provider": "gemini"
     },
+    "b58ad6e79a411c0812ac4e48800a0bc6b88a0b11a9b369b63dc7ca361d45d041": {
+      "attempt_finished_at": "2026-09-07T18:14:32Z",
+      "model": "DeepSeek-V3.1",
+      "outcome": "not_called",
+      "provider": "sambanova"
+    },
     "b593890725d26a6cf3a22eb82d1e75888e888e521a8db48916a70d2cdb7f594a": {
       "attempt_finished_at": "2026-08-29T15:09:39Z",
       "model": "DeepSeek-V3.1",
@@ -76478,6 +77048,12 @@
       "outcome": "not_called",
       "provider": "sambanova"
     },
+    "b7f966fab20759ae47c433d659109ef5347cecd986149a6c0fe9ca444f1d615d": {
+      "attempt_finished_at": "2026-09-07T18:14:32Z",
+      "model": "DeepSeek-V3.1",
+      "outcome": "not_called",
+      "provider": "sambanova"
+    },
     "b800b5844368f84633f110ca18f86ab82f0bfef4f31762c438d625fb9ebf05c8": {
       "attempt_finished_at": "2026-08-30T17:22:23Z",
       "model": "DeepSeek-V3.2",
@@ -77438,6 +78014,12 @@
       "outcome": "not_called",
       "provider": "sambanova"
     },
+    "ba7a6d9231429ffb8c554339d9da022b8c562331cff2efe914bf1a2db1d09d4f": {
+      "attempt_finished_at": "2026-09-07T18:14:32Z",
+      "model": "DeepSeek-V3.1",
+      "outcome": "not_called",
+      "provider": "sambanova"
+    },
     "ba7a7f6fe4199cfb5840fdafa046b85784fb1298011aba0c5f43d2089cecb582": {
       "attempt_finished_at": "2026-08-29T03:09:17Z",
       "model": "Meta-Llama-3.3-70B-Instruct",
@@ -77701,6 +78283,12 @@
       "model": "gemini-2.5-flash",
       "outcome": "valid",
       "provider": "gemini"
+    },
+    "bb0f8e1d0148e190b78a5f213bcb0dffb095b79e2e0e7f363709c63a61c6f88c": {
+      "attempt_finished_at": "2026-09-07T18:14:32Z",
+      "model": "DeepSeek-V3.1",
+      "outcome": "not_called",
+      "provider": "sambanova"
     },
     "bb127abea13b5e5435d9e76ab26e70105acca8d29587b6bd78f122af8a974075": {
       "attempt_finished_at": "2026-09-05T20:31:56Z",
@@ -78392,6 +78980,12 @@
       "outcome": "not_called",
       "provider": "sambanova"
     },
+    "bca7ef0a0667b88351f9d1a360e4756928fdc2804f22e477821416c3c838f48c": {
+      "attempt_finished_at": "2026-09-07T18:14:54Z",
+      "model": "poolside/laguna-xs-2.1:free",
+      "outcome": "not_called",
+      "provider": "openrouter"
+    },
     "bcafabf2ac5bcb21c7297723628da3c28cdcfc3116e58daed5b47b875e1c8c5f": {
       "attempt_finished_at": "2026-09-04T15:02:29Z",
       "model": "DeepSeek-V3.2",
@@ -78787,6 +79381,12 @@
       "model": "poolside/laguna-xs-2.1:free",
       "outcome": "not_called",
       "provider": "openrouter"
+    },
+    "bda89d70b0356cef88b3243c889cbd2c7755f886e2f7c8d5671a1f62b58c5693": {
+      "attempt_finished_at": "2026-09-07T18:14:32Z",
+      "model": "DeepSeek-V3.1",
+      "outcome": "not_called",
+      "provider": "sambanova"
     },
     "bdb437a4f92a38af1b5608977612323273f8ab90c05dca26a85ef2f07246ee5f": {
       "attempt_finished_at": "2026-09-03T06:51:13Z",
@@ -79646,6 +80246,12 @@
       "outcome": "not_called",
       "provider": "gemini"
     },
+    "bfe5f72e10f51c36fd8b9a2af14388747c9290df3bbc0329673dfa7a238ebf08": {
+      "attempt_finished_at": "2026-09-07T18:14:32Z",
+      "model": "DeepSeek-V3.1",
+      "outcome": "not_called",
+      "provider": "sambanova"
+    },
     "bfedb1ec0d2e8db0b44cc9e474aacfcda3c74485b71832c79589cd1b682cb4c7": {
       "attempt_finished_at": "2026-09-01T05:01:47Z",
       "model": "gpt-oss-120b",
@@ -80096,6 +80702,12 @@
       "outcome": "not_called",
       "provider": "sambanova"
     },
+    "c135668704555da0ebf5925b50aba3ba2f62fd19dd0b0a0d96538f48ea412fd9": {
+      "attempt_finished_at": "2026-09-07T18:14:32Z",
+      "model": "DeepSeek-V3.1",
+      "outcome": "not_called",
+      "provider": "sambanova"
+    },
     "c1378e70008725efcda3e9ac43bc0c6b25e2fbf2a71ed2bd87f6f09af6fa1869": {
       "attempt_finished_at": "2026-09-05T20:31:56Z",
       "model": "DeepSeek-V3.2",
@@ -80537,6 +81149,12 @@
     "c2380a17383d8e385249c812b34c62e1fa3fcf068c38bf55c365c969f5bbe461": {
       "attempt_finished_at": "2026-09-01T05:01:47Z",
       "model": "Meta-Llama-3.3-70B-Instruct",
+      "outcome": "not_called",
+      "provider": "sambanova"
+    },
+    "c23bc748b568e6c7a42afe1a421f1bbdb64d67e5e9e55787dfd83fc1609649a5": {
+      "attempt_finished_at": "2026-09-07T18:14:32Z",
+      "model": "DeepSeek-V3.1",
       "outcome": "not_called",
       "provider": "sambanova"
     },
@@ -81143,6 +81761,12 @@
     "c3b907565ee603dd8dca74e18bdbe1896936b1f8ac2c11a9e3c6c5a4823d7b7a": {
       "attempt_finished_at": "2026-08-29T03:09:17Z",
       "model": "gemma-4-31B-it",
+      "outcome": "not_called",
+      "provider": "sambanova"
+    },
+    "c3bd98f25cc2e7b7575a0c09b98cb17b058cb639635ca385cccbc65d9cb79aba": {
+      "attempt_finished_at": "2026-09-07T18:14:32Z",
+      "model": "DeepSeek-V3.1",
       "outcome": "not_called",
       "provider": "sambanova"
     },
@@ -83594,6 +84218,12 @@
       "outcome": "not_called",
       "provider": "sambanova"
     },
+    "ca848e421a81a0d53e8c046c97fe711223033014f8665f2ee079766403cdbd85": {
+      "attempt_finished_at": "2026-09-07T18:14:32Z",
+      "model": "DeepSeek-V3.1",
+      "outcome": "provider_failure",
+      "provider": "sambanova"
+    },
     "ca8f585ca495bb1b03bfee57782f42f903a5e3bba8b818321819972b81f96e9b": {
       "attempt_finished_at": "2026-09-05T20:31:56Z",
       "model": "DeepSeek-V3.2",
@@ -84305,6 +84935,12 @@
     "cc29b392b8f38c23d99250d8b0b715ba550cf1ea004e9700950e981f3331ccae": {
       "attempt_finished_at": "2026-08-29T10:16:34Z",
       "model": "Meta-Llama-3.3-70B-Instruct",
+      "outcome": "not_called",
+      "provider": "sambanova"
+    },
+    "cc2d1e808f8bbfc77d6f220dcb1453045bf6cb9ae609e8eb207efdd3ecfd6958": {
+      "attempt_finished_at": "2026-09-07T18:14:32Z",
+      "model": "DeepSeek-V3.1",
       "outcome": "not_called",
       "provider": "sambanova"
     },
@@ -85094,6 +85730,12 @@
       "outcome": "not_called",
       "provider": "sambanova"
     },
+    "ce171bad046de054ecba2e00e186bc8c256dad3eb4c0b6f662e13dad317852c8": {
+      "attempt_finished_at": "2026-09-07T18:14:32Z",
+      "model": "DeepSeek-V3.1",
+      "outcome": "not_called",
+      "provider": "sambanova"
+    },
     "ce191cd0c90a6e7a1151300a22fb4fbe2d6ea7174ad5b85595ab186133539f39": {
       "attempt_finished_at": "2026-08-30T22:41:51Z",
       "model": "MiniMax-M2.7",
@@ -85213,6 +85855,12 @@
       "model": "DeepSeek-V3.2",
       "outcome": "not_called",
       "provider": "sambanova"
+    },
+    "ce561adb47e421f59c311695b61fb84bc66bc4076300a1bd9ad7509754691ad1": {
+      "attempt_finished_at": "2026-09-07T18:14:54Z",
+      "model": "google/gemma-4-31b-it:free",
+      "outcome": "not_called",
+      "provider": "openrouter"
     },
     "ce5bcbacf1dc075e97e6e29d081e48901665105ed3a73c8fddd3c951d96f0edd": {
       "attempt_finished_at": "2026-09-06T19:33:24Z",
@@ -85657,6 +86305,12 @@
       "model": "DeepSeek-V3.2",
       "outcome": "not_called",
       "provider": "sambanova"
+    },
+    "cfa3bcc6786fddd40c10946b58c055c01a7652c15b59e9bb595a3855f0135e73": {
+      "attempt_finished_at": "2026-09-07T18:14:54Z",
+      "model": "openai/gpt-oss-20b:free",
+      "outcome": "not_called",
+      "provider": "openrouter"
     },
     "cfa5b23ad2280c5764d1b751e4aac5605403a0946cb0856fd5ae238bd0032783": {
       "attempt_finished_at": "2026-09-05T10:16:58Z",
@@ -89474,6 +90128,12 @@
       "outcome": "not_called",
       "provider": "sambanova"
     },
+    "d949657b1cc8540b3f28cf1a6dc51137379ae7f6029265fa3f1f5c9ef563cc23": {
+      "attempt_finished_at": "2026-09-07T18:14:32Z",
+      "model": "DeepSeek-V3.1",
+      "outcome": "not_called",
+      "provider": "sambanova"
+    },
     "d94d127058cb96328fb00b1aadbe5c717c708f58e5317c9d60cd0ff291820566": {
       "attempt_finished_at": "2026-09-06T08:48:33Z",
       "model": "nvidia/nemotron-nano-9b-v2:free",
@@ -89654,6 +90314,12 @@
       "outcome": "not_called",
       "provider": "sambanova"
     },
+    "d9ccc7e8424c9f62df8ef45df5d73929b31e75b71df9d6b67c0d84495530928f": {
+      "attempt_finished_at": "2026-09-07T18:14:32Z",
+      "model": "DeepSeek-V3.1",
+      "outcome": "not_called",
+      "provider": "sambanova"
+    },
     "d9cd6f0da65bc4c00edf7c921c015e78708f189b78c848eda58a4d1dac05fce8": {
       "attempt_finished_at": "2026-09-06T17:44:11Z",
       "model": "nvidia/nemotron-nano-9b-v2:free",
@@ -89789,6 +90455,12 @@
     "da25b8bf355e876764b83473362a660866882117d670deb4a96e8c0ff29fd884": {
       "attempt_finished_at": "2026-08-30T07:07:15Z",
       "model": "openai/gpt-oss-20b:free",
+      "outcome": "not_called",
+      "provider": "openrouter"
+    },
+    "da2884f77be2229daf359f69337f79080814cd02b20554e7ac9164268c22bd77": {
+      "attempt_finished_at": "2026-09-07T18:14:54Z",
+      "model": "google/gemma-4-26b-a4b-it:free",
       "outcome": "not_called",
       "provider": "openrouter"
     },
@@ -92270,6 +92942,12 @@
       "outcome": "not_called",
       "provider": "sambanova"
     },
+    "dfb55b455ffb8407f259777e27556483c22c690b2c5601ceb521f52be66ef604": {
+      "attempt_finished_at": "2026-09-07T18:14:32Z",
+      "model": "DeepSeek-V3.1",
+      "outcome": "not_called",
+      "provider": "sambanova"
+    },
     "dfb7e409a6bdb4b8e6e995c88079ac9692ce0fb51c1cd8a43603075dd209d883": {
       "attempt_finished_at": "2026-08-29T23:27:42Z",
       "model": "Meta-Llama-3.3-70B-Instruct",
@@ -92446,6 +93124,12 @@
     },
     "e029396cbb896b9e16e1fda9f71f7888585119ffc8aba73f62b2bcc880319764": {
       "attempt_finished_at": "2026-09-06T17:43:54Z",
+      "model": "DeepSeek-V3.1",
+      "outcome": "not_called",
+      "provider": "sambanova"
+    },
+    "e02a07398d968250891775d45f6c432a1257edfedabf4ff6bfefcff2a9678d95": {
+      "attempt_finished_at": "2026-09-07T18:14:32Z",
       "model": "DeepSeek-V3.1",
       "outcome": "not_called",
       "provider": "sambanova"
@@ -92839,6 +93523,12 @@
       "model": "google/gemma-4-31b-it:free",
       "outcome": "not_called",
       "provider": "openrouter"
+    },
+    "e10358268e44d74e74d9ad78bd2fcae641bdeaefb2b8f67c530a1bfbc72b6ed9": {
+      "attempt_finished_at": "2026-09-07T18:14:32Z",
+      "model": "DeepSeek-V3.1",
+      "outcome": "not_called",
+      "provider": "sambanova"
     },
     "e103d075dd069b480d53b844faa657af1727c245393a4c8a68da5fad4bc9971a": {
       "attempt_finished_at": "2026-09-05T20:31:56Z",
@@ -93365,6 +94055,12 @@
     "e23fa5c9bfe28bb2c0cb3417ba9134eaa73ce601f649c057fc5ac7acca4cfa39": {
       "attempt_finished_at": "2026-09-04T18:19:35Z",
       "model": "DeepSeek-V3.2",
+      "outcome": "not_called",
+      "provider": "sambanova"
+    },
+    "e241165bb673fe965b6d7c7893fc64087bf2c142c6a81b56d3ae498fd2bc461e": {
+      "attempt_finished_at": "2026-09-07T18:14:32Z",
+      "model": "DeepSeek-V3.1",
       "outcome": "not_called",
       "provider": "sambanova"
     },
@@ -93961,6 +94657,12 @@
       "model": "DeepSeek-V3.1",
       "outcome": "not_called",
       "provider": "sambanova"
+    },
+    "e3d6a61eafc4014ab0a52fdf32b78d925e6fd7b294c54c004b71feaf8bad67bc": {
+      "attempt_finished_at": "2026-09-07T18:14:54Z",
+      "model": "google/gemma-4-26b-a4b-it:free",
+      "outcome": "not_called",
+      "provider": "openrouter"
     },
     "e3d6ad05cf94dcafb940f6e259f9209dde4302719a55703d9c7ed9fe7b6f5654": {
       "attempt_finished_at": "2026-09-04T01:23:28Z",
@@ -94880,6 +95582,12 @@
       "outcome": "provider_failure",
       "provider": "sambanova"
     },
+    "e60abc763b6f5faced4597cfbb4d2c57a522ec5fcea551a83a632b0552568953": {
+      "attempt_finished_at": "2026-09-07T18:14:32Z",
+      "model": "DeepSeek-V3.1",
+      "outcome": "not_called",
+      "provider": "sambanova"
+    },
     "e60d48e4b2cd36d45b3f554d128851ad5329645d2a7718895f98a577cf0a7f38": {
       "attempt_finished_at": "2026-09-03T23:33:29Z",
       "model": "DeepSeek-V3.1",
@@ -95068,6 +95776,12 @@
     },
     "e67bf6fa6cc3bd82ea3d2e4651766180ee803b05d810b5861df0a445e69e55e5": {
       "attempt_finished_at": "2026-08-28T21:01:03Z",
+      "model": "DeepSeek-V3.1",
+      "outcome": "not_called",
+      "provider": "sambanova"
+    },
+    "e67fe4d51ae6e4324e7303fb1cdda2fdc09f61dd0799d69b10f2446994da2090": {
+      "attempt_finished_at": "2026-09-07T18:14:32Z",
       "model": "DeepSeek-V3.1",
       "outcome": "not_called",
       "provider": "sambanova"
@@ -96662,6 +97376,12 @@
       "outcome": "not_called",
       "provider": "sambanova"
     },
+    "eac5bc43fb739b296aabc4b25989308ed411bb3762f0852ff45e80182fc0a3ab": {
+      "attempt_finished_at": "2026-09-07T18:14:32Z",
+      "model": "DeepSeek-V3.1",
+      "outcome": "not_called",
+      "provider": "sambanova"
+    },
     "eac6abe0c62b7099094603983dd39f7c50d689b888af7952934ed73d905ac1f2": {
       "attempt_finished_at": "2026-09-02T13:25:05Z",
       "model": "Meta-Llama-3.3-70B-Instruct",
@@ -97214,6 +97934,12 @@
       "outcome": "not_called",
       "provider": "sambanova"
     },
+    "ebff759398ecb15f42fc3341f603374af2d0ce8e5435c982a701e3c18792f09a": {
+      "attempt_finished_at": "2026-09-07T18:14:54Z",
+      "model": "poolside/laguna-s-2.1:free",
+      "outcome": "not_called",
+      "provider": "openrouter"
+    },
     "ec02c93bf1ba9d163ba7fa6590fe7cd83d45f479e06a8bb457dc3a582822f60a": {
       "attempt_finished_at": "2026-09-02T13:25:05Z",
       "model": "gpt-oss-120b",
@@ -97618,6 +98344,12 @@
     },
     "ece52360bee913db3bca04952a7c321a0a2731038689803568acfbcd448a8bad": {
       "attempt_finished_at": "2026-09-06T21:45:36Z",
+      "model": "DeepSeek-V3.1",
+      "outcome": "not_called",
+      "provider": "sambanova"
+    },
+    "ece6bd022c07a3ff24ade319a173185ee1eebda8bae8e00c8523f38d27246efb": {
+      "attempt_finished_at": "2026-09-07T18:14:32Z",
       "model": "DeepSeek-V3.1",
       "outcome": "not_called",
       "provider": "sambanova"
@@ -98102,6 +98834,12 @@
       "outcome": "not_called",
       "provider": "sambanova"
     },
+    "ee22be6c79fb7f1d1019e198ceee6b1353b6680d7cfd35dc55d066eaea01d4e7": {
+      "attempt_finished_at": "2026-09-07T18:14:32Z",
+      "model": "DeepSeek-V3.1",
+      "outcome": "not_called",
+      "provider": "sambanova"
+    },
     "ee2494d1109455b39ffa63b46846659ab131117ee2bb8249074e678a16c1de71": {
       "attempt_finished_at": "2026-09-04T18:19:35Z",
       "model": "DeepSeek-V3.1",
@@ -98581,6 +99319,12 @@
       "model": "gemini-3.6-flash",
       "outcome": "valid",
       "provider": "gemini"
+    },
+    "ef66cd648ed41f57877cf68da58d4511f54be3274c991630a81a5e1c442fde8e": {
+      "attempt_finished_at": "2026-09-07T18:14:54Z",
+      "model": "nvidia/nemotron-3.5-lightning:free",
+      "outcome": "not_called",
+      "provider": "openrouter"
     },
     "ef6ad02b27e04e9fb4733e21ee95aabb24e1c17d676b421587a9a33a23d01bca": {
       "attempt_finished_at": "2026-09-02T18:52:39Z",
@@ -99932,6 +100676,12 @@
       "outcome": "provider_failure",
       "provider": "sambanova"
     },
+    "f2eeaa8d845be20c7b6d2e38fb2f70daff93387b66959acfff9fdb67aaafa46d": {
+      "attempt_finished_at": "2026-09-07T18:14:54Z",
+      "model": "poolside/laguna-xs-2.1:free",
+      "outcome": "not_called",
+      "provider": "openrouter"
+    },
     "f2f2c19dffb5d452ed4cd9033fa7c1ca296e7d0e4d7d5276886c5817a7fa04f4": {
       "attempt_finished_at": "2026-09-02T18:50:08Z",
       "model": "DeepSeek-V3.2",
@@ -100334,6 +101084,12 @@
       "outcome": "not_called",
       "provider": "sambanova"
     },
+    "f3dd0dba867f4e11aa67164a0add161432c05a6f77042ac3f8007b00d2ae8ac4": {
+      "attempt_finished_at": "2026-09-07T18:14:32Z",
+      "model": "DeepSeek-V3.1",
+      "outcome": "not_called",
+      "provider": "sambanova"
+    },
     "f3df84f5b5527544dd115b10a668dc5cebb6b94aeab530cfe6ef770639db3b7c": {
       "attempt_finished_at": "2026-09-04T01:23:28Z",
       "model": "DeepSeek-V3.1",
@@ -100664,6 +101420,12 @@
       "outcome": "not_called",
       "provider": "openrouter"
     },
+    "f4886a3c517e9c0edf2650b0223e3de701cda7451fb773058797343a65805043": {
+      "attempt_finished_at": "2026-09-07T18:14:54Z",
+      "model": "poolside/laguna-xs-2.1:free",
+      "outcome": "not_called",
+      "provider": "openrouter"
+    },
     "f490c5347033845f972ca4a177e5387a63f9cdeca36cd203f15c12125ba515c6": {
       "attempt_finished_at": "2026-09-04T15:02:29Z",
       "model": "DeepSeek-V3.1",
@@ -100807,6 +101569,12 @@
       "model": "DeepSeek-V3.2",
       "outcome": "not_called",
       "provider": "sambanova"
+    },
+    "f4f40b5c831704d5198eca877eb0d25ee6ea6b59357c493dea8a1771dacf30c0": {
+      "attempt_finished_at": "2026-09-07T18:14:54Z",
+      "model": "google/gemma-4-31b-it:free",
+      "outcome": "not_called",
+      "provider": "openrouter"
     },
     "f4fbe78c81562bb10d0f6f7155f2893351a32b327e27d6d5b2bd2a42eef34446": {
       "attempt_finished_at": "2026-09-04T11:10:58Z",
@@ -101818,6 +102586,12 @@
     },
     "f75e59728b0828cc0019163e93219bc6620c26c52c88d11d511bd51bd5c89f42": {
       "attempt_finished_at": "2026-09-02T21:45:49Z",
+      "model": "DeepSeek-V3.1",
+      "outcome": "not_called",
+      "provider": "sambanova"
+    },
+    "f763917e15634d78a60a959ac5c2e0728c0f95b7c0b1a1ca2a264b0cadc91aec": {
+      "attempt_finished_at": "2026-09-07T18:14:32Z",
       "model": "DeepSeek-V3.1",
       "outcome": "not_called",
       "provider": "sambanova"
@@ -103640,6 +104414,12 @@
       "outcome": "not_called",
       "provider": "openrouter"
     },
+    "fc1c04574a4eef991a250021a3d4c07761eb2492568d62d4512a72e612eb9e15": {
+      "attempt_finished_at": "2026-09-07T18:14:54Z",
+      "model": "nvidia/nemotron-nano-9b-v2:free",
+      "outcome": "not_called",
+      "provider": "openrouter"
+    },
     "fc1ec4860059c69066160994cedd82f9e15f752b1f230646660b319de8ccb479": {
       "attempt_finished_at": "2026-09-04T06:05:56Z",
       "model": "google/gemma-4-31b-it:free",
@@ -104143,6 +104923,12 @@
       "model": "DeepSeek-V3.1",
       "outcome": "not_called",
       "provider": "sambanova"
+    },
+    "fd56a6e67945ebe17948b6a16c3b46afd65cea25b0b2d58f879f79b3d80a7578": {
+      "attempt_finished_at": "2026-09-07T18:14:54Z",
+      "model": "poolside/laguna-s-2.1:free",
+      "outcome": "not_called",
+      "provider": "openrouter"
     },
     "fd57db39225b602fcc78bd3bb13020654d941b7e79f4c1b22e7c77e0c44374ec": {
       "attempt_finished_at": "2026-09-01T00:08:05Z",
