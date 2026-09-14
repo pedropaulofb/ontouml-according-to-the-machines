@@ -4,13 +4,13 @@
 
 Triggers represents a relation from a Situation to an Event. The sources characterize the relation as holding when an event occurs because a situation obtains; in the formalized accounts, the triggering situation obtains at the event's begin point and each event occurrence has a unique triggering situation.
 
-The supplied sources also connect Triggers to dispositions. For atomic events, a situation triggers an atomic event when the situation activates a disposition manifested by that event. In this role, Triggers relates the obtaining of a situation to the manifestation of a disposition through an event occurrence, and is associated with the source relations `activates` and `manifestedBy`.
+Triggers are also connected to dispositions. For atomic events, a situation triggers an atomic event when the situation activates a disposition manifested by that event. In this role, Triggers relates the obtaining of a situation to the manifestation of a disposition through an event occurrence, and is associated with the source relations `activates` and `manifestedBy`.
 
 Triggers is also used in accounts of event causation. If one event brings about a situation that triggers another event, the brought-about situation mediates a direct causal relation between the two events. One source further uses this pattern in its account of historical dependence, where historical dependence may hold when one event brings about a situation that triggers another event or brings about a situation necessary for such triggering.
 
 ## Stereotype Profile
 
-The stereotype profile has not been defined at this time.
+The stereotype profile has not been defined.
 
 ## Examples
 
@@ -50,3 +50,4 @@ Examples are not yet available.
 | 2026-07-21 | Phase 2 | Phase 2 automated resolver | Signal resolution | resolve-page-hygiene-signal-issue-v1.2.2 | Phase 2 automated resolver: page-hygiene signals v1.2.2 | GitHub issue #299 | Applied accepted page-hygiene-checker signal edits through automated Phase 2 resolution; not a conceptual or source-faithfulness validation. |
 | 2026-08-07 | Phase 2 | Phase 2 automated resolver | Signal resolution | resolve-page-hygiene-signal-issue-v1.2.2 | Phase 2 automated resolver: page-hygiene signals v1.2.2 | GitHub issue #464 | Applied accepted page-hygiene-checker signal edits through automated Phase 2 resolution; not a conceptual or source-faithfulness validation. |
 | 2026-08-07 | Phase 2 | Phase 2 automated resolver | Signal resolution | resolve-language-style-signal-issue-v1.2.2 | Phase 2 automated resolver: language-style signals v1.2.2 | GitHub issue #466 | Applied accepted language-style-checker signal edits through automated Phase 2 resolution; not a conceptual or source-faithfulness validation. |
+| 2026-09-03 | Phase 2 | Phase 2 automated resolver | Signal resolution | resolve-language-style-signal-issue-v1.2.2 | Phase 2 automated resolver: language-style signals v1.2.2 | GitHub issue #593 | Applied accepted language-style-checker signal edits through automated Phase 2 resolution; not a conceptual or source-faithfulness validation. |
