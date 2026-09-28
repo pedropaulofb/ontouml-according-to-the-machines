@@ -2,7 +2,7 @@
 
 ## Description
 
-Creation connects an Event with the endurant or Object it brings into existence. The sources characterize Creation as an event-to-endurant relation, and one source describes `<<creation>>` as a special kind of Participation. In the evidence, Creation belongs to the broader event-extension account in which Event occurrences record changes affecting endurants, including Creation, Termination, property change, and Participation.
+Creation connects an Event with the endurant or Object it brings into existence. The sources characterize Creation as an event-to-endurant relation, and one source describes `<<creation>>` as a special kind of Participation. Creation belongs to the broader event-extension account in which Event occurrences record changes affecting endurants, including Creation, Termination, property change, and Participation.
 
 For past Event occurrences, a Creation relation fixes which endurant was created by the Event. The source discussing `<<creation>>` therefore applies an immutability rule to association ends attached to endurants in Creation associations: they should be read-only because the past Event cannot change which endurant it created.
 
@@ -45,3 +45,4 @@ Examples are not yet available.
 | 2026-07-02 | Phase 2 | Phase 2 automated resolver | Signal resolution | resolve-language-style-signal-issue-v1.2.2 | Phase 2 automated resolver: language-style signals v1.2.2 | GitHub issue #177 | Applied accepted language-style-checker signal edits through automated Phase 2 resolution; not a conceptual or source-faithfulness validation. |
 | 2026-07-18 | Phase 2 | Phase 2 automated resolver | Signal resolution | resolve-language-style-signal-issue-v1.2.2 | Phase 2 automated resolver: language-style signals v1.2.2 | GitHub issue #274 | Applied accepted language-style-checker signal edits through automated Phase 2 resolution; not a conceptual or source-faithfulness validation. |
 | 2026-08-04 | Phase 2 | Phase 2 automated resolver | Signal resolution | resolve-page-hygiene-signal-issue-v1.2.2 | Phase 2 automated resolver: page-hygiene signals v1.2.2 | GitHub issue #452 | Applied accepted page-hygiene-checker signal edits through automated Phase 2 resolution; not a conceptual or source-faithfulness validation. |
+| 2026-09-06 | Phase 2 | Phase 2 automated resolver | Signal resolution | resolve-language-style-signal-issue-v1.2.2 | Phase 2 automated resolver: language-style signals v1.2.2 | GitHub issue #606 | Applied accepted language-style-checker signal edits through automated Phase 2 resolution; not a conceptual or source-faithfulness validation. |
