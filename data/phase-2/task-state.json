@@ -1,5 +1,5 @@
 {
-  "last_reconciled_at": "2026-10-01T23:06:03Z",
+  "last_reconciled_at": "2026-10-02T02:10:14Z",
   "queue_generation": "phase-2-recalibration-v1",
   "registry_sha256": "456e184dcbb45c67f6a48efb8d59830ac56149c2ff4c88d738a45d28d05d4442",
   "schema_version": 2,
@@ -4413,7 +4413,7 @@
       "validation_rejection_count": 0
     },
     "03f73210b4da3dbd3b4be9868e9ef5fc051e1314c082b0f2bbca2896c8472aad": {
-      "attempt_count": 307,
+      "attempt_count": 308,
       "created_at": "2026-08-17T00:00:00Z",
       "identity": {
         "agent": "language-style-checker",
@@ -4428,14 +4428,21 @@
         "segmentation_profile": "full-page-v1",
         "validator_version": "check-signal-schema-v1"
       },
-      "last_attempt_at": "2026-10-01T23:06:03Z",
+      "last_attempt_at": "2026-10-02T02:10:14Z",
       "last_outcome": {
         "attempt_id": "9380f6374af1acbfed1d41f167bf039c642df803ec72fb2e40aa56a57392400e",
         "finished_at": "2026-10-01T23:07:02Z",
         "kind": "rate_or_quota_limited",
         "provider_attempts": 1
       },
-      "lease": null,
+      "lease": {
+        "attempt_id": "42649435ca6203b420a7dad8cdc2477f0907b9f5801576923acf94a8399f664d",
+        "attempt_number": 308,
+        "expires_at": "2026-10-02T03:10:14Z",
+        "leased_at": "2026-10-02T02:10:14Z",
+        "worker_id": "openrouter",
+        "workflow_run_id": "36954312118-1"
+      },
       "publication": {
         "last_attempt_at": null,
         "last_error": null,
@@ -4453,9 +4460,9 @@
       "source_metadata": {
         "repository_commit_sha": "ce92069bcdf491a87550eb0b43b275a1ce24555e"
       },
-      "status": "deferred_quota",
+      "status": "leased",
       "task_id": "03f73210b4da3dbd3b4be9868e9ef5fc051e1314c082b0f2bbca2896c8472aad",
-      "updated_at": "2026-10-01T23:07:02Z",
+      "updated_at": "2026-10-02T02:10:14Z",
       "validation_rejection_count": 0
     },
     "0405bd9d942da70a735df68c6ee1fb73deeac3b6d1913b765bc68942b52be930": {
@@ -13173,7 +13180,7 @@
       "validation_rejection_count": 2
     },
     "0b9732a2b11e1d48d2973a08fb553360fc4fecf21c1c29a5958f35cb88e55193": {
-      "attempt_count": 307,
+      "attempt_count": 308,
       "created_at": "2026-08-17T00:00:00Z",
       "identity": {
         "agent": "language-style-checker",
@@ -13188,14 +13195,21 @@
         "segmentation_profile": "full-page-v1",
         "validator_version": "check-signal-schema-v1"
       },
-      "last_attempt_at": "2026-10-01T23:06:03Z",
+      "last_attempt_at": "2026-10-02T02:10:14Z",
       "last_outcome": {
         "attempt_id": "07f38299788aa658d16d6240bbfe48951360d504224acb4fc973d28716d8e4d7",
         "finished_at": "2026-10-01T23:06:57Z",
         "kind": "not_called",
         "provider_attempts": 0
       },
-      "lease": null,
+      "lease": {
+        "attempt_id": "302300616998ff75807b3cbdc1de4d7ec021aa1dc4d7e4088e5b228f838e7784",
+        "attempt_number": 308,
+        "expires_at": "2026-10-02T03:10:14Z",
+        "leased_at": "2026-10-02T02:10:14Z",
+        "worker_id": "openrouter",
+        "workflow_run_id": "36954312118-1"
+      },
       "publication": {
         "last_attempt_at": null,
         "last_error": null,
@@ -13213,9 +13227,9 @@
       "source_metadata": {
         "repository_commit_sha": "ce92069bcdf491a87550eb0b43b275a1ce24555e"
       },
-      "status": "pending",
+      "status": "leased",
       "task_id": "0b9732a2b11e1d48d2973a08fb553360fc4fecf21c1c29a5958f35cb88e55193",
-      "updated_at": "2026-10-01T23:06:57Z",
+      "updated_at": "2026-10-02T02:10:14Z",
       "validation_rejection_count": 0
     },
     "0bb0732db4e53625b41c975e44ce0810cbfab375b7666520d0db5fe67ffd5772": {
@@ -18017,7 +18031,7 @@
       "validation_rejection_count": 0
     },
     "111b46b6561c4503f84ff0689c4d08dfabc4fb886ef02b77d5f13c5425900161": {
-      "attempt_count": 215,
+      "attempt_count": 216,
       "created_at": "2026-08-17T00:00:00Z",
       "identity": {
         "agent": "language-style-checker",
@@ -18032,14 +18046,21 @@
         "segmentation_profile": "full-page-v1",
         "validator_version": "check-signal-schema-v1"
       },
-      "last_attempt_at": "2026-10-01T23:06:03Z",
+      "last_attempt_at": "2026-10-02T02:10:14Z",
       "last_outcome": {
         "attempt_id": "5dce4a0349465d7db86793fa2a2b6d412040cf39993b711105b973f9bf2add56",
         "finished_at": "2026-10-01T23:07:02Z",
         "kind": "not_called",
         "provider_attempts": 0
       },
-      "lease": null,
+      "lease": {
+        "attempt_id": "56917ef7dc854f33d996f69ef8a6d8a5e320bf50924f03f44b699852f7b0adb7",
+        "attempt_number": 216,
+        "expires_at": "2026-10-02T03:10:14Z",
+        "leased_at": "2026-10-02T02:10:14Z",
+        "worker_id": "openrouter",
+        "workflow_run_id": "36954312118-1"
+      },
       "publication": {
         "last_attempt_at": null,
         "last_error": null,
@@ -18057,9 +18078,9 @@
       "source_metadata": {
         "repository_commit_sha": "ce92069bcdf491a87550eb0b43b275a1ce24555e"
       },
-      "status": "pending",
+      "status": "leased",
       "task_id": "111b46b6561c4503f84ff0689c4d08dfabc4fb886ef02b77d5f13c5425900161",
-      "updated_at": "2026-10-01T23:07:02Z",
+      "updated_at": "2026-10-02T02:10:14Z",
       "validation_rejection_count": 0
     },
     "11277c0f04e8249038b50e08dcc4c422177ebe6de614cfdd3aaec98233d490cd": {
@@ -26252,7 +26273,7 @@
       "validation_rejection_count": 0
     },
     "18f2b23922607dade9e08ac0c73df386f73e2fbd71186f5beb1cbd2fabf421e9": {
-      "attempt_count": 215,
+      "attempt_count": 216,
       "created_at": "2026-08-17T00:00:00Z",
       "identity": {
         "agent": "language-style-checker",
@@ -26267,14 +26288,21 @@
         "segmentation_profile": "full-page-v1",
         "validator_version": "check-signal-schema-v1"
       },
-      "last_attempt_at": "2026-10-01T23:06:03Z",
+      "last_attempt_at": "2026-10-02T02:10:14Z",
       "last_outcome": {
         "attempt_id": "d17aebd36e10f4f9116db42f25d5eea581ee5bcbc0728d7d2f35131927950d0c",
         "finished_at": "2026-10-01T23:07:02Z",
         "kind": "not_called",
         "provider_attempts": 0
       },
-      "lease": null,
+      "lease": {
+        "attempt_id": "837d2bd5e6e6bcbd549c64228f63ca5da85104f0aacf0981c0c4660b293017d2",
+        "attempt_number": 216,
+        "expires_at": "2026-10-02T03:10:14Z",
+        "leased_at": "2026-10-02T02:10:14Z",
+        "worker_id": "openrouter",
+        "workflow_run_id": "36954312118-1"
+      },
       "publication": {
         "last_attempt_at": null,
         "last_error": null,
@@ -26292,9 +26320,9 @@
       "source_metadata": {
         "repository_commit_sha": "ce92069bcdf491a87550eb0b43b275a1ce24555e"
       },
-      "status": "pending",
+      "status": "leased",
       "task_id": "18f2b23922607dade9e08ac0c73df386f73e2fbd71186f5beb1cbd2fabf421e9",
-      "updated_at": "2026-10-01T23:07:02Z",
+      "updated_at": "2026-10-02T02:10:14Z",
       "validation_rejection_count": 0
     },
     "18f4c9dc6fc20d53f56137407162fb1657123b514d2132d75ba151c6b9141359": {
@@ -30552,7 +30580,7 @@
       "validation_rejection_count": 0
     },
     "1d957ebec9717149e02edb44708f80c16a2738660434652f1afd2d8cee788922": {
-      "attempt_count": 215,
+      "attempt_count": 216,
       "created_at": "2026-08-17T00:00:00Z",
       "identity": {
         "agent": "language-style-checker",
@@ -30567,14 +30595,21 @@
         "segmentation_profile": "full-page-v1",
         "validator_version": "check-signal-schema-v1"
       },
-      "last_attempt_at": "2026-10-01T23:06:03Z",
+      "last_attempt_at": "2026-10-02T02:10:14Z",
       "last_outcome": {
         "attempt_id": "9f871699f3019c2956a71747913016464de59292805e363a46d53ecee69737fe",
         "finished_at": "2026-10-01T23:07:02Z",
         "kind": "not_called",
         "provider_attempts": 0
       },
-      "lease": null,
+      "lease": {
+        "attempt_id": "602ab2b6430f64d938f830d307aeee3e37f6b412cdddc60c29726c6f21640bd8",
+        "attempt_number": 216,
+        "expires_at": "2026-10-02T03:10:14Z",
+        "leased_at": "2026-10-02T02:10:14Z",
+        "worker_id": "openrouter",
+        "workflow_run_id": "36954312118-1"
+      },
       "publication": {
         "last_attempt_at": null,
         "last_error": null,
@@ -30592,9 +30627,9 @@
       "source_metadata": {
         "repository_commit_sha": "ce92069bcdf491a87550eb0b43b275a1ce24555e"
       },
-      "status": "pending",
+      "status": "leased",
       "task_id": "1d957ebec9717149e02edb44708f80c16a2738660434652f1afd2d8cee788922",
-      "updated_at": "2026-10-01T23:07:02Z",
+      "updated_at": "2026-10-02T02:10:14Z",
       "validation_rejection_count": 0
     },
     "1d9c691bb0bed8adb244650475b667f72ec17279212274a8792ff5a778d531c4": {
@@ -36977,7 +37012,7 @@
       "validation_rejection_count": 0
     },
     "2472b52ebb47e86f5373f48a5bdb43e3476a2d2a4699a10b38f2665e351e36ed": {
-      "attempt_count": 215,
+      "attempt_count": 216,
       "created_at": "2026-08-17T00:00:00Z",
       "identity": {
         "agent": "language-style-checker",
@@ -36992,14 +37027,21 @@
         "segmentation_profile": "full-page-v1",
         "validator_version": "check-signal-schema-v1"
       },
-      "last_attempt_at": "2026-10-01T23:06:03Z",
+      "last_attempt_at": "2026-10-02T02:10:14Z",
       "last_outcome": {
         "attempt_id": "cc5cbd52f386060c6e636f20046d2415c58f04cd0ce45505ffd5f1e9ecd06288",
         "finished_at": "2026-10-01T23:07:02Z",
         "kind": "not_called",
         "provider_attempts": 0
       },
-      "lease": null,
+      "lease": {
+        "attempt_id": "7f1b944506ab6581a8b5f2b57be3185b8baa8ce74f0d410eac28407a907c1978",
+        "attempt_number": 216,
+        "expires_at": "2026-10-02T03:10:14Z",
+        "leased_at": "2026-10-02T02:10:14Z",
+        "worker_id": "openrouter",
+        "workflow_run_id": "36954312118-1"
+      },
       "publication": {
         "last_attempt_at": null,
         "last_error": null,
@@ -37017,9 +37059,9 @@
       "source_metadata": {
         "repository_commit_sha": "ce92069bcdf491a87550eb0b43b275a1ce24555e"
       },
-      "status": "pending",
+      "status": "leased",
       "task_id": "2472b52ebb47e86f5373f48a5bdb43e3476a2d2a4699a10b38f2665e351e36ed",
-      "updated_at": "2026-10-01T23:07:02Z",
+      "updated_at": "2026-10-02T02:10:14Z",
       "validation_rejection_count": 0
     },
     "2479189b0f87dac24788f39026368be3370f427c5555f084abdd317173c6fccb": {
@@ -37279,7 +37321,7 @@
       "validation_rejection_count": 0
     },
     "24abebced56e6f173c24d33944ac307a48bc8fd4f0cc36031dd6457d732e0a25": {
-      "attempt_count": 215,
+      "attempt_count": 216,
       "created_at": "2026-08-17T00:00:00Z",
       "identity": {
         "agent": "language-style-checker",
@@ -37294,14 +37336,21 @@
         "segmentation_profile": "full-page-v1",
         "validator_version": "check-signal-schema-v1"
       },
-      "last_attempt_at": "2026-10-01T23:06:03Z",
+      "last_attempt_at": "2026-10-02T02:10:14Z",
       "last_outcome": {
         "attempt_id": "9e4c9f186c1fedff2db04b2f4f7ce0c38c0d19e54ed25c5a45bc952ffc8f64b8",
         "finished_at": "2026-10-01T23:07:02Z",
         "kind": "not_called",
         "provider_attempts": 0
       },
-      "lease": null,
+      "lease": {
+        "attempt_id": "48599a967a1eda04ea08cac48ec2101803dd6041e7ca360dd081d00b6bf9d117",
+        "attempt_number": 216,
+        "expires_at": "2026-10-02T03:10:14Z",
+        "leased_at": "2026-10-02T02:10:14Z",
+        "worker_id": "openrouter",
+        "workflow_run_id": "36954312118-1"
+      },
       "publication": {
         "last_attempt_at": null,
         "last_error": null,
@@ -37319,9 +37368,9 @@
       "source_metadata": {
         "repository_commit_sha": "ce92069bcdf491a87550eb0b43b275a1ce24555e"
       },
-      "status": "pending",
+      "status": "leased",
       "task_id": "24abebced56e6f173c24d33944ac307a48bc8fd4f0cc36031dd6457d732e0a25",
-      "updated_at": "2026-10-01T23:07:02Z",
+      "updated_at": "2026-10-02T02:10:14Z",
       "validation_rejection_count": 0
     },
     "24ba4033bf00555eb8a1f810c33b8369a6dda82e6d89237cfd73507a19a010c3": {
@@ -39793,7 +39842,7 @@
       "validation_rejection_count": 0
     },
     "26d9bd13f5c2ba1d6891f15df69b750791b91748693978e4843679953ac46b13": {
-      "attempt_count": 55,
+      "attempt_count": 56,
       "created_at": "2026-08-17T00:00:00Z",
       "identity": {
         "agent": "language-style-checker",
@@ -39808,14 +39857,21 @@
         "segmentation_profile": "full-page-v1",
         "validator_version": "check-signal-schema-v1"
       },
-      "last_attempt_at": "2026-10-01T23:06:03Z",
+      "last_attempt_at": "2026-10-02T02:10:14Z",
       "last_outcome": {
         "attempt_id": "6425a57ed46b545747cfdb15002153b059a71b70ae352cdcde1d8de35b456a60",
         "finished_at": "2026-10-01T23:07:02Z",
         "kind": "not_called",
         "provider_attempts": 0
       },
-      "lease": null,
+      "lease": {
+        "attempt_id": "c60e5254b588aaa9484a1e74b7fd0a78a9f77b890019b40a11e2de374e2791ee",
+        "attempt_number": 56,
+        "expires_at": "2026-10-02T03:10:14Z",
+        "leased_at": "2026-10-02T02:10:14Z",
+        "worker_id": "openrouter",
+        "workflow_run_id": "36954312118-1"
+      },
       "publication": {
         "last_attempt_at": null,
         "last_error": null,
@@ -39833,9 +39889,9 @@
       "source_metadata": {
         "repository_commit_sha": "ce92069bcdf491a87550eb0b43b275a1ce24555e"
       },
-      "status": "pending",
+      "status": "leased",
       "task_id": "26d9bd13f5c2ba1d6891f15df69b750791b91748693978e4843679953ac46b13",
-      "updated_at": "2026-10-01T23:07:02Z",
+      "updated_at": "2026-10-02T02:10:14Z",
       "validation_rejection_count": 0
     },
     "26dafb77cd9ef715f3d74fb44e7980117b579b2383434f9923e8ad0c54dfbb15": {
@@ -45282,7 +45338,7 @@
       "validation_rejection_count": 0
     },
     "2c4707d83993c1193bc2ab2ba61b07c5d62dd3bb10430dd6df4747009a0c32eb": {
-      "attempt_count": 307,
+      "attempt_count": 308,
       "created_at": "2026-08-19T15:59:42Z",
       "identity": {
         "agent": "language-style-checker",
@@ -45297,14 +45353,21 @@
         "segmentation_profile": "full-page-v1",
         "validator_version": "check-signal-schema-v1"
       },
-      "last_attempt_at": "2026-10-01T23:06:03Z",
+      "last_attempt_at": "2026-10-02T02:10:14Z",
       "last_outcome": {
         "attempt_id": "547f8b85b0e00e38497974b917c030f6ca5716eba5c3e92a084d6b644365b6dc",
         "finished_at": "2026-10-01T23:06:55Z",
         "kind": "provider_unavailable",
         "provider_attempts": 2
       },
-      "lease": null,
+      "lease": {
+        "attempt_id": "b934272e0c2b4c89067627730e6dd343f3393b86a3b5a3a16aa19ada951140ab",
+        "attempt_number": 308,
+        "expires_at": "2026-10-02T03:10:14Z",
+        "leased_at": "2026-10-02T02:10:14Z",
+        "worker_id": "openrouter",
+        "workflow_run_id": "36954312118-1"
+      },
       "publication": {
         "last_attempt_at": null,
         "last_error": null,
@@ -45322,9 +45385,9 @@
       "source_metadata": {
         "repository_commit_sha": "c8ce658eb483351453afdd507a0889f6bd8f6f37"
       },
-      "status": "temporarily_unavailable",
+      "status": "leased",
       "task_id": "2c4707d83993c1193bc2ab2ba61b07c5d62dd3bb10430dd6df4747009a0c32eb",
-      "updated_at": "2026-10-01T23:06:55Z",
+      "updated_at": "2026-10-02T02:10:14Z",
       "validation_rejection_count": 0
     },
     "2c47c968e3891966fcc3cbde29fc29bfc82fb8034553cac288b77709aefab1e1": {
@@ -47437,7 +47500,7 @@
       "validation_rejection_count": 0
     },
     "2e3db6ba471567d6f2363b0abd9fb6d71d32811e38398863f8f77c7277bf606e": {
-      "attempt_count": 187,
+      "attempt_count": 188,
       "created_at": "2026-08-17T00:00:00Z",
       "identity": {
         "agent": "language-style-checker",
@@ -47452,14 +47515,21 @@
         "segmentation_profile": "full-page-v1",
         "validator_version": "check-signal-schema-v1"
       },
-      "last_attempt_at": "2026-10-01T23:06:03Z",
+      "last_attempt_at": "2026-10-02T02:10:14Z",
       "last_outcome": {
         "attempt_id": "0bb127ad85d0ce242f53f815a0b0c0529d1c51e7c20a691c6de0c91a92db5e02",
         "finished_at": "2026-10-01T23:07:02Z",
         "kind": "not_called",
         "provider_attempts": 0
       },
-      "lease": null,
+      "lease": {
+        "attempt_id": "451ab7f8b8a974acd4323eba79564e83b1cec252bde80884cbb1b492d2e129af",
+        "attempt_number": 188,
+        "expires_at": "2026-10-02T03:10:14Z",
+        "leased_at": "2026-10-02T02:10:14Z",
+        "worker_id": "openrouter",
+        "workflow_run_id": "36954312118-1"
+      },
       "publication": {
         "last_attempt_at": null,
         "last_error": null,
@@ -47477,9 +47547,9 @@
       "source_metadata": {
         "repository_commit_sha": "ce92069bcdf491a87550eb0b43b275a1ce24555e"
       },
-      "status": "pending",
+      "status": "leased",
       "task_id": "2e3db6ba471567d6f2363b0abd9fb6d71d32811e38398863f8f77c7277bf606e",
-      "updated_at": "2026-10-01T23:07:02Z",
+      "updated_at": "2026-10-02T02:10:14Z",
       "validation_rejection_count": 0
     },
     "2e41697fa8e827666847ba5772d98fda2dd27c86b0ba2302b5f82695415307da": {
@@ -56244,7 +56314,7 @@
       "validation_rejection_count": 0
     },
     "35cb201650c694d4a48678be1a386ef004f0a99779df8d309fde7e4e36ce1d46": {
-      "attempt_count": 215,
+      "attempt_count": 216,
       "created_at": "2026-08-17T00:00:00Z",
       "identity": {
         "agent": "language-style-checker",
@@ -56259,14 +56329,21 @@
         "segmentation_profile": "full-page-v1",
         "validator_version": "check-signal-schema-v1"
       },
-      "last_attempt_at": "2026-10-01T23:06:03Z",
+      "last_attempt_at": "2026-10-02T02:10:14Z",
       "last_outcome": {
         "attempt_id": "be00436846dede3af003fe67feead83cae61647db817f35d6e9460cdb472f825",
         "finished_at": "2026-10-01T23:07:02Z",
         "kind": "not_called",
         "provider_attempts": 0
       },
-      "lease": null,
+      "lease": {
+        "attempt_id": "b456b84fd64e75bef34cec1432c334eacc2a1d55303ec58f56a69d8ad9589edc",
+        "attempt_number": 216,
+        "expires_at": "2026-10-02T03:10:14Z",
+        "leased_at": "2026-10-02T02:10:14Z",
+        "worker_id": "openrouter",
+        "workflow_run_id": "36954312118-1"
+      },
       "publication": {
         "last_attempt_at": null,
         "last_error": null,
@@ -56284,9 +56361,9 @@
       "source_metadata": {
         "repository_commit_sha": "ce92069bcdf491a87550eb0b43b275a1ce24555e"
       },
-      "status": "pending",
+      "status": "leased",
       "task_id": "35cb201650c694d4a48678be1a386ef004f0a99779df8d309fde7e4e36ce1d46",
-      "updated_at": "2026-10-01T23:07:02Z",
+      "updated_at": "2026-10-02T02:10:14Z",
       "validation_rejection_count": 0
     },
     "35da78a94f3243c80f298c5c6e9bd573ff6d2de7703053e6b5235da0b4b953dc": {
@@ -61221,7 +61298,7 @@
       "validation_rejection_count": 0
     },
     "3b60c5c3ab2a6adb9f7a788aa0d2595da642ac9e127ac23dd9743633503daa49": {
-      "attempt_count": 215,
+      "attempt_count": 216,
       "created_at": "2026-08-17T00:00:00Z",
       "identity": {
         "agent": "language-style-checker",
@@ -61236,14 +61313,21 @@
         "segmentation_profile": "full-page-v1",
         "validator_version": "check-signal-schema-v1"
       },
-      "last_attempt_at": "2026-10-01T23:06:03Z",
+      "last_attempt_at": "2026-10-02T02:10:14Z",
       "last_outcome": {
         "attempt_id": "11f88abb96df263a1caba9c70c62a5a4e7d376612a6edd9a43b5faae419dfa59",
         "finished_at": "2026-10-01T23:07:02Z",
         "kind": "not_called",
         "provider_attempts": 0
       },
-      "lease": null,
+      "lease": {
+        "attempt_id": "0a0541c7d5ab68623029e884219fa2a146d73ea019e38bab9d2779c867813fd6",
+        "attempt_number": 216,
+        "expires_at": "2026-10-02T03:10:14Z",
+        "leased_at": "2026-10-02T02:10:14Z",
+        "worker_id": "openrouter",
+        "workflow_run_id": "36954312118-1"
+      },
       "publication": {
         "last_attempt_at": null,
         "last_error": null,
@@ -61261,9 +61345,9 @@
       "source_metadata": {
         "repository_commit_sha": "ce92069bcdf491a87550eb0b43b275a1ce24555e"
       },
-      "status": "pending",
+      "status": "leased",
       "task_id": "3b60c5c3ab2a6adb9f7a788aa0d2595da642ac9e127ac23dd9743633503daa49",
-      "updated_at": "2026-10-01T23:07:02Z",
+      "updated_at": "2026-10-02T02:10:14Z",
       "validation_rejection_count": 0
     },
     "3b711dee3744ea432ce2e7d13e5c1d86ce381229f18adf99b053be1175712385": {
@@ -61308,7 +61392,7 @@
       "validation_rejection_count": 0
     },
     "3b7cb8e5154b829af9961de33af8bd6942303f1d206e2151842464cdece6790a": {
-      "attempt_count": 187,
+      "attempt_count": 188,
       "created_at": "2026-08-17T00:00:00Z",
       "identity": {
         "agent": "language-style-checker",
@@ -61323,14 +61407,21 @@
         "segmentation_profile": "full-page-v1",
         "validator_version": "check-signal-schema-v1"
       },
-      "last_attempt_at": "2026-10-01T23:06:03Z",
+      "last_attempt_at": "2026-10-02T02:10:14Z",
       "last_outcome": {
         "attempt_id": "5f2cd21e705ad99029d2efc235d709af64084e043ee18b417abba99995d0b0bf",
         "finished_at": "2026-10-01T23:07:02Z",
         "kind": "not_called",
         "provider_attempts": 0
       },
-      "lease": null,
+      "lease": {
+        "attempt_id": "07fb7dd3b5957bb20a97b808792bfa1e18fb67a3792c4a91901d5093ef9f10f2",
+        "attempt_number": 188,
+        "expires_at": "2026-10-02T03:10:14Z",
+        "leased_at": "2026-10-02T02:10:14Z",
+        "worker_id": "openrouter",
+        "workflow_run_id": "36954312118-1"
+      },
       "publication": {
         "last_attempt_at": null,
         "last_error": null,
@@ -61348,9 +61439,9 @@
       "source_metadata": {
         "repository_commit_sha": "ce92069bcdf491a87550eb0b43b275a1ce24555e"
       },
-      "status": "pending",
+      "status": "leased",
       "task_id": "3b7cb8e5154b829af9961de33af8bd6942303f1d206e2151842464cdece6790a",
-      "updated_at": "2026-10-01T23:07:02Z",
+      "updated_at": "2026-10-02T02:10:14Z",
       "validation_rejection_count": 0
     },
     "3b8a8ecc05fae1235a511eda6300e8f3902f5c3d7580fdeb224ef455ff0a5ce8": {
@@ -71196,7 +71287,7 @@
       "validation_rejection_count": 0
     },
     "44b28eb5e1f7b4df13eddfe3aec7db552e1ec564a716d0f5e58a884f6bcee728": {
-      "attempt_count": 215,
+      "attempt_count": 216,
       "created_at": "2026-08-19T09:20:00Z",
       "identity": {
         "agent": "language-style-checker",
@@ -71211,14 +71302,21 @@
         "segmentation_profile": "full-page-v1",
         "validator_version": "check-signal-schema-v1"
       },
-      "last_attempt_at": "2026-10-01T23:06:03Z",
+      "last_attempt_at": "2026-10-02T02:10:14Z",
       "last_outcome": {
         "attempt_id": "307f871750adeeb372f9fd90f564ebfdc4eb9ab403b55c7b28e6f500d3802019",
         "finished_at": "2026-10-01T23:07:02Z",
         "kind": "not_called",
         "provider_attempts": 0
       },
-      "lease": null,
+      "lease": {
+        "attempt_id": "07aa22893d8de74a30915b6e959e8e165dacf3850c54d122c56683fc0bea803a",
+        "attempt_number": 216,
+        "expires_at": "2026-10-02T03:10:14Z",
+        "leased_at": "2026-10-02T02:10:14Z",
+        "worker_id": "openrouter",
+        "workflow_run_id": "36954312118-1"
+      },
       "publication": {
         "last_attempt_at": null,
         "last_error": null,
@@ -71236,9 +71334,9 @@
       "source_metadata": {
         "repository_commit_sha": "4fa57cb1a09178457606804db4afcc925b2eaabe"
       },
-      "status": "pending",
+      "status": "leased",
       "task_id": "44b28eb5e1f7b4df13eddfe3aec7db552e1ec564a716d0f5e58a884f6bcee728",
-      "updated_at": "2026-10-01T23:07:02Z",
+      "updated_at": "2026-10-02T02:10:14Z",
       "validation_rejection_count": 0
     },
     "44c227171217116c2a62e24fa0e3b420bf6f0e204b91640c11dfd1d2ce0dc596": {
@@ -75610,7 +75708,7 @@
       "validation_rejection_count": 0
     },
     "48d54ced0a068ec46e56e751149fed134dff754bc9344974db3a817db5916d92": {
-      "attempt_count": 307,
+      "attempt_count": 308,
       "created_at": "2026-08-17T00:00:00Z",
       "identity": {
         "agent": "language-style-checker",
@@ -75625,14 +75723,21 @@
         "segmentation_profile": "full-page-v1",
         "validator_version": "check-signal-schema-v1"
       },
-      "last_attempt_at": "2026-10-01T23:06:03Z",
+      "last_attempt_at": "2026-10-02T02:10:14Z",
       "last_outcome": {
         "attempt_id": "78a5706bcc68365e57e397d1802ace3d4b57612353cb695b8820cbfcf0e1cc82",
         "finished_at": "2026-10-01T23:06:59Z",
         "kind": "not_called",
         "provider_attempts": 0
       },
-      "lease": null,
+      "lease": {
+        "attempt_id": "d73ed8d59657eb85a8a6e2abc9450bb1f92726e2d72225d711072f3bf69f5129",
+        "attempt_number": 308,
+        "expires_at": "2026-10-02T03:10:14Z",
+        "leased_at": "2026-10-02T02:10:14Z",
+        "worker_id": "openrouter",
+        "workflow_run_id": "36954312118-1"
+      },
       "publication": {
         "last_attempt_at": null,
         "last_error": null,
@@ -75650,9 +75755,9 @@
       "source_metadata": {
         "repository_commit_sha": "ce92069bcdf491a87550eb0b43b275a1ce24555e"
       },
-      "status": "pending",
+      "status": "leased",
       "task_id": "48d54ced0a068ec46e56e751149fed134dff754bc9344974db3a817db5916d92",
-      "updated_at": "2026-10-01T23:06:59Z",
+      "updated_at": "2026-10-02T02:10:14Z",
       "validation_rejection_count": 0
     },
     "48dcabbb859592837bc71d1118ee7a15f2575d7b98bac0bc1aff1ad62f403db9": {
@@ -77192,7 +77297,7 @@
       "validation_rejection_count": 0
     },
     "4a70dcfd074789da9b39c9fe33afd3d41b54635eb4a13a22a1d13dcacb7f8b78": {
-      "attempt_count": 215,
+      "attempt_count": 216,
       "created_at": "2026-08-17T00:00:00Z",
       "identity": {
         "agent": "language-style-checker",
@@ -77207,14 +77312,21 @@
         "segmentation_profile": "full-page-v1",
         "validator_version": "check-signal-schema-v1"
       },
-      "last_attempt_at": "2026-10-01T23:06:03Z",
+      "last_attempt_at": "2026-10-02T02:10:14Z",
       "last_outcome": {
         "attempt_id": "699dda3f523aec96f3f8ae68de6977d47275ce2a87b22716ad387a8392de0429",
         "finished_at": "2026-10-01T23:07:02Z",
         "kind": "not_called",
         "provider_attempts": 0
       },
-      "lease": null,
+      "lease": {
+        "attempt_id": "5e6e3d4ad2b07e488206d7ad16b8044a11227714f4de8dda5c45f8c26fe9e95b",
+        "attempt_number": 216,
+        "expires_at": "2026-10-02T03:10:14Z",
+        "leased_at": "2026-10-02T02:10:14Z",
+        "worker_id": "openrouter",
+        "workflow_run_id": "36954312118-1"
+      },
       "publication": {
         "last_attempt_at": null,
         "last_error": null,
@@ -77232,9 +77344,9 @@
       "source_metadata": {
         "repository_commit_sha": "ce92069bcdf491a87550eb0b43b275a1ce24555e"
       },
-      "status": "pending",
+      "status": "leased",
       "task_id": "4a70dcfd074789da9b39c9fe33afd3d41b54635eb4a13a22a1d13dcacb7f8b78",
-      "updated_at": "2026-10-01T23:07:02Z",
+      "updated_at": "2026-10-02T02:10:14Z",
       "validation_rejection_count": 0
     },
     "4a80556b084ff875e8593d86479a90cbb67977663030f72bda6f6d97d1da7b8b": {
@@ -77509,7 +77621,7 @@
       "validation_rejection_count": 0
     },
     "4ac8ccaba67cc2c9c553a971496e203f4d95443ba4255eddb89eda8d06444acb": {
-      "attempt_count": 215,
+      "attempt_count": 216,
       "created_at": "2026-08-19T09:20:00Z",
       "identity": {
         "agent": "language-style-checker",
@@ -77524,14 +77636,21 @@
         "segmentation_profile": "full-page-v1",
         "validator_version": "check-signal-schema-v1"
       },
-      "last_attempt_at": "2026-10-01T23:06:03Z",
+      "last_attempt_at": "2026-10-02T02:10:14Z",
       "last_outcome": {
         "attempt_id": "a07863ab205c6e3ae84c3491164a93a38c673b988f1c9da567e081eb16aee983",
         "finished_at": "2026-10-01T23:07:02Z",
         "kind": "not_called",
         "provider_attempts": 0
       },
-      "lease": null,
+      "lease": {
+        "attempt_id": "94e27f74c96d12313302b51913e739e642f8091a841c54936ff7339c92bb9c00",
+        "attempt_number": 216,
+        "expires_at": "2026-10-02T03:10:14Z",
+        "leased_at": "2026-10-02T02:10:14Z",
+        "worker_id": "openrouter",
+        "workflow_run_id": "36954312118-1"
+      },
       "publication": {
         "last_attempt_at": null,
         "last_error": null,
@@ -77549,9 +77668,9 @@
       "source_metadata": {
         "repository_commit_sha": "4fa57cb1a09178457606804db4afcc925b2eaabe"
       },
-      "status": "pending",
+      "status": "leased",
       "task_id": "4ac8ccaba67cc2c9c553a971496e203f4d95443ba4255eddb89eda8d06444acb",
-      "updated_at": "2026-10-01T23:07:02Z",
+      "updated_at": "2026-10-02T02:10:14Z",
       "validation_rejection_count": 0
     },
     "4ada0e32075b4508aece8c6898f9f946e4d12637620ee15bbc4f7be5018101fd": {
@@ -91670,7 +91789,7 @@
       "validation_rejection_count": 0
     },
     "5811ab78763513f0a34544e4d1833d1e73bbecbeba883dcaf0ae9e2332f7bd12": {
-      "attempt_count": 215,
+      "attempt_count": 216,
       "created_at": "2026-08-17T00:00:00Z",
       "identity": {
         "agent": "language-style-checker",
@@ -91685,14 +91804,21 @@
         "segmentation_profile": "full-page-v1",
         "validator_version": "check-signal-schema-v1"
       },
-      "last_attempt_at": "2026-10-01T23:06:03Z",
+      "last_attempt_at": "2026-10-02T02:10:14Z",
       "last_outcome": {
         "attempt_id": "3f8eca250484370b52a8d5de93540c965978254838430186be8eddbd2e05376d",
         "finished_at": "2026-10-01T23:07:02Z",
         "kind": "not_called",
         "provider_attempts": 0
       },
-      "lease": null,
+      "lease": {
+        "attempt_id": "916ec90795d605aa1e333f3ab213dc52b2b77f7ec0a7336aa20f916dc38a3113",
+        "attempt_number": 216,
+        "expires_at": "2026-10-02T03:10:14Z",
+        "leased_at": "2026-10-02T02:10:14Z",
+        "worker_id": "openrouter",
+        "workflow_run_id": "36954312118-1"
+      },
       "publication": {
         "last_attempt_at": null,
         "last_error": null,
@@ -91710,9 +91836,9 @@
       "source_metadata": {
         "repository_commit_sha": "ce92069bcdf491a87550eb0b43b275a1ce24555e"
       },
-      "status": "pending",
+      "status": "leased",
       "task_id": "5811ab78763513f0a34544e4d1833d1e73bbecbeba883dcaf0ae9e2332f7bd12",
-      "updated_at": "2026-10-01T23:07:02Z",
+      "updated_at": "2026-10-02T02:10:14Z",
       "validation_rejection_count": 0
     },
     "581241972d81af9f8e789f6e8d480b4eb66e192da8895a00310f4c85c8253096": {
@@ -102166,7 +102292,7 @@
       "validation_rejection_count": 0
     },
     "61d8075533365408da3339a986f84e07c2d96b17dbcb0e133418d58247d73c84": {
-      "attempt_count": 122,
+      "attempt_count": 123,
       "created_at": "2026-08-17T00:00:00Z",
       "identity": {
         "agent": "language-style-checker",
@@ -102181,14 +102307,21 @@
         "segmentation_profile": "full-page-v1",
         "validator_version": "check-signal-schema-v1"
       },
-      "last_attempt_at": "2026-10-01T23:06:03Z",
+      "last_attempt_at": "2026-10-02T02:10:14Z",
       "last_outcome": {
         "attempt_id": "7855dbc6869fff58a1d55d3d07499aea346aa225af8252de54a2f18cdd250276",
         "finished_at": "2026-10-01T23:07:02Z",
         "kind": "not_called",
         "provider_attempts": 0
       },
-      "lease": null,
+      "lease": {
+        "attempt_id": "d743d417d098137fc3d9a7b8ced3c1dcc7ed7ce7a820c4d6d0d2de51f67b83bb",
+        "attempt_number": 123,
+        "expires_at": "2026-10-02T03:10:14Z",
+        "leased_at": "2026-10-02T02:10:14Z",
+        "worker_id": "openrouter",
+        "workflow_run_id": "36954312118-1"
+      },
       "publication": {
         "last_attempt_at": null,
         "last_error": null,
@@ -102206,9 +102339,9 @@
       "source_metadata": {
         "repository_commit_sha": "ce92069bcdf491a87550eb0b43b275a1ce24555e"
       },
-      "status": "pending",
+      "status": "leased",
       "task_id": "61d8075533365408da3339a986f84e07c2d96b17dbcb0e133418d58247d73c84",
-      "updated_at": "2026-10-01T23:07:02Z",
+      "updated_at": "2026-10-02T02:10:14Z",
       "validation_rejection_count": 0
     },
     "61dcd68e5cfbfcee1bb74696bf1115359dcd262c849eea06db908f5f5941fb41": {
@@ -109242,7 +109375,7 @@
       "validation_rejection_count": 0
     },
     "6840827adf0a4814797cf2d09358ac596ead015a7350c97bff33da6af2189c04": {
-      "attempt_count": 123,
+      "attempt_count": 124,
       "created_at": "2026-08-17T00:00:00Z",
       "identity": {
         "agent": "language-style-checker",
@@ -109257,14 +109390,21 @@
         "segmentation_profile": "full-page-v1",
         "validator_version": "check-signal-schema-v1"
       },
-      "last_attempt_at": "2026-10-01T23:06:03Z",
+      "last_attempt_at": "2026-10-02T02:10:14Z",
       "last_outcome": {
         "attempt_id": "03189bf28e5b466884c5eb2138c142620f52f859d9bbf6deb8b284ff2b2d5ae8",
         "finished_at": "2026-10-01T23:07:02Z",
         "kind": "not_called",
         "provider_attempts": 0
       },
-      "lease": null,
+      "lease": {
+        "attempt_id": "58206787f07264579ab841f56f7eff386d743b2415a1f039108ba39c1610ee26",
+        "attempt_number": 124,
+        "expires_at": "2026-10-02T03:10:14Z",
+        "leased_at": "2026-10-02T02:10:14Z",
+        "worker_id": "openrouter",
+        "workflow_run_id": "36954312118-1"
+      },
       "publication": {
         "last_attempt_at": null,
         "last_error": null,
@@ -109282,9 +109422,9 @@
       "source_metadata": {
         "repository_commit_sha": "ce92069bcdf491a87550eb0b43b275a1ce24555e"
       },
-      "status": "pending",
+      "status": "leased",
       "task_id": "6840827adf0a4814797cf2d09358ac596ead015a7350c97bff33da6af2189c04",
-      "updated_at": "2026-10-01T23:07:02Z",
+      "updated_at": "2026-10-02T02:10:14Z",
       "validation_rejection_count": 0
     },
     "684da6c488710aac52f858ecc7a6ba48198e6bac44ea377ab753892221c4b2ac": {
@@ -110717,7 +110857,7 @@
       "validation_rejection_count": 0
     },
     "69f8e87be2ac22c2a16e29eea37644deb5708ecd6b28441fb4d6a0a355c1457d": {
-      "attempt_count": 215,
+      "attempt_count": 216,
       "created_at": "2026-08-17T00:00:00Z",
       "identity": {
         "agent": "language-style-checker",
@@ -110732,14 +110872,21 @@
         "segmentation_profile": "full-page-v1",
         "validator_version": "check-signal-schema-v1"
       },
-      "last_attempt_at": "2026-10-01T23:06:03Z",
+      "last_attempt_at": "2026-10-02T02:10:14Z",
       "last_outcome": {
         "attempt_id": "9d175632e362dec11571bf398eec8b29a331d3b041590028bc4d7101b618372a",
         "finished_at": "2026-10-01T23:07:02Z",
         "kind": "not_called",
         "provider_attempts": 0
       },
-      "lease": null,
+      "lease": {
+        "attempt_id": "a63f0ec81bc167446ebe0fe33fe694f0bc86470a660aabedca83a3c100a53037",
+        "attempt_number": 216,
+        "expires_at": "2026-10-02T03:10:14Z",
+        "leased_at": "2026-10-02T02:10:14Z",
+        "worker_id": "openrouter",
+        "workflow_run_id": "36954312118-1"
+      },
       "publication": {
         "last_attempt_at": null,
         "last_error": null,
@@ -110757,9 +110904,9 @@
       "source_metadata": {
         "repository_commit_sha": "ce92069bcdf491a87550eb0b43b275a1ce24555e"
       },
-      "status": "pending",
+      "status": "leased",
       "task_id": "69f8e87be2ac22c2a16e29eea37644deb5708ecd6b28441fb4d6a0a355c1457d",
-      "updated_at": "2026-10-01T23:07:02Z",
+      "updated_at": "2026-10-02T02:10:14Z",
       "validation_rejection_count": 0
     },
     "6a0576da4d62e9dad7d0acfd3a06774d5c809cef6e0e4df19a5999ba190818a7": {
@@ -127199,7 +127346,7 @@
       "validation_rejection_count": 0
     },
     "7ab131ae0fc3ba3db21d35f0ec90a7e343725c6ecb4e21b64db879d8bfe4379f": {
-      "attempt_count": 54,
+      "attempt_count": 55,
       "created_at": "2026-08-17T00:00:00Z",
       "identity": {
         "agent": "language-style-checker",
@@ -127214,14 +127361,21 @@
         "segmentation_profile": "full-page-v1",
         "validator_version": "check-signal-schema-v1"
       },
-      "last_attempt_at": "2026-10-01T23:06:03Z",
+      "last_attempt_at": "2026-10-02T02:10:14Z",
       "last_outcome": {
         "attempt_id": "187257ba2d17661622cfa9aaeb9a01620aa0862cfde7e778fc787399bb890852",
         "finished_at": "2026-10-01T23:07:02Z",
         "kind": "not_called",
         "provider_attempts": 0
       },
-      "lease": null,
+      "lease": {
+        "attempt_id": "5d745acf1e76f33918bba48ad6ae35ec040db2cc3475d9494d147ecfdce8e929",
+        "attempt_number": 55,
+        "expires_at": "2026-10-02T03:10:14Z",
+        "leased_at": "2026-10-02T02:10:14Z",
+        "worker_id": "openrouter",
+        "workflow_run_id": "36954312118-1"
+      },
       "publication": {
         "last_attempt_at": null,
         "last_error": null,
@@ -127239,9 +127393,9 @@
       "source_metadata": {
         "repository_commit_sha": "ce92069bcdf491a87550eb0b43b275a1ce24555e"
       },
-      "status": "pending",
+      "status": "leased",
       "task_id": "7ab131ae0fc3ba3db21d35f0ec90a7e343725c6ecb4e21b64db879d8bfe4379f",
-      "updated_at": "2026-10-01T23:07:02Z",
+      "updated_at": "2026-10-02T02:10:14Z",
       "validation_rejection_count": 0
     },
     "7adb9a3ba83be58ba6eb7c5b5e1af6c92cd2a98603893fc50a08527ac7a6d302": {
@@ -132265,7 +132419,7 @@
       "validation_rejection_count": 0
     },
     "8067c2e1b6e9869dadae0a74f61cc4a4a7ed764f296e9049e06a40c46428ea13": {
-      "attempt_count": 215,
+      "attempt_count": 216,
       "created_at": "2026-08-17T00:00:00Z",
       "identity": {
         "agent": "language-style-checker",
@@ -132280,14 +132434,21 @@
         "segmentation_profile": "full-page-v1",
         "validator_version": "check-signal-schema-v1"
       },
-      "last_attempt_at": "2026-10-01T23:06:03Z",
+      "last_attempt_at": "2026-10-02T02:10:14Z",
       "last_outcome": {
         "attempt_id": "420020f77c7d710063406e7bd13335d82a312d094309f90a7e16e4e3ae32ff04",
         "finished_at": "2026-10-01T23:07:02Z",
         "kind": "not_called",
         "provider_attempts": 0
       },
-      "lease": null,
+      "lease": {
+        "attempt_id": "eb20e492ebf6fc194fa513282e90332597d71a935cbe9b78f18335954725a203",
+        "attempt_number": 216,
+        "expires_at": "2026-10-02T03:10:14Z",
+        "leased_at": "2026-10-02T02:10:14Z",
+        "worker_id": "openrouter",
+        "workflow_run_id": "36954312118-1"
+      },
       "publication": {
         "last_attempt_at": null,
         "last_error": null,
@@ -132305,9 +132466,9 @@
       "source_metadata": {
         "repository_commit_sha": "ce92069bcdf491a87550eb0b43b275a1ce24555e"
       },
-      "status": "pending",
+      "status": "leased",
       "task_id": "8067c2e1b6e9869dadae0a74f61cc4a4a7ed764f296e9049e06a40c46428ea13",
-      "updated_at": "2026-10-01T23:07:02Z",
+      "updated_at": "2026-10-02T02:10:14Z",
       "validation_rejection_count": 0
     },
     "80682a599f08f7f3b3794fde10d34496032c0d6e380e1e86564b44d08c6e80b2": {
@@ -139439,7 +139600,7 @@
       "validation_rejection_count": 0
     },
     "86f23a36648be5a6d6ac278a769ce0877973b07ee23e01d018a725927d10bd83": {
-      "attempt_count": 307,
+      "attempt_count": 308,
       "created_at": "2026-08-17T00:00:00Z",
       "identity": {
         "agent": "language-style-checker",
@@ -139454,14 +139615,21 @@
         "segmentation_profile": "full-page-v1",
         "validator_version": "check-signal-schema-v1"
       },
-      "last_attempt_at": "2026-10-01T23:06:03Z",
+      "last_attempt_at": "2026-10-02T02:10:14Z",
       "last_outcome": {
         "attempt_id": "ba30fe096fa6652d80b043bcf4169f1f386d32170df3793ec0336a307bbded9d",
         "finished_at": "2026-10-01T23:06:58Z",
         "kind": "not_called",
         "provider_attempts": 0
       },
-      "lease": null,
+      "lease": {
+        "attempt_id": "1e485f864a05ad887969d438a05abca5e6015d7f0699d0a5d98cd7c3459fd12f",
+        "attempt_number": 308,
+        "expires_at": "2026-10-02T03:10:14Z",
+        "leased_at": "2026-10-02T02:10:14Z",
+        "worker_id": "openrouter",
+        "workflow_run_id": "36954312118-1"
+      },
       "publication": {
         "last_attempt_at": null,
         "last_error": null,
@@ -139479,9 +139647,9 @@
       "source_metadata": {
         "repository_commit_sha": "ce92069bcdf491a87550eb0b43b275a1ce24555e"
       },
-      "status": "pending",
+      "status": "leased",
       "task_id": "86f23a36648be5a6d6ac278a769ce0877973b07ee23e01d018a725927d10bd83",
-      "updated_at": "2026-10-01T23:06:58Z",
+      "updated_at": "2026-10-02T02:10:14Z",
       "validation_rejection_count": 0
     },
     "86fcac1bc606ea21266abc656057c2166a0e2ac16a7d33423384bf585dd3f8fa": {
@@ -146209,7 +146377,7 @@
       "validation_rejection_count": 0
     },
     "8db86512c735d850a6acd798bf1cba741c0c64b403baad968175c929628cf56a": {
-      "attempt_count": 215,
+      "attempt_count": 216,
       "created_at": "2026-08-17T00:00:00Z",
       "identity": {
         "agent": "language-style-checker",
@@ -146224,14 +146392,21 @@
         "segmentation_profile": "full-page-v1",
         "validator_version": "check-signal-schema-v1"
       },
-      "last_attempt_at": "2026-10-01T23:06:03Z",
+      "last_attempt_at": "2026-10-02T02:10:14Z",
       "last_outcome": {
         "attempt_id": "63d74492a3adaa3bcb899e4f325054715b4257faba65bd1b8d98d3584f31c39c",
         "finished_at": "2026-10-01T23:07:02Z",
         "kind": "not_called",
         "provider_attempts": 0
       },
-      "lease": null,
+      "lease": {
+        "attempt_id": "753d9bb32a06c047fe07d6705de3e9920a72362693e8501905b3d06bfde23298",
+        "attempt_number": 216,
+        "expires_at": "2026-10-02T03:10:14Z",
+        "leased_at": "2026-10-02T02:10:14Z",
+        "worker_id": "openrouter",
+        "workflow_run_id": "36954312118-1"
+      },
       "publication": {
         "last_attempt_at": null,
         "last_error": null,
@@ -146249,9 +146424,9 @@
       "source_metadata": {
         "repository_commit_sha": "ce92069bcdf491a87550eb0b43b275a1ce24555e"
       },
-      "status": "pending",
+      "status": "leased",
       "task_id": "8db86512c735d850a6acd798bf1cba741c0c64b403baad968175c929628cf56a",
-      "updated_at": "2026-10-01T23:07:02Z",
+      "updated_at": "2026-10-02T02:10:14Z",
       "validation_rejection_count": 0
     },
     "8dc9af35cf63c34584832f40f371f33d693739ef43ab8e886f0508565ca8d8da": {
@@ -149225,7 +149400,7 @@
       "validation_rejection_count": 0
     },
     "90d8f1c7b5bc4ec03a2deb39d722d92b5d419c200fb838e4c3e5e4a7695d44f4": {
-      "attempt_count": 215,
+      "attempt_count": 216,
       "created_at": "2026-08-17T00:00:00Z",
       "identity": {
         "agent": "language-style-checker",
@@ -149240,14 +149415,21 @@
         "segmentation_profile": "full-page-v1",
         "validator_version": "check-signal-schema-v1"
       },
-      "last_attempt_at": "2026-10-01T23:06:03Z",
+      "last_attempt_at": "2026-10-02T02:10:14Z",
       "last_outcome": {
         "attempt_id": "65c7e173e9d1b33d7d44b877539011b0e274102fb1960434fa02f51269747022",
         "finished_at": "2026-10-01T23:07:02Z",
         "kind": "not_called",
         "provider_attempts": 0
       },
-      "lease": null,
+      "lease": {
+        "attempt_id": "006b4e1ece48ad669ce42eabfa0a72cd2137939898ef8e1dd2343a3fd4073e2a",
+        "attempt_number": 216,
+        "expires_at": "2026-10-02T03:10:14Z",
+        "leased_at": "2026-10-02T02:10:14Z",
+        "worker_id": "openrouter",
+        "workflow_run_id": "36954312118-1"
+      },
       "publication": {
         "last_attempt_at": null,
         "last_error": null,
@@ -149265,9 +149447,9 @@
       "source_metadata": {
         "repository_commit_sha": "ce92069bcdf491a87550eb0b43b275a1ce24555e"
       },
-      "status": "pending",
+      "status": "leased",
       "task_id": "90d8f1c7b5bc4ec03a2deb39d722d92b5d419c200fb838e4c3e5e4a7695d44f4",
-      "updated_at": "2026-10-01T23:07:02Z",
+      "updated_at": "2026-10-02T02:10:14Z",
       "validation_rejection_count": 0
     },
     "90dbd6920f52b70835ac5f91853d6ec0e77e4608e0b85af58c15fcbd621a8dfb": {
@@ -151688,7 +151870,7 @@
       "validation_rejection_count": 0
     },
     "9315391274488135c4d54f3f7fb0ab5210d676282221cc86311b4dea51242c5e": {
-      "attempt_count": 307,
+      "attempt_count": 308,
       "created_at": "2026-08-17T00:00:00Z",
       "identity": {
         "agent": "language-style-checker",
@@ -151703,14 +151885,21 @@
         "segmentation_profile": "full-page-v1",
         "validator_version": "check-signal-schema-v1"
       },
-      "last_attempt_at": "2026-10-01T23:06:03Z",
+      "last_attempt_at": "2026-10-02T02:10:14Z",
       "last_outcome": {
         "attempt_id": "4dbe412c9c537a2d6c3c69043fb47c1f8e318e62201cf21dd8c82da9c9394bd4",
         "finished_at": "2026-10-01T23:06:55Z",
         "kind": "not_called",
         "provider_attempts": 0
       },
-      "lease": null,
+      "lease": {
+        "attempt_id": "538f26ad575b6d2ee9dd22476f76290d6ed437143c253b2e406534b0220a69db",
+        "attempt_number": 308,
+        "expires_at": "2026-10-02T03:10:14Z",
+        "leased_at": "2026-10-02T02:10:14Z",
+        "worker_id": "openrouter",
+        "workflow_run_id": "36954312118-1"
+      },
       "publication": {
         "last_attempt_at": null,
         "last_error": null,
@@ -151728,9 +151917,9 @@
       "source_metadata": {
         "repository_commit_sha": "ce92069bcdf491a87550eb0b43b275a1ce24555e"
       },
-      "status": "pending",
+      "status": "leased",
       "task_id": "9315391274488135c4d54f3f7fb0ab5210d676282221cc86311b4dea51242c5e",
-      "updated_at": "2026-10-01T23:06:55Z",
+      "updated_at": "2026-10-02T02:10:14Z",
       "validation_rejection_count": 0
     },
     "9329601ac2b37f083b1441e655a6aa348bae13cc2bc57d91d5fe1a2f31d85e1f": {
@@ -165767,7 +165956,7 @@
       "validation_rejection_count": 0
     },
     "a04e2de2597ab1849fa27903f055bb8792ac060574a13d3734ae5316bdf4f10d": {
-      "attempt_count": 215,
+      "attempt_count": 216,
       "created_at": "2026-08-17T00:00:00Z",
       "identity": {
         "agent": "language-style-checker",
@@ -165782,14 +165971,21 @@
         "segmentation_profile": "full-page-v1",
         "validator_version": "check-signal-schema-v1"
       },
-      "last_attempt_at": "2026-10-01T23:06:03Z",
+      "last_attempt_at": "2026-10-02T02:10:14Z",
       "last_outcome": {
         "attempt_id": "9423b9502452d85bda60ef9d5f2e80d01e68cc0cc7580f3c5d320d2f2a7dc3dd",
         "finished_at": "2026-10-01T23:07:02Z",
         "kind": "not_called",
         "provider_attempts": 0
       },
-      "lease": null,
+      "lease": {
+        "attempt_id": "54456b3f21078bc5f342671153c7772b67ad6ac06ce2f0b3f7e83a9bf1624b65",
+        "attempt_number": 216,
+        "expires_at": "2026-10-02T03:10:14Z",
+        "leased_at": "2026-10-02T02:10:14Z",
+        "worker_id": "openrouter",
+        "workflow_run_id": "36954312118-1"
+      },
       "publication": {
         "last_attempt_at": null,
         "last_error": null,
@@ -165807,9 +166003,9 @@
       "source_metadata": {
         "repository_commit_sha": "ce92069bcdf491a87550eb0b43b275a1ce24555e"
       },
-      "status": "pending",
+      "status": "leased",
       "task_id": "a04e2de2597ab1849fa27903f055bb8792ac060574a13d3734ae5316bdf4f10d",
-      "updated_at": "2026-10-01T23:07:02Z",
+      "updated_at": "2026-10-02T02:10:14Z",
       "validation_rejection_count": 0
     },
     "a04e34a978bf6f2feacb2dc8f0db4a99e65cc842365efab4a1a58e4e2d428c55": {
@@ -178398,7 +178594,7 @@
       "validation_rejection_count": 0
     },
     "ad413f09bf3279baca7fda416cf34a6bb9fa768032a36da5ebcee46a2dd44e00": {
-      "attempt_count": 187,
+      "attempt_count": 188,
       "created_at": "2026-08-17T00:00:00Z",
       "identity": {
         "agent": "language-style-checker",
@@ -178413,14 +178609,21 @@
         "segmentation_profile": "full-page-v1",
         "validator_version": "check-signal-schema-v1"
       },
-      "last_attempt_at": "2026-10-01T23:06:03Z",
+      "last_attempt_at": "2026-10-02T02:10:14Z",
       "last_outcome": {
         "attempt_id": "f40d600499ca6ba66ec5390de456e507d405b38f7b5e8252266358e1f43402fb",
         "finished_at": "2026-10-01T23:07:02Z",
         "kind": "not_called",
         "provider_attempts": 0
       },
-      "lease": null,
+      "lease": {
+        "attempt_id": "17a0539462f4eb51b179e926cae327de0f8d6051161b7d63686f53d54882c54b",
+        "attempt_number": 188,
+        "expires_at": "2026-10-02T03:10:14Z",
+        "leased_at": "2026-10-02T02:10:14Z",
+        "worker_id": "openrouter",
+        "workflow_run_id": "36954312118-1"
+      },
       "publication": {
         "last_attempt_at": null,
         "last_error": null,
@@ -178438,9 +178641,9 @@
       "source_metadata": {
         "repository_commit_sha": "ce92069bcdf491a87550eb0b43b275a1ce24555e"
       },
-      "status": "pending",
+      "status": "leased",
       "task_id": "ad413f09bf3279baca7fda416cf34a6bb9fa768032a36da5ebcee46a2dd44e00",
-      "updated_at": "2026-10-01T23:07:02Z",
+      "updated_at": "2026-10-02T02:10:14Z",
       "validation_rejection_count": 0
     },
     "ad4ef40e0fcb1813800ecb8b015917b9574ed4d85bf2c687c8f9d9635145d59f": {
@@ -188634,7 +188837,7 @@
       "validation_rejection_count": 0
     },
     "b765bd2a736ff709240db4790e56387122ea079f87ced715b0fceeda24b6cb00": {
-      "attempt_count": 187,
+      "attempt_count": 188,
       "created_at": "2026-08-17T00:00:00Z",
       "identity": {
         "agent": "language-style-checker",
@@ -188649,14 +188852,21 @@
         "segmentation_profile": "full-page-v1",
         "validator_version": "check-signal-schema-v1"
       },
-      "last_attempt_at": "2026-10-01T23:06:03Z",
+      "last_attempt_at": "2026-10-02T02:10:14Z",
       "last_outcome": {
         "attempt_id": "29cb6af9567f94cfa8542ab3493b5d79213b0b00ce23ffdfb1e5ccfdda1e1294",
         "finished_at": "2026-10-01T23:07:02Z",
         "kind": "not_called",
         "provider_attempts": 0
       },
-      "lease": null,
+      "lease": {
+        "attempt_id": "7a6a1e45c469364394ebe87d9cd7b1eae980d58b38794a601bcb18c7e3ed193a",
+        "attempt_number": 188,
+        "expires_at": "2026-10-02T03:10:14Z",
+        "leased_at": "2026-10-02T02:10:14Z",
+        "worker_id": "openrouter",
+        "workflow_run_id": "36954312118-1"
+      },
       "publication": {
         "last_attempt_at": null,
         "last_error": null,
@@ -188674,9 +188884,9 @@
       "source_metadata": {
         "repository_commit_sha": "ce92069bcdf491a87550eb0b43b275a1ce24555e"
       },
-      "status": "pending",
+      "status": "leased",
       "task_id": "b765bd2a736ff709240db4790e56387122ea079f87ced715b0fceeda24b6cb00",
-      "updated_at": "2026-10-01T23:07:02Z",
+      "updated_at": "2026-10-02T02:10:14Z",
       "validation_rejection_count": 0
     },
     "b7664073cb6f0b57805f0577dd80e795a8068deb855b659dfebb31a1586773b0": {
@@ -190754,7 +190964,7 @@
       "validation_rejection_count": 0
     },
     "b99596a0c8386d2961a8602019170cc3767c137db9279b4b5cf871ef09fc4f40": {
-      "attempt_count": 215,
+      "attempt_count": 216,
       "created_at": "2026-08-17T00:00:00Z",
       "identity": {
         "agent": "language-style-checker",
@@ -190769,14 +190979,21 @@
         "segmentation_profile": "full-page-v1",
         "validator_version": "check-signal-schema-v1"
       },
-      "last_attempt_at": "2026-10-01T23:06:03Z",
+      "last_attempt_at": "2026-10-02T02:10:14Z",
       "last_outcome": {
         "attempt_id": "8f9630045d50d3d443b9fbf0968894e4308830d8a1070b8de257734817a5f672",
         "finished_at": "2026-10-01T23:07:02Z",
         "kind": "not_called",
         "provider_attempts": 0
       },
-      "lease": null,
+      "lease": {
+        "attempt_id": "3a46c3a3ca34211b122726a732fbeefd5000f5183b15485ee83c1f17f1dbee23",
+        "attempt_number": 216,
+        "expires_at": "2026-10-02T03:10:14Z",
+        "leased_at": "2026-10-02T02:10:14Z",
+        "worker_id": "openrouter",
+        "workflow_run_id": "36954312118-1"
+      },
       "publication": {
         "last_attempt_at": null,
         "last_error": null,
@@ -190794,9 +191011,9 @@
       "source_metadata": {
         "repository_commit_sha": "ce92069bcdf491a87550eb0b43b275a1ce24555e"
       },
-      "status": "pending",
+      "status": "leased",
       "task_id": "b99596a0c8386d2961a8602019170cc3767c137db9279b4b5cf871ef09fc4f40",
-      "updated_at": "2026-10-01T23:07:02Z",
+      "updated_at": "2026-10-02T02:10:14Z",
       "validation_rejection_count": 0
     },
     "b9a117d1800d6ed2e7adc6540a343f0606750db1bd09f8d182f0b4fdb9b6331a": {
@@ -194543,7 +194760,7 @@
       "validation_rejection_count": 0
     },
     "bd9463a596cba3062b2a67de20802bade96e4c80ffe404bc15005d206a638305": {
-      "attempt_count": 130,
+      "attempt_count": 131,
       "created_at": "2026-08-17T00:00:00Z",
       "identity": {
         "agent": "language-style-checker",
@@ -194558,14 +194775,21 @@
         "segmentation_profile": "full-page-v1",
         "validator_version": "check-signal-schema-v1"
       },
-      "last_attempt_at": "2026-10-01T23:06:03Z",
+      "last_attempt_at": "2026-10-02T02:10:14Z",
       "last_outcome": {
         "attempt_id": "21adc2f20622a17e08e4a1fde84ee2dcf131bbd77132b9896b1a02384a74895f",
         "finished_at": "2026-10-01T23:07:02Z",
         "kind": "not_called",
         "provider_attempts": 0
       },
-      "lease": null,
+      "lease": {
+        "attempt_id": "78fa5ff44bdec88dc9aba3867aa9b6997a3c34a2efd8d15c5816cfc2075fc38e",
+        "attempt_number": 131,
+        "expires_at": "2026-10-02T03:10:14Z",
+        "leased_at": "2026-10-02T02:10:14Z",
+        "worker_id": "openrouter",
+        "workflow_run_id": "36954312118-1"
+      },
       "publication": {
         "last_attempt_at": null,
         "last_error": null,
@@ -194583,9 +194807,9 @@
       "source_metadata": {
         "repository_commit_sha": "ce92069bcdf491a87550eb0b43b275a1ce24555e"
       },
-      "status": "pending",
+      "status": "leased",
       "task_id": "bd9463a596cba3062b2a67de20802bade96e4c80ffe404bc15005d206a638305",
-      "updated_at": "2026-10-01T23:07:02Z",
+      "updated_at": "2026-10-02T02:10:14Z",
       "validation_rejection_count": 0
     },
     "bda31cc64e43e16ba9a93411830a1432bcfa4bc9c4b0309ad90407b52ef26671": {
@@ -195091,7 +195315,7 @@
       "validation_rejection_count": 0
     },
     "be3b22e430df62bcda928ba6446c9f8f21a66434ec2613383ba36ea2d3933aa2": {
-      "attempt_count": 215,
+      "attempt_count": 216,
       "created_at": "2026-08-19T09:20:00Z",
       "identity": {
         "agent": "language-style-checker",
@@ -195106,14 +195330,21 @@
         "segmentation_profile": "full-page-v1",
         "validator_version": "check-signal-schema-v1"
       },
-      "last_attempt_at": "2026-10-01T23:06:03Z",
+      "last_attempt_at": "2026-10-02T02:10:14Z",
       "last_outcome": {
         "attempt_id": "58b4c7ce6cd6b828c9acc7573587856d26b4e3e8829a02fdac18bbe2ff6178d7",
         "finished_at": "2026-10-01T23:07:02Z",
         "kind": "not_called",
         "provider_attempts": 0
       },
-      "lease": null,
+      "lease": {
+        "attempt_id": "91a4f7ce2a9cbc8a9b9ad954145ef8fab022c2b169188e3371b708ada9485c21",
+        "attempt_number": 216,
+        "expires_at": "2026-10-02T03:10:14Z",
+        "leased_at": "2026-10-02T02:10:14Z",
+        "worker_id": "openrouter",
+        "workflow_run_id": "36954312118-1"
+      },
       "publication": {
         "last_attempt_at": null,
         "last_error": null,
@@ -195131,9 +195362,9 @@
       "source_metadata": {
         "repository_commit_sha": "4fa57cb1a09178457606804db4afcc925b2eaabe"
       },
-      "status": "pending",
+      "status": "leased",
       "task_id": "be3b22e430df62bcda928ba6446c9f8f21a66434ec2613383ba36ea2d3933aa2",
-      "updated_at": "2026-10-01T23:07:02Z",
+      "updated_at": "2026-10-02T02:10:14Z",
       "validation_rejection_count": 0
     },
     "be4cdbc77742191905246146c8bea2ed58b56025028d6ba9dbfc08202e526aa8": {
@@ -198368,7 +198599,7 @@
       "validation_rejection_count": 1
     },
     "c142ee485f4d44c5c0e75aeb0a8c79f0b465fa1e5b9b213cb7fd39844c167bb2": {
-      "attempt_count": 187,
+      "attempt_count": 188,
       "created_at": "2026-08-17T00:00:00Z",
       "identity": {
         "agent": "language-style-checker",
@@ -198383,14 +198614,21 @@
         "segmentation_profile": "full-page-v1",
         "validator_version": "check-signal-schema-v1"
       },
-      "last_attempt_at": "2026-10-01T23:06:03Z",
+      "last_attempt_at": "2026-10-02T02:10:14Z",
       "last_outcome": {
         "attempt_id": "d1415d0b0d4cc38a5da2464b25ab122b660fc59a399c2ad15eb93a5f0df4d1f9",
         "finished_at": "2026-10-01T23:07:02Z",
         "kind": "not_called",
         "provider_attempts": 0
       },
-      "lease": null,
+      "lease": {
+        "attempt_id": "54b3588e286d33469067b2638bf8945b775e67c16873d470f99b32fa6dd08869",
+        "attempt_number": 188,
+        "expires_at": "2026-10-02T03:10:14Z",
+        "leased_at": "2026-10-02T02:10:14Z",
+        "worker_id": "openrouter",
+        "workflow_run_id": "36954312118-1"
+      },
       "publication": {
         "last_attempt_at": null,
         "last_error": null,
@@ -198408,9 +198646,9 @@
       "source_metadata": {
         "repository_commit_sha": "ce92069bcdf491a87550eb0b43b275a1ce24555e"
       },
-      "status": "pending",
+      "status": "leased",
       "task_id": "c142ee485f4d44c5c0e75aeb0a8c79f0b465fa1e5b9b213cb7fd39844c167bb2",
-      "updated_at": "2026-10-01T23:07:02Z",
+      "updated_at": "2026-10-02T02:10:14Z",
       "validation_rejection_count": 0
     },
     "c14619a393f1629a7307f233555c6bd14670ffb9f9976a81cf6c6cfaff12e292": {
@@ -212088,7 +212326,7 @@
       "validation_rejection_count": 0
     },
     "cf9583c5575942d0e0550b3d746356089de45c73677fd85854f10eff7b6435f1": {
-      "attempt_count": 215,
+      "attempt_count": 216,
       "created_at": "2026-08-17T00:00:00Z",
       "identity": {
         "agent": "language-style-checker",
@@ -212103,14 +212341,21 @@
         "segmentation_profile": "full-page-v1",
         "validator_version": "check-signal-schema-v1"
       },
-      "last_attempt_at": "2026-10-01T23:06:03Z",
+      "last_attempt_at": "2026-10-02T02:10:14Z",
       "last_outcome": {
         "attempt_id": "d3fd2120ed53a12b5efd1ec925c0e88b80279fa2de358c6c3457ddf576feb588",
         "finished_at": "2026-10-01T23:07:02Z",
         "kind": "not_called",
         "provider_attempts": 0
       },
-      "lease": null,
+      "lease": {
+        "attempt_id": "176517735e9f49dd56176a3ab99bc2882e5f57d71ec5c3d984494fa9a0eb564c",
+        "attempt_number": 216,
+        "expires_at": "2026-10-02T03:10:14Z",
+        "leased_at": "2026-10-02T02:10:14Z",
+        "worker_id": "openrouter",
+        "workflow_run_id": "36954312118-1"
+      },
       "publication": {
         "last_attempt_at": null,
         "last_error": null,
@@ -212128,9 +212373,9 @@
       "source_metadata": {
         "repository_commit_sha": "ce92069bcdf491a87550eb0b43b275a1ce24555e"
       },
-      "status": "pending",
+      "status": "leased",
       "task_id": "cf9583c5575942d0e0550b3d746356089de45c73677fd85854f10eff7b6435f1",
-      "updated_at": "2026-10-01T23:07:02Z",
+      "updated_at": "2026-10-02T02:10:14Z",
       "validation_rejection_count": 0
     },
     "cfaa42f053618bfe8c673b9ba910e2343c0db830565e0d26178d609b1ef3b349": {
@@ -219195,7 +219440,7 @@
       "validation_rejection_count": 0
     },
     "d66c4da2984dcf35d38b8657dadd748c73a3eee4240661f96b8040db39e0bbaf": {
-      "attempt_count": 307,
+      "attempt_count": 308,
       "created_at": "2026-08-17T00:00:00Z",
       "identity": {
         "agent": "language-style-checker",
@@ -219210,14 +219455,21 @@
         "segmentation_profile": "full-page-v1",
         "validator_version": "check-signal-schema-v1"
       },
-      "last_attempt_at": "2026-10-01T23:06:03Z",
+      "last_attempt_at": "2026-10-02T02:10:14Z",
       "last_outcome": {
         "attempt_id": "6beb25ec021440a634f4b6fa68e8a7771acba77773448d991404789cb675ce82",
         "finished_at": "2026-10-01T23:07:02Z",
         "kind": "not_called",
         "provider_attempts": 0
       },
-      "lease": null,
+      "lease": {
+        "attempt_id": "aeb58d2286bdf078bb2ef8c4f0218c94adb3d64a2ed69357924ad1a5836c2d12",
+        "attempt_number": 308,
+        "expires_at": "2026-10-02T03:10:14Z",
+        "leased_at": "2026-10-02T02:10:14Z",
+        "worker_id": "openrouter",
+        "workflow_run_id": "36954312118-1"
+      },
       "publication": {
         "last_attempt_at": null,
         "last_error": null,
@@ -219235,9 +219487,9 @@
       "source_metadata": {
         "repository_commit_sha": "ce92069bcdf491a87550eb0b43b275a1ce24555e"
       },
-      "status": "pending",
+      "status": "leased",
       "task_id": "d66c4da2984dcf35d38b8657dadd748c73a3eee4240661f96b8040db39e0bbaf",
-      "updated_at": "2026-10-01T23:07:02Z",
+      "updated_at": "2026-10-02T02:10:14Z",
       "validation_rejection_count": 0
     },
     "d66d552547639748e07628bf9fa6d2e9925df38eadfd79c0ab9ab6525de92d07": {
@@ -220173,7 +220425,7 @@
       "validation_rejection_count": 0
     },
     "d72d17e6fadd4cc2645c50f3e2beaad0eba1a36c0f16d2e3312fa6618323ad6c": {
-      "attempt_count": 116,
+      "attempt_count": 117,
       "created_at": "2026-08-17T00:00:00Z",
       "identity": {
         "agent": "language-style-checker",
@@ -220188,14 +220440,21 @@
         "segmentation_profile": "full-page-v1",
         "validator_version": "check-signal-schema-v1"
       },
-      "last_attempt_at": "2026-10-01T23:06:03Z",
+      "last_attempt_at": "2026-10-02T02:10:14Z",
       "last_outcome": {
         "attempt_id": "429b2da3d2d0febb711da98d69d0c7ede9668400ed6edc226b22eccbaad811b4",
         "finished_at": "2026-10-01T23:07:02Z",
         "kind": "not_called",
         "provider_attempts": 0
       },
-      "lease": null,
+      "lease": {
+        "attempt_id": "849ca426abc9ca6791b15f941676e2302a155da64649a7ea028d281005748db2",
+        "attempt_number": 117,
+        "expires_at": "2026-10-02T03:10:14Z",
+        "leased_at": "2026-10-02T02:10:14Z",
+        "worker_id": "openrouter",
+        "workflow_run_id": "36954312118-1"
+      },
       "publication": {
         "last_attempt_at": null,
         "last_error": null,
@@ -220213,9 +220472,9 @@
       "source_metadata": {
         "repository_commit_sha": "ce92069bcdf491a87550eb0b43b275a1ce24555e"
       },
-      "status": "pending",
+      "status": "leased",
       "task_id": "d72d17e6fadd4cc2645c50f3e2beaad0eba1a36c0f16d2e3312fa6618323ad6c",
-      "updated_at": "2026-10-01T23:07:02Z",
+      "updated_at": "2026-10-02T02:10:14Z",
       "validation_rejection_count": 0
     },
     "d732c21d4c499d6bf74228526ddf0eabf48bd13b2e1f4a618711617a58eb30d8": {
@@ -223087,7 +223346,7 @@
       "validation_rejection_count": 0
     },
     "da30803807cc998bf260d024f8fb1bd8f8057c70def986849af1e35edf382038": {
-      "attempt_count": 55,
+      "attempt_count": 56,
       "created_at": "2026-08-17T00:00:00Z",
       "identity": {
         "agent": "language-style-checker",
@@ -223102,14 +223361,21 @@
         "segmentation_profile": "full-page-v1",
         "validator_version": "check-signal-schema-v1"
       },
-      "last_attempt_at": "2026-10-01T23:06:03Z",
+      "last_attempt_at": "2026-10-02T02:10:14Z",
       "last_outcome": {
         "attempt_id": "0ee080ffef2377789e1d105b9bc190e3499c1d5f63979254c13cbcd6d9714349",
         "finished_at": "2026-10-01T23:07:02Z",
         "kind": "not_called",
         "provider_attempts": 0
       },
-      "lease": null,
+      "lease": {
+        "attempt_id": "50b4a3a2f277beb89732451cc43c27ebd3e10598bce0c8e80dcd68bcd9c7fa9d",
+        "attempt_number": 56,
+        "expires_at": "2026-10-02T03:10:14Z",
+        "leased_at": "2026-10-02T02:10:14Z",
+        "worker_id": "openrouter",
+        "workflow_run_id": "36954312118-1"
+      },
       "publication": {
         "last_attempt_at": null,
         "last_error": null,
@@ -223127,9 +223393,9 @@
       "source_metadata": {
         "repository_commit_sha": "ce92069bcdf491a87550eb0b43b275a1ce24555e"
       },
-      "status": "pending",
+      "status": "leased",
       "task_id": "da30803807cc998bf260d024f8fb1bd8f8057c70def986849af1e35edf382038",
-      "updated_at": "2026-10-01T23:07:02Z",
+      "updated_at": "2026-10-02T02:10:14Z",
       "validation_rejection_count": 0
     },
     "da3cd7fa76138a1388f0120a73f6de565cd4c35198cb6b81f437351d3098e05d": {
@@ -223307,7 +223573,7 @@
       "validation_rejection_count": 0
     },
     "da67f97106381393ec37b564f7862a748416830c9399d69018dd1a468fcdeda9": {
-      "attempt_count": 122,
+      "attempt_count": 123,
       "created_at": "2026-08-17T00:00:00Z",
       "identity": {
         "agent": "language-style-checker",
@@ -223322,14 +223588,21 @@
         "segmentation_profile": "full-page-v1",
         "validator_version": "check-signal-schema-v1"
       },
-      "last_attempt_at": "2026-10-01T23:06:03Z",
+      "last_attempt_at": "2026-10-02T02:10:14Z",
       "last_outcome": {
         "attempt_id": "728a44bece6838b5b25ac4f19f1d2a1b320827f2ff36104635fef5553c124f69",
         "finished_at": "2026-10-01T23:07:02Z",
         "kind": "not_called",
         "provider_attempts": 0
       },
-      "lease": null,
+      "lease": {
+        "attempt_id": "c3892d43f5964e21e2dff213cd149b32276b9f375707a1b48b3b5e51a0cd545f",
+        "attempt_number": 123,
+        "expires_at": "2026-10-02T03:10:14Z",
+        "leased_at": "2026-10-02T02:10:14Z",
+        "worker_id": "openrouter",
+        "workflow_run_id": "36954312118-1"
+      },
       "publication": {
         "last_attempt_at": null,
         "last_error": null,
@@ -223347,9 +223620,9 @@
       "source_metadata": {
         "repository_commit_sha": "ce92069bcdf491a87550eb0b43b275a1ce24555e"
       },
-      "status": "pending",
+      "status": "leased",
       "task_id": "da67f97106381393ec37b564f7862a748416830c9399d69018dd1a468fcdeda9",
-      "updated_at": "2026-10-01T23:07:02Z",
+      "updated_at": "2026-10-02T02:10:14Z",
       "validation_rejection_count": 0
     },
     "da70b6c35eedd88abc93506b31b6cf9d75bc3d5469a1bd7c3e98f41f1af86799": {
@@ -227915,7 +228188,7 @@
       "validation_rejection_count": 0
     },
     "decc99d3ea6af9b548eb74f35ff725e7fba40a717ee95f3c8691d8391440eddd": {
-      "attempt_count": 307,
+      "attempt_count": 308,
       "created_at": "2026-08-17T00:00:00Z",
       "identity": {
         "agent": "language-style-checker",
@@ -227930,14 +228203,21 @@
         "segmentation_profile": "full-page-v1",
         "validator_version": "check-signal-schema-v1"
       },
-      "last_attempt_at": "2026-10-01T23:06:03Z",
+      "last_attempt_at": "2026-10-02T02:10:14Z",
       "last_outcome": {
         "attempt_id": "5022de73b56ba82977b98941d99447dda6e4af88ed15210572002656e092e887",
         "finished_at": "2026-10-01T23:06:56Z",
         "kind": "not_called",
         "provider_attempts": 0
       },
-      "lease": null,
+      "lease": {
+        "attempt_id": "684dd3b386edec2c5423dc967ca3e2b9af2ac859629d8c561a410e91e31f1b54",
+        "attempt_number": 308,
+        "expires_at": "2026-10-02T03:10:14Z",
+        "leased_at": "2026-10-02T02:10:14Z",
+        "worker_id": "openrouter",
+        "workflow_run_id": "36954312118-1"
+      },
       "publication": {
         "last_attempt_at": null,
         "last_error": null,
@@ -227955,9 +228235,9 @@
       "source_metadata": {
         "repository_commit_sha": "ce92069bcdf491a87550eb0b43b275a1ce24555e"
       },
-      "status": "pending",
+      "status": "leased",
       "task_id": "decc99d3ea6af9b548eb74f35ff725e7fba40a717ee95f3c8691d8391440eddd",
-      "updated_at": "2026-10-01T23:06:56Z",
+      "updated_at": "2026-10-02T02:10:14Z",
       "validation_rejection_count": 0
     },
     "ded00e64aa7055e01c026500af2cb9c7740e9bf33944318a6b9cce3453dc7987": {
@@ -230875,7 +231155,7 @@
       "validation_rejection_count": 0
     },
     "e0f3dcc3b2e7330b5c1a35f752aba6c4abf71b6dc4796ae1a13d3c6bfd6397fb": {
-      "attempt_count": 307,
+      "attempt_count": 308,
       "created_at": "2026-08-17T00:00:00Z",
       "identity": {
         "agent": "language-style-checker",
@@ -230890,14 +231170,21 @@
         "segmentation_profile": "full-page-v1",
         "validator_version": "check-signal-schema-v1"
       },
-      "last_attempt_at": "2026-10-01T23:06:03Z",
+      "last_attempt_at": "2026-10-02T02:10:14Z",
       "last_outcome": {
         "attempt_id": "7aef5fa889ba75056cd0c5cc94d21c393f357626dd91818e3c387cc3f248970a",
         "finished_at": "2026-10-01T23:07:02Z",
         "kind": "not_called",
         "provider_attempts": 0
       },
-      "lease": null,
+      "lease": {
+        "attempt_id": "c85a40b9d63f7b3d861d7368a8383e6b91f004adfa9655804249356472f00c4d",
+        "attempt_number": 308,
+        "expires_at": "2026-10-02T03:10:14Z",
+        "leased_at": "2026-10-02T02:10:14Z",
+        "worker_id": "openrouter",
+        "workflow_run_id": "36954312118-1"
+      },
       "publication": {
         "last_attempt_at": null,
         "last_error": null,
@@ -230915,9 +231202,9 @@
       "source_metadata": {
         "repository_commit_sha": "ce92069bcdf491a87550eb0b43b275a1ce24555e"
       },
-      "status": "pending",
+      "status": "leased",
       "task_id": "e0f3dcc3b2e7330b5c1a35f752aba6c4abf71b6dc4796ae1a13d3c6bfd6397fb",
-      "updated_at": "2026-10-01T23:07:02Z",
+      "updated_at": "2026-10-02T02:10:14Z",
       "validation_rejection_count": 0
     },
     "e0f3e97c468f6df66ecb3594856662b80e0a331d3a2e274202af6477fd54ffb8": {
@@ -237978,7 +238265,7 @@
       "validation_rejection_count": 0
     },
     "e7ded10284e670c7f5c1fe8b5d1260cea42f6d87c90afff9d546fa452678eef4": {
-      "attempt_count": 215,
+      "attempt_count": 216,
       "created_at": "2026-08-17T00:00:00Z",
       "identity": {
         "agent": "language-style-checker",
@@ -237993,14 +238280,21 @@
         "segmentation_profile": "full-page-v1",
         "validator_version": "check-signal-schema-v1"
       },
-      "last_attempt_at": "2026-10-01T23:06:03Z",
+      "last_attempt_at": "2026-10-02T02:10:14Z",
       "last_outcome": {
         "attempt_id": "ce71b4d75226556ca0f22b2dfb8ef4c071dcb8a4300b1930596e668968d80493",
         "finished_at": "2026-10-01T23:07:02Z",
         "kind": "not_called",
         "provider_attempts": 0
       },
-      "lease": null,
+      "lease": {
+        "attempt_id": "ec7e6ad8ed0d6adf29f6fca7137a1cff5d9667c4560c0673ec7135891d95988c",
+        "attempt_number": 216,
+        "expires_at": "2026-10-02T03:10:14Z",
+        "leased_at": "2026-10-02T02:10:14Z",
+        "worker_id": "openrouter",
+        "workflow_run_id": "36954312118-1"
+      },
       "publication": {
         "last_attempt_at": null,
         "last_error": null,
@@ -238018,9 +238312,9 @@
       "source_metadata": {
         "repository_commit_sha": "ce92069bcdf491a87550eb0b43b275a1ce24555e"
       },
-      "status": "pending",
+      "status": "leased",
       "task_id": "e7ded10284e670c7f5c1fe8b5d1260cea42f6d87c90afff9d546fa452678eef4",
-      "updated_at": "2026-10-01T23:07:02Z",
+      "updated_at": "2026-10-02T02:10:14Z",
       "validation_rejection_count": 0
     },
     "e7ea434e648da087d7ebd9f38548778b9eeef3947657731f2fbce11799831140": {
@@ -245049,7 +245343,7 @@
       "validation_rejection_count": 0
     },
     "ee105c78d11054e7c5bde1fb745d0716ff0da935992ef2c21512acbea690fe9b": {
-      "attempt_count": 187,
+      "attempt_count": 188,
       "created_at": "2026-08-17T00:00:00Z",
       "identity": {
         "agent": "language-style-checker",
@@ -245064,14 +245358,21 @@
         "segmentation_profile": "full-page-v1",
         "validator_version": "check-signal-schema-v1"
       },
-      "last_attempt_at": "2026-10-01T23:06:03Z",
+      "last_attempt_at": "2026-10-02T02:10:14Z",
       "last_outcome": {
         "attempt_id": "3ebb99d0a81e55739e7eb22b89b3e1ca8902a66e59c05bec81c01b73072a25d6",
         "finished_at": "2026-10-01T23:07:02Z",
         "kind": "not_called",
         "provider_attempts": 0
       },
-      "lease": null,
+      "lease": {
+        "attempt_id": "bbfea159e90875c7185d7ab9299e60e2b490761f354c3deabcd494d1929a3408",
+        "attempt_number": 188,
+        "expires_at": "2026-10-02T03:10:14Z",
+        "leased_at": "2026-10-02T02:10:14Z",
+        "worker_id": "openrouter",
+        "workflow_run_id": "36954312118-1"
+      },
       "publication": {
         "last_attempt_at": null,
         "last_error": null,
@@ -245089,9 +245390,9 @@
       "source_metadata": {
         "repository_commit_sha": "ce92069bcdf491a87550eb0b43b275a1ce24555e"
       },
-      "status": "pending",
+      "status": "leased",
       "task_id": "ee105c78d11054e7c5bde1fb745d0716ff0da935992ef2c21512acbea690fe9b",
-      "updated_at": "2026-10-01T23:07:02Z",
+      "updated_at": "2026-10-02T02:10:14Z",
       "validation_rejection_count": 0
     },
     "ee1fa214c09501dd09a09fae9ad2dc72ff7c952d645ce3f1550aa649ae13259f": {
@@ -246590,7 +246891,7 @@
       "validation_rejection_count": 0
     },
     "efb473cbfb4acd001f39dc54484710bf13c3482de4a9cf9b12dcd9b98ce17abf": {
-      "attempt_count": 215,
+      "attempt_count": 216,
       "created_at": "2026-08-17T00:00:00Z",
       "identity": {
         "agent": "language-style-checker",
@@ -246605,14 +246906,21 @@
         "segmentation_profile": "full-page-v1",
         "validator_version": "check-signal-schema-v1"
       },
-      "last_attempt_at": "2026-10-01T23:06:03Z",
+      "last_attempt_at": "2026-10-02T02:10:14Z",
       "last_outcome": {
         "attempt_id": "db73f865c87c4ce5f15c923354dae9e8eedf65b7920441b91ed223650bb50747",
         "finished_at": "2026-10-01T23:07:02Z",
         "kind": "not_called",
         "provider_attempts": 0
       },
-      "lease": null,
+      "lease": {
+        "attempt_id": "c3ebda7532dab987dfac2581c9b55d31e1ed5e931db1645685476309041c74f4",
+        "attempt_number": 216,
+        "expires_at": "2026-10-02T03:10:14Z",
+        "leased_at": "2026-10-02T02:10:14Z",
+        "worker_id": "openrouter",
+        "workflow_run_id": "36954312118-1"
+      },
       "publication": {
         "last_attempt_at": null,
         "last_error": null,
@@ -246630,9 +246938,9 @@
       "source_metadata": {
         "repository_commit_sha": "ce92069bcdf491a87550eb0b43b275a1ce24555e"
       },
-      "status": "pending",
+      "status": "leased",
       "task_id": "efb473cbfb4acd001f39dc54484710bf13c3482de4a9cf9b12dcd9b98ce17abf",
-      "updated_at": "2026-10-01T23:07:02Z",
+      "updated_at": "2026-10-02T02:10:14Z",
       "validation_rejection_count": 0
     },
     "efc1b755fae8b824196d710706626d88a126a4a46d74887ab207f13da00a6ca1": {
@@ -248668,7 +248976,7 @@
       "validation_rejection_count": 0
     },
     "f221d47a265bb5008445bfdbd3b9c89b88fc495cd220c03527182e0327a86b1c": {
-      "attempt_count": 12,
+      "attempt_count": 13,
       "created_at": "2026-08-17T00:00:00Z",
       "identity": {
         "agent": "language-style-checker",
@@ -248683,14 +248991,21 @@
         "segmentation_profile": "full-page-v1",
         "validator_version": "check-signal-schema-v1"
       },
-      "last_attempt_at": "2026-10-01T23:06:03Z",
+      "last_attempt_at": "2026-10-02T02:10:14Z",
       "last_outcome": {
         "attempt_id": "4493449d99d3ca786f57efa3f810eebdb6b50fbab2f9c9765026681ab51a89b6",
         "finished_at": "2026-10-01T23:07:02Z",
         "kind": "not_called",
         "provider_attempts": 0
       },
-      "lease": null,
+      "lease": {
+        "attempt_id": "d3ac851089de8f625fc5685fbc18fb8dd1058e9d30c44658b601ceaf8aab89d1",
+        "attempt_number": 13,
+        "expires_at": "2026-10-02T03:10:14Z",
+        "leased_at": "2026-10-02T02:10:14Z",
+        "worker_id": "openrouter",
+        "workflow_run_id": "36954312118-1"
+      },
       "publication": {
         "last_attempt_at": null,
         "last_error": null,
@@ -248708,9 +249023,9 @@
       "source_metadata": {
         "repository_commit_sha": "ce92069bcdf491a87550eb0b43b275a1ce24555e"
       },
-      "status": "pending",
+      "status": "leased",
       "task_id": "f221d47a265bb5008445bfdbd3b9c89b88fc495cd220c03527182e0327a86b1c",
-      "updated_at": "2026-10-01T23:07:02Z",
+      "updated_at": "2026-10-02T02:10:14Z",
       "validation_rejection_count": 0
     },
     "f232b3968f8524e6c8109827e3b6e954e3966e419b1189a12c6fca16de071a8c": {
@@ -250741,7 +251056,7 @@
       "validation_rejection_count": 0
     },
     "f4698e3be176f369542189d11a0428de76c9baabed370b3854a06e45737e0649": {
-      "attempt_count": 215,
+      "attempt_count": 216,
       "created_at": "2026-08-17T00:00:00Z",
       "identity": {
         "agent": "language-style-checker",
@@ -250756,14 +251071,21 @@
         "segmentation_profile": "full-page-v1",
         "validator_version": "check-signal-schema-v1"
       },
-      "last_attempt_at": "2026-10-01T23:06:03Z",
+      "last_attempt_at": "2026-10-02T02:10:14Z",
       "last_outcome": {
         "attempt_id": "e89678298f7fea3b5c87e35f9880864df5628e8cc35174e839f02198172dc01b",
         "finished_at": "2026-10-01T23:07:02Z",
         "kind": "not_called",
         "provider_attempts": 0
       },
-      "lease": null,
+      "lease": {
+        "attempt_id": "60b4b469af5c03508287c09abdb7037d7c95fe051391d25fb967e8279d5c696b",
+        "attempt_number": 216,
+        "expires_at": "2026-10-02T03:10:14Z",
+        "leased_at": "2026-10-02T02:10:14Z",
+        "worker_id": "openrouter",
+        "workflow_run_id": "36954312118-1"
+      },
       "publication": {
         "last_attempt_at": null,
         "last_error": null,
@@ -250781,9 +251103,9 @@
       "source_metadata": {
         "repository_commit_sha": "ce92069bcdf491a87550eb0b43b275a1ce24555e"
       },
-      "status": "pending",
+      "status": "leased",
       "task_id": "f4698e3be176f369542189d11a0428de76c9baabed370b3854a06e45737e0649",
-      "updated_at": "2026-10-01T23:07:02Z",
+      "updated_at": "2026-10-02T02:10:14Z",
       "validation_rejection_count": 0
     },
     "f483b701b2143218eb17ad63846ce8d72f174414ef531cf16f9c253595ae4e84": {
@@ -251371,7 +251693,7 @@
       "validation_rejection_count": 0
     },
     "f513725269f9885b8bed2c6bf7fb5ae79ef65c10ebee4c3bb9c15df5f20cd99c": {
-      "attempt_count": 307,
+      "attempt_count": 308,
       "created_at": "2026-08-17T00:00:00Z",
       "identity": {
         "agent": "language-style-checker",
@@ -251386,14 +251708,21 @@
         "segmentation_profile": "full-page-v1",
         "validator_version": "check-signal-schema-v1"
       },
-      "last_attempt_at": "2026-10-01T23:06:03Z",
+      "last_attempt_at": "2026-10-02T02:10:14Z",
       "last_outcome": {
         "attempt_id": "136012e00a1a663d36d982a9361ec4794e5aafea1c6d56b3121f019acdfd2f48",
         "finished_at": "2026-10-01T23:07:02Z",
         "kind": "not_called",
         "provider_attempts": 0
       },
-      "lease": null,
+      "lease": {
+        "attempt_id": "d37279fce8bfc14754be64aee84c7fddaeeb6e1b66b0798a6a107e86be535d78",
+        "attempt_number": 308,
+        "expires_at": "2026-10-02T03:10:14Z",
+        "leased_at": "2026-10-02T02:10:14Z",
+        "worker_id": "openrouter",
+        "workflow_run_id": "36954312118-1"
+      },
       "publication": {
         "last_attempt_at": null,
         "last_error": null,
@@ -251411,9 +251740,9 @@
       "source_metadata": {
         "repository_commit_sha": "ce92069bcdf491a87550eb0b43b275a1ce24555e"
       },
-      "status": "pending",
+      "status": "leased",
       "task_id": "f513725269f9885b8bed2c6bf7fb5ae79ef65c10ebee4c3bb9c15df5f20cd99c",
-      "updated_at": "2026-10-01T23:07:02Z",
+      "updated_at": "2026-10-02T02:10:14Z",
       "validation_rejection_count": 0
     },
     "f51c3e014abb68e246bdcaed1ae99fd3ea2ca0c4dca3c913a46d5174a3925b16": {
@@ -252892,7 +253221,7 @@
       "validation_rejection_count": 0
     },
     "f6cf57409b4a10d80e3a8a72b872add62b3847e2471b5d9032d4c4326b70c4b8": {
-      "attempt_count": 122,
+      "attempt_count": 123,
       "created_at": "2026-08-17T00:00:00Z",
       "identity": {
         "agent": "language-style-checker",
@@ -252907,14 +253236,21 @@
         "segmentation_profile": "full-page-v1",
         "validator_version": "check-signal-schema-v1"
       },
-      "last_attempt_at": "2026-10-01T23:06:03Z",
+      "last_attempt_at": "2026-10-02T02:10:14Z",
       "last_outcome": {
         "attempt_id": "9e214aa694f07df5c664b464b5c9eeeca67ae064a30c4626b681afa762d4666c",
         "finished_at": "2026-10-01T23:07:02Z",
         "kind": "not_called",
         "provider_attempts": 0
       },
-      "lease": null,
+      "lease": {
+        "attempt_id": "ad60ac1fd03eae778c42b7d8b17bb461a57e8274d26513bcfbcc3e0a5cf8c443",
+        "attempt_number": 123,
+        "expires_at": "2026-10-02T03:10:14Z",
+        "leased_at": "2026-10-02T02:10:14Z",
+        "worker_id": "openrouter",
+        "workflow_run_id": "36954312118-1"
+      },
       "publication": {
         "last_attempt_at": null,
         "last_error": null,
@@ -252932,9 +253268,9 @@
       "source_metadata": {
         "repository_commit_sha": "ce92069bcdf491a87550eb0b43b275a1ce24555e"
       },
-      "status": "pending",
+      "status": "leased",
       "task_id": "f6cf57409b4a10d80e3a8a72b872add62b3847e2471b5d9032d4c4326b70c4b8",
-      "updated_at": "2026-10-01T23:07:02Z",
+      "updated_at": "2026-10-02T02:10:14Z",
       "validation_rejection_count": 0
     },
     "f6e42a8420c9666b030dff77fdb52bcc00a4a89a3268d828fe8c1934eb273031": {
@@ -256451,7 +256787,7 @@
       "validation_rejection_count": 0
     },
     "fa9edbab9302bae3a35baefe8ef26fad60305f9551002172cb5b76ef7f91d5fb": {
-      "attempt_count": 215,
+      "attempt_count": 216,
       "created_at": "2026-08-17T00:00:00Z",
       "identity": {
         "agent": "language-style-checker",
@@ -256466,14 +256802,21 @@
         "segmentation_profile": "full-page-v1",
         "validator_version": "check-signal-schema-v1"
       },
-      "last_attempt_at": "2026-10-01T23:06:03Z",
+      "last_attempt_at": "2026-10-02T02:10:14Z",
       "last_outcome": {
         "attempt_id": "5becf131d6e9f9ab6b21f2e6a0a797bf776fe4b67b47ac06a4866872600cb608",
         "finished_at": "2026-10-01T23:07:02Z",
         "kind": "not_called",
         "provider_attempts": 0
       },
-      "lease": null,
+      "lease": {
+        "attempt_id": "656ccb27963f6a6a922a1a06e78d1d374c79180b17e477474582ccf53135cfdb",
+        "attempt_number": 216,
+        "expires_at": "2026-10-02T03:10:14Z",
+        "leased_at": "2026-10-02T02:10:14Z",
+        "worker_id": "openrouter",
+        "workflow_run_id": "36954312118-1"
+      },
       "publication": {
         "last_attempt_at": null,
         "last_error": null,
@@ -256491,9 +256834,9 @@
       "source_metadata": {
         "repository_commit_sha": "ce92069bcdf491a87550eb0b43b275a1ce24555e"
       },
-      "status": "pending",
+      "status": "leased",
       "task_id": "fa9edbab9302bae3a35baefe8ef26fad60305f9551002172cb5b76ef7f91d5fb",
-      "updated_at": "2026-10-01T23:07:02Z",
+      "updated_at": "2026-10-02T02:10:14Z",
       "validation_rejection_count": 0
     },
     "fab50ba38dd7bac06564f0c197b711e34fa1307acc9eb35fdc01ab804124982b": {
@@ -261054,7 +261397,7 @@
       "validation_rejection_count": 0
     },
     "feb216c544daed5bddd10f7e1c5ca2f2d69d81f560e709f3992e2f4d6ec24403": {
-      "attempt_count": 215,
+      "attempt_count": 216,
       "created_at": "2026-08-17T00:00:00Z",
       "identity": {
         "agent": "language-style-checker",
@@ -261069,14 +261412,21 @@
         "segmentation_profile": "full-page-v1",
         "validator_version": "check-signal-schema-v1"
       },
-      "last_attempt_at": "2026-10-01T23:06:03Z",
+      "last_attempt_at": "2026-10-02T02:10:14Z",
       "last_outcome": {
         "attempt_id": "39c95ad878788e9eef6671e2f3102932c1cc9ddfc2ffcee3b3778380f4b4579e",
         "finished_at": "2026-10-01T23:07:02Z",
         "kind": "not_called",
         "provider_attempts": 0
       },
-      "lease": null,
+      "lease": {
+        "attempt_id": "040ce071fc48a9c6aaca0479ce72f006e59b023e069c6a58d7774aaccbc29a3e",
+        "attempt_number": 216,
+        "expires_at": "2026-10-02T03:10:14Z",
+        "leased_at": "2026-10-02T02:10:14Z",
+        "worker_id": "openrouter",
+        "workflow_run_id": "36954312118-1"
+      },
       "publication": {
         "last_attempt_at": null,
         "last_error": null,
@@ -261094,9 +261444,9 @@
       "source_metadata": {
         "repository_commit_sha": "ce92069bcdf491a87550eb0b43b275a1ce24555e"
       },
-      "status": "pending",
+      "status": "leased",
       "task_id": "feb216c544daed5bddd10f7e1c5ca2f2d69d81f560e709f3992e2f4d6ec24403",
-      "updated_at": "2026-10-01T23:07:02Z",
+      "updated_at": "2026-10-02T02:10:14Z",
       "validation_rejection_count": 0
     },
     "febe68efcf6f3166cf318f2a7ea7546c3ed23c891fefca2a10d035a4e5b36ebf": {
