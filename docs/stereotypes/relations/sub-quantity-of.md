@@ -2,11 +2,11 @@
 
 ## Description
 
-SubQuantityOf is a meronymic parthood relation between quantities. The supplied evidence constrains the relation to Quantity classifiers at both ends. It presents the relation as holding between quantities, where quantities are maximal self-connected objectified portions of matter, and both connected classifiers represent Quantity universals.
+SubQuantityOf is a meronymic parthood relation between quantities. The relation is constrained to Quantity classifiers at both ends. It presents the relation as holding between quantities, where quantities are maximal self-connected objectified portions of matter, and both connected classifiers represent Quantity universals.
 
-SubQuantityOf is governed by extensional mereology. In that setting, the supplied evidence associates the relation with non-reflexivity, anti-symmetry, transitivity, and strong supplementation. Transitivity is independently emphasized in the quantity/mass account, which states that parthood among quantities is always transitive.
+SubQuantityOf is governed by extensional mereology. In that setting, the relation is associated with non-reflexivity, anti-symmetry, transitivity, and strong supplementation. Transitivity is independently emphasized in the quantity/mass account, which states that parthood among quantities is always transitive.
 
-Both source contributions characterize SubQuantityOf as non-shareable: a quantity part belongs to one maximal quantity whole in the relevant sense, and the relation is recorded with `isShareable = false`. The supplied evidence also treats parthood involving quantities as essential parthood; one contribution states that the part is essential to the whole, while another grounds essentiality in the extensional character of Quantity individuals.
+Both source contributions characterize SubQuantityOf as non-shareable: a quantity part belongs to one maximal quantity whole in the relevant sense, and the relation is recorded with `isShareable = false`. Parthood involving quantities is also treated as essential parthood; one contribution states that the part is essential to the whole, while another grounds essentiality in the extensional character of Quantity individuals.
 
 The supplied evidence gives cardinality constraints for the association ends. One contribution states that, when fully specified, cardinality at both ends is exactly one. Another specifically requires the maximum cardinality at the part end to be one.
 
@@ -41,3 +41,4 @@ Examples are not yet available.
 | 2026-07-04 | Phase 2 | Phase 2 automated resolver | Signal resolution | resolve-language-style-signal-issue-v1.2.2 | Phase 2 automated resolver: language-style signals v1.2.2 | GitHub issue #191 | Applied accepted language-style-checker signal edits through automated Phase 2 resolution; not a conceptual or source-faithfulness validation. |
 | 2026-07-21 | Phase 2 | Phase 2 automated resolver | Signal resolution | resolve-language-style-signal-issue-v1.2.2 | Phase 2 automated resolver: language-style signals v1.2.2 | GitHub issue #296 | Applied accepted language-style-checker signal edits through automated Phase 2 resolution; not a conceptual or source-faithfulness validation. |
 | 2026-07-27 | Phase 2 | Phase 2 automated resolver | Signal resolution | resolve-language-style-signal-issue-v1.2.2 | Phase 2 automated resolver: language-style signals v1.2.2 | GitHub issue #355 | Applied accepted language-style-checker signal edits through automated Phase 2 resolution; not a conceptual or source-faithfulness validation. |
+| 2026-09-05 | Phase 2 | Phase 2 automated resolver | Signal resolution | resolve-language-style-signal-issue-v1.2.2 | Phase 2 automated resolver: language-style signals v1.2.2 | GitHub issue #602 | Applied accepted language-style-checker signal edits through automated Phase 2 resolution; not a conceptual or source-faithfulness validation. |
