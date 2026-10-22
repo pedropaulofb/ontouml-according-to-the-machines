@@ -4,7 +4,7 @@
     "daily_period_start": "2026-10-22",
     "source": "configured"
   },
-  "last_updated_at": "2026-10-22T06:01:44Z",
+  "last_updated_at": "2026-10-22T11:41:13Z",
   "processed_event_ids": [
     "01787044575385241714-da20d73c-26ec-462c-a1d4-198de5477b38",
     "01787044578572383222-966719cd-7fa5-46a3-a0d6-3a110180d3b5",
@@ -3844,7 +3844,10 @@
     "01792630583079185401-3737e7b9-b31e-432b-a7bc-2ccf7a36b90c",
     "01792648878040889867-3dfa31a5-aade-4878-83eb-d4208db7c995",
     "01792648893418240866-1e826e7b-ebd6-4263-abb1-aba5f8f9b6e0",
-    "01792648904288447673-3c8aaec2-b020-45e3-8c1e-758f3d649b66"
+    "01792648904288447673-3c8aaec2-b020-45e3-8c1e-758f3d649b66",
+    "01792669249937835324-f6f4a966-90c4-4f91-95f3-4066c09d0f4f",
+    "01792669265312713863-a6d91f11-1211-4231-a67e-1f8f7cc910db",
+    "01792669273810229789-7a426c3d-6b9d-4182-a701-b59a3b77802f"
   ],
   "provider_blocks": {},
   "quota_groups": {
@@ -4882,7 +4885,7 @@
     },
     "openrouter-free-account": {
       "input_tokens_used_day_local": 0,
-      "last_updated_at": "2026-10-22T06:01:44Z",
+      "last_updated_at": "2026-10-22T11:41:13Z",
       "output_tokens_used_day_local": 0,
       "provenance": {
         "input_tokens_used_day_local": {
@@ -4897,7 +4900,7 @@
         },
         "remaining_estimate": {
           "estimated": true,
-          "observed_at": "2026-10-22T06:01:44Z",
+          "observed_at": "2026-10-22T11:41:13Z",
           "source": "inferred"
         },
         "requests_limit_day": {
@@ -4917,7 +4920,7 @@
         },
         "requests_used_day_local": {
           "estimated": false,
-          "observed_at": "2026-10-22T06:01:44Z",
+          "observed_at": "2026-10-22T11:41:13Z",
           "source": "locally-counted"
         },
         "reset_at": {
@@ -4927,12 +4930,12 @@
         },
         "retry_not_before": {
           "estimated": false,
-          "observed_at": "2026-10-22T06:01:44Z",
+          "observed_at": "2026-10-22T11:41:13Z",
           "source": "inferred"
         },
         "status": {
           "estimated": false,
-          "observed_at": "2026-10-22T06:01:44Z",
+          "observed_at": "2026-10-22T11:41:13Z",
           "source": "provider-reported"
         },
         "tokens_limit_minute": {
@@ -4952,13 +4955,13 @@
         }
       },
       "provider": "openrouter",
-      "remaining_estimate": 44,
+      "remaining_estimate": 41,
       "requests_limit_day": 50,
       "requests_limit_minute": null,
       "requests_remaining_minute": null,
-      "requests_used_day_local": 6,
+      "requests_used_day_local": 9,
       "reset_at": null,
-      "retry_not_before": "2026-10-22T07:01:44Z",
+      "retry_not_before": "2026-10-22T12:41:13Z",
       "scope": "account",
       "source": "provider-reported",
       "status": "deferred_quota",
@@ -4968,7 +4971,7 @@
     },
     "openrouter:google/gemma-4-26b-a4b-it:free": {
       "input_tokens_used_day_local": 0,
-      "last_updated_at": "2026-10-22T06:01:44Z",
+      "last_updated_at": "2026-10-22T11:41:13Z",
       "output_tokens_used_day_local": 0,
       "provenance": {
         "input_tokens_used_day_local": {
@@ -5003,7 +5006,7 @@
         },
         "requests_used_day_local": {
           "estimated": false,
-          "observed_at": "2026-10-22T06:01:44Z",
+          "observed_at": "2026-10-22T11:41:13Z",
           "source": "locally-counted"
         },
         "reset_at": {
@@ -5042,7 +5045,7 @@
       "requests_limit_day": null,
       "requests_limit_minute": null,
       "requests_remaining_minute": null,
-      "requests_used_day_local": 2,
+      "requests_used_day_local": 3,
       "reset_at": null,
       "retry_not_before": null,
       "scope": "model",
@@ -5226,7 +5229,7 @@
     },
     "openrouter:nvidia/nemotron-3-ultra-550b-a55b:free": {
       "input_tokens_used_day_local": 0,
-      "last_updated_at": "2026-10-22T06:01:33Z",
+      "last_updated_at": "2026-10-22T11:41:05Z",
       "output_tokens_used_day_local": 0,
       "provenance": {
         "input_tokens_used_day_local": {
@@ -5261,7 +5264,7 @@
         },
         "requests_used_day_local": {
           "estimated": false,
-          "observed_at": "2026-10-22T06:01:33Z",
+          "observed_at": "2026-10-22T11:41:05Z",
           "source": "locally-counted"
         },
         "reset_at": {
@@ -5300,7 +5303,7 @@
       "requests_limit_day": null,
       "requests_limit_minute": null,
       "requests_remaining_minute": null,
-      "requests_used_day_local": 4,
+      "requests_used_day_local": 6,
       "reset_at": null,
       "retry_not_before": null,
       "scope": "model",
@@ -6514,15 +6517,15 @@
       "validation_required": true
     },
     "openrouter:nvidia/nemotron-3-ultra-550b-a55b:free": {
-      "authorized_recheck_task_id": "2c4707d83993c1193bc2ab2ba61b07c5d62dd3bb10430dd6df4747009a0c32eb",
+      "authorized_recheck_task_id": null,
       "block_reason": "provider_unavailable",
       "block_scope": "slot",
-      "last_updated_at": "2026-10-22T11:40:07Z",
+      "last_updated_at": "2026-10-22T11:41:05Z",
       "last_validation_at": "2026-08-19T09:20:00Z",
       "last_validation_result": "passed",
       "model": "nvidia/nemotron-3-ultra-550b-a55b:free",
       "provider": "openrouter",
-      "retry_not_before": "2026-10-22T07:01:33Z",
+      "retry_not_before": "2026-10-22T12:41:05Z",
       "status": "temporarily_unavailable",
       "validation_required": false
     },
