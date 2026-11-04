@@ -4,7 +4,7 @@
     "daily_period_start": "2026-11-04",
     "source": "configured"
   },
-  "last_updated_at": "2026-11-04T06:03:38Z",
+  "last_updated_at": "2026-11-04T14:21:20Z",
   "processed_event_ids": [
     "01787044575385241714-da20d73c-26ec-462c-a1d4-198de5477b38",
     "01787044578572383222-966719cd-7fa5-46a3-a0d6-3a110180d3b5",
@@ -4052,7 +4052,8 @@
     "01793706738892916650-923e6664-9e28-4ed5-8773-fba6597b6f3b",
     "01793734315179708662-38aa813b-145a-4a51-ba32-ea1fad9d8d2b",
     "01793750667900122113-564fa437-9f93-451d-a3ca-68ba77334ae9",
-    "01793772218663276965-c09f1340-8aea-4d7a-bdda-2238df83b7bc"
+    "01793772218663276965-c09f1340-8aea-4d7a-bdda-2238df83b7bc",
+    "01793802080733403743-6e6afcfb-d426-45a3-a86c-90a34a88a7c5"
   ],
   "provider_blocks": {},
   "quota_groups": {
@@ -5090,7 +5091,7 @@
     },
     "openrouter-free-account": {
       "input_tokens_used_day_local": 0,
-      "last_updated_at": "2026-11-04T06:03:38Z",
+      "last_updated_at": "2026-11-04T14:21:20Z",
       "output_tokens_used_day_local": 0,
       "provenance": {
         "input_tokens_used_day_local": {
@@ -5105,7 +5106,7 @@
         },
         "remaining_estimate": {
           "estimated": true,
-          "observed_at": "2026-11-04T06:03:38Z",
+          "observed_at": "2026-11-04T14:21:20Z",
           "source": "inferred"
         },
         "requests_limit_day": {
@@ -5125,7 +5126,7 @@
         },
         "requests_used_day_local": {
           "estimated": false,
-          "observed_at": "2026-11-04T06:03:38Z",
+          "observed_at": "2026-11-04T14:21:20Z",
           "source": "locally-counted"
         },
         "reset_at": {
@@ -5135,12 +5136,12 @@
         },
         "retry_not_before": {
           "estimated": false,
-          "observed_at": "2026-11-04T06:03:38Z",
+          "observed_at": "2026-11-04T14:21:20Z",
           "source": "inferred"
         },
         "status": {
           "estimated": false,
-          "observed_at": "2026-11-04T06:03:38Z",
+          "observed_at": "2026-11-04T14:21:20Z",
           "source": "provider-reported"
         },
         "tokens_limit_minute": {
@@ -5160,13 +5161,13 @@
         }
       },
       "provider": "openrouter",
-      "remaining_estimate": 48,
+      "remaining_estimate": 47,
       "requests_limit_day": 50,
       "requests_limit_minute": null,
       "requests_remaining_minute": null,
-      "requests_used_day_local": 2,
+      "requests_used_day_local": 3,
       "reset_at": null,
-      "retry_not_before": "2026-11-04T07:03:38Z",
+      "retry_not_before": "2026-11-04T15:21:20Z",
       "scope": "account",
       "source": "provider-reported",
       "status": "deferred_quota",
@@ -5262,7 +5263,7 @@
     },
     "openrouter:google/gemma-4-31b-it:free": {
       "input_tokens_used_day_local": 0,
-      "last_updated_at": "2026-11-04T06:03:38Z",
+      "last_updated_at": "2026-11-04T14:21:20Z",
       "output_tokens_used_day_local": 0,
       "provenance": {
         "input_tokens_used_day_local": {
@@ -5297,7 +5298,7 @@
         },
         "requests_used_day_local": {
           "estimated": false,
-          "observed_at": "2026-11-04T06:03:38Z",
+          "observed_at": "2026-11-04T14:21:20Z",
           "source": "locally-counted"
         },
         "reset_at": {
@@ -5336,7 +5337,7 @@
       "requests_limit_day": null,
       "requests_limit_minute": null,
       "requests_remaining_minute": null,
-      "requests_used_day_local": 2,
+      "requests_used_day_local": 3,
       "reset_at": null,
       "retry_not_before": null,
       "scope": "model",
