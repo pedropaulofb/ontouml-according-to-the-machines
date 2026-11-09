@@ -33,7 +33,7 @@ A personal experiment in designing and coordinating AI agents, using the generat
 
 </div>
 
-!!! note "Archived personal experiment"
+!!! danger "Archived personal experiment"
 
     This was a personal project created primarily to practice designing, coordinating, and working with AI agents. OntoUML documentation was the experimental use case—not a promise of comprehensive or expert-validated reference material.
 
