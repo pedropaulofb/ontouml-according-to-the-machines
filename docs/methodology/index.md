@@ -1,6 +1,10 @@
 # Methodology
 
-This section documents the working methodology used to generate, review, and refine the content of **OntoUML According to the Machines**.
+This section preserves the methodology used to generate, review, and refine the content of **OntoUML According to the Machines**.
+
+!!! note "Historical methodology"
+
+    These materials describe experimental workflows as they existed before the project was retired in November 2026. References to current activity or future plans should be read as historical, not as commitments to ongoing maintenance.
 
 The methodology is concerned with the documentation content itself: how source material is selected, how pages are populated, how generated claims are handled, and how review work is organized. It does not govern the site's visual design, layout, deployment configuration, or general website formatting.
 
@@ -43,7 +47,7 @@ This methodology section operationalizes those principles by documenting concret
 
 The project is organized into phases. A phase is a content-production period with a defined purpose, scope, and maturity target.
 
-Current phase documentation is available in the [Project Phases](phases/index.md) section.
+The phase records are available in the [Project Phases](phases/index.md) section.
 
 ## General content principles
 
@@ -55,6 +59,6 @@ All phases should preserve the following principles unless a phase-specific docu
 4. **Uncertainty should not be hidden.**
 5. **Content work should not be mixed with website styling or visual-design work.**
 
-## Current status
+## Archival status
 
-The methodology is expected to evolve with the project. Phase-specific documents may be added or revised as the content-production workflow becomes more mature.
+This methodology is preserved as a historical record. Development stopped in November 2026, and the described content-production process is no longer being actively developed or maintained.

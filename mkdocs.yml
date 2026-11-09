@@ -1,11 +1,12 @@
 site_name: OntoUML According to the Machines
-site_description: An unofficial, apocryphal LLM-generated guide to OntoUML stereotypes.
+site_description: Archived personal AI-agent experiment using OntoUML documentation as a case study; not an authoritative guide.
 site_author: Pedro Paulo Favato Barcelos
 site_url: https://pedropaulofb.github.io/ontouml-according-to-the-machines/
 
 repo_name: pedropaulofb/ontouml-according-to-the-machines
 repo_url: https://github.com/pedropaulofb/ontouml-according-to-the-machines
-edit_uri: edit/main/docs/
+# Keep the repository link, but do not offer edit links for the retired project.
+edit_uri: ""
 
 theme:
   name: material

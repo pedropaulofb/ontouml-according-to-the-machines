@@ -2,24 +2,31 @@
 
 **An Apocryphal Guide to OntoUML**
 
+> [!NOTE]
+> **Archived personal experiment**
+>
+> This was a personal learning project created primarily to practice designing, coordinating, and working with AI agents. Generating and reviewing OntoUML documentation served as an experimental use case, not as an attempt to produce a comprehensive or expert-validated reference.
+>
+> Development ended in November 2026. The repository and [documentation website](https://pedropaulofb.github.io/ontouml-according-to-the-machines/) are retained as a historical record and are no longer actively maintained. The content may be incomplete, inaccurate, or outdated.
+
 > [!WARNING]
 > This project is unofficial, experimental, and LLM-generated. It may contain hallucinations, inaccuracies, oversimplifications, or unsupported claims. Use it as a learning aid, not as an authoritative source. Any substantive claim should be checked against authoritative OntoUML and UFO materials before being reused in teaching, research, modeling work, or publications.
 
-## Goal
+## Original goal
 
-**OntoUML According to the Machines** aims to provide an accessible, stereotype-by-stereotype guide to OntoUML.
+**OntoUML According to the Machines** was intended to provide an accessible, stereotype-by-stereotype guide to OntoUML.
 
-The goal is to help readers understand OntoUML concepts through structured explanations, examples, and visual material, while remaining explicit about the experimental nature of the content. The repository explores how large language models can explain OntoUML and where their explanations require human review, correction, or qualification.
+The content-oriented goal was to help readers understand OntoUML concepts through structured explanations, examples, and visual material, while remaining explicit about the experimental nature of the content. The repository explored how large language models can explain OntoUML and where their explanations require human review, correction, or qualification.
 
-In practical terms, this project is intended to become a readable companion for people learning OntoUML, especially those who benefit from concise explanations and illustrative examples.
+In practical terms, the guide was envisioned as a readable companion for people learning OntoUML, especially those who benefit from concise explanations and illustrative examples.
 
-## Vision
+## Original vision
 
-The vision of this project is to make OntoUML easier to approach without flattening its conceptual precision.
+The original vision of this project was to make OntoUML easier to approach without flattening its conceptual precision.
 
-OntoUML is grounded in a rich theory of categories, identity, dependence, rigidity, and relations. These foundations are powerful, but they can also be difficult for beginners to absorb from formal material alone. This repository experiments with a different entry point: an open educational guide generated with the help of machines, curated around human learning needs, and framed with explicit caution about its limitations.
+OntoUML is grounded in a rich theory of categories, identity, dependence, rigidity, and relations. These foundations are powerful, but they can also be difficult for beginners to absorb from formal material alone. This repository experimented with a different entry point: an open educational guide generated with the help of machines, curated around human learning needs, and framed with explicit caution about its limitations.
 
-The project embraces its apocryphal character. It is not the official doctrine of OntoUML. It is a machine-assisted attempt to explain, organize, and illustrate OntoUML concepts in a way that can support learning and reflection.
+The project adopted its apocryphal character. It is not the official doctrine of OntoUML. It was a machine-assisted attempt to explain, organize, and illustrate OntoUML concepts in a way that can support learning and reflection.
 
 ## Intended audience
 
@@ -56,11 +63,11 @@ This project is not:
 
 The content should be read critically. The machine-generated nature of the guide is part of the project, not a hidden implementation detail.
 
-## Current status
+## Archival status
 
-This repository is in an early stage and is a work in progress.
+Development concluded in November 2026. The project is no longer actively maintained, and no further content generation, review, or feature work is planned.
 
-At this stage, the project defines its purpose, scope, and direction. The stereotype-specific guide content is expected to evolve gradually. Some sections may remain incomplete, provisional, or in need of expert review.
+The repository and its [public documentation website](https://pedropaulofb.github.io/ontouml-according-to-the-machines/) remain available for historical and reference purposes. The published material reflects the experiment as it stood when work stopped; some pages remain incomplete, provisional, or in need of expert review.
 
 ## How to use this project
 
@@ -75,7 +82,7 @@ Do not use it as the final authority on OntoUML semantics. When precision matter
 
 ## Guiding principles
 
-The project is guided by the following principles:
+The project was guided by the following principles:
 
 1. **Accessibility** — explanations should help newcomers understand OntoUML concepts without unnecessary barriers.
 2. **Conceptual care** — simplification should not erase important distinctions.

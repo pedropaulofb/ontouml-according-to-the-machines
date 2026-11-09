@@ -29,18 +29,18 @@ They do not define or govern:
 - deployment infrastructure;
 - general repository maintenance unrelated to documentation content or documented phase methodology.
 
-## Current phases
+## Documented phases (at retirement)
 
 | Phase | Name | Status | Main purpose |
 |---|---|---|---|
-| Phase 1 | [Groundwork and Initial Population](phase-1.md) | In progress | Generate source-specific intermediate files from selected high-yield sources and consolidate them into first canonical stereotype pages. |
-| Phase 2 | [Lightweight Check-Agent Infrastructure](phase-2/index.md) | Active / implemented infrastructure | Provide deterministic and LLM-based check-agent infrastructure that emits page-local signals, routes them to page-plus-agent GitHub issues, and supports manual confirmation-gated review of LLM signal issues. |
+| Phase 1 | [Groundwork and Initial Population](phase-1.md) | Stopped before completion | Generate source-specific intermediate files from selected high-yield sources and consolidate them into first canonical stereotype pages. |
+| Phase 2 | [Lightweight Check-Agent Infrastructure](phase-2/index.md) | Infrastructure implemented; no longer maintained | Provide deterministic and LLM-based check-agent infrastructure that emits page-local signals, routes them to page-plus-agent GitHub issues, and supports manual confirmation-gated review of LLM signal issues. |
 
 ## Phase relationship
 
 The phases are cumulative but not necessarily exhaustive.
 
-Phase 1 creates a provisional source-grounded documentation base. Phase 2 adds lightweight page-local check infrastructure over that base: deterministic page-structure checks in CI, scheduled conservative LLM signal collection for page hygiene and language/style, deterministic issue routing, and manual confirmation-gated signal-review prompts. Phase 2 does not perform source-faithfulness validation, conceptual adequacy review, cross-page semantic comparison, automatic page repair, automatic PR creation, or automatic issue closure. Later work may review, refine, normalize, restructure, validate, or expand the documentation base. A later phase may also revisit content produced in an earlier phase if new source material, review decisions, or automation requirements justify it.
+Phase 1 was designed to create a provisional source-grounded documentation base. Phase 2 added lightweight page-local check infrastructure over that base: deterministic page-structure checks in CI, scheduled conservative LLM signal collection for page hygiene and language/style, deterministic issue routing, and manual confirmation-gated signal-review prompts. Phase 2 does not perform source-faithfulness validation, conceptual adequacy review, cross-page semantic comparison, automatic page repair, automatic PR creation, or automatic issue closure. Additional phases were envisioned for review, refinement, normalization, validation, and expansion, but that work was not pursued before the project was retired.
 
 ## Maturity expectation
 

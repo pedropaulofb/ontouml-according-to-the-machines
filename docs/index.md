@@ -9,12 +9,12 @@ hide:
 
 <img src="assets/images/logo-text.svg" alt="OntoUML According to the Machines" class="aatm-wordmark">
 
-<p class="aatm-eyebrow">Unofficial · LLM-generated · Review-oriented</p>
+<p class="aatm-eyebrow">Archived personal experiment · AI agents · OntoUML</p>
 
 # OntoUML According to the Machines
 
 <p class="aatm-hero__lead">
-A machine-generated documentation atlas for OntoUML stereotypes, organized around descriptions, stereotype profiles, examples, references, and review logs.
+A personal experiment in designing and coordinating AI agents, using the generation and review of OntoUML stereotype documentation as a practical use case.
 </p>
 
 <div class="aatm-hero__actions" markdown>
@@ -33,6 +33,12 @@ A machine-generated documentation atlas for OntoUML stereotypes, organized aroun
 
 </div>
 
+!!! note "Archived personal experiment"
+
+    This was a personal project created primarily to practice designing, coordinating, and working with AI agents. OntoUML documentation was the experimental use case—not a promise of comprehensive or expert-validated reference material.
+
+    Development ended in November 2026. The project is no longer actively maintained, but this site and its source repository remain available as a historical record. Content may be incomplete, inaccurate, or outdated.
+
 <div class="aatm-read-note" markdown>
 
 This project is **not authoritative OntoUML documentation**. It is an experimental, LLM-generated documentation site whose claims, examples, and interpretations should be reviewed against authoritative OntoUML sources before reuse.
@@ -45,19 +51,19 @@ This project is **not authoritative OntoUML documentation**. It is an experiment
 
 -   **Class Stereotypes**
 
-    Browse placeholder pages for OntoUML class stereotypes such as Kind, Role, Phase, Relator, Quality, Category, Mixin, and related constructs.
+    Explore the available (sometimes incomplete) pages for OntoUML class stereotypes such as Kind, Role, Phase, Relator, Quality, Category, Mixin, and related constructs.
 
     [Open class stereotypes](stereotypes/classes/index.md)
 
 -   **Relation Stereotypes**
 
-    Browse placeholder pages for OntoUML relation stereotypes such as Mediation, Material, Characterization, ComponentOf, MemberOf, Participation, and related constructs.
+    Explore the available (sometimes incomplete) pages for OntoUML relation stereotypes such as Mediation, Material, Characterization, ComponentOf, MemberOf, Participation, and related constructs.
 
     [Open relation stereotypes](stereotypes/relations/index.md)
 
 -   **Generation Policy**
 
-    Read how generated content, direct citations, consulted sources, and generation/review logs should be handled.
+    Read the historical policy for handling generated content, direct citations, consulted sources, and generation/review logs.
 
     [Open generation policy](methodology/generation-policy.md)
 
@@ -69,18 +75,18 @@ This project is **not authoritative OntoUML documentation**. It is an experiment
 
 -   **Generated content**
 
-    Pages are intended to be created, reviewed, or revised by large language models.
+    The project experimented with generating, reviewing, and revising pages using large language models.
 
 -   **Draft status**
 
-    The presence of content does not imply correctness. Pages should remain drafts until checked against authoritative OntoUML sources.
+    The presence of content does not imply correctness. Some pages remain drafts and have not been checked against authoritative OntoUML sources.
 
 -   **Source traceability**
 
-    Each page should distinguish exact direct citations from broader consulted sources.
+    Where available, pages distinguish exact direct citations from broader consulted sources.
 
 -   **Review logs**
 
-    Each page should preserve a record of generation, review, correction, and regeneration activities.
+    Generation and review logs record documented activity, but do not guarantee expert validation.
 
 </div>

@@ -1,5 +1,9 @@
 # Phase 2 — Lightweight Check-Agent and Automated Signal-Resolution Infrastructure
 
+!!! note "Historical implementation record"
+
+    This section records the Phase 2 implementation before the project was retired in November 2026. References to “current” settings, scheduled workflows, and planned actions describe the historical implementation, not ongoing development.
+
 Phase 2 is the second documented project phase of **OntoUML According to the Machines**.
 
 Its purpose is to provide lightweight deterministic and API-based review infrastructure for existing canonical stereotype pages, plus a tightly bounded automated resolver for selected Phase 2 signal issues.
